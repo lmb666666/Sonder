@@ -1,63 +1,119 @@
-# Astro Starter Kit: Blog
+# Astro Navfolio
 
-```sh
-bun create astro@latest -- --template blog
-```
+一个基于 Astro 的个人主页仪表盘与博客项目。首页采用紧凑的卡片式布局，用来展示个人资料、常用导航、GitHub 数据、实时时钟、月历、最近关注事项和联系方式。
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+![首页预览](./homepage.png)
 
-Features:
+## 功能特性
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+- 基于 Astro 的静态站点，支持 Markdown 和 MDX 博客内容。
+- 响应式个人仪表盘布局，适配桌面端和移动端。
+- 使用玻璃拟态卡片组织个人信息、导航、统计、时间和日历。
+- 个人资料、导航链接、GitHub 统计和联系方式集中配置在 `src/data/profile.ts`。
+- GitHub Stats 使用可配置的 `github-readme-stats` 图片接口。
+- 图标统一由 `lucide-astro` 和 `src/components/Icon.astro` 管理，尺寸稳定。
+- 当前时间模块支持秒数显示，并让秒数使用更小字号。
+- 月历组件会自动标注当天日期。
+- 内置 RSS 和 Sitemap 支持。
 
-## 🚀 Project Structure
+## 技术栈
 
-Inside of your Astro project, you'll see the following folders and files:
+- Astro 6
+- Bun
+- Tailwind CSS 4
+- lucide-astro
+- @astrojs/mdx
+- @astrojs/rss
+- @astrojs/sitemap
+
+## 目录结构
 
 ```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+public/
+  images/                 首页使用的静态图片
+src/
+  components/
+    cards/                首页卡片组件
+    layout/               仪表盘网格布局
+    widgets/              时钟、日历等小组件
+    Icon.astro            统一图标适配组件
+  content/blog/           Markdown / MDX 博客文章
+  data/profile.ts         首页主要内容与配置
+  layouts/                基础布局与博客布局
+  pages/                  Astro 页面路由
+  styles/global.css       全局样式
+astro.config.mjs          Astro 配置
+package.json              项目脚本与依赖
+homepage.png              首页截图
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 本地开发
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+安装依赖：
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+```sh
+bun install
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+启动开发服务器：
 
-## 🧞 Commands
+```sh
+bun run dev
+```
 
-All commands are run from the root of the project, from a terminal:
+构建生产版本：
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
+```sh
+bun run build
+```
 
-## 👀 Want to learn more?
+本地预览生产构建：
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```sh
+bun run preview
+```
 
-## Credit
+## 内容配置
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+首页大部分内容都在 `src/data/profile.ts` 中维护：
+
+- `profile`：姓名、角色、头像、GitHub、邮箱、网站和所在地。
+- `navigationLinks`：主页导航卡片。
+- `quote`：引用卡片的文字和图片。
+- `intro`：个人介绍卡片内容。
+- `githubStats`：GitHub Stats 卡片配置与查询参数。
+- `connectLinks`：联系方式和社交链接。
+- `doingItems`：最近关注或正在做的事情。
+
+GitHub Stats 的图片地址由 `githubStats.baseUrl` 生成。如果使用公共服务，可以配置为：
+
+```ts
+baseUrl: 'https://github-readme-stats.vercel.app'
+```
+
+如果需要统计私有仓库、降低接口限流风险，建议部署自己的 `github-readme-stats` 实例并配置 GitHub Token。
+
+## 博客内容
+
+博客文章位于 `src/content/blog/`，支持 `.md` 和 `.mdx` 文件。
+
+相关页面：
+
+- `src/pages/blog/index.astro`
+- `src/pages/blog/[...slug].astro`
+
+## 部署
+
+这是一个静态 Astro 项目，可以部署到任意支持 Node 或 Bun 构建的静态托管平台。
+
+推荐构建命令：
+
+```sh
+bun run build
+```
+
+输出目录：
+
+```text
+dist
+```
