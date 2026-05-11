@@ -7,7 +7,7 @@ export const profile = {
   email: 'hello@navfolio.site',
   website: 'https://astro.navfolio.site/',
   github: 'https://github.com/navfolio',
-  meta: 'Builder | Writer | Open-source maintainer',
+  meta: 'Open-source maintainer',
   avatar: '/images/logo.png',
 };
 
@@ -40,9 +40,9 @@ export const navigationLinks = [
 
 export const quote = {
   text: [
-    'Build systems that stay useful,',
-    'write notes that stay readable,',
-    'and keep the homepage easy to adapt.',
+    'Navigate your world,',
+    'Showcase your story,',
+    'and keep everything in one place.',
   ],
   image: '/images/logo-with-name.png',
 };
