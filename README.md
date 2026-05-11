@@ -88,7 +88,7 @@ bun run preview
 GitHub Stats 的图片地址由 `githubStats.baseUrl` 生成。如果使用公共服务，可以配置为：
 
 ```ts
-baseUrl: 'https://github-readme-stats.vercel.app'
+baseUrl: "https://github-readme-stats.vercel.app";
 ```
 
 如果需要统计私有仓库、降低接口限流风险，建议部署自己的 `github-readme-stats` 实例并配置 GitHub Token。
@@ -105,6 +105,22 @@ baseUrl: 'https://github-readme-stats.vercel.app'
 ## 部署
 
 这是一个静态 Astro 项目，可以部署到任意支持 Node 或 Bun 构建的静态托管平台。
+
+### GitHub Pages（GitHub Actions）
+
+项目已包含工作流文件：`.github/workflows/deploy-pages.yml`。
+
+触发方式：
+
+- 推送到 `main` 或 `master` 分支时自动部署。
+- 支持在 Actions 页面手动触发（`workflow_dispatch`）。
+
+首次启用请在仓库设置中完成：
+
+1. 打开 GitHub 仓库 `Settings -> Pages`。
+2. 在 `Build and deployment` 中将 `Source` 设置为 `GitHub Actions`。
+
+该项目会在 GitHub Actions 环境中自动计算 GitHub Pages 的 `site` 和 `base`（支持仓库 Pages 与用户 Pages），避免静态资源路径错误。
 
 推荐构建命令：
 
