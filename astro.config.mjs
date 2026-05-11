@@ -7,6 +7,8 @@ import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
 const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
+const customSite = process.env.SITE_URL;
+const customBase = process.env.SITE_BASE;
 const repositoryOwner = process.env.GITHUB_REPOSITORY_OWNER;
 const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1];
 const isProjectPage =
@@ -19,10 +21,16 @@ const githubPagesSite =
         ? `https://${repositoryOwner}.github.io${isProjectPage ? `/${repositoryName}` : ''}`
         : undefined;
 
+const resolvedSite =
+    customSite || (isGitHubActions && githubPagesSite ? githubPagesSite : 'https://example.com');
+
+const resolvedBase =
+    customBase || (isGitHubActions && isProjectPage && repositoryName ? `/${repositoryName}` : '/');
+
 // https://astro.build/config
 export default defineConfig({
-    site: isGitHubActions && githubPagesSite ? githubPagesSite : 'https://example.com',
-    base: isGitHubActions && isProjectPage && repositoryName ? `/${repositoryName}` : '/',
+    site: resolvedSite,
+    base: resolvedBase,
     integrations: [mdx(), sitemap()],
 
     fonts: [

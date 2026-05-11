@@ -35,6 +35,9 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build site
+        env:
+          SITE_URL: https://astro.navfolio.site
+          SITE_BASE: /
         run: bun run build
 
       - name: Upload artifact
