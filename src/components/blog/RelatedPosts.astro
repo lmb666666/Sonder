@@ -36,7 +36,7 @@ const { posts } = Astro.props;
 
   h2 {
     margin: 0 0 14px;
-    color: #1b2a3d;
+    color: var(--paper-ink);
     font-size: 0.9rem;
     line-height: 1.2;
     text-transform: uppercase;
@@ -52,20 +52,21 @@ const { posts } = Astro.props;
     grid-template-columns: 58px 1fr;
     gap: 11px;
     align-items: center;
-    color: #26374a;
+    color: var(--paper-ink);
     text-decoration: none;
   }
 
   a:hover strong {
-    color: #14775e;
+    color: var(--paper-accent);
   }
 
   img {
     width: 58px;
     height: 48px;
-    border-radius: 14px;
+    border-radius: 6px;
     object-fit: cover;
-    box-shadow: 0 10px 22px rgba(68, 99, 94, 0.12);
+    box-shadow: var(--paper-shadow);
+    filter: saturate(0.7);
   }
 
   span {
@@ -84,7 +85,7 @@ const { posts } = Astro.props;
   }
 
   small {
-    color: #7b8998;
+    color: var(--paper-ink-faint);
     font-size: 0.75rem;
   }
 </style>

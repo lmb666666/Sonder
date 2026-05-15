@@ -55,7 +55,7 @@ const { pubDate, updatedDate, readingTime, tags } = Astro.props;
   }
 
   dt {
-    color: #788695;
+    color: var(--paper-ink-faint);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -63,7 +63,7 @@ const { pubDate, updatedDate, readingTime, tags } = Astro.props;
 
   dd {
     margin: 0;
-    color: #213246;
+    color: var(--paper-ink);
     font-size: 0.92rem;
     font-weight: 700;
   }
@@ -77,9 +77,10 @@ const { pubDate, updatedDate, readingTime, tags } = Astro.props;
 
   .tags span {
     padding: 6px 10px;
+    border: 1px solid var(--paper-line);
     border-radius: 999px;
-    background: rgba(230, 250, 243, 0.86);
-    color: #15745d;
+    background: var(--paper-control);
+    color: var(--paper-accent);
     font-size: 0.76rem;
     font-weight: 700;
   }

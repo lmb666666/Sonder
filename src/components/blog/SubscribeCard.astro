@@ -26,20 +26,21 @@ import { Send } from 'lucide-astro';
     width: 42px;
     height: 42px;
     margin-bottom: 14px;
-    border-radius: 16px;
-    background: #dff9ef;
-    color: #128164;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-control);
+    color: var(--paper-accent);
   }
 
   h2 {
     margin: 0 0 8px;
-    color: #1b2a3d;
+    color: var(--paper-ink);
     font-size: 1rem;
   }
 
   p {
     margin: 0 0 16px;
-    color: #667686;
+    color: var(--paper-ink-soft);
     font-size: 0.86rem;
     line-height: 1.55;
   }
@@ -53,21 +54,21 @@ import { Send } from 'lucide-astro';
   button {
     width: 100%;
     min-height: 42px;
-    border-radius: 15px;
+    border-radius: 7px;
     font: inherit;
   }
 
   input {
-    border: 1px solid rgba(91, 131, 121, 0.16);
-    background: rgba(255, 255, 255, 0.68);
-    color: #203147;
+    border: 1px solid var(--paper-line);
+    background: var(--paper-control);
+    color: var(--paper-ink);
     padding: 0 12px;
   }
 
   button {
-    border: 0;
-    background: #28bd8f;
-    color: white;
+    border: 1px solid var(--paper-line-strong);
+    background: var(--paper-accent);
+    color: var(--paper-bg);
     cursor: pointer;
     font-weight: 700;
   }

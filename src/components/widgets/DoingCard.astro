@@ -33,14 +33,14 @@ const { items } = Astro.props as { items: DoingItem[] };
     align-items: center;
     gap: 10px;
     margin: 0 0 18px;
-    color: #142033;
+    color: var(--paper-ink);
     font-size: 1.06rem;
   }
 
   h2 svg {
     width: 21px;
     height: 21px;
-    color: #28bb8f;
+    color: var(--paper-accent);
   }
 
   ul {
@@ -58,7 +58,7 @@ const { items } = Astro.props as { items: DoingItem[] };
     gap: 12px;
     align-items: center;
     padding-left: 18px;
-    color: #162338;
+    color: var(--paper-ink);
     font-size: 0.98rem;
   }
 
@@ -68,7 +68,7 @@ const { items } = Astro.props as { items: DoingItem[] };
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #75ad9c;
+    background: #9f7d4f;
     content: '';
   }
 

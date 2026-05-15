@@ -161,7 +161,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     display: grid;
     gap: 14px;
     padding: 22px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   header {
@@ -176,7 +176,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     align-items: center;
     gap: 10px;
     margin: 0;
-    color: #142033;
+    color: var(--paper-ink);
     font-size: 1.05rem;
     line-height: 1.15;
   }
@@ -184,7 +184,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   h2 svg {
     width: 20px;
     height: 20px;
-    color: #18b98a;
+    color: var(--paper-accent);
   }
 
   .stats-row {
@@ -200,14 +200,14 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   }
 
   .stat-item strong {
-    color: #142033;
+    color: var(--paper-ink);
     font-size: 1.12rem;
     line-height: 1;
   }
 
   .stat-item span {
     overflow: hidden;
-    color: #687588;
+    color: var(--paper-ink-soft);
     font-size: 0.72rem;
     line-height: 1.2;
     text-overflow: ellipsis;
@@ -218,9 +218,9 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     display: grid;
     gap: 6px;
     padding: 10px 11px;
-    border: 1px solid rgba(255, 255, 255, 0.68);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.44);
+    border: 1px solid var(--paper-line);
+    border-radius: 7px;
+    background: var(--paper-control);
   }
 
   .latest-tip span {
@@ -232,14 +232,14 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   }
 
   .latest-tip strong {
-    color: #478392;
+    color: var(--paper-accent);
     font-size: 0.7rem;
     line-height: 1.15;
   }
 
   .latest-tip em {
     overflow: hidden;
-    color: #17243a;
+    color: var(--paper-ink);
     font-size: 0.8rem;
     font-style: normal;
     font-weight: 650;
@@ -249,7 +249,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   }
 
   .latest-tip time {
-    color: #5d7188;
+    color: var(--paper-ink-soft);
     font-size: 0.68rem;
     line-height: 1;
     white-space: nowrap;
@@ -261,7 +261,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     width: 24px;
     height: 24px;
     border-radius: 8px;
-    color: #13ae84;
+    color: var(--paper-accent);
     text-decoration: none;
     transition:
       background 180ms ease,
@@ -269,7 +269,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   }
 
   .latest-tip a:hover {
-    background: rgba(255, 255, 255, 0.72);
+    background: var(--paper-control-hover);
     transform: translateY(-1px);
   }
 
@@ -282,14 +282,14 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     align-items: center;
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .weekday-column {
     display: grid;
     grid-template-rows: repeat(3, var(--cell-size));
     gap: calc(var(--cell-size) + var(--cell-gap));
-    color: #687588;
+    color: var(--paper-ink-faint);
     font-size: 0.62rem;
     line-height: 1;
   }
@@ -321,15 +321,20 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     text-decoration: none;
   }
 
+  .cell-link:hover,
+  .cell-link:focus-visible {
+    z-index: 10;
+  }
+
   .cell-link:hover .heatmap-cell {
-    outline: 1px solid rgba(20, 32, 51, 0.3);
+    outline: 1px solid var(--paper-line-strong);
     outline-offset: 1px;
   }
 
   .heatmap-cell {
     border-radius: 2.5px;
-    background: rgba(190, 207, 210, 0.34);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+    background: rgba(193, 172, 134, 0.22);
+    box-shadow: inset 0 0 0 1px var(--paper-line);
   }
 
   .future-cell {
@@ -338,23 +343,23 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   }
 
   .level-0 {
-    background: rgba(190, 207, 210, 0.34);
+    background: rgba(193, 172, 134, 0.22);
   }
 
   .level-1 {
-    background: #bceccb;
+    background: #d9c8a8;
   }
 
   .level-2 {
-    background: #7edba6;
+    background: #c2a879;
   }
 
   .level-3 {
-    background: #33bf89;
+    background: #9f7b4c;
   }
 
   .level-4 {
-    background: #12836f;
+    background: #6c4d2e;
   }
 
   .tooltip {
@@ -367,11 +372,11 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     max-width: 230px;
     gap: 5px;
     padding: 10px 12px;
-    border: 1px solid rgba(119, 139, 160, 0.2);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 14px 34px rgba(48, 78, 103, 0.16);
-    color: #17243a;
+    border: 1px solid var(--paper-line);
+    border-radius: 7px;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow-lift);
+    color: var(--paper-ink);
     font-size: 0.78rem;
     line-height: 1.35;
     opacity: 0;
@@ -394,7 +399,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   }
 
   .tooltip strong {
-    color: #142033;
+    color: var(--paper-ink);
     font-size: 0.86rem;
   }
 
@@ -419,7 +424,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #687588;
+    color: var(--paper-ink-faint);
     font-size: 0.72rem;
   }
 
@@ -439,8 +444,9 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     }
 
     .rhythm-grid {
-      --cell-size: 9px;
-      overflow-x: auto;
+      --cell-size: 8px;
+      --cell-gap: 2px;
+      overflow: visible;
       width: 100%;
     }
   }

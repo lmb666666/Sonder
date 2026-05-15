@@ -96,7 +96,7 @@ const hasItems = items.length > 0;
 
   h2 {
     margin: 0 0 14px;
-    color: #1b2a3d;
+    color: var(--paper-ink);
     font-size: 0.9rem;
     line-height: 1.2;
     text-transform: uppercase;
@@ -121,7 +121,7 @@ const hasItems = items.length > 0;
     bottom: -5px;
     left: 3px;
     width: 1px;
-    background: rgba(89, 135, 123, 0.16);
+    background: rgba(92, 68, 42, 0.16);
     content: '';
   }
 
@@ -136,8 +136,8 @@ const hasItems = items.length > 0;
     gap: 8px;
     align-items: center;
     padding: 9px 10px;
-    border-radius: 15px;
-    color: #5c6d7c;
+    border-radius: 7px;
+    color: var(--paper-ink-soft);
     font-size: 0.86rem;
     line-height: 1.35;
     text-decoration: none;
@@ -148,27 +148,27 @@ const hasItems = items.length > 0;
     left: -13px;
     width: 7px;
     height: 7px;
-    border: 2px solid #b5cec5;
+    border: 2px solid #c7ae82;
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--paper-surface);
     content: '';
   }
 
   a.active,
   a:hover {
-    background: rgba(229, 250, 242, 0.82);
-    color: #14775e;
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
   }
 
   a.active::before,
   a:hover::before {
-    border-color: #31c395;
-    background: #31c395;
-    box-shadow: 0 0 15px rgba(49, 195, 149, 0.36);
+    border-color: var(--paper-accent);
+    background: var(--paper-accent);
+    box-shadow: none;
   }
 
   span {
-    color: #9aadba;
+    color: var(--paper-ink-faint);
     font-size: 0.75rem;
     font-weight: 700;
   }

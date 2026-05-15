@@ -22,12 +22,72 @@ const { title, description, image = FallbackImage } = Astro.props;
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<script is:inline>
+  (() => {
+    const storageKey = 'navfolio-theme';
+    const root = document.documentElement;
+    const themeMeta = () => document.querySelector('meta[name="theme-color"]');
+    const systemTheme = () =>
+      window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const storedTheme = () => {
+      try {
+        return localStorage.getItem(storageKey);
+      } catch {
+        return null;
+      }
+    };
+    const setStoredTheme = (theme) => {
+      try {
+        localStorage.setItem(storageKey, theme);
+      } catch {}
+    };
+    const applyTheme = (theme, persist = true) => {
+      const nextTheme = theme === 'dark' ? 'dark' : 'light';
+      root.dataset.theme = nextTheme;
+      root.style.colorScheme = nextTheme;
+      themeMeta()?.setAttribute('content', nextTheme === 'dark' ? '#1c1915' : '#fffffc');
+      for (const button of document.querySelectorAll('[data-theme-toggle]')) {
+        const label = nextTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+        button.setAttribute('aria-label', label);
+        button.setAttribute('title', label);
+      }
+      if (persist) setStoredTheme(nextTheme);
+    };
+
+    applyTheme(storedTheme() || systemTheme(), false);
+
+    window.__navfolioTheme = {
+      toggle() {
+        applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+      },
+    };
+
+    document.addEventListener('click', (event) => {
+      const toggle = event.target.closest?.('[data-theme-toggle]');
+      if (toggle) window.__navfolioTheme.toggle();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme(root.dataset.theme, false);
+    });
+
+    window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+      if (!storedTheme()) applyTheme(event.matches ? 'dark' : 'light', false);
+    });
+  })();
+</script>
 <link rel="icon" href={assetPath('favicon.svg')} sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href={assetPath('favicon-32x32.png')} />
 <link rel="icon" type="image/png" sizes="16x16" href={assetPath('favicon-16x16.png')} />
 <link rel="apple-touch-icon" sizes="180x180" href={assetPath('apple-touch-icon.png')} />
 <link rel="manifest" href={assetPath('manifest.json')} />
-<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#fffffc" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Serif+SC:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
   rel="alternate"

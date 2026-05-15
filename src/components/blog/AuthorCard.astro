@@ -34,31 +34,32 @@ import { profile } from '../../data/profile';
   img {
     width: 82px;
     height: 82px;
-    border: 6px solid rgba(255, 255, 255, 0.74);
-    border-radius: 28px;
-    box-shadow: 0 18px 34px rgba(52, 96, 88, 0.14);
+    border: 6px solid var(--paper-surface-muted);
+    border-radius: 12px;
+    box-shadow: var(--paper-shadow);
     object-fit: cover;
   }
 
   h2 {
     margin: 4px 0 0;
-    color: #18273a;
+    color: var(--paper-ink);
     font-size: 1.25rem;
     line-height: 1.1;
   }
 
   p {
     margin: 0;
-    color: #6a7887;
+    color: var(--paper-ink-soft);
     font-size: 0.9rem;
   }
 
   span {
     display: inline-flex;
     padding: 6px 11px;
+    border: 1px solid var(--paper-line);
     border-radius: 999px;
-    background: rgba(229, 250, 242, 0.84);
-    color: #16775f;
+    background: var(--paper-control);
+    color: var(--paper-accent);
     font-size: 0.78rem;
     font-weight: 700;
   }
@@ -74,14 +75,14 @@ import { profile } from '../../data/profile';
     place-items: center;
     width: 34px;
     height: 34px;
-    border: 1px solid rgba(96, 143, 132, 0.14);
-    border-radius: 13px;
-    background: rgba(255, 255, 255, 0.62);
-    color: #28394d;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-control);
+    color: var(--paper-ink);
   }
 
   a:hover {
-    color: #148066;
-    background: rgba(229, 250, 242, 0.92);
+    color: var(--paper-accent);
+    background: var(--paper-control-hover);
   }
 </style>

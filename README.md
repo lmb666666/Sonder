@@ -24,20 +24,7 @@
 
 ## 预览
 
-<table>
-  <tr>
-    <th width="50%">Orbit Layout</th>
-    <th width="50%">Grid Layout</th>
-  </tr>
-  <tr>
-    <td width="50%">
-      <img src="./public/images/orbit-layout.png" alt="Navfolio orbit layout preview" />
-    </td>
-    <td width="50%">
-      <img src="./public/images/grid-layout.png" alt="Navfolio grid layout preview" />
-    </td>
-  </tr>
-</table>
+<img src="./public/images/grid-layout.png" alt="Navfolio grid layout preview" />
 
 ## Blog Article Preview
 

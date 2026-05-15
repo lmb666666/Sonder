@@ -4,8 +4,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import IslandNav from '../../components/IslandNav.astro';
+import BlogTopNav from '../../components/blog/BlogTopNav.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog')).sort(
@@ -19,91 +18,250 @@ const posts = (await getCollection('blog')).sort(
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
     <style>
       main {
-        width: 960px;
+        width: min(100%, 1080px);
+        max-width: none;
+        padding-top: 112px;
       }
-      ul {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2rem;
-        list-style-type: none;
+
+      .archive-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) max-content;
+        gap: 28px;
+        align-items: end;
+        margin-bottom: 40px;
+        padding: 0 10px;
+      }
+
+      .archive-kicker {
         margin: 0;
+        color: var(--paper-accent);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 760px;
+        margin: 8px 0 0;
+        color: var(--paper-ink);
+        font-size: clamp(3rem, 8vw, 6.4rem);
+        line-height: 0.9;
+      }
+
+      .archive-note {
+        max-width: 260px;
+        margin: 0;
+        color: var(--paper-ink-soft);
+        font-family: var(--font-note);
+        font-size: 1.03rem;
+        line-height: 1.76;
+      }
+
+      .post-stack {
+        display: grid;
+        gap: 18px;
         padding: 0;
+        list-style: none;
       }
-      ul li {
-        width: calc(50% - 1rem);
+
+      .post-item {
+        position: relative;
       }
-      ul li * {
+
+      .post-link {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 220px;
+        gap: 28px;
+        align-items: stretch;
+        min-height: 176px;
+        padding: 22px 24px 20px;
+        overflow: hidden;
+        border: 1px solid var(--paper-line);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, var(--paper-card-wash-top), var(--paper-card-wash-bottom)),
+          var(--paper-surface);
+        box-shadow: var(--paper-shadow);
+        color: var(--paper-ink);
         text-decoration: none;
-        transition: 0.2s ease;
+        transform: translateY(0);
+        transition:
+          transform 180ms ease,
+          box-shadow 180ms ease,
+          border-color 180ms ease;
       }
-      ul li:first-child {
-        width: 100%;
-        margin-bottom: 1rem;
-        text-align: center;
+
+      .post-link::before {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(123, 84, 55, 0.12) 0 1px, transparent 1px) 60px 0 / 1px
+            100% no-repeat,
+          repeating-linear-gradient(
+            to bottom,
+            transparent 0 31px,
+            rgba(92, 68, 42, 0.045) 32px
+          );
+        opacity: 0.55;
+        content: '';
       }
-      ul li:first-child img {
-        width: 100%;
+
+      .post-link::after {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        width: 56px;
+        height: 17px;
+        border: 1px solid var(--paper-line);
+        background: var(--paper-control);
+        content: '';
       }
-      ul li:first-child .title {
-        font-size: 2.369rem;
+
+      .post-link:hover {
+        border-color: var(--paper-line-strong);
+        box-shadow: var(--paper-shadow-lift);
+        transform: translateY(-2px);
       }
-      ul li img {
-        margin-bottom: 0.5rem;
-        border-radius: 12px;
+
+      .post-copy {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        align-content: space-between;
+        gap: 28px;
       }
-      ul li a {
-        display: block;
+
+      .post-index {
+        color: var(--paper-ink-faint);
+        font-family: ui-monospace, 'Cascadia Mono', monospace;
+        font-size: 0.76rem;
+        letter-spacing: 0.1em;
       }
+
       .title {
         margin: 0;
-        color: rgb(var(--black));
-        line-height: 1;
+        max-width: 680px;
+        color: var(--paper-ink);
+        font-size: clamp(2rem, 4vw, 3.6rem);
+        line-height: 0.98;
       }
+
       .date {
+        margin: 10px 0 0;
+        color: var(--paper-ink-soft);
+        font-size: 0.86rem;
+        font-weight: 600;
+      }
+
+      .post-excerpt {
+        max-width: 58ch;
         margin: 0;
-        color: rgb(var(--gray));
+        color: var(--paper-ink-soft);
+        font-size: 0.98rem;
+        line-height: 1.78;
       }
-      ul li a:hover h4,
-      ul li a:hover .date {
-        color: rgb(var(--accent));
+
+      .thumb-wrap {
+        position: relative;
+        z-index: 1;
+        align-self: stretch;
+        min-height: 130px;
+        overflow: hidden;
+        border: 1px solid rgba(52, 39, 27, 0.08);
+        border-radius: 6px;
+        background: var(--paper-surface-muted);
+        filter: saturate(0.62) contrast(0.96);
       }
-      ul a:hover img {
-        box-shadow: var(--box-shadow);
+
+      .thumb-wrap img {
+        width: 100%;
+        height: 100%;
+        min-height: 130px;
+        object-fit: cover;
+        border-radius: 0;
+        mix-blend-mode: multiply;
+        opacity: 0.78;
       }
+
+      .post-item:first-child .post-link {
+        grid-template-columns: minmax(0, 1fr) 300px;
+        min-height: 230px;
+        padding: 30px;
+      }
+
+      .post-item:first-child .title {
+        font-size: clamp(2.8rem, 6vw, 5.5rem);
+      }
+
       @media (max-width: 720px) {
-        ul {
-          gap: 0.5em;
+        main {
+          padding-top: 88px;
         }
-        ul li {
-          width: 100%;
-          text-align: center;
+
+        .archive-hero {
+          grid-template-columns: 1fr;
+          gap: 14px;
+          margin-bottom: 28px;
         }
-        ul li:first-child {
-          margin-bottom: 0;
+
+        .archive-note {
+          max-width: none;
         }
-        ul li:first-child .title {
-          font-size: 1.563em;
+
+        .post-link,
+        .post-item:first-child .post-link {
+          grid-template-columns: 1fr;
+          gap: 18px;
+          padding: 22px;
+        }
+
+        .thumb-wrap {
+          min-height: 168px;
+          order: -1;
+        }
+
+        .title,
+        .post-item:first-child .title {
+          font-size: 2.15rem;
+          line-height: 1;
         }
       }
     </style>
   </head>
   <body>
-    <IslandNav />
-    <Header />
+    <BlogTopNav />
     <main>
+      <header class="archive-hero">
+        <div>
+          <p class="archive-kicker">Notebook archive</p>
+          <h1>Writing notes</h1>
+        </div>
+        <p class="archive-note">Loose pages, technical margins, and small notes gathered into a readable stack.</p>
+      </header>
       <section>
-        <ul>
+        <ul class="post-stack">
           {
-            posts.map((post) => (
-              <li>
-                <a href={`/blog/${post.id}/`}>
+            posts.map((post, index) => (
+              <li class="post-item">
+                <a class="post-link" href={`/blog/${post.id}/`}>
+                  <div class="post-copy">
+                    <div>
+                      <span class="post-index">{String(index + 1).padStart(2, '0')}</span>
+                      <h2 class="title">{post.data.title}</h2>
+                      <p class="date">
+                        <FormattedDate date={post.data.pubDate} />
+                      </p>
+                    </div>
+                    <p class="post-excerpt">{post.data.description}</p>
+                  </div>
                   {post.data.heroImage && (
-                    <Image width={720} height={360} src={post.data.heroImage} alt="" />
+                    <span class="thumb-wrap">
+                      <Image width={520} height={360} src={post.data.heroImage} alt="" />
+                    </span>
                   )}
-                  <h4 class="title">{post.data.title}</h4>
-                  <p class="date">
-                    <FormattedDate date={post.data.pubDate} />
-                  </p>
                 </a>
               </li>
             ))

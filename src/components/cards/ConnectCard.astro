@@ -34,7 +34,7 @@ const { items } = Astro.props as { items: ConnectItem[] };
     align-items: center;
     gap: 10px;
     margin: 0 0 14px;
-    color: #142033;
+    color: var(--paper-ink);
     font-size: 1.05rem;
   }
 
@@ -57,12 +57,12 @@ const { items } = Astro.props as { items: ConnectItem[] };
     gap: 8px;
     min-height: 48px;
     padding: 0 12px;
-    border: 1px solid rgba(255, 255, 255, 0.86);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.46);
-    color: #142033;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-control);
+    color: var(--paper-ink);
     text-decoration: none;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.7);
+    box-shadow: var(--paper-shadow);
     transition:
       transform 180ms ease,
       background 180ms ease,
@@ -70,9 +70,9 @@ const { items } = Astro.props as { items: ConnectItem[] };
   }
 
   a:hover {
-    background: rgba(255, 255, 255, 0.82);
-    color: #118b70;
-    transform: translateY(-2px);
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
+    transform: translateY(-1px);
   }
 
   svg {

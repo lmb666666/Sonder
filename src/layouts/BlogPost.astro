@@ -4,8 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import IslandNav from '../components/IslandNav.astro';
+import BlogTopNav from '../components/blog/BlogTopNav.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -28,7 +27,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
         display: block;
         margin: 0 auto;
         border-radius: 12px;
-        box-shadow: var(--box-shadow);
+        box-shadow: var(--paper-shadow);
       }
       .prose {
         width: 720px;
@@ -57,8 +56,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
   </head>
 
   <body>
-    <IslandNav />
-    <Header />
+    <BlogTopNav />
     <main>
       <article>
         <div class="hero-image">

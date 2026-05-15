@@ -3,22 +3,19 @@ import IntroCard from '../components/cards/IntroCard.astro';
 import NavigationCard from '../components/cards/NavigationCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
-import DashboardGrid from '../components/layout/DashboardGrid.astro';
 import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
 import ClockWidget from '../components/widgets/ClockWidget.astro';
 import DoingCard from '../components/widgets/DoingCard.astro';
-import { homeLayout } from '../config/layout';
 import { doingItems, intro, navigationLinks, profile, quote } from '../data/profile';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const pageTitle = 'navfolio | Personal Dashboard';
 const pageDescription = 'A customizable personal navigation portfolio dashboard built with Astro.';
-const HomeLayout = homeLayout === 'grid' ? DashboardFlow : DashboardGrid;
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
   <div class="dashboard-bg" aria-hidden="true"></div>
-  <HomeLayout>
+  <DashboardFlow>
     <Fragment slot="profile">
       <ProfileCard profile={profile} />
     </Fragment>
@@ -42,5 +39,5 @@ const HomeLayout = homeLayout === 'grid' ? DashboardFlow : DashboardGrid;
     <Fragment slot="recently">
       <DoingCard items={doingItems} />
     </Fragment>
-  </HomeLayout>
+  </DashboardFlow>
 </BaseLayout>

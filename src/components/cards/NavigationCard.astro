@@ -41,14 +41,14 @@ const { items } = Astro.props as { items: NavItem[] };
     align-items: center;
     gap: 10px;
     margin: 0 0 14px;
-    color: #142033;
+    color: var(--paper-ink);
     font-size: 1.05rem;
   }
 
   h2 svg {
     width: 20px;
     height: 20px;
-    color: #18b98a;
+    color: var(--paper-accent);
   }
 
   nav {
@@ -62,8 +62,8 @@ const { items } = Astro.props as { items: NavItem[] };
     gap: 12px;
     align-items: center;
     padding: 10px 12px;
-    border-radius: 14px;
-    color: #17243a;
+    border-radius: 7px;
+    color: var(--paper-ink);
     text-decoration: none;
     transition:
       background 180ms ease,
@@ -72,14 +72,14 @@ const { items } = Astro.props as { items: NavItem[] };
   }
 
   .nav-item:hover {
-    background: rgba(255, 255, 255, 0.72);
-    color: #118b70;
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
     transform: translateX(3px);
   }
 
   .nav-icon,
   .nav-item > svg {
-    color: #13ae84;
+    color: var(--paper-accent);
   }
 
   .nav-icon svg,
@@ -103,7 +103,7 @@ const { items } = Astro.props as { items: NavItem[] };
 
   small {
     margin-top: 2px;
-    color: #478392;
+    color: var(--paper-ink-soft);
     font-size: 0.82rem;
   }
 </style>

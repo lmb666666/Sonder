@@ -1,5 +1,5 @@
 ---
-import { Moon, Search } from 'lucide-astro';
+import { Moon, Search, Sun } from 'lucide-astro';
 
 const links = [
   { label: 'Home', href: '/' },
@@ -7,6 +7,20 @@ const links = [
   { label: 'Projects', href: 'https://github.com/navfolio' },
   { label: 'About', href: '/about' },
 ];
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+function isActive(href: string) {
+  if (href.startsWith('http')) return false;
+
+  const normalizedHref = href.replace(/\/$/, '') || '/';
+
+  if (normalizedHref === '/') {
+    return currentPath === '/';
+  }
+
+  return currentPath === normalizedHref || currentPath.startsWith(`${normalizedHref}/`);
+}
 ---
 
 <header class="blog-top-nav">
@@ -18,7 +32,7 @@ const links = [
   <nav class="nav-links" aria-label="Article navigation">
     {
       links.map((link) => (
-        <a class:list={['nav-link', { active: link.label === 'Blog' }]} href={link.href}>
+        <a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href}>
           {link.label}
         </a>
       ))
@@ -26,8 +40,9 @@ const links = [
   </nav>
 
   <div class="nav-actions" aria-label="Page actions">
-    <button type="button" aria-label="Toggle theme">
-      <Moon size={17} stroke-width={2} />
+    <button type="button" data-theme-toggle aria-label="Switch theme">
+      <Moon class="theme-icon-moon" size={17} stroke-width={2} />
+      <Sun class="theme-icon-sun" size={17} stroke-width={2} />
     </button>
     <button type="button" aria-label="Search">
       <Search size={17} stroke-width={2} />
@@ -48,19 +63,16 @@ const links = [
     width: min(calc(100% - 32px), 900px);
     min-height: 58px;
     padding: 10px 14px 10px 18px;
-    border: 1px solid rgba(255, 255, 255, 0.78);
-    border-radius: 24px;
-    background: rgba(255, 255, 255, 0.76);
-    box-shadow:
-      0 18px 48px rgba(52, 88, 82, 0.13),
-      inset 0 1px 1px rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(18px);
+    border: 1px solid var(--paper-line);
+    border-radius: 10px;
+    background: var(--paper-nav);
+    box-shadow: var(--paper-shadow);
     transform: translateX(-50%);
   }
 
   .brand,
   .nav-link {
-    color: #152437;
+    color: var(--paper-ink);
     text-decoration: none;
   }
 
@@ -75,8 +87,8 @@ const links = [
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background: #35c99a;
-    box-shadow: 0 0 18px rgba(53, 201, 154, 0.44);
+    background: var(--paper-accent);
+    box-shadow: none;
   }
 
   .nav-links {
@@ -91,16 +103,16 @@ const links = [
     justify-content: center;
     min-width: 74px;
     padding: 9px 12px 12px;
-    border-radius: 16px;
-    color: #526171;
+    border-radius: 8px;
+    color: var(--paper-ink-soft);
     font-size: 0.9rem;
     font-weight: 700;
   }
 
   .nav-link:hover,
   .nav-link.active {
-    background: rgba(233, 250, 244, 0.78);
-    color: #14775e;
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
   }
 
   .nav-link.active::after {
@@ -110,7 +122,7 @@ const links = [
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #27bd8c;
+    background: var(--paper-accent);
     content: '';
     transform: translateX(-50%);
   }
@@ -126,16 +138,16 @@ const links = [
     width: 38px;
     height: 38px;
     padding: 0;
-    border: 1px solid rgba(103, 144, 134, 0.16);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.68);
-    color: #223346;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-control);
+    color: var(--paper-ink);
     cursor: pointer;
   }
 
   .nav-actions button:hover {
-    background: rgba(228, 249, 242, 0.9);
-    color: #14775e;
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
   }
 
   @media (max-width: 720px) {
