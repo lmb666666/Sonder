@@ -18,23 +18,24 @@ const posts = (await getCollection('blog')).sort(
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
     <style>
       main {
-        width: min(100%, 1080px);
+        width: min(100%, var(--layout-shell-width));
         max-width: none;
-        padding-top: 112px;
+        padding: 118px var(--layout-page-gutter) var(--layout-page-bottom);
       }
 
       .archive-hero {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) max-content;
-        gap: 28px;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
+        gap: 32px;
         align-items: end;
-        margin-bottom: 40px;
-        padding: 0 10px;
+        margin-bottom: 54px;
+        padding: 0;
       }
 
       .archive-kicker {
         margin: 0;
         color: var(--paper-accent);
+        font-family: var(--font-ui-label);
         font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.12em;
@@ -45,22 +46,22 @@ const posts = (await getCollection('blog')).sort(
         max-width: 760px;
         margin: 8px 0 0;
         color: var(--paper-ink);
-        font-size: clamp(3rem, 8vw, 6.4rem);
-        line-height: 0.9;
+        font-size: clamp(2.4rem, 5.5vw, 4rem);
+        line-height: 1.08;
       }
 
       .archive-note {
         max-width: 260px;
         margin: 0;
         color: var(--paper-ink-soft);
-        font-family: var(--font-note);
+        font-family: var(--font-article);
         font-size: 1.03rem;
         line-height: 1.76;
       }
 
       .post-stack {
         display: grid;
-        gap: 18px;
+        gap: 0;
         padding: 0;
         list-style: none;
       }
@@ -72,18 +73,17 @@ const posts = (await getCollection('blog')).sort(
       .post-link {
         position: relative;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 220px;
-        gap: 28px;
-        align-items: stretch;
-        min-height: 176px;
-        padding: 22px 24px 20px;
-        overflow: hidden;
+        grid-template-columns: minmax(0, 1fr) 210px;
+        gap: 30px;
+        align-items: center;
+        min-height: 132px;
+        padding: 26px 0;
+        overflow: visible;
         border: 1px solid var(--paper-line);
-        border-radius: 8px;
-        background:
-          linear-gradient(180deg, var(--paper-card-wash-top), var(--paper-card-wash-bottom)),
-          var(--paper-surface);
-        box-shadow: var(--paper-shadow);
+        border-width: 1px 0 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
         color: var(--paper-ink);
         text-decoration: none;
         transform: translateY(0);
@@ -94,36 +94,17 @@ const posts = (await getCollection('blog')).sort(
       }
 
       .post-link::before {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background:
-          linear-gradient(90deg, rgba(123, 84, 55, 0.12) 0 1px, transparent 1px) 60px 0 / 1px
-            100% no-repeat,
-          repeating-linear-gradient(
-            to bottom,
-            transparent 0 31px,
-            rgba(92, 68, 42, 0.045) 32px
-          );
-        opacity: 0.55;
-        content: '';
+        content: none;
       }
 
       .post-link::after {
-        position: absolute;
-        top: 14px;
-        right: 16px;
-        width: 56px;
-        height: 17px;
-        border: 1px solid var(--paper-line);
-        background: var(--paper-control);
-        content: '';
+        content: none;
       }
 
       .post-link:hover {
-        border-color: var(--paper-line-strong);
-        box-shadow: var(--paper-shadow-lift);
-        transform: translateY(-2px);
+        border-color: var(--paper-line);
+        box-shadow: none;
+        transform: translateY(-1px);
       }
 
       .post-copy {
@@ -131,12 +112,12 @@ const posts = (await getCollection('blog')).sort(
         z-index: 1;
         display: grid;
         align-content: space-between;
-        gap: 28px;
+        gap: 0;
       }
 
       .post-index {
         color: var(--paper-ink-faint);
-        font-family: ui-monospace, 'Cascadia Mono', monospace;
+        font-family: var(--font-meta);
         font-size: 0.76rem;
         letter-spacing: 0.1em;
       }
@@ -145,13 +126,14 @@ const posts = (await getCollection('blog')).sort(
         margin: 0;
         max-width: 680px;
         color: var(--paper-ink);
-        font-size: clamp(2rem, 4vw, 3.6rem);
-        line-height: 0.98;
+        font-size: clamp(1.28rem, 2vw, 1.72rem);
+        line-height: 1.24;
       }
 
       .date {
         margin: 10px 0 0;
         color: var(--paper-ink-soft);
+        font-family: var(--font-meta);
         font-size: 0.86rem;
         font-weight: 600;
       }
@@ -167,19 +149,21 @@ const posts = (await getCollection('blog')).sort(
       .thumb-wrap {
         position: relative;
         z-index: 1;
-        align-self: stretch;
-        min-height: 130px;
+        align-self: center;
+        width: 210px;
+        aspect-ratio: 4 / 3;
         overflow: hidden;
-        border: 1px solid rgba(52, 39, 27, 0.08);
+        border: 1px solid var(--paper-line);
         border-radius: 6px;
         background: var(--paper-surface-muted);
         filter: saturate(0.62) contrast(0.96);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 18px 100%, 0 calc(100% - 18px));
       }
 
       .thumb-wrap img {
+        display: block;
         width: 100%;
         height: 100%;
-        min-height: 130px;
         object-fit: cover;
         border-radius: 0;
         mix-blend-mode: multiply;
@@ -187,13 +171,13 @@ const posts = (await getCollection('blog')).sort(
       }
 
       .post-item:first-child .post-link {
-        grid-template-columns: minmax(0, 1fr) 300px;
-        min-height: 230px;
-        padding: 30px;
+        grid-template-columns: minmax(0, 1fr) 210px;
+        min-height: 132px;
+        padding: 26px 0;
       }
 
       .post-item:first-child .title {
-        font-size: clamp(2.8rem, 6vw, 5.5rem);
+        font-size: clamp(1.36rem, 2.2vw, 1.9rem);
       }
 
       @media (max-width: 720px) {
@@ -215,18 +199,20 @@ const posts = (await getCollection('blog')).sort(
         .post-item:first-child .post-link {
           grid-template-columns: 1fr;
           gap: 18px;
-          padding: 22px;
+          padding: 22px 0;
         }
 
         .thumb-wrap {
-          min-height: 168px;
+          width: 100%;
+          aspect-ratio: 16 / 9;
           order: -1;
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px));
         }
 
         .title,
         .post-item:first-child .title {
-          font-size: 2.15rem;
-          line-height: 1;
+          font-size: 1.45rem;
+          line-height: 1.22;
         }
       }
     </style>

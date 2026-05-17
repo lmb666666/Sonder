@@ -24,7 +24,7 @@
 
 ## 预览
 
-<img src="./public/images/grid-layout.png" alt="Navfolio grid layout preview" />
+<img src="./public/images/homepage-layout.png" alt="Navfolio homepage layout preview" />
 
 ## Blog Article Preview
 

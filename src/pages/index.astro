@@ -4,24 +4,19 @@ import NavigationCard from '../components/cards/NavigationCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
 import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
-import ClockWidget from '../components/widgets/ClockWidget.astro';
 import DoingCard from '../components/widgets/DoingCard.astro';
 import { doingItems, intro, navigationLinks, profile, quote } from '../data/profile';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const pageTitle = 'navfolio | Personal Dashboard';
-const pageDescription = 'A customizable personal navigation portfolio dashboard built with Astro.';
+const pageTitle = 'navfolio | Digital Publication Space';
+const pageDescription = 'A calm AI-native personal publication space for notes, links, and writing.';
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <div class="dashboard-bg" aria-hidden="true"></div>
+  <div class="publication-bg" aria-hidden="true"></div>
   <DashboardFlow>
     <Fragment slot="profile">
       <ProfileCard profile={profile} />
-    </Fragment>
-
-    <Fragment slot="clock">
-      <ClockWidget />
     </Fragment>
 
     <Fragment slot="hero">

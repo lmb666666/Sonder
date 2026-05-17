@@ -45,7 +45,7 @@ const { title, description, image = FallbackImage } = Astro.props;
       const nextTheme = theme === 'dark' ? 'dark' : 'light';
       root.dataset.theme = nextTheme;
       root.style.colorScheme = nextTheme;
-      themeMeta()?.setAttribute('content', nextTheme === 'dark' ? '#1c1915' : '#fffffc');
+      themeMeta()?.setAttribute('content', nextTheme === 'dark' ? '#171b18' : '#fdfdf9');
       for (const button of document.querySelectorAll('[data-theme-toggle]')) {
         const label = nextTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
         button.setAttribute('aria-label', label);
@@ -81,11 +81,11 @@ const { title, description, image = FallbackImage } = Astro.props;
 <link rel="icon" type="image/png" sizes="16x16" href={assetPath('favicon-16x16.png')} />
 <link rel="apple-touch-icon" sizes="180x180" href={assetPath('apple-touch-icon.png')} />
 <link rel="manifest" href={assetPath('manifest.json')} />
-<meta name="theme-color" content="#fffffc" />
+<meta name="theme-color" content="#fdfdf9" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
-  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Serif+SC:wght@400;500;600;700&display=swap"
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Serif+SC:wght@400;500;600;700&display=swap"
   rel="stylesheet"
 />
 <link rel="sitemap" href="/sitemap-index.xml" />

@@ -159,9 +159,18 @@ function getTooltipPosts(posts: HeatmapPost[]) {
 <style>
   .heatmap-card {
     display: grid;
-    gap: 14px;
-    padding: 22px;
+    gap: 16px;
+    padding: 20px;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
     overflow: visible;
+  }
+
+  .heatmap-card:hover {
+    border-color: transparent;
+    box-shadow: none;
+    transform: none;
   }
 
   header {
@@ -220,7 +229,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     padding: 10px 11px;
     border: 1px solid var(--paper-line);
     border-radius: 7px;
-    background: var(--paper-control);
+    background: var(--paper-surface-muted);
   }
 
   .latest-tip span {
@@ -333,7 +342,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
 
   .heatmap-cell {
     border-radius: 2.5px;
-    background: rgba(193, 172, 134, 0.22);
+    background: rgba(102, 125, 109, 0.12);
     box-shadow: inset 0 0 0 1px var(--paper-line);
   }
 
@@ -343,23 +352,23 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   }
 
   .level-0 {
-    background: rgba(193, 172, 134, 0.22);
+    background: rgba(102, 125, 109, 0.16);
   }
 
   .level-1 {
-    background: #d9c8a8;
+    background: #dce8dc;
   }
 
   .level-2 {
-    background: #c2a879;
+    background: #b9cbb9;
   }
 
   .level-3 {
-    background: #9f7b4c;
+    background: #8fa58f;
   }
 
   .level-4 {
-    background: #6c4d2e;
+    background: #667d6d;
   }
 
   .tooltip {

@@ -1,0 +1,136 @@
+---
+import { Image } from 'astro:assets';
+import FormattedDate from '../FormattedDate.astro';
+
+interface Props {
+  title: string;
+  pubDate?: Date;
+  wordCount: number;
+  readingTime: string;
+  tags?: string[];
+  heroImage?: ImageMetadata;
+}
+
+const { title, pubDate, wordCount, readingTime, tags = [], heroImage } = Astro.props;
+const wordCountLabel = `${wordCount.toLocaleString('en-US')} words`;
+const hasTags = tags.length > 0;
+---
+
+<header class="article-header">
+  <h1>{title}</h1>
+
+  <div class="meta-line" aria-label="Article metadata">
+    {pubDate && <span class="meta-item"><FormattedDate date={pubDate} /></span>}
+    <span class="meta-item">{wordCountLabel}</span>
+    <span class="meta-item">{readingTime}</span>
+    {
+      hasTags && (
+        <span class="meta-item tag-list">
+          {tags.map((tag) => (
+            <span class="tag">#{tag}</span>
+          ))}
+        </span>
+      )
+    }
+  </div>
+
+  {
+    heroImage && (
+      <figure class="article-hero-image">
+        <Image width={1020} height={510} src={heroImage} alt="" />
+      </figure>
+    )
+  }
+</header>
+
+<style>
+  .article-header {
+    display: grid;
+    gap: 14px;
+    width: 100%;
+    max-width: var(--article-content-max, 68ch);
+    margin-bottom: 34px;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--paper-ink);
+    font-size: clamp(2.15rem, 4.8vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 6px;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .meta-item + .meta-item::before {
+    margin: 0 9px;
+    color: var(--paper-ink-faint);
+    content: '\00b7';
+    opacity: 0.7;
+  }
+
+  .tag-list {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    color: var(--paper-accent);
+    font-weight: 700;
+  }
+
+  .article-hero-image {
+    width: 100%;
+    height: 84px;
+    margin: 10px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--paper-line);
+    border-radius: 7px;
+    background: var(--paper-surface-muted);
+  }
+
+  .article-hero-image :global(img) {
+    display: block;
+    width: 100%;
+    height: 84px;
+    object-fit: cover;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    filter: saturate(0.72) contrast(0.96);
+  }
+
+  @media (max-width: 640px) {
+    .article-header {
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 2.08rem;
+      line-height: 1.1;
+    }
+
+    .article-hero-image,
+    .article-hero-image :global(img) {
+      height: 84px;
+      border-radius: 6px;
+    }
+  }
+</style>

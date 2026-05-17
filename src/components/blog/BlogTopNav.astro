@@ -1,5 +1,5 @@
 ---
-import { Moon, Search, Sun } from 'lucide-astro';
+import { Github, Moon, Search, Sun } from 'lucide-astro';
 
 const links = [
   { label: 'Home', href: '/' },
@@ -40,6 +40,15 @@ function isActive(href: string) {
   </nav>
 
   <div class="nav-actions" aria-label="Page actions">
+    <a
+      href="https://github.com/dodolalorc/astro-navfolio"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Open GitHub repository"
+      title="GitHub"
+    >
+      <Github size={17} stroke-width={2} />
+    </a>
     <button type="button" data-theme-toggle aria-label="Switch theme">
       <Moon class="theme-icon-moon" size={17} stroke-width={2} />
       <Sun class="theme-icon-sun" size={17} stroke-width={2} />
@@ -61,10 +70,10 @@ function isActive(href: string) {
     gap: 24px;
     align-items: center;
     width: min(calc(100% - 32px), 900px);
-    min-height: 58px;
+    min-height: 56px;
     padding: 10px 14px 10px 18px;
     border: 1px solid var(--paper-line);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--paper-nav);
     box-shadow: var(--paper-shadow);
     transform: translateX(-50%);
@@ -132,6 +141,7 @@ function isActive(href: string) {
     gap: 8px;
   }
 
+  .nav-actions a,
   .nav-actions button {
     display: inline-grid;
     place-items: center;
@@ -145,6 +155,7 @@ function isActive(href: string) {
     cursor: pointer;
   }
 
+  .nav-actions a:hover,
   .nav-actions button:hover {
     background: var(--paper-control-hover);
     color: var(--paper-accent);
@@ -158,7 +169,7 @@ function isActive(href: string) {
       width: min(calc(100% - 20px), 520px);
       min-height: 54px;
       padding: 8px 10px 8px 14px;
-      border-radius: 20px;
+      border-radius: 8px;
     }
 
     .nav-links {

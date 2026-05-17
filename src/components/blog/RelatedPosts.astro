@@ -31,7 +31,7 @@ const { posts } = Astro.props;
 
 <style>
   .related-posts {
-    padding: 22px;
+    padding: 18px;
   }
 
   h2 {
@@ -49,8 +49,8 @@ const { posts } = Astro.props;
 
   a {
     display: grid;
-    grid-template-columns: 58px 1fr;
-    gap: 11px;
+    grid-template-columns: 1fr;
+    gap: 5px;
     align-items: center;
     color: var(--paper-ink);
     text-decoration: none;
@@ -61,6 +61,7 @@ const { posts } = Astro.props;
   }
 
   img {
+    display: none;
     width: 58px;
     height: 48px;
     border-radius: 6px;

@@ -16,41 +16,68 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
     <BaseHead title={title} description={description} />
     <style>
       main {
-        width: calc(100% - 2em);
-        max-width: 100%;
-        margin: 0;
+        width: min(100%, var(--layout-shell-width));
+        max-width: none;
+        margin: 0 auto;
+        padding: 118px var(--layout-page-gutter) var(--layout-page-bottom);
       }
       .hero-image {
         width: 100%;
+        margin: 0 0 34px;
       }
       .hero-image img {
         display: block;
         margin: 0 auto;
-        border-radius: 12px;
+        border: 1px solid var(--paper-line);
+        border-radius: 8px;
         box-shadow: var(--paper-shadow);
+        filter: saturate(0.72) contrast(0.98);
       }
       .prose {
-        width: 720px;
-        max-width: calc(100% - 2em);
+        width: min(100%, var(--layout-reading-width));
+        max-width: 100%;
         margin: auto;
-        padding: 1em;
-        color: rgb(var(--gray-dark));
+        padding: 0 0 42px;
+        color: var(--paper-ink);
+        font-family: var(--font-article);
+        font-size: 1.04rem;
+        line-height: 1.9;
       }
       .title {
-        margin-bottom: 1em;
-        padding: 1em 0;
-        text-align: center;
-        line-height: 1;
+        margin-bottom: 34px;
+        padding: 0;
+        text-align: left;
+        line-height: 1.2;
       }
       .title h1 {
-        margin: 0 0 0.5em 0;
+        max-width: 100%;
+        margin: 8px 0 18px;
+        color: var(--paper-ink);
+        font-size: clamp(2.4rem, 7vw, 4.2rem);
+        line-height: 1.02;
       }
       .date {
         margin-bottom: 0.5em;
-        color: rgb(var(--gray));
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.86rem;
+        font-weight: 600;
       }
       .last-updated-on {
         font-style: italic;
+      }
+      .prose :global(p) {
+        margin: 0 0 1.35em;
+      }
+      .prose :global(a) {
+        color: var(--paper-accent);
+        text-underline-offset: 4px;
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 92px 18px 42px;
+        }
       }
     </style>
   </head>
@@ -59,9 +86,6 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
     <BlogTopNav />
     <main>
       <article>
-        <div class="hero-image">
-          {heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-        </div>
         <div class="prose">
           <div class="title">
             <div class="date">
@@ -76,6 +100,9 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
             </div>
             <h1>{title}</h1>
             <hr />
+          </div>
+          <div class="hero-image">
+            {heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
           </div>
           <slot />
         </div>

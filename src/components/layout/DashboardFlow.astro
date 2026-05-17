@@ -1,39 +1,36 @@
 <main class="flow-shell">
-  <section class="flow-grid" aria-label="navfolio personal dashboard">
-    <aside class="flow-column side-column">
-      <slot name="profile" />
-      <slot name="links" />
-    </aside>
-
+  <section class="flow-grid" aria-label="navfolio personal publication">
     <section class="flow-column main-column">
       <slot name="hero" />
+      <slot name="activity" />
       <slot name="recently" />
     </section>
 
     <aside class="flow-column side-column">
-      <slot name="clock" />
-      <slot name="activity" />
+      <slot name="profile" />
+      <slot name="links" />
     </aside>
   </section>
 </main>
 
 <style>
   .flow-shell {
-    width: min(100%, 1500px);
+    width: min(100%, var(--layout-shell-width));
     margin: 0 auto;
-    padding: 116px 24px 46px;
+    padding: 132px var(--layout-page-gutter) var(--layout-page-bottom);
   }
 
   .flow-grid {
     display: grid;
-    grid-template-columns: minmax(250px, 0.9fr) minmax(460px, 2fr) minmax(280px, 1fr);
-    gap: 20px;
+    grid-template-columns: minmax(0, 760px) minmax(240px, 286px);
+    justify-content: center;
+    gap: 42px;
     align-items: start;
   }
 
   .flow-column {
     display: grid;
-    gap: 20px;
+    gap: 22px;
     align-content: start;
     min-width: 0;
   }
@@ -43,54 +40,49 @@
   }
 
   .flow-grid :global(.profile-card) {
-    min-height: 302px;
-    padding: 28px 22px 26px;
+    min-height: auto;
+    padding: 24px 22px;
   }
 
   .flow-grid :global(.avatar-wrap) {
-    width: 136px;
-    height: 136px;
-    margin-bottom: 18px;
+    width: 108px;
+    height: 108px;
+    margin-bottom: 16px;
   }
 
   .flow-grid :global(.profile-heading h1) {
-    font-size: 1.78rem;
+    font-size: 1.52rem;
   }
 
   .flow-grid :global(.intro-card) {
-    min-height: 350px;
-    padding: 42px 44px;
+    min-height: 0;
+    padding: 0 0 8px;
   }
 
-  .flow-grid :global(.clock-card) {
-    min-height: 162px;
-    padding: 24px 26px;
-  }
-
-  @media (max-width: 1180px) {
+  @media (max-width: 920px) {
     .flow-grid {
-      grid-template-columns: minmax(260px, 0.9fr) minmax(420px, 1.6fr);
+      grid-template-columns: 1fr;
+      gap: 26px;
     }
 
-    .flow-grid > .flow-column:last-child {
-      grid-column: 1 / -1;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .side-column {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
     }
   }
 
   @media (max-width: 820px) {
     .flow-shell {
-      padding: 96px 12px 24px;
+      padding: 96px 18px 42px;
     }
 
     .flow-grid,
-    .flow-grid > .flow-column:last-child {
+    .side-column {
       grid-template-columns: 1fr;
     }
 
     .flow-grid :global(.intro-card) {
       min-height: auto;
-      padding: 32px 26px;
+      padding: 0;
     }
   }
 </style>

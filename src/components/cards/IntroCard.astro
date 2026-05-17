@@ -42,8 +42,17 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
   .intro-card {
     display: flex;
     flex-direction: column;
-    min-height: 330px;
-    padding: 38px;
+    min-height: 280px;
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .intro-card:hover {
+    border-color: transparent;
+    box-shadow: none;
+    transform: none;
   }
 
   .intro-copy {
@@ -57,18 +66,19 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
   }
 
   .quote-mark {
-    margin-bottom: -4px;
-    color: rgba(123, 84, 55, 0.42);
+    margin-bottom: 2px;
+    color: rgba(102, 125, 109, 0.32);
     font-family: var(--font-display);
-    font-size: 4.8rem;
+    font-size: 3rem;
     line-height: 0.7;
   }
 
   h2 {
-    margin: 0 0 20px;
+    margin: 0 0 18px;
     color: var(--paper-ink);
-    font-size: clamp(2rem, 3.1vw, 3rem);
-    line-height: 1.1;
+    max-width: 14ch;
+    font-size: clamp(2.45rem, 5vw, 4rem);
+    line-height: 1.04;
   }
 
   h2 span {
@@ -84,14 +94,15 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
 
   blockquote {
     display: block;
-    margin: 0 0 28px;
+    max-width: 52ch;
+    margin: 0 0 26px;
     padding: 0;
     border: 0;
-    color: #4a3a2b;
+    color: var(--paper-ink-soft);
     font-family: var(--font-note);
-    font-size: clamp(1.05rem, 1.4vw, 1.36rem);
+    font-size: clamp(1.08rem, 1.6vw, 1.3rem);
     font-style: italic;
-    line-height: 1.55;
+    line-height: 1.72;
   }
 
   blockquote span {
@@ -100,10 +111,11 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
 
   p {
     width: 100%;
-    margin: 0 0 16px;
+    margin: 0 0 12px;
     color: var(--paper-ink);
-    font-size: 0.98rem;
-    line-height: 1.9;
+    max-width: 66ch;
+    font-size: 1.02rem;
+    line-height: 1.92;
   }
 
   p:last-child {
@@ -112,7 +124,7 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
 
   @media (max-width: 640px) {
     .intro-card {
-      padding: 28px;
+      padding: 0;
     }
 
     h2 {

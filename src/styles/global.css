@@ -1,3 +1,8 @@
+@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.min.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@latest/400.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@latest/500.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@latest/700.css');
+
 /*
   The CSS in this style tag is based off of Bear Blog's default CSS.
   https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
@@ -5,94 +10,99 @@
  */
 
 :root {
-  --accent: #6b4a2f;
-  --accent-dark: #3f2d20;
-  --black: 35, 30, 24;
-  --gray: 118, 101, 80;
-  --gray-light: 231, 222, 206;
-  --gray-dark: 54, 46, 37;
-  --paper-bg: #fffffc;
-  --paper-bg-deep: #f4f1ea;
+  --accent: #6b7d70;
+  --accent-dark: #3f5348;
+  --black: 35, 39, 35;
+  --gray: 112, 119, 111;
+  --gray-light: 226, 231, 224;
+  --gray-dark: 48, 53, 49;
+  --paper-bg: #fdfdf9;
+  --paper-bg-deep: #f3f5ef;
   --paper-surface: #fffffc;
-  --paper-surface-muted: #f8f6f0;
+  --paper-surface-muted: #f7f8f3;
   --paper-surface-rgb: 255, 255, 252;
-  --paper-line: rgba(58, 42, 27, 0.045);
-  --paper-line-strong: rgba(58, 42, 27, 0.08);
-  --paper-ink: #30271f;
-  --paper-ink-soft: #6d5d4c;
-  --paper-ink-faint: #94846f;
-  --paper-accent: #7b5437;
-  --paper-accent-soft: #f2eee4;
-  --paper-control: rgba(246, 242, 233, 0.54);
-  --paper-control-hover: rgba(239, 234, 224, 0.78);
+  --paper-line: rgba(31, 35, 40, 0.075);
+  --paper-line-strong: rgba(31, 35, 40, 0.12);
+  --paper-ink: #272d28;
+  --paper-ink-soft: #667066;
+  --paper-ink-faint: #90998f;
+  --paper-accent: #667d6d;
+  --paper-accent-soft: #edf3ed;
+  --paper-fog: #dfe8e8;
+  --paper-dust: #e9e2eb;
+  --paper-control: rgba(246, 248, 245, 0.76);
+  --paper-control-hover: rgba(238, 243, 237, 0.92);
   --paper-nav: rgba(255, 255, 252, 0.92);
-  --paper-card-wash-top: rgba(255, 255, 252, 0.74);
-  --paper-card-wash-bottom: rgba(250, 248, 242, 0.36);
-  --paper-page-bg:
-    radial-gradient(circle at 18% 12%, rgba(255, 255, 252, 0.92), transparent 28%),
-    radial-gradient(circle at 86% 4%, rgba(218, 210, 194, 0.08), transparent 30%),
-    linear-gradient(135deg, #fffffc 0%, #f5f2eb 100%);
-  --paper-detail-bg:
-    radial-gradient(circle at 12% 8%, rgba(255, 255, 252, 0.86), transparent 30%),
-    radial-gradient(circle at 88% 18%, rgba(218, 210, 194, 0.07), transparent 35%),
-    linear-gradient(135deg, #fffffc 0%, #f5f2eb 100%);
-  --paper-texture-ink: rgba(82, 59, 34, 0.022);
+  --paper-card-wash-top: rgba(255, 255, 252, 0.78);
+  --paper-card-wash-bottom: rgba(247, 248, 243, 0.52);
+  --paper-page-bg: #fdfdf9;
+  --paper-detail-bg: #fdfdf9;
+  --paper-texture-ink: rgba(73, 88, 75, 0.012);
   --paper-texture-light: rgba(255, 255, 255, 0.18);
-  --paper-rule: rgba(106, 78, 45, 0.018);
-  --paper-theme-color: #fffffc;
-  --paper-shadow: 0 1px 1px rgba(0, 0, 0, 0.018);
-  --paper-shadow-lift: 0 4px 10px rgba(66, 48, 27, 0.035), 0 1px 2px rgba(66, 48, 27, 0.03);
-  --font-body: 'IBM Plex Sans', Inter, 'Source Han Sans SC', 'Noto Sans SC', 'PingFang SC',
-    'Microsoft YaHei', sans-serif;
-  --font-display: 'Instrument Serif', 'Noto Serif SC', 'LXGW WenKai', Georgia, serif;
-  --font-note: 'LXGW WenKai', 'Noto Serif SC', var(--font-display);
-  --gray-gradient: rgba(231, 222, 206, 0.42), var(--paper-bg);
+  --paper-rule: rgba(73, 88, 75, 0.026);
+  --paper-theme-color: #fdfdf9;
+  --paper-shadow: 0 1px 2px rgba(31, 35, 40, 0.03), 0 4px 12px rgba(31, 35, 40, 0.02);
+  --paper-shadow-lift: 0 1px 2px rgba(31, 35, 40, 0.04), 0 6px 14px rgba(31, 35, 40, 0.025);
+  --layout-shell-width: 1168px;
+  --layout-reading-width: 760px;
+  --layout-page-gutter: 32px;
+  --layout-page-top: 126px;
+  --layout-page-bottom: 72px;
+  --font-serif-cn: 'LXGW WenKai', 'STKaiti', 'KaiTi', serif;
+  --font-mono: 'Maple Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-body: var(--font-serif-cn);
+  --font-display: var(--font-serif-cn);
+  --font-note: var(--font-serif-cn);
+  --font-article: var(--font-serif-cn);
+  --font-heading: var(--font-serif-cn);
+  --font-meta: var(--font-mono);
+  --font-code: var(--font-mono);
+  --font-ui-label: var(--font-mono);
+  --gray-gradient: rgba(226, 231, 224, 0.38), var(--paper-bg);
   --box-shadow: var(--paper-shadow-lift);
   color-scheme: light;
 }
 
 :root[data-theme='dark'] {
-  --accent: #d5b98e;
-  --accent-dark: #f0ddbd;
-  --black: 237, 226, 209;
-  --gray: 178, 159, 134;
-  --gray-light: 63, 54, 44;
-  --gray-dark: 221, 209, 190;
-  --paper-bg: #1c1915;
-  --paper-bg-deep: #14120f;
-  --paper-surface: #242019;
-  --paper-surface-muted: #2d271e;
-  --paper-surface-rgb: 36, 32, 25;
-  --paper-line: rgba(244, 225, 190, 0.07);
-  --paper-line-strong: rgba(244, 225, 190, 0.12);
-  --paper-ink: #eee2ce;
-  --paper-ink-soft: #c7b69a;
-  --paper-ink-faint: #9d8c72;
-  --paper-accent: #d6b680;
-  --paper-accent-soft: #3a3023;
-  --paper-control: rgba(65, 55, 42, 0.68);
-  --paper-control-hover: rgba(82, 68, 49, 0.82);
-  --paper-nav: rgba(36, 32, 25, 0.92);
-  --paper-card-wash-top: rgba(44, 39, 31, 0.72);
-  --paper-card-wash-bottom: rgba(31, 28, 23, 0.42);
+  --accent: #a8baa9;
+  --accent-dark: #d3dfd2;
+  --black: 234, 235, 229;
+  --gray: 166, 175, 164;
+  --gray-light: 56, 64, 56;
+  --gray-dark: 225, 229, 221;
+  --paper-bg: #171b18;
+  --paper-bg-deep: #111411;
+  --paper-surface: #202620;
+  --paper-surface-muted: #273026;
+  --paper-surface-rgb: 32, 38, 32;
+  --paper-line: rgba(217, 229, 213, 0.08);
+  --paper-line-strong: rgba(217, 229, 213, 0.14);
+  --paper-ink: #eaebe5;
+  --paper-ink-soft: #b5beb1;
+  --paper-ink-faint: #899487;
+  --paper-accent: #a8baa9;
+  --paper-accent-soft: #2b372d;
+  --paper-fog: #293737;
+  --paper-dust: #352d38;
+  --paper-control: rgba(42, 51, 43, 0.72);
+  --paper-control-hover: rgba(52, 64, 53, 0.88);
+  --paper-nav: rgba(32, 38, 32, 0.92);
+  --paper-card-wash-top: rgba(39, 47, 39, 0.72);
+  --paper-card-wash-bottom: rgba(28, 33, 28, 0.52);
   --paper-page-bg:
-    radial-gradient(circle at 18% 12%, rgba(72, 61, 45, 0.46), transparent 28%),
-    radial-gradient(circle at 86% 4%, rgba(171, 131, 72, 0.1), transparent 30%),
-    linear-gradient(135deg, #211d17 0%, #171410 100%);
+    linear-gradient(180deg, rgba(23, 27, 24, 0.98) 0%, rgba(17, 20, 17, 0.98) 100%);
   --paper-detail-bg:
-    radial-gradient(circle at 12% 8%, rgba(72, 61, 45, 0.38), transparent 30%),
-    radial-gradient(circle at 88% 18%, rgba(171, 131, 72, 0.1), transparent 35%),
-    linear-gradient(135deg, #211d17 0%, #171410 100%);
-  --paper-texture-ink: rgba(241, 222, 184, 0.04);
-  --paper-texture-light: rgba(255, 239, 205, 0.04);
-  --paper-rule: rgba(236, 211, 167, 0.032);
-  --paper-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
-  --paper-shadow-lift: 0 4px 10px rgba(0, 0, 0, 0.16), 0 1px 2px rgba(0, 0, 0, 0.14);
-  --paper-theme-color: #1c1915;
+    linear-gradient(180deg, rgba(23, 27, 24, 0.98) 0%, rgba(17, 20, 17, 0.98) 100%);
+  --paper-texture-ink: rgba(217, 229, 213, 0.032);
+  --paper-texture-light: rgba(255, 255, 255, 0.035);
+  --paper-rule: rgba(217, 229, 213, 0.028);
+  --paper-shadow: 0 1px 2px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --paper-shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.16), 0 6px 14px rgba(0, 0, 0, 0.1);
+  --paper-theme-color: #171b18;
   color-scheme: dark;
 }
 body {
-  font-family: var(--font-atkinson);
+  font-family: var(--font-body);
   margin: 0;
   padding: 0;
   text-align: left;
@@ -105,10 +115,10 @@ body {
   line-height: 1.7;
 }
 main {
-  width: 720px;
-  max-width: calc(100% - 2em);
+  width: min(100%, var(--layout-shell-width));
+  max-width: none;
   margin: auto;
-  padding: 3em 1em;
+  padding: var(--layout-page-top) var(--layout-page-gutter) var(--layout-page-bottom);
 }
 h1,
 h2,
@@ -167,11 +177,13 @@ img {
   border-radius: 8px;
 }
 code {
+  font-family: var(--font-code);
   padding: 2px 5px;
   background-color: rgb(var(--gray-light));
   border-radius: 2px;
 }
 pre {
+  font-family: var(--font-code);
   padding: 1.5em;
   border-radius: 8px;
 }
@@ -193,7 +205,7 @@ hr {
     font-size: 18px;
   }
   main {
-    padding: 1em;
+    padding: 92px 18px 42px;
   }
 }
 
@@ -229,7 +241,7 @@ body {
   color: var(--paper-ink);
   font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.72;
+  line-height: 1.8;
 }
 
 body::before {
@@ -238,54 +250,35 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image:
-    radial-gradient(circle at 24% 31%, var(--paper-texture-ink) 0 0.7px, transparent 0.8px),
-    radial-gradient(circle at 76% 62%, var(--paper-texture-light) 0 0.6px, transparent 0.7px),
-    linear-gradient(var(--paper-rule) 1px, transparent 1px);
+  background-image: linear-gradient(var(--paper-rule) 1px, transparent 1px);
   background-size:
-    22px 24px,
-    31px 29px,
     100% 32px;
-  opacity: 0.58;
+  opacity: 0.28;
 }
 
-.dashboard-bg {
+.publication-bg {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background:
-    linear-gradient(115deg, rgba(var(--paper-surface-rgb), 0.28), transparent 34%),
-    linear-gradient(245deg, rgba(188, 169, 140, 0.08), transparent 42%);
+  background: linear-gradient(180deg, rgba(var(--paper-surface-rgb), 0.28), transparent 42%);
 }
 
 .glass-card {
   position: relative;
   border: 1px solid var(--paper-line);
-  border-radius: 10px;
-  background:
-    linear-gradient(180deg, var(--paper-card-wash-top), var(--paper-card-wash-bottom)),
-    var(--paper-surface);
+  border-radius: 8px;
+  background: var(--paper-surface);
   box-shadow: var(--paper-shadow);
-  animation: card-in 520ms both;
+  animation: card-in 420ms both;
   transition:
-    transform 220ms ease,
-    box-shadow 220ms ease,
-    border-color 220ms ease;
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
 }
 
 .glass-card::after {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background-image:
-    linear-gradient(90deg, transparent 0, transparent 22px, rgba(139, 96, 51, 0.035) 23px, transparent 24px),
-    radial-gradient(circle at 35% 18%, rgba(101, 72, 39, 0.04) 0 0.7px, transparent 0.8px);
-  background-size:
-    100% 100%,
-    19px 21px;
-  opacity: 0.65;
-  content: '';
+  content: none;
 }
 
 .theme-icon-sun {
@@ -333,9 +326,13 @@ a {
 
 h1,
 h2,
-h3 {
-  font-family: var(--font-display);
-  font-weight: 500;
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 @keyframes card-in {

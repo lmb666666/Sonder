@@ -1,15 +1,12 @@
 ---
-import { Image } from 'astro:assets';
 import { type CollectionEntry, getCollection } from 'astro:content';
-import ArticleInfoCard from '../components/blog/ArticleInfoCard.astro';
-import AuthorCard from '../components/blog/AuthorCard.astro';
+import ArticleHeader from '../components/article/ArticleHeader.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
 import BottomActionBar from '../components/blog/BottomActionBar.astro';
 import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import SubscribeCard from '../components/blog/SubscribeCard.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import BaseHead from '../components/BaseHead.astro';
-import FormattedDate from '../components/FormattedDate.astro';
 
 interface Props {
   post?: CollectionEntry<'blog'>;
@@ -19,6 +16,7 @@ interface Props {
   pubDate?: Date;
   updatedDate?: Date;
   heroImage?: ImageMetadata;
+  tags?: string[];
 }
 
 const props = Astro.props;
@@ -32,13 +30,16 @@ const post = props.post ?? {
     pubDate: props.pubDate ?? new Date(),
     updatedDate: props.updatedDate,
     heroImage: props.heroImage,
+    tags: props.tags ?? [],
     draft: false,
   },
 };
-const { title, description, pubDate, updatedDate, heroImage } = post.data;
+const { title, description, pubDate, heroImage } = post.data;
 const bodyText = 'body' in post && typeof post.body === 'string' ? post.body : description;
-const readingTime = `${Math.max(3, Math.ceil(bodyText.trim().split(/\s+/).length / 220))} min read`;
-const tags = ['Design', 'Thinking', 'AI'];
+const words = bodyText.trim().match(/\S+/g) ?? [];
+const wordCount = words.length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 220))} min read`;
+const tags = post.data.tags ?? [];
 const renderedTocItems = headings
   .filter((heading) => heading.depth === 2 || heading.depth === 3)
   .map((heading) => ({ href: `#${heading.slug}`, label: heading.text }));
@@ -60,62 +61,19 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     <div class="blog-background" aria-hidden="true"></div>
 
     <main class="blog-layout">
-      <aside class="left-sidebar" aria-label="Article context">
-        <AuthorCard />
-        <ArticleInfoCard
-          pubDate={pubDate}
-          updatedDate={updatedDate}
-          readingTime={readingTime}
-          tags={tags}
-        />
-        <aside class="quote-card blog-card">
-          <p>Writing is thinking.</p>
-          <p>To write well is to think clearly.</p>
-        </aside>
-      </aside>
-
       <div class="article-column">
         <article class="article-card">
-          <header class="article-header">
-            <p class="category-line">Design / Thinking / AI</p>
-            <h1>{title}</h1>
-            <p class="article-subtitle">{description}</p>
-            <div class="meta-row">
-              <span><FormattedDate date={pubDate} /></span>
-              <span>{readingTime}</span>
-              {
-                updatedDate && (
-                  <span>
-                    Updated <FormattedDate date={updatedDate} />
-                  </span>
-                )
-              }
-            </div>
-          </header>
-
-          {
-            heroImage && (
-              <figure class="hero-image">
-                <Image width={1020} height={510} src={heroImage} alt="" />
-              </figure>
-            )
-          }
+          <ArticleHeader
+            title={title}
+            pubDate={pubDate}
+            wordCount={wordCount}
+            readingTime={readingTime}
+            tags={tags}
+            heroImage={heroImage}
+          />
 
           <section id="article-start" class="article-content">
             <slot />
-          </section>
-
-          <section class="article-enhancements" aria-label="Article examples">
-            <div id="key-insight" class="highlight-callout">
-              <strong>Insight</strong>
-              <p>The goal is not to remember more, but to think more clearly.</p>
-            </div>
-            <pre
-              id="system-sketch"
-              class="code-block"><code>const system = capture()
-  .organize()
-  .connect()
-  .publish();</code></pre>
           </section>
         </article>
 
@@ -162,33 +120,28 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
   .blog-background::before {
     position: absolute;
     inset: 0;
-    background-image:
-      radial-gradient(circle at 20% 30%, var(--paper-texture-ink) 0 0.7px, transparent 0.8px),
-      radial-gradient(circle at 80% 62%, var(--paper-texture-light) 0 0.6px, transparent 0.7px);
-    background-size:
-      23px 25px,
-      33px 29px;
+    background-image: linear-gradient(var(--paper-rule) 1px, transparent 1px);
+    background-size: 100% 34px;
     content: '';
-    opacity: 0.55;
+    opacity: 0.2;
   }
 
   .blog-layout {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: 220px minmax(0, 720px) 280px;
-    gap: 36px;
-    width: min(100%, 1360px);
+    grid-template-columns: minmax(0, 780px) 252px;
+    gap: 48px;
+    width: min(100%, var(--layout-shell-width));
     max-width: none;
     margin: 0 auto;
-    padding: 112px 32px 52px;
+    padding: var(--layout-page-top) var(--layout-page-gutter) var(--layout-page-bottom);
   }
 
   .article-column {
     min-width: 0;
   }
 
-  .left-sidebar,
   .right-sidebar-inner,
   .mobile-after-article {
     display: grid;
@@ -196,7 +149,6 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     align-content: start;
   }
 
-  .left-sidebar,
   .right-sidebar-inner {
     position: sticky;
     top: 96px;
@@ -210,108 +162,22 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     box-shadow: var(--paper-shadow);
   }
 
-  .quote-card {
-    padding: 22px;
-    color: var(--paper-ink-soft);
-  }
-
-  .quote-card p {
-    margin: 0;
-    font-size: 0.92rem;
-    line-height: 1.55;
-  }
-
-  .quote-card p:first-child {
-    color: var(--paper-ink);
-    font-weight: 700;
-  }
-
   .article-card {
-    overflow: hidden;
-    padding: clamp(30px, 5vw, 62px);
-    border: 1px solid var(--paper-line);
-    border-radius: 10px;
-    background:
-      linear-gradient(90deg, var(--paper-line-strong) 0 1px, transparent 1px) 58px 0 / 1px
-        100% no-repeat,
-      repeating-linear-gradient(to bottom, transparent 0 31px, var(--paper-rule) 32px),
-      var(--paper-surface);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.018), 0 6px 14px rgba(75, 55, 31, 0.025);
-  }
-
-  .article-header {
-    display: grid;
-    gap: 18px;
-    margin-bottom: 36px;
-  }
-
-  .category-line {
-    margin: 0;
-    color: var(--paper-accent);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  h1 {
-    max-width: 640px;
-    margin: 0;
-    color: var(--paper-ink);
-    font-size: clamp(3.1rem, 7vw, 5.8rem);
-    line-height: 0.94;
-  }
-
-  h1::first-letter {
-    color: var(--paper-accent);
-  }
-
-  .article-subtitle {
-    max-width: 58ch;
-    margin: 0;
-    color: var(--paper-ink-soft);
-    font-family: var(--font-note);
-    font-size: 1.12rem;
-    line-height: 1.82;
-  }
-
-  .meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    color: var(--paper-ink-faint);
-    font-size: 0.86rem;
-    font-weight: 700;
-  }
-
-  .meta-row span {
-    display: inline-flex;
-    align-items: center;
-    min-height: 30px;
-    padding: 5px 10px;
-    border: 1px solid var(--paper-line);
-    border-radius: 999px;
-    background: var(--paper-control);
-  }
-
-  .hero-image {
-    margin: 0 0 42px;
-  }
-
-  .hero-image img {
-    display: block;
-    width: 100%;
-    border: 1px solid var(--paper-line);
-    border-radius: 7px;
-    box-shadow: var(--paper-shadow);
-    filter: saturate(0.72) contrast(0.96);
+    --article-content-max: 68ch;
+    overflow: visible;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .article-content {
-    max-width: 66ch;
+    max-width: var(--article-content-max);
     color: var(--paper-ink);
-    font-size: 17px;
-    line-height: 1.92;
+    font-family: var(--font-article);
+    font-size: 18px;
+    line-height: 1.75;
     text-wrap: pretty;
   }
 
@@ -319,8 +185,8 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     margin-top: 56px;
     margin-bottom: 20px;
     color: var(--paper-ink);
-    font-size: 2.1rem;
-    line-height: 1.08;
+    font-size: 1.9rem;
+    line-height: 1.2;
   }
 
   .article-content :global(h3) {
@@ -331,13 +197,13 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
   }
 
   .article-content :global(p) {
-    margin: 0 0 20px;
+    margin: 0 0 22px;
   }
 
   .article-content :global(a) {
     color: var(--paper-accent);
     font-weight: 700;
-    text-decoration-color: rgba(123, 84, 55, 0.28);
+    text-decoration-color: rgba(102, 125, 109, 0.32);
     text-underline-offset: 4px;
   }
 
@@ -345,11 +211,11 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     margin: 34px 0;
     padding: 18px 22px 18px 26px;
     border: 1px solid var(--paper-line);
-    border-left: 4px solid rgba(123, 84, 55, 0.42);
+    border-left: 3px solid rgba(102, 125, 109, 0.42);
     border-radius: 7px;
-    background: var(--paper-control);
+    background: var(--paper-surface-muted);
     color: var(--paper-ink);
-    font-family: var(--font-note);
+    font-family: var(--font-article);
     font-size: 1.08rem;
   }
 
@@ -367,6 +233,7 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
   }
 
   .article-content :global(code) {
+    font-family: var(--font-code);
     border-radius: 7px;
     background: var(--paper-control);
     color: var(--paper-ink);
@@ -376,35 +243,8 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     background: transparent;
   }
 
-  .article-enhancements {
-    display: grid;
-    gap: 18px;
-    margin-top: 36px;
-  }
-
-  .highlight-callout {
-    padding: 22px 24px;
-    border: 1px solid var(--paper-line);
-    border-radius: 7px;
-    background: var(--paper-control);
-    color: var(--paper-ink);
-  }
-
-  .highlight-callout strong {
-    display: block;
-    margin-bottom: 7px;
-    color: var(--paper-accent);
-    font-size: 0.82rem;
-    text-transform: uppercase;
-  }
-
-  .highlight-callout p {
-    margin: 0;
-    font-size: 1.02rem;
-    line-height: 1.65;
-  }
-
   .code-block {
+    font-family: var(--font-code);
     margin: 0;
     padding: 20px;
     font-size: 0.9rem;
@@ -416,13 +256,9 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
 
   @media (max-width: 1180px) {
     .blog-layout {
-      grid-template-columns: minmax(0, 680px) 260px;
+      grid-template-columns: minmax(0, 720px) 238px;
       justify-content: center;
-      width: min(100%, 1032px);
-    }
-
-    .left-sidebar {
-      display: none;
+      width: min(100%, 1040px);
     }
   }
 
@@ -445,31 +281,8 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
 
   @media (max-width: 640px) {
     .article-card {
-      padding: 28px 22px;
-      border-radius: 24px;
-    }
-
-    .article-header {
-      gap: 14px;
-      margin-bottom: 26px;
-    }
-
-    h1 {
-      max-width: 100%;
-      font-size: 2.35rem;
-      line-height: 1.04;
-    }
-
-    .article-subtitle {
-      font-size: 1rem;
-    }
-
-    .hero-image {
-      margin-bottom: 30px;
-    }
-
-    .hero-image img {
-      border-radius: 20px;
+      padding: 0;
+      border-radius: 8px;
     }
   }
 </style>

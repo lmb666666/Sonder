@@ -56,6 +56,7 @@ const { pubDate, updatedDate, readingTime, tags } = Astro.props;
 
   dt {
     color: var(--paper-ink-faint);
+    font-family: var(--font-ui-label);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -64,6 +65,7 @@ const { pubDate, updatedDate, readingTime, tags } = Astro.props;
   dd {
     margin: 0;
     color: var(--paper-ink);
+    font-family: var(--font-meta);
     font-size: 0.92rem;
     font-weight: 700;
   }
@@ -78,9 +80,10 @@ const { pubDate, updatedDate, readingTime, tags } = Astro.props;
   .tags span {
     padding: 6px 10px;
     border: 1px solid var(--paper-line);
-    border-radius: 999px;
+    border-radius: 8px;
     background: var(--paper-control);
     color: var(--paper-accent);
+    font-family: var(--font-meta);
     font-size: 0.76rem;
     font-weight: 700;
   }
