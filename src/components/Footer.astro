@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import { profile } from '../data/profile';
 
 const today = new Date();
 ---
@@ -7,17 +8,17 @@ const today = new Date();
 <footer>
   &copy; {today.getFullYear()} navfolio. Released as an open-source starter.
   <div class="social-links">
-    <a href="https://example.com/" target="_blank">
-      <span class="sr-only">Open example website</span>
-      <Icon name="mastodon" size={18} />
+    <a href={profile.website} target="_blank" rel="noreferrer">
+      <span class="sr-only">Open website</span>
+      <Icon name="compass" size={18} />
     </a>
-    <a href="https://twitter.com/example" target="_blank">
-      <span class="sr-only">Open example Twitter profile</span>
-      <Icon name="twitter" size={18} />
-    </a>
-    <a href="https://github.com/example" target="_blank">
-      <span class="sr-only">Open example GitHub profile</span>
+    <a href={profile.github} target="_blank" rel="noreferrer">
+      <span class="sr-only">Open GitHub profile</span>
       <Icon name="github" size={18} />
+    </a>
+    <a href={`mailto:${profile.email}`}>
+      <span class="sr-only">Email</span>
+      <Icon name="mail" size={18} />
     </a>
   </div>
 </footer>

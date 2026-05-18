@@ -5,17 +5,27 @@ import FormattedDate from '../FormattedDate.astro';
 
 interface Props {
   posts: CollectionEntry<'blog'>[];
+  class?: string;
 }
 
-const { posts } = Astro.props;
+const { posts, class: className } = Astro.props;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function withBase(href: string) {
+  if (href === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
 ---
 
-<aside class="related-posts blog-card">
+<aside class:list={['related-posts', 'blog-card', className]}>
   <h2>More from navfolio</h2>
   <div class="related-list">
     {
       posts.map((post) => (
-        <a href={`/blog/${post.id}/`}>
+        <a href={withBase(`/blog/${post.id}/`)}>
           {post.data.heroImage && <Image width={88} height={64} src={post.data.heroImage} alt="" />}
           <span>
             <strong>{post.data.title}</strong>

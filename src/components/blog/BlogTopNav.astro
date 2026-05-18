@@ -4,11 +4,32 @@ import { Github, Moon, Search, Sun } from 'lucide-astro';
 const links = [
   { label: 'Home', href: '/' },
   { label: 'Blog', href: '/blog' },
-  { label: 'Projects', href: 'https://github.com/navfolio' },
+  { label: 'Projects', href: '/projects' },
   { label: 'About', href: '/about' },
-];
+] as {
+  label: string;
+  href: string;
+  disabled?: boolean;
+}[];
 
-const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const currentPathname =
+  basePath && Astro.url.pathname.startsWith(basePath)
+    ? Astro.url.pathname.slice(basePath.length) || '/'
+    : Astro.url.pathname;
+const currentPath = currentPathname.replace(/\/$/, '') || '/';
+
+function withBase(href: string) {
+  if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
+    return href;
+  }
+
+  if (href === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
 
 function isActive(href: string) {
   if (href.startsWith('http')) return false;
@@ -24,18 +45,28 @@ function isActive(href: string) {
 ---
 
 <header class="blog-top-nav">
-  <a class="brand" href="/" aria-label="Go to navfolio home">
+  <a class="brand" href={withBase('/')} aria-label="Go to navfolio home">
     <span class="brand-mark" aria-hidden="true"></span>
     <span>navfolio</span>
   </a>
 
   <nav class="nav-links" aria-label="Article navigation">
     {
-      links.map((link) => (
-        <a class:list={['nav-link', { active: isActive(link.href) }]} href={link.href}>
-          {link.label}
-        </a>
-      ))
+      links.map((link) =>
+        link.disabled ? (
+          <span
+            class="nav-link nav-link-placeholder"
+            aria-disabled="true"
+            title="Projects content placeholder"
+          >
+            {link.label}
+          </span>
+        ) : (
+          <a class:list={['nav-link', { active: isActive(link.href) }]} href={withBase(link.href)}>
+            {link.label}
+          </a>
+        ),
+      )
     }
   </nav>
 
@@ -80,7 +111,7 @@ function isActive(href: string) {
   }
 
   .brand,
-  .nav-link {
+  a.nav-link {
     color: var(--paper-ink);
     text-decoration: none;
   }
@@ -118,8 +149,8 @@ function isActive(href: string) {
     font-weight: 700;
   }
 
-  .nav-link:hover,
-  .nav-link.active {
+  a.nav-link:hover,
+  a.nav-link.active {
     background: var(--paper-control-hover);
     color: var(--paper-accent);
   }
@@ -134,6 +165,11 @@ function isActive(href: string) {
     background: var(--paper-accent);
     content: '';
     transform: translateX(-50%);
+  }
+
+  .nav-link-placeholder {
+    color: var(--paper-ink-faint);
+    cursor: default;
   }
 
   .nav-actions {

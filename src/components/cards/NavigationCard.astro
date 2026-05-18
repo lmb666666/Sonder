@@ -9,14 +9,27 @@ interface NavItem {
 }
 
 const { items } = Astro.props as { items: NavItem[] };
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function withBase(href: string) {
+  if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
+    return href;
+  }
+
+  if (href === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
 ---
 
-<article class="glass-card nav-card">
-  <h2><Icon name="repo" /> Identity Links</h2>
+<article class="nav-card">
+  <h2><span>Identity Links</span><Icon name="repo" /></h2>
   <nav aria-label="identity websites">
     {
       items.map((item) => (
-        <a class="nav-item" href={item.href}>
+        <a class="nav-item" href={withBase(item.href)}>
           <span class="nav-icon">
             <Icon name={item.icon} />
           </span>
@@ -33,16 +46,21 @@ const { items } = Astro.props as { items: NavItem[] };
 
 <style>
   .nav-card {
-    padding: 20px;
+    padding: 20px 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   h2 {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 10px;
     margin: 0 0 14px;
     color: var(--paper-ink);
     font-size: 1.05rem;
+    text-align: right;
   }
 
   h2 svg {
@@ -61,20 +79,18 @@ const { items } = Astro.props as { items: NavItem[] };
     grid-template-columns: 28px minmax(0, 1fr) 18px;
     gap: 12px;
     align-items: center;
-    padding: 10px 12px;
-    border-radius: 7px;
+    padding: 8px 0;
+    border-radius: 0;
+    background: transparent;
     color: var(--paper-ink);
     text-decoration: none;
     transition:
-      background 180ms ease,
-      transform 180ms ease,
       color 180ms ease;
   }
 
   .nav-item:hover {
-    background: var(--paper-control-hover);
+    background: transparent;
     color: var(--paper-accent);
-    transform: translateY(-1px);
   }
 
   .nav-icon,

@@ -1,17 +1,46 @@
 ---
-title: 'Second post'
-description: 'Lorem ipsum dolor sit amet'
+title: 'Moonlight over the Lotus Pond'
+description: 'An English rendering of a quiet summer-night walk by a lotus pond, where moonlight softens the world and solitude becomes briefly spacious.'
 pubDate: 'Jul 15 2022'
 heroImage: '../../assets/blog-placeholder-4.jpg'
-tags: ['Journal', 'Ideas']
+tags:
+  - 'Essay'
+  - 'English'
+  - 'Moonlight'
+toc:
+  enable: true
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+For several days my mind had not been at ease. The room felt too close, and the small sounds of the evening seemed to gather around me without meaning. My wife was inside, coaxing the child to sleep. The courtyard had settled into silence. I put on a light coat and stepped out, thinking I might walk by the lotus pond for a while.
 
-Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.
+The path was familiar, but at night it had become another path. Shadows lay across it in strips and patches. The trees along both sides stood quietly, their leaves crowded together, and when a breeze passed through them they made a soft, dry sound, like pages being turned somewhere far away.
 
-Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+## The Narrow Path
 
-Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.
+I often walked this road, yet that evening it seemed newly discovered. Moonlight slipped through the branches and fell unevenly on the ground. Some places were pale, some almost black; the contrast made the path feel deeper than it did in daylight.
 
-Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+There was no one else around. Walking alone in such a night, I felt a small freedom. The roles and duties of the day withdrew for a moment. I did not need to speak, answer, explain, or keep up with anyone. I only needed to walk.
+
+## The Lotus Pond
+
+The pond opened before me. Lotus leaves covered the water, layer upon layer, spreading out into the dimness. In the night they looked darker and fuller, like round umbrellas held close together. Among them stood white blossoms: some fully open, some still folded, as if they were about to say something but had chosen silence.
+
+A faint breeze moved over the pond. The leaves trembled lightly, and the flowers moved with them. Their fragrance was not heavy; it arrived quietly, almost by accident, like a song heard from a distant house. The water answered the breeze with fine ripples, and the moonlight broke into small pieces upon it.
+
+## Moonlight
+
+The moonlight poured over the leaves and flowers as gently as water. A thin mist floated above the pond, making everything seem veiled. Nothing was hidden, but nothing was too clear either. The light softened the edges of the world, and the lotus pond became something halfway between a real place and a dream.
+
+Tree shadows fell along the bank. Some were dense, some faint; together they resembled a wash of ink not yet dry. Moonlight and shadow crossed each other without conflict. The scene was still, and yet the stillness seemed alive. If one looked only briefly, nothing happened; if one looked longer, everything seemed to breathe.
+
+## A Thought of Lotus Gathering
+
+Standing there, I thought of old songs about gathering lotus. I imagined southern waters, slender boats moving between green leaves, young voices calling and answering, laughter drifting over the surface. That world was far from me, but the pond before my eyes gave it shape for a moment.
+
+Still, imagination remained imagination. There were no boats tonight, no songs, no figures among the leaves. There was only the pond, the moon, and myself standing by the bank. Perhaps that was enough. The liveliness belonged elsewhere; the quiet belonged here.
+
+## Returning
+
+I turned back along the path. The shadows were the same, and so was the moonlight, but something in me had been loosened. My worries had not vanished, yet they no longer felt as sharp. They had been washed a little by the night air.
+
+When I reached home, the house was still. The child must have fallen asleep. I opened the door softly and returned to ordinary life. But the moonlight over the lotus pond remained with me, cool and faint, like a quiet surface inside the heart.

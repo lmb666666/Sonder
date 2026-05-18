@@ -1,17 +1,46 @@
 ---
-title: 'First post'
-description: 'Lorem ipsum dolor sit amet'
+title: '荷塘月色'
+description: '一篇以夏夜荷塘为中心的中文散文改写：月光、荷叶、微风与独行的心绪，在静夜里缓慢铺开。'
 pubDate: 'Jul 08 2022'
 heroImage: '../../assets/blog-placeholder-3.jpg'
-tags: ['Notes', 'Writing']
+tags:
+  - '散文'
+  - '中文'
+  - '荷塘月色'
+toc:
+  enable: true
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+这几天心里颇不宁静。夜里坐在屋中，总觉得四周的空气有些沉，像有许多细小的念头堆在窗前，挥不开，也说不清。妻在屋里拍着孩子入睡，轻轻的声响一下一下落下去，院子渐渐静了。我披了衣衫，推门出去，想着到荷塘边走走。
 
-Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.
+沿着小路走去，树影在地上铺成一层淡淡的黑。白天看惯了的路，到夜里忽然有了另一种神气；它不催人，也不问人，只静静地向前伸着。路旁的树高低错落，叶子密密地挤着，偶尔有风经过，便发出一点轻响，像有人在远处翻书。
 
-Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+## 曲径与夜色
 
-Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.
+这条路是我常走的，可今夜却像第一次见。月光从树缝里漏下来，有的地方亮，有的地方暗，明暗交错着，倒比白日里更有层次。没有旁人，只有我一个人。一个人走在这样的时候，心里反而松下来，好像白日里那些必须承担的身份，都被夜色暂时收走了。
 
-Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+我爱热闹，也爱冷静；爱群居，也爱独处。今夜的独处尤其可贵。天地仿佛都低声说话，我也就不必大声回答什么。只管走着，听自己的脚步落在路上，听远处不知名的虫声，听风从树叶之间穿过去。
+
+## 荷塘
+
+荷塘就在前面。满塘的荷叶望过去，是一片层层叠叠的绿，在夜色里显得更深。叶子挨着叶子，像许多撑开的伞，又像安静的舞裙，铺在水面上。叶间点缀着白色的花，有的开得正好，有的含着苞，像刚要说话又停住。
+
+微风过处，荷叶轻轻摇动，花也跟着颤了颤。那香气不浓，却能在不经意间浮到身边，清清淡淡的，让人想起远处的歌声。水面也被风牵动，细细的波纹一层一层散开，月光落在上面，便碎成许多细亮的片。
+
+## 月光
+
+月光如水一般，静静地泻在荷叶和花上。薄薄的青雾浮在塘面，叶子与花像隔着一层纱。光不是明亮得刺眼的光，而是温和、含蓄、带着一点梦意的光。它把一切都照得清楚，又不让一切显得太真实。
+
+树影落在荷塘边，浓淡不一。近处的影子重些，远处的影子淡些，像一幅没有完全干透的水墨画。月光与影子彼此交织，塘边的景色便有了静中的动、实中的虚。若只看一眼，似乎什么都没有变；看久了，却觉得每一处都在微微呼吸。
+
+## 采莲的想象
+
+望着这片荷塘，我忽然想起古人采莲的情景。江南的水面，少年男女划着船，穿行在荷叶之间，笑语与歌声都被水托着，轻轻荡开。那样的热闹离我很远，却又因为眼前的荷叶和月色，忽然变得可以想象。
+
+然而想象终究只是想象。今夜没有船，也没有歌，只有我站在塘边，看月色从叶上滑过。热闹属于别处，清静属于此时。这样也好。一个人能在短短一段夜路里得到片刻自由，已是一件难得的事。
+
+## 回去
+
+我沿原路往回走。树影仍旧沉默，月光仍旧温和。方才心里那些纷乱的东西，并没有完全消失，却似乎被夜色洗淡了一些。走到门前，屋里依然静着，孩子大约已经睡熟。
+
+推门进去时，我又回到日常生活里。但荷塘上的月色还留在心里，像一层薄薄的清凉。它不解决什么，却让人知道，在烦乱之外，仍有一处安静的水面，等着夜深时慢慢亮起来。

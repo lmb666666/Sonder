@@ -3,15 +3,15 @@
 </p>
 
 <p align="center">
-  An Astro starter for building a personal navigation portfolio. It brings your profile, quick links, GitHub stats, blog, calendar, clock, and recent activity into one lightweight responsive homepage.
+  A calm Astro starter for a personal publishing space: homepage, blog, project notes, and a small digital-garden structure in one maintainable site.
   <br />
-  <sub>Currently under active development. Features and visual details may continue to change.</sub>
+  <sub>Built for writing-first personal websites with quiet visuals, lightweight motion, and content collections.</sub>
 </p>
 
 <p align="center">
   <a href="./README.en.md">English</a>
   ·
-  <a href="./README.zh-CN.md">简体中文</a>
+  <a href="./README.md">简体中文</a>
 </p>
 
 <p align="center">
@@ -24,43 +24,109 @@
 
 ## Preview
 
-<img src="./public/images/homepage-layout.png" alt="Navfolio grid layout preview" />
+<img src="./public/images/homepage-layout.png" alt="Navfolio homepage layout preview" />
 
-## Blog Article Preview
+## What Navfolio Is
 
-<p align="center">
-  <img src="./public/images/blog-preview.png" alt="Navfolio blog article page preview" />
-</p>
+Navfolio combines navigation, portfolio, blog, and project documentation into a single Astro site. It is designed for people who want a personal homepage that can also grow into a readable notebook, a writing archive, and a lightweight project shelf.
 
-## About
+The current version focuses on:
 
-Navfolio combines Navigation and Portfolio. It is not a traditional one-page resume. It is a configurable personal entry point where you can collect your portfolio, blog, resume, open-source work, contact links, status cards, and recent activity in a single homepage.
+- a quiet homepage with profile, identity links, intro copy, writing activity, and current focus cards;
+- a `/blog` archive with article thumbnails, dates, and tags;
+- Markdown / MDX article pages with optional table of contents and related posts;
+- a `/projects` shelf powered by content collections;
+- project detail pages for repository notes, design records, and implementation documents;
+- an `/about` page rendered with the same calm article layout;
+- GitHub Pages friendly base-path handling.
 
-It works well as:
+The visual direction is intentionally restrained: soft structure, minimal shadows, notebook-like typography, subtle active states, and images that stay readable in both light and dark themes.
 
-- A personal homepage and navigation page
-- A public entry point for open-source maintainers
-- A hub for portfolio, blog, and resume links
-- An Astro static-site starter
+## Routes
+
+```text
+/                 Personal dashboard homepage
+/blog             Writing archive
+/blog/[slug]      Blog article pages
+/projects         Project shelf and project index
+/projects/[slug]  Project documentation pages
+/about            About page
+/rss.xml          RSS feed
+```
+
+## Content Model
+
+Most content is stored as Markdown or MDX:
+
+```text
+src/content/
+  about.mdx
+  blog/
+    first-post.md
+    second-post.md
+    third-post.md
+    ...
+  projects/
+    index.mdx
+    astro-navfolio.mdx
+```
+
+Blog posts and project documents share the same article schema:
+
+```yaml
+title: 'Article title'
+description: 'Short summary for archives and metadata.'
+pubDate: '2026-05-18'
+updatedDate: '2026-05-18'
+draft: false
+tags:
+  - Astro
+toc:
+  enable: true
+sidebar:
+  enable: false
+  toc: false
+  relatedPosts: false
+```
+
+`toc.enable` controls heading navigation. `sidebar` controls whether article utility areas are rendered. Blog articles default to showing reading tools when available; `/about` and project pages default to a centered, no-sidebar article layout.
+
+## Homepage Configuration
+
+Homepage data lives in `src/data/profile.ts`:
+
+- `profile`: name, handle, role, avatar, website, GitHub, email, and metadata.
+- `navigationLinks`: identity links on the homepage.
+- `quote`: short homepage motto.
+- `intro`: main homepage introduction.
+- `connectLinks`: contact and navigation links.
+- `doingItems`: current focus list.
+
+The homepage intentionally stays mostly static and data-driven, so replacing starter content does not require editing component internals.
 
 ## Features
 
-- Astro static site with Markdown and MDX blog support.
-- Responsive dashboard layout for desktop and mobile.
-- Centralized homepage content in `src/data/profile.ts`.
-- Built-in profile, navigation cards, intro card, GitHub Stats, social links, clock, calendar, and recent activity.
-- Shared icon adapter powered by `lucide-astro`.
-- RSS, Sitemap, and GitHub Pages deployment workflow support.
+- Astro 6 static site architecture.
+- Markdown and MDX content collections.
+- Article layout with optional TOC, tags, reading time, and related posts.
+- Dedicated project shelf and project document routes.
+- Calm top navigation with theme toggle and repository link.
+- Responsive homepage dashboard.
+- RSS and Sitemap support.
+- GitHub Pages deployment workflow with project-page base path support.
+- Shared icon adapter using `lucide-astro`.
+- Local font configuration and global CSS variables.
 
 ## Stack
 
 - Astro 6
 - Bun
-- Tailwind CSS 4
-- lucide-astro
-- @astrojs/mdx
-- @astrojs/rss
-- @astrojs/sitemap
+- Tailwind CSS 4 through Vite
+- `@astrojs/mdx`
+- `@astrojs/rss`
+- `@astrojs/sitemap`
+- `lucide-astro`
+- `sharp`
 
 ## Getting Started
 
@@ -88,51 +154,51 @@ Preview the production build:
 bun run preview
 ```
 
-## Customization
-
-Most homepage content lives in `src/data/profile.ts`:
-
-- `profile`: name, role, avatar, GitHub, email, website, and location.
-- `navigationLinks`: homepage navigation cards.
-- `quote`: top quote and display image.
-- `intro`: project or personal introduction card.
-- `githubStats`: GitHub stats card configuration.
-- `connectLinks`: social and contact links.
-- `doingItems`: recent activity or current focus.
-
-The site title and meta description live in `src/consts.ts`.
-
 ## Project Structure
 
 ```text
 public/
-  images/                 Brand, cover, and homepage presentation images
+  images/                 Logos, previews, and homepage images
 src/
+  assets/                 Blog placeholder images and local fonts
   components/
-    cards/                Homepage card components
+    article/              Article header components
+    blog/                 Blog navigation, TOC, and related posts
+    cards/                Homepage cards
     layout/               Dashboard layout
-    widgets/              Clock, calendar, and activity widgets
+    widgets/              Writing activity and utility widgets
     Icon.astro            Shared icon adapter
-  content/blog/           Markdown / MDX blog posts
-  data/profile.ts         Main homepage configuration
-  layouts/                Base and blog layouts
+  content/
+    blog/                 Blog Markdown / MDX
+    projects/             Project index and project documents
+    about.mdx             About page content
+  data/profile.ts         Homepage content configuration
+  layouts/                Base and article layouts
   pages/                  Astro routes
-  styles/global.css       Global styles
-astro.config.mjs          Astro configuration
+  styles/global.css       Global theme, typography, and layout variables
+astro.config.mjs          Astro, sitemap, MDX, fonts, and base-path config
 ```
 
 ## Deployment
 
-This is a static Astro project and can be deployed to any platform that supports Node or Bun builds.
+The site builds to static files in `dist`.
 
-The repository includes `.github/workflows/deploy-pages.yml` for GitHub Pages deployment. Recommended build command:
+For GitHub Pages, the included workflow uses Astro's `site` and `base` configuration. The config automatically supports repository project pages when running in GitHub Actions, and can also be overridden:
 
 ```sh
-bun run build
+SITE_URL=https://example.com SITE_BASE=/astro-navfolio bun run build
 ```
 
-Output directory:
+## Design Notes
 
-```text
-dist
-```
+Navfolio is meant to feel like a calm developer notebook:
+
+- content first;
+- soft but structured surfaces;
+- restrained shadows and borders;
+- readable article rhythm;
+- subtle motion;
+- no heavy marketing layout;
+- no visual noise around long-form reading.
+
+The project is also organized for AI-assisted iteration. The `.agents/skills` and `.agents/reviewers` folders describe the local visual language and review standards used while evolving the interface.

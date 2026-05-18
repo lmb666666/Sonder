@@ -28,9 +28,8 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
     {
       quote && (
         <blockquote>
-          {quote.text.map((line) => (
-            <span>{line}</span>
-          ))}
+          <span>- {quote.text.slice(0, 2).join(' ')}</span>
+          <span>{quote.text.slice(2).join(' ')}</span>
         </blockquote>
       )
     }
@@ -76,9 +75,10 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
   h2 {
     margin: 0 0 18px;
     color: var(--paper-ink);
-    max-width: 14ch;
-    font-size: clamp(2.45rem, 5vw, 4rem);
+    max-width: none;
+    font-size: clamp(2.2rem, 4vw, 3.35rem);
     line-height: 1.04;
+    white-space: nowrap;
   }
 
   h2 span {
@@ -95,14 +95,15 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
   blockquote {
     display: block;
     max-width: 52ch;
-    margin: 0 0 26px;
+    margin: 0 0 26px auto;
     padding: 0;
     border: 0;
     color: var(--paper-ink-soft);
     font-family: var(--font-note);
-    font-size: clamp(1.08rem, 1.6vw, 1.3rem);
+    font-size: clamp(0.96rem, 1.35vw, 1.12rem);
     font-style: italic;
     line-height: 1.72;
+    text-align: right;
   }
 
   blockquote span {
@@ -129,6 +130,12 @@ const { intro, quote } = Astro.props as { intro: Intro; quote?: Quote };
 
     h2 {
       font-size: 1.7rem;
+      white-space: normal;
+    }
+
+    blockquote {
+      margin-left: 0;
+      text-align: left;
     }
   }
 </style>

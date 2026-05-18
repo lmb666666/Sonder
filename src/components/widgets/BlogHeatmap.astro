@@ -58,7 +58,7 @@ function getTooltipPosts(posts: HeatmapPost[]) {
 
 <article class="glass-card heatmap-card">
   <header>
-    <h2><Icon name="calendar" /> {title}</h2>
+    <h2><span>{title}</span><Icon name="calendar" /></h2>
   </header>
 
   <div class="stats-row">
@@ -176,18 +176,21 @@ function getTooltipPosts(posts: HeatmapPost[]) {
   header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 12px;
   }
 
   h2 {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 10px;
+    width: 100%;
     margin: 0;
     color: var(--paper-ink);
     font-size: 1.05rem;
     line-height: 1.15;
+    text-align: right;
   }
 
   h2 svg {

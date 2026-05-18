@@ -58,7 +58,7 @@ export const connectLinks = [
   { label: 'GitHub', href: profile.github, icon: 'github' },
   { label: 'Website', href: profile.website, icon: 'compass' },
   { label: 'Blog', href: '/blog', icon: 'book' },
-  { label: 'Projects', href: 'https://github.com/example?tab=repositories', icon: 'repo' },
+  { label: 'Projects', href: '/projects', icon: 'repo' },
   { label: 'Email', href: `mailto:${profile.email}`, icon: 'mail' },
 ];
 

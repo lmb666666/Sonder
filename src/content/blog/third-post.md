@@ -1,17 +1,46 @@
 ---
-title: 'Third post'
-description: 'Lorem ipsum dolor sit amet'
+title: '蓮池の月明かり'
+description: '夏の夜、蓮池のほとりをひとり歩く心のゆらぎを、日本語で静かに綴った散文。'
 pubDate: 'Jul 22 2022'
 heroImage: '../../assets/blog-placeholder-2.jpg'
-tags: ['Garden', 'Notes']
+tags:
+  - '随筆'
+  - '日本語'
+  - '月明かり'
+toc:
+  enable: true
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+ここ数日、心がどうにも落ち着かなかった。部屋の中に座っていても、空気が少し重く感じられ、考えごとばかりが窓辺にたまっていくようだった。妻は奥で子どもを寝かしつけている。庭はしだいに静まり、夜の気配だけが残った。私は薄い上着を羽織り、蓮池の方へ歩いてみることにした。
 
-Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.
+小径はいつもの道だったが、夜になると別の道のように見えた。木々の影が地面に長く落ち、月の光が枝のすき間からところどころにこぼれている。葉が風に触れるたび、かすかな音がした。遠くで誰かが本のページをめくっているような音だった。
 
-Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+## 夜の小径
 
-Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.
+昼間なら何でもない道も、夜には深さを持つ。明るいところと暗いところが交互に現れ、足もとは静かに前へ続いていた。人影はない。ひとりで歩いていると、昼間まとっていた役割が少しずつほどけていくようだった。
 
-Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+私はにぎやかな場所も好きだが、静かな時間も好きだ。人といることも必要だが、ひとりでいることもまた必要だ。この夜の静けさは、私に何も求めなかった。ただ歩いていればよかった。
+
+## 蓮池
+
+やがて蓮池が見えてきた。水面には蓮の葉が幾重にも広がり、夜の中で深い緑のかたまりになっていた。葉は葉に寄り添い、丸い傘をいくつも並べたようにも見える。その間に白い花が立っていた。開いた花もあれば、まだつぼみのままの花もある。
+
+風が池を渡ると、葉がかすかに揺れ、花もそれに合わせて震えた。香りは強くない。けれど、ふと気づくとそばに来ている。遠くから聞こえる歌のように、淡く、消えそうで、しかしたしかにそこにあった。
+
+## 月明かり
+
+月の光は水のように静かに降り、蓮の葉と花の上に広がっていた。池の上には薄い靄がかかり、すべてが一枚の紗を通して見えるようだった。はっきり見えるのに、現実そのものではない。そんな不思議なやわらかさがあった。
+
+岸辺の木の影は、濃いところも淡いところもあった。まるで乾ききらない墨絵のように、光と影がにじみ合っている。景色は動かないようでいて、長く見ていると、どこかで静かに息をしているように思えた。
+
+## 蓮を摘む歌
+
+その景色を見ているうちに、昔の蓮摘みの歌を思い出した。南の水辺で、小舟が蓮の葉の間を進み、若い声が笑い合い、歌が水面に揺れていく。そんな情景は私から遠いものだったが、目の前の蓮池が、一瞬だけそれを近くに引き寄せた。
+
+けれど、想像は想像にすぎない。今夜ここに舟はなく、歌もなく、人の姿もない。ただ月明かりと蓮池、そして池のほとりに立つ私がいるだけだった。にぎわいは遠い場所にあり、この静けさは今ここにある。それで十分なのかもしれない。
+
+## 帰り道
+
+私は来た道を引き返した。木の影は相変わらず黙っていて、月の光も変わらずやわらかかった。胸の中のもやもやがすっかり消えたわけではない。それでも、夜の空気に少し洗われたような気がした。
+
+家の前まで戻ると、中は静かだった。子どもはもう眠ったのだろう。戸を開けて日常へ戻る。そのときも、蓮池の月明かりはまだ心の中に残っていた。薄く涼しい光として、しばらく消えずにそこにあった。

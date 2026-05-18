@@ -1,29 +1,41 @@
 ---
 import { SITE_TITLE } from '../consts';
+import { profile } from '../data/profile';
 import HeaderLink from './HeaderLink.astro';
 import Icon from './Icon.astro';
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function withBase(href: string) {
+  if (href === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
 ---
 
 <header>
   <nav>
-    <h2><a href="/">{SITE_TITLE}</a></h2>
+    <h2><a href={withBase('/')}>{SITE_TITLE}</a></h2>
     <div class="internal-links">
       <HeaderLink href="/">Home</HeaderLink>
       <HeaderLink href="/blog">Blog</HeaderLink>
+      <HeaderLink href="/projects">Projects</HeaderLink>
       <HeaderLink href="/about">About</HeaderLink>
     </div>
     <div class="social-links">
-      <a href="https://example.com/" target="_blank">
-        <span class="sr-only">Open example website</span>
-        <Icon name="mastodon" size={18} />
+      <a href={profile.website} target="_blank" rel="noreferrer">
+        <span class="sr-only">Open website</span>
+        <Icon name="compass" size={18} />
       </a>
-      <a href="https://twitter.com/example" target="_blank">
-        <span class="sr-only">Open example Twitter profile</span>
-        <Icon name="twitter" size={18} />
-      </a>
-      <a href="https://github.com/example" target="_blank">
-        <span class="sr-only">Open example GitHub profile</span>
+      <a href={profile.github} target="_blank" rel="noreferrer">
+        <span class="sr-only">Open GitHub profile</span>
         <Icon name="github" size={18} />
+      </a>
+      <a href={`mailto:${profile.email}`}>
+        <span class="sr-only">Email</span>
+        <Icon name="mail" size={18} />
       </a>
     </div>
   </nav>

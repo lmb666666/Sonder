@@ -4,41 +4,81 @@ import FormattedDate from '../FormattedDate.astro';
 
 interface Props {
   title: string;
+  description?: string;
   pubDate?: Date;
   wordCount: number;
   readingTime: string;
   tags?: string[];
   heroImage?: ImageMetadata;
+  variant?: 'default' | 'archive';
+  kicker?: string;
 }
 
-const { title, pubDate, wordCount, readingTime, tags = [], heroImage } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  wordCount,
+  readingTime,
+  tags = [],
+  heroImage,
+  variant = 'default',
+  kicker = 'Notebook entry',
+} = Astro.props;
 const wordCountLabel = `${wordCount.toLocaleString('en-US')} words`;
 const hasTags = tags.length > 0;
+const isArchiveHeader = variant === 'archive';
 ---
 
-<header class="article-header">
-  <h1>{title}</h1>
+<header class:list={['article-header', { 'article-header-archive': isArchiveHeader }]}>
+  {
+    isArchiveHeader ? (
+      <>
+        <div class="archive-heading">
+          <p class="archive-kicker">{kicker}</p>
+          <h1>{title}</h1>
+          <div class="meta-line" aria-label="Article metadata">
+            {pubDate && (
+              <span class="meta-item">
+                <FormattedDate date={pubDate} />
+              </span>
+            )}
+            <span class="meta-item">{wordCountLabel}</span>
+            <span class="meta-item">{readingTime}</span>
+            {hasTags && (
+              <span class="meta-item tag-list">
+                {tags.map((tag) => (
+                  <span class="tag">#{tag}</span>
+                ))}
+              </span>
+            )}
+          </div>
+        </div>
+        {description && <p class="archive-note">{description}</p>}
+      </>
+    ) : (
+      <>
+        <h1>{title}</h1>
 
-  <div class="meta-line" aria-label="Article metadata">
-    {
-      pubDate && (
-        <span class="meta-item">
-          <FormattedDate date={pubDate} />
-        </span>
-      )
-    }
-    <span class="meta-item">{wordCountLabel}</span>
-    <span class="meta-item">{readingTime}</span>
-    {
-      hasTags && (
-        <span class="meta-item tag-list">
-          {tags.map((tag) => (
-            <span class="tag">#{tag}</span>
-          ))}
-        </span>
-      )
-    }
-  </div>
+        <div class="meta-line" aria-label="Article metadata">
+          {pubDate && (
+            <span class="meta-item">
+              <FormattedDate date={pubDate} />
+            </span>
+          )}
+          <span class="meta-item">{wordCountLabel}</span>
+          <span class="meta-item">{readingTime}</span>
+          {hasTags && (
+            <span class="meta-item tag-list">
+              {tags.map((tag) => (
+                <span class="tag">#{tag}</span>
+              ))}
+            </span>
+          )}
+        </div>
+      </>
+    )
+  }
 
   {
     heroImage && (
@@ -54,8 +94,39 @@ const hasTags = tags.length > 0;
     display: grid;
     gap: 14px;
     width: 100%;
-    max-width: var(--article-content-max, 68ch);
+    max-width: var(--article-content-max, 720px);
     margin-bottom: 34px;
+  }
+
+  .article-header-archive {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
+    gap: 32px;
+    align-items: end;
+    max-width: none;
+    margin-bottom: 54px;
+  }
+
+  .archive-heading {
+    min-width: 0;
+  }
+
+  .archive-kicker {
+    margin: 0;
+    color: var(--paper-accent);
+    font-family: var(--font-ui-label);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .archive-note {
+    max-width: 260px;
+    margin: 0;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-article);
+    font-size: 1.03rem;
+    line-height: 1.76;
   }
 
   h1 {
@@ -65,6 +136,16 @@ const hasTags = tags.length > 0;
     font-weight: 400;
     line-height: 1.08;
     text-wrap: balance;
+  }
+
+  .archive-heading h1 {
+    max-width: 760px;
+    margin-top: 8px;
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+  }
+
+  .archive-heading .meta-line {
+    margin-top: 14px;
   }
 
   .meta-line {
@@ -128,9 +209,23 @@ const hasTags = tags.length > 0;
       margin-bottom: 30px;
     }
 
+    .article-header-archive {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 34px;
+    }
+
+    .archive-note {
+      max-width: none;
+    }
+
     h1 {
       font-size: 2.08rem;
       line-height: 1.1;
+    }
+
+    .archive-heading h1 {
+      font-size: 2.08rem;
     }
 
     .article-hero-image,

@@ -1,16 +1,39 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
+import { getCollection } from 'astro:content';
 import ArticleHeader from '../components/article/ArticleHeader.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
-import BottomActionBar from '../components/blog/BottomActionBar.astro';
 import RelatedPosts from '../components/blog/RelatedPosts.astro';
-import SubscribeCard from '../components/blog/SubscribeCard.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import BaseHead from '../components/BaseHead.astro';
 
+type SidebarConfig = {
+  enable?: boolean;
+  toc?: boolean;
+  relatedPosts?: boolean;
+};
+
 interface Props {
-  post?: CollectionEntry<'blog'>;
+  post?: {
+    id: string;
+    body?: string;
+    data: {
+      title: string;
+      description: string;
+      pubDate: Date;
+      updatedDate?: Date;
+      heroImage?: ImageMetadata;
+      tags?: string[];
+      draft?: boolean;
+      toc?: {
+        enable?: boolean;
+      };
+      sidebar?: SidebarConfig;
+    };
+  };
   headings?: { depth: number; slug: string; text: string }[];
+  sidebar?: SidebarConfig;
+  headerVariant?: 'default' | 'archive';
+  headerKicker?: string;
   title?: string;
   description?: string;
   pubDate?: Date;
@@ -32,6 +55,8 @@ const post = props.post ?? {
     heroImage: props.heroImage,
     tags: props.tags ?? [],
     draft: false,
+    toc: { enable: true },
+    sidebar: { enable: true, toc: true, relatedPosts: true },
   },
 };
 const { title, description, pubDate, heroImage } = post.data;
@@ -44,11 +69,22 @@ const renderedTocItems = headings
   .filter((heading) => heading.depth === 2 || heading.depth === 3)
   .map((heading) => ({ href: `#${heading.slug}`, label: heading.text }));
 const tocItems = renderedTocItems;
-const hasToc = tocItems.length > 0;
+const sidebarConfig = {
+  enable: true,
+  toc: true,
+  relatedPosts: true,
+  ...post.data.sidebar,
+  ...props.sidebar,
+};
+const shouldRenderSidebar = sidebarConfig.enable ?? true;
+const shouldRenderToc = (post.data.toc?.enable ?? true) && (sidebarConfig.toc ?? true);
+const hasToc = shouldRenderToc && tocItems.length > 0;
 
 const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.id && !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
+const hasRelatedPosts = shouldRenderSidebar && (sidebarConfig.relatedPosts ?? true) && relatedPosts.length > 0;
+const hasSidebar = shouldRenderSidebar && hasToc;
 ---
 
 <!doctype html>
@@ -60,16 +96,19 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     <BlogTopNav />
     <div class="blog-background" aria-hidden="true"></div>
 
-    <main class="blog-layout">
+    <main class:list={['blog-layout', { 'blog-layout-centered': !hasSidebar }]}>
       <div class="article-column">
         <article class="article-card">
           <ArticleHeader
             title={title}
+            description={description}
             pubDate={pubDate}
             wordCount={wordCount}
             readingTime={readingTime}
             tags={tags}
             heroImage={heroImage}
+            variant={props.headerVariant}
+            kicker={props.headerKicker}
           />
 
           <section id="article-start" class="article-content">
@@ -77,22 +116,26 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
           </section>
         </article>
 
-        <BottomActionBar />
+        {hasRelatedPosts && <RelatedPosts posts={relatedPosts} class="article-after-related" />}
 
-        <section class="mobile-after-article" aria-label="More article tools">
-          {hasToc && <TableOfContents items={tocItems} compact />}
-          <RelatedPosts posts={relatedPosts} />
-          <SubscribeCard />
-        </section>
+        {
+          hasSidebar && (
+            <section class="mobile-after-article" aria-label="More article tools">
+              {hasToc && <TableOfContents items={tocItems} compact />}
+            </section>
+          )
+        }
       </div>
 
-      <aside class="right-sidebar" aria-label="Reading tools">
-        <div class="right-sidebar-inner">
-          {hasToc && <TableOfContents items={tocItems} />}
-          <RelatedPosts posts={relatedPosts} />
-          <SubscribeCard />
-        </div>
-      </aside>
+      {
+        hasSidebar && (
+          <aside class="right-sidebar" aria-label="Reading tools">
+            <div class="right-sidebar-inner">
+              {hasToc && <TableOfContents items={tocItems} />}
+            </div>
+          </aside>
+        )
+      }
     </main>
   </body>
 </html>
@@ -138,8 +181,26 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     padding: var(--layout-page-top) var(--layout-page-gutter) var(--layout-page-bottom);
   }
 
+  .blog-layout-centered {
+    display: block;
+    width: min(100%, var(--layout-shell-width));
+  }
+
   .article-column {
     min-width: 0;
+  }
+
+  .blog-layout-centered .article-column {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .blog-layout-centered .article-card {
+    --article-content-max: 100%;
+  }
+
+  .blog-layout-centered .article-content {
+    max-width: none;
   }
 
   .right-sidebar-inner,
@@ -147,6 +208,29 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     display: grid;
     gap: 18px;
     align-content: start;
+  }
+
+  :global(.article-after-related) {
+    width: min(100%, var(--article-content-max, 720px));
+    margin-top: 40px;
+  }
+
+  .blog-layout-centered :global(.article-after-related) {
+    width: 100%;
+  }
+
+  :global(.article-after-related .related-list) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  :global(.article-after-related a) {
+    align-content: start;
+    min-height: 96px;
+    padding: 12px;
+    border: 1px solid var(--paper-line);
+    border-radius: 7px;
+    background: var(--paper-control);
   }
 
   .right-sidebar-inner {
@@ -163,7 +247,7 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
   }
 
   .article-card {
-    --article-content-max: 68ch;
+    --article-content-max: 720px;
     overflow: visible;
     padding: 0;
     border: 0;
@@ -173,6 +257,7 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
   }
 
   .article-content {
+    width: min(100%, var(--article-content-max));
     max-width: var(--article-content-max);
     color: var(--paper-ink);
     font-family: var(--font-article);
@@ -260,6 +345,11 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
       justify-content: center;
       width: min(100%, 1040px);
     }
+
+    .blog-layout-centered {
+      display: block;
+      width: min(100%, var(--layout-shell-width));
+    }
   }
 
   @media (max-width: 900px) {
@@ -276,6 +366,10 @@ const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.
     .mobile-after-article {
       display: grid;
       margin-top: 18px;
+    }
+
+    :global(.article-after-related .related-list) {
+      grid-template-columns: 1fr;
     }
   }
 

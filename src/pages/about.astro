@@ -1,27 +1,16 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import { getCollection, render } from 'astro:content';
+import BlogArticle from '../layouts/BlogArticle.astro';
+
+const [about] = await getCollection('about');
+
+if (!about) {
+  throw new Error('Missing src/content/about.mdx content entry.');
+}
+
+const { Content, headings } = await render(about);
 ---
 
-<Layout
-  title="About navfolio"
-  description="A calm personal publication starter for links, notes, writing, and profile content."
-  pubDate={new Date('May 01 2026')}
-  heroImage={AboutHeroImage}
->
-  <p>
-    navfolio is a small personal publication starter built for people who want a clear place to
-    collect profile details, useful links, project notes, and long-form writing.
-  </p>
-
-  <p>
-    The default content is intentionally fictional. Replace the sample profile, links, GitHub
-    username, and blog posts with your own information in `src/data/profile.ts` and
-    `src/content/blog/`.
-  </p>
-
-  <p>
-    The publication space is static by default, so it is easy to host on GitHub Pages, Vercel,
-    Netlify, Cloudflare Pages, or any platform that can build an Astro project.
-  </p>
-</Layout>
+<BlogArticle post={about} headings={headings} sidebar={{ enable: false, ...about.data.sidebar }}>
+  <Content />
+</BlogArticle>

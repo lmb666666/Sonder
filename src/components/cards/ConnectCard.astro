@@ -8,6 +8,19 @@ interface ConnectItem {
 }
 
 const { items } = Astro.props as { items: ConnectItem[] };
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function withBase(href: string) {
+  if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
+    return href;
+  }
+
+  if (href === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
 ---
 
 <article class="glass-card connect-card">
@@ -15,7 +28,7 @@ const { items } = Astro.props as { items: ConnectItem[] };
   <div class="connect-list">
     {
       items.map((item) => (
-        <a href={item.href} aria-label={item.label}>
+        <a href={withBase(item.href)} aria-label={item.label}>
           <Icon name={item.icon} />
           <span>{item.label}</span>
         </a>

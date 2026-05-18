@@ -10,6 +10,15 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function withBase(href: string) {
+  if (href === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
 ---
 
 <!doctype html>
@@ -131,11 +140,38 @@ const posts = (await getCollection('blog')).sort(
       }
 
       .date {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        align-items: center;
         margin: 10px 0 0;
         color: var(--paper-ink-soft);
         font-family: var(--font-meta);
         font-size: 0.86rem;
         font-weight: 600;
+      }
+
+      .post-tags {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0;
+      }
+
+      .post-tags::before {
+        margin: 0 9px;
+        color: var(--paper-ink-faint);
+        content: '\00b7';
+      }
+
+      .post-tag {
+        color: var(--paper-accent);
+      }
+
+      .post-tag + .post-tag::before {
+        margin: 0 6px;
+        color: var(--paper-ink-faint);
+        content: '\00b7';
       }
 
       .post-excerpt {
@@ -156,7 +192,7 @@ const posts = (await getCollection('blog')).sort(
         border: 1px solid var(--paper-line);
         border-radius: 6px;
         background: var(--paper-surface-muted);
-        filter: saturate(0.62) contrast(0.96);
+        filter: saturate(0.86) contrast(0.98);
         clip-path: polygon(0 0, 100% 0, 100% 100%, 18px 100%, 0 calc(100% - 18px));
       }
 
@@ -166,8 +202,18 @@ const posts = (await getCollection('blog')).sort(
         height: 100%;
         object-fit: cover;
         border-radius: 0;
-        mix-blend-mode: multiply;
-        opacity: 0.78;
+        mix-blend-mode: normal;
+        opacity: 0.92;
+      }
+
+      :root[data-theme='dark'] .thumb-wrap {
+        background: transparent;
+        filter: none;
+      }
+
+      :root[data-theme='dark'] .thumb-wrap img {
+        opacity: 1;
+        mix-blend-mode: normal;
       }
 
       .post-item:first-child .post-link {
@@ -234,13 +280,20 @@ const posts = (await getCollection('blog')).sort(
           {
             posts.map((post, index) => (
               <li class="post-item">
-                <a class="post-link" href={`/blog/${post.id}/`}>
+                <a class="post-link" href={withBase(`/blog/${post.id}/`)}>
                   <div class="post-copy">
                     <div>
                       <span class="post-index">{String(index + 1).padStart(2, '0')}</span>
                       <h2 class="title">{post.data.title}</h2>
                       <p class="date">
                         <FormattedDate date={post.data.pubDate} />
+                        {post.data.tags.length > 0 && (
+                          <span class="post-tags">
+                            {post.data.tags.map((tag) => (
+                              <span class="post-tag">#{tag}</span>
+                            ))}
+                          </span>
+                        )}
                       </p>
                     </div>
                     <p class="post-excerpt">{post.data.description}</p>
