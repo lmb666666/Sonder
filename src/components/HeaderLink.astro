@@ -10,7 +10,13 @@ const subpath = pathname.match(/[^\/]+/g);
 const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 
 function withBase(url: string | URL | null | undefined) {
-  if (!url || url instanceof URL || url.startsWith('http') || url.startsWith('mailto:') || url.startsWith('#')) {
+  if (
+    !url ||
+    url instanceof URL ||
+    url.startsWith('http') ||
+    url.startsWith('mailto:') ||
+    url.startsWith('#')
+  ) {
     return url;
   }
 

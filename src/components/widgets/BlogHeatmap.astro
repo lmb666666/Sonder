@@ -9,19 +9,12 @@ import {
 
 interface Props {
   weeks?: 12 | 24;
-  title?: string;
   showLatest?: boolean;
   excludeDraft?: boolean;
   dateArchiveBaseHref?: string;
 }
 
-const {
-  weeks = 24,
-  title = 'Writing Activity',
-  showLatest = true,
-  excludeDraft = true,
-  dateArchiveBaseHref,
-} = Astro.props;
+const { weeks = 24, showLatest = true, excludeDraft = true, dateArchiveBaseHref } = Astro.props;
 const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
 const heatmap = createRecentBlogHeatmap(posts, weeks);
 const formatDate = new Intl.DateTimeFormat('en', {
@@ -57,10 +50,6 @@ function getTooltipPosts(posts: HeatmapPost[]) {
 ---
 
 <article class="glass-card heatmap-card">
-  <header>
-    <h2><span>{title}</span><Icon name="calendar" /></h2>
-  </header>
-
   <div class="stats-row">
     <div class="stat-item">
       <strong>{heatmap.totalPosts}</strong>
@@ -171,32 +160,6 @@ function getTooltipPosts(posts: HeatmapPost[]) {
     border-color: transparent;
     box-shadow: none;
     transform: none;
-  }
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-  }
-
-  h2 {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    width: 100%;
-    margin: 0;
-    color: var(--paper-ink);
-    font-size: 1.05rem;
-    line-height: 1.15;
-    text-align: right;
-  }
-
-  h2 svg {
-    width: 20px;
-    height: 20px;
-    color: var(--paper-accent);
   }
 
   .stats-row {

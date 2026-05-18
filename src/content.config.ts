@@ -17,7 +17,9 @@ const sidebarSchema = z
   })
   .optional();
 
-const articleSchema = ({ image }: Parameters<Parameters<typeof defineCollection>[0]['schema']>[0]) =>
+const articleSchema = ({
+  image,
+}: Parameters<Parameters<typeof defineCollection>[0]['schema']>[0]) =>
   z.object({
     title: z.string(),
     description: z.string(),

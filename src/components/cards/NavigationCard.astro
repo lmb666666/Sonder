@@ -25,7 +25,6 @@ function withBase(href: string) {
 ---
 
 <article class="nav-card">
-  <h2><span>Identity Links</span><Icon name="repo" /></h2>
   <nav aria-label="identity websites">
     {
       items.map((item) => (
@@ -52,23 +51,6 @@ function withBase(href: string) {
     box-shadow: none;
   }
 
-  h2 {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    margin: 0 0 14px;
-    color: var(--paper-ink);
-    font-size: 1.05rem;
-    text-align: right;
-  }
-
-  h2 svg {
-    width: 20px;
-    height: 20px;
-    color: var(--paper-accent);
-  }
-
   nav {
     display: grid;
     gap: 8px;
@@ -84,8 +66,7 @@ function withBase(href: string) {
     background: transparent;
     color: var(--paper-ink);
     text-decoration: none;
-    transition:
-      color 180ms ease;
+    transition: color 180ms ease;
   }
 
   .nav-item:hover {

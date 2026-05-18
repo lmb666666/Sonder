@@ -83,7 +83,8 @@ const hasToc = shouldRenderToc && tocItems.length > 0;
 const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.id && !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
-const hasRelatedPosts = shouldRenderSidebar && (sidebarConfig.relatedPosts ?? true) && relatedPosts.length > 0;
+const hasRelatedPosts =
+  shouldRenderSidebar && (sidebarConfig.relatedPosts ?? true) && relatedPosts.length > 0;
 const hasSidebar = shouldRenderSidebar && hasToc;
 ---
 
@@ -130,9 +131,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
       {
         hasSidebar && (
           <aside class="right-sidebar" aria-label="Reading tools">
-            <div class="right-sidebar-inner">
-              {hasToc && <TableOfContents items={tocItems} />}
-            </div>
+            <div class="right-sidebar-inner">{hasToc && <TableOfContents items={tocItems} />}</div>
           </aside>
         )
       }

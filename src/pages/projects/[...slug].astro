@@ -17,6 +17,10 @@ const project = Astro.props;
 const { Content, headings } = await render(project);
 ---
 
-<BlogArticle post={project} headings={headings} sidebar={{ enable: false, ...project.data.sidebar }}>
+<BlogArticle
+  post={project}
+  headings={headings}
+  sidebar={{ enable: false, ...project.data.sidebar }}
+>
   <Content />
 </BlogArticle>
