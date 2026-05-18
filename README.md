@@ -24,7 +24,10 @@
 
 ## 预览
 
-<img src="./public/images/homepage-layout.png" alt="Navfolio homepage layout preview" />
+<p align="center">
+  <img src="./public/images/homepage-light.png" alt="Navfolio homepage light theme preview" width="49%" />
+  <img src="./public/images/homepage-dark.png" alt="Navfolio homepage dark theme preview" width="49%" />
+</p>
 
 ## Navfolio 是什么
 
@@ -81,15 +84,13 @@ updatedDate: '2026-05-18'
 draft: false
 tags:
   - Astro
-toc:
-  enable: true
 sidebar:
   enable: false
   toc: false
   relatedPosts: false
 ```
 
-`toc.enable` 控制目录导航。`sidebar` 控制文章辅助区域是否渲染。普通博客文章默认在有内容时展示阅读工具；`/about` 和 projects 相关页面默认使用无侧栏、居中的文章布局。
+`sidebar` 统一控制文章辅助区域：`enable` 控制是否启用侧栏区块，`toc` 控制目录导航，`relatedPosts` 控制相关文章。普通博客文章默认在有内容时展示阅读工具；`/about` 和 projects 相关页面默认使用无侧栏、居中的文章布局。
 
 ## 首页配置
 

@@ -2,12 +2,10 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const tocSchema = z
-  .object({
-    enable: z.boolean().optional().default(true),
-  })
-  .optional()
-  .default({ enable: true });
+type CollectionSchemaFactory = Extract<
+  Parameters<typeof defineCollection>[0]['schema'],
+  (...args: any[]) => any
+>;
 
 const sidebarSchema = z
   .object({
@@ -17,9 +15,7 @@ const sidebarSchema = z
   })
   .optional();
 
-const articleSchema = ({
-  image,
-}: Parameters<Parameters<typeof defineCollection>[0]['schema']>[0]) =>
+const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
   z.object({
     title: z.string(),
     description: z.string(),
@@ -29,7 +25,6 @@ const articleSchema = ({
     draft: z.boolean().optional().default(false),
     heroImage: z.optional(image()),
     tags: z.array(z.string()).optional().default([]),
-    toc: tocSchema,
     sidebar: sidebarSchema,
   });
 

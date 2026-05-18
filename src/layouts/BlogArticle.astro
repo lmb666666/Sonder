@@ -24,9 +24,6 @@ interface Props {
       heroImage?: ImageMetadata;
       tags?: string[];
       draft?: boolean;
-      toc?: {
-        enable?: boolean;
-      };
       sidebar?: SidebarConfig;
     };
   };
@@ -55,7 +52,6 @@ const post = props.post ?? {
     heroImage: props.heroImage,
     tags: props.tags ?? [],
     draft: false,
-    toc: { enable: true },
     sidebar: { enable: true, toc: true, relatedPosts: true },
   },
 };
@@ -77,7 +73,7 @@ const sidebarConfig = {
   ...props.sidebar,
 };
 const shouldRenderSidebar = sidebarConfig.enable ?? true;
-const shouldRenderToc = (post.data.toc?.enable ?? true) && (sidebarConfig.toc ?? true);
+const shouldRenderToc = sidebarConfig.toc ?? true;
 const hasToc = shouldRenderToc && tocItems.length > 0;
 
 const relatedPosts = (await getCollection('blog', ({ id, data }) => id !== post.id && !data.draft))

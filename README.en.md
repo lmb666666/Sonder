@@ -24,7 +24,10 @@
 
 ## Preview
 
-<img src="./public/images/homepage-layout.png" alt="Navfolio homepage layout preview" />
+<p align="center">
+  <img src="./public/images/homepage-light.png" alt="Navfolio homepage light theme preview" width="49%" />
+  <img src="./public/images/homepage-dark.png" alt="Navfolio homepage dark theme preview" width="49%" />
+</p>
 
 ## What Navfolio Is
 
@@ -81,15 +84,13 @@ updatedDate: '2026-05-18'
 draft: false
 tags:
   - Astro
-toc:
-  enable: true
 sidebar:
   enable: false
   toc: false
   relatedPosts: false
 ```
 
-`toc.enable` controls heading navigation. `sidebar` controls whether article utility areas are rendered. Blog articles default to showing reading tools when available; `/about` and project pages default to a centered, no-sidebar article layout.
+`sidebar` is the single source of truth for article utility areas: `enable` toggles the sidebar area, `toc` toggles heading navigation, and `relatedPosts` toggles related-post cards. Blog articles default to showing reading tools when available; `/about` and project pages default to a centered, no-sidebar article layout.
 
 ## Homepage Configuration
 

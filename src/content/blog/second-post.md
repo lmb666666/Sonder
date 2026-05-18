@@ -7,8 +7,6 @@ tags:
   - 'Essay'
   - 'English'
   - 'Moonlight'
-toc:
-  enable: true
 ---
 
 For several days my mind had not been at ease. The room felt too close, and the small sounds of the evening seemed to gather around me without meaning. My wife was inside, coaxing the child to sleep. The courtyard had settled into silence. I put on a light coat and stepped out, thinking I might walk by the lotus pond for a while.
