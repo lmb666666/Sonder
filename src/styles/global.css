@@ -48,7 +48,7 @@
   --layout-page-gutter: 32px;
   --layout-page-top: 126px;
   --layout-page-bottom: 72px;
-  --font-serif-cn: 'LXGW WenKai', 'STKaiti', 'KaiTi', serif;
+  --font-serif-cn: 'Maple Mono', 'LXGW WenKai', 'STKaiti', 'KaiTi', serif;
   --font-mono: 'Maple Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-body: var(--font-serif-cn);
   --font-display: var(--font-serif-cn);
