@@ -22,6 +22,7 @@ interface Props {
       pubDate: Date;
       updatedDate?: Date;
       heroImage?: ImageMetadata;
+      showHeroImage?: boolean;
       tags?: string[];
       draft?: boolean;
       sidebar?: SidebarConfig;
@@ -36,6 +37,7 @@ interface Props {
   pubDate?: Date;
   updatedDate?: Date;
   heroImage?: ImageMetadata;
+  showHeroImage?: boolean;
   tags?: string[];
 }
 
@@ -50,12 +52,13 @@ const post = props.post ?? {
     pubDate: props.pubDate ?? new Date(),
     updatedDate: props.updatedDate,
     heroImage: props.heroImage,
+    showHeroImage: props.showHeroImage ?? true,
     tags: props.tags ?? [],
     draft: false,
     sidebar: { enable: true, toc: true, relatedPosts: true },
   },
 };
-const { title, description, pubDate, heroImage } = post.data;
+const { title, description, pubDate, heroImage, showHeroImage = true } = post.data;
 const bodyText = 'body' in post && typeof post.body === 'string' ? post.body : description;
 const englishWords = bodyText.match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g) ?? [];
 const cjkChars =
@@ -107,6 +110,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
             readingTime={readingTime}
             tags={tags}
             heroImage={heroImage}
+            showHeroImage={showHeroImage}
             variant={props.headerVariant}
             kicker={props.headerKicker}
           />

@@ -10,6 +10,7 @@ interface Props {
   readingTime: string;
   tags?: string[];
   heroImage?: ImageMetadata;
+  showHeroImage?: boolean;
   variant?: 'default' | 'archive';
   kicker?: string;
 }
@@ -22,6 +23,7 @@ const {
   readingTime,
   tags = [],
   heroImage,
+  showHeroImage = true,
   variant = 'default',
   kicker = 'Notebook entry',
 } = Astro.props;
@@ -86,7 +88,7 @@ const isArchiveHeader = variant === 'archive';
   }
 
   {
-    heroImage && (
+    showHeroImage && heroImage && (
       <figure class="article-hero-image">
         <Image width={1020} height={510} src={heroImage} alt="" />
       </figure>

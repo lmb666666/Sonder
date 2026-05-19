@@ -24,6 +24,7 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     updatedDate: z.coerce.date().optional(),
     draft: z.boolean().optional().default(false),
     heroImage: z.optional(image()),
+    showHeroImage: z.boolean().optional().default(true),
     tags: z.array(z.string()).optional().default([]),
     sidebar: sidebarSchema,
   });

@@ -25,7 +25,10 @@ function withBase(href: string) {
   <div class="related-list">
     {
       posts.map((post) => (
-        <a href={withBase(`/blog/${post.id}/`)}>
+        <a
+          class:list={[{ 'has-thumbnail': Boolean(post.data.heroImage) }]}
+          href={withBase(`/blog/${post.id}/`)}
+        >
           {post.data.heroImage && <Image width={88} height={64} src={post.data.heroImage} alt="" />}
           <span>
             <strong>{post.data.title}</strong>
@@ -66,15 +69,21 @@ function withBase(href: string) {
     text-decoration: none;
   }
 
+  a.has-thumbnail {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 10px;
+  }
+
   a:hover strong {
     color: var(--paper-accent);
   }
 
   img {
-    display: none;
+    display: block;
     width: 58px;
     height: 48px;
     border-radius: 6px;
+    background: var(--paper-surface-muted);
     object-fit: cover;
     box-shadow: var(--paper-shadow);
     filter: saturate(0.7);
