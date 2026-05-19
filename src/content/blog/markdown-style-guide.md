@@ -1,217 +1,219 @@
 ---
-title: 'Markdown Style Guide'
-description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
-pubDate: 'Jun 19 2024'
-heroImage: '../../assets/blog-placeholder-1.jpg'
+title: 'Markdown 语法渲染示例'
+description: '这是一篇用于展示 Astro 中常见 Markdown 语法渲染效果的中文示例文章。'
+pubDate: 'May 19 2025'
+heroImage: '/public/images/blog-sample-picture.png'
 tags:
   - 'Markdown'
-  - 'Guide'
+  - '教程'
 ---
 
-Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.
+这篇文章用于集中展示常见 Markdown 语法在 Astro 中的渲染效果，便于你写作时快速对照。
 
-## Headings
+## 标题
 
-The following HTML `<h1>`—`<h6>` elements represent six levels of section headings. `<h1>` is the highest section level while `<h6>` is the lowest.
+以下是从一级到六级标题的示例：
 
-# H1
+# 一级标题 H1
 
-## H2
+## 二级标题 H2
 
-### H3
+### 三级标题 H3
 
-#### H4
+#### 四级标题 H4
 
-##### H5
+##### 五级标题 H5
 
-###### H6
+###### 六级标题 H6
 
-## Paragraph
+## 段落
 
-Xerum, quo qui aut unt expliquam qui dolut labo. Aque venitatiusda cum, voluptionse latur sitiae dolessi aut parist aut dollo enim qui voluptate ma dolestendit peritin re plis aut quas inctum laceat est volestemque commosa as cus endigna tectur, offic to cor sequas etum rerum idem sintibus eiur? Quianimin porecus evelectur, cum que nis nust voloribus ratem aut omnimi, sitatur? Quiatem. Nam, omnis sum am facea corem alique molestrunt et eos evelece arcillit ut aut eos eos nus, sin conecerem erum fuga. Ri oditatquam, ad quibus unda veliamenimin cusam et facea ipsamus es exerum sitate dolores editium rerore eost, temped molorro ratiae volorro te reribus dolorer sperchicium faceata tiustia prat.
+这是一个普通段落示例。Markdown 的段落通常通过空行分隔。
 
-Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sapicia is sinveli squiatum, core et que aut hariosam ex eat.
+你可以在段落中使用 **加粗**、_斜体_、`行内代码`，也可以插入 [链接](https://astro.build)。
 
-## Images
+## 图片
 
-### Syntax
+### 语法
 
 ```markdown
-![Alt text](./full/or/relative/path/of/image)
+![图片替代文本](./图片路径)
 ```
 
-### Output
+### 渲染效果
 
-![blog placeholder](../../assets/blog-placeholder-about.jpg)
+![blog placeholder](/images/blog-sample-picture.png)
 
-## Blockquotes
+## 引用
 
-The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a `footer` or `cite` element, and optionally with in-line changes such as annotations and abbreviations.
+### 无署名引用
 
-### Blockquote without attribution
-
-#### Syntax
+#### 语法
 
 ```markdown
-> Tiam, ad mint andaepu dandae nostion secatur sequo quae.
-> **Note** that you can use _Markdown syntax_ within a blockquote.
+> 这是一个引用块示例。
+> **提示：** 引用里同样可以使用 _Markdown_ 语法。
 ```
 
-#### Output
+#### 渲染效果
 
-> Tiam, ad mint andaepu dandae nostion secatur sequo quae.
-> **Note** that you can use _Markdown syntax_ within a blockquote.
+> 这是一个引用块示例。
+> **提示：** 引用里同样可以使用 _Markdown_ 语法。
 
-### Blockquote with attribution
+### 带署名引用
 
-#### Syntax
+#### 语法
 
 ```markdown
-> Don't communicate by sharing memory, share memory by communicating.<br>
+> 不要通过共享内存来通信，而要通过通信来共享内存。<br>
 > — <cite>Rob Pike[^1]</cite>
 ```
 
-#### Output
+#### 渲染效果
 
-> Don't communicate by sharing memory, share memory by communicating.<br>
+> 不要通过共享内存来通信，而要通过通信来共享内存。<br>
 > — <cite>Rob Pike[^1]</cite>
 
-[^1]: The above quote is excerpted from Rob Pike's [talk](https://www.youtube.com/watch?v=PAAkCSZUG1c) during Gopherfest, November 18, 2015.
+[^1]: 引文改写自 Rob Pike 在 Gopherfest 的演讲。
 
-## Tables
+## 表格
 
-### Syntax
+### 语法
 
 ```markdown
-| Italics   | Bold     | Code   |
-| --------- | -------- | ------ |
-| _italics_ | **bold** | `code` |
+| 样式 | 示例     |
+| ---- | -------- |
+| 斜体 | _文字_   |
+| 加粗 | **文字** |
+| 代码 | `code`   |
 ```
 
-### Output
+### 渲染效果
 
-| Italics   | Bold     | Code   |
-| --------- | -------- | ------ |
-| _italics_ | **bold** | `code` |
+| 样式 | 示例     |
+| ---- | -------- |
+| 斜体 | _文字_   |
+| 加粗 | **文字** |
+| 代码 | `code`   |
 
-## Code Blocks
+## 代码块
 
-### Syntax
+### 语法
 
-we can use 3 backticks ``` in new line and write snippet and close with 3 backticks on new line and to highlight language specific syntax, write one word of language name after first 3 backticks, for eg. html, javascript, css, markdown, typescript, txt, bash
+在三反引号后面指定语言类型，可以启用语法高亮，例如 `html`、`css`、`js`、`ts`、`bash`。
 
 ````markdown
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <title>Example HTML5 Document</title>
+    <title>示例页面</title>
   </head>
   <body>
-    <p>Test</p>
+    <p>Hello Markdown</p>
   </body>
 </html>
 ```
 ````
 
-### Output
+### 渲染效果
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <title>Example HTML5 Document</title>
+    <title>示例页面</title>
   </head>
   <body>
-    <p>Test</p>
+    <p>Hello Markdown</p>
   </body>
 </html>
 ```
 
-## List Types
+## 列表
 
-### Ordered List
+### 有序列表
 
-#### Syntax
+#### 语法
 
 ```markdown
-1. First item
-2. Second item
-3. Third item
+1. 第一项
+2. 第二项
+3. 第三项
 ```
 
-#### Output
+#### 渲染效果
 
-1. First item
-2. Second item
-3. Third item
+1. 第一项
+2. 第二项
+3. 第三项
 
-### Unordered List
+### 无序列表
 
-#### Syntax
+#### 语法
 
 ```markdown
-- List item
-- Another item
-- And another item
+- 列表项 A
+- 列表项 B
+- 列表项 C
 ```
 
-#### Output
+#### 渲染效果
 
-- List item
-- Another item
-- And another item
+- 列表项 A
+- 列表项 B
+- 列表项 C
 
-### Nested list
+### 嵌套列表示例
 
-#### Syntax
+#### 语法
 
 ```markdown
-- Fruit
-  - Apple
-  - Orange
-  - Banana
-- Dairy
-  - Milk
-  - Cheese
+- 水果
+  - 苹果
+  - 橙子
+  - 香蕉
+- 乳制品
+  - 牛奶
+  - 奶酪
 ```
 
-#### Output
+#### 渲染效果
 
-- Fruit
-  - Apple
-  - Orange
-  - Banana
-- Dairy
-  - Milk
-  - Cheese
+- 水果
+  - 苹果
+  - 橙子
+  - 香蕉
+- 乳制品
+  - 牛奶
+  - 奶酪
 
-## Other Elements — abbr, sub, sup, kbd, mark
+## 其他常见内联元素
 
-### Syntax
+### 语法
 
 ```markdown
-<abbr title="Graphics Interchange Format">GIF</abbr> is a bitmap image format.
+<abbr title="Graphics Interchange Format">GIF</abbr> 是一种位图格式。
 
 H<sub>2</sub>O
 
 X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
 
-Press <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd> to end the session.
+按下 <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd>。
 
-Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.
+<mark>高亮文本</mark>
 ```
 
-### Output
+### 渲染效果
 
-<abbr title="Graphics Interchange Format">GIF</abbr> is a bitmap image format.
+<abbr title="Graphics Interchange Format">GIF</abbr> 是一种位图格式。
 
 H<sub>2</sub>O
 
 X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
 
-Press <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd> to end the session.
+按下 <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd>。
 
-Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.
+<mark>高亮文本</mark>

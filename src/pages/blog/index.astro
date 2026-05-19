@@ -32,42 +32,6 @@ function withBase(href: string) {
         padding: 118px var(--layout-page-gutter) var(--layout-page-bottom);
       }
 
-      .archive-hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
-        gap: 32px;
-        align-items: end;
-        margin-bottom: 54px;
-        padding: 0;
-      }
-
-      .archive-kicker {
-        margin: 0;
-        color: var(--paper-accent);
-        font-family: var(--font-ui-label);
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        max-width: 760px;
-        margin: 8px 0 0;
-        color: var(--paper-ink);
-        font-size: clamp(2.4rem, 5.5vw, 4rem);
-        line-height: 1.08;
-      }
-
-      .archive-note {
-        max-width: 260px;
-        margin: 0;
-        color: var(--paper-ink-soft);
-        font-family: var(--font-article);
-        font-size: 1.03rem;
-        line-height: 1.76;
-      }
-
       .post-stack {
         display: grid;
         gap: 0;
@@ -231,16 +195,6 @@ function withBase(href: string) {
           padding-top: 88px;
         }
 
-        .archive-hero {
-          grid-template-columns: 1fr;
-          gap: 14px;
-          margin-bottom: 28px;
-        }
-
-        .archive-note {
-          max-width: none;
-        }
-
         .post-link,
         .post-item:first-child .post-link {
           grid-template-columns: 1fr;
@@ -266,10 +220,10 @@ function withBase(href: string) {
   <body>
     <BlogTopNav />
     <main>
-      <header class="archive-hero">
-        <div>
+      <header class="archive-hero archive-header-shared page-header-spacing">
+        <div class="archive-header-main">
           <p class="archive-kicker">Notebook archive</p>
-          <h1>Writing notes</h1>
+          <h1 class="archive-title">Writing notes</h1>
         </div>
         <p class="archive-note">
           Loose pages, technical margins, and small notes gathered into a readable stack.

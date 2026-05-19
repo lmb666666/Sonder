@@ -1,8 +1,12 @@
-@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.min.css');
-@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@latest/400.css');
-@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@latest/500.css');
-@import url('https://cdn.jsdelivr.net/npm/@fontsource/maple-mono@latest/700.css');
+@import '@fontsource/maple-mono/200.css';
+@import '@fontsource/maple-mono/300.css';
+@import '@fontsource/maple-mono/400.css';
+@import '@fontsource/maple-mono/500.css';
+@import '@fontsource/maple-mono/600.css';
+@import '@fontsource/maple-mono/700.css';
+@import '@fontsource/maple-mono/800.css';
 
+@import 'lxgw-wenkai-webfont/style.css';
 /*
   The CSS in this style tag is based off of Bear Blog's default CSS.
   https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
@@ -48,6 +52,8 @@
   --layout-page-gutter: 32px;
   --layout-page-top: 126px;
   --layout-page-bottom: 72px;
+  --page-header-spacing: 54px;
+  --page-header-spacing-mobile: 28px;
   --font-serif-cn: 'Maple Mono', 'LXGW WenKai', 'STKaiti', 'KaiTi', serif;
   --font-mono: 'Maple Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-body: var(--font-serif-cn);
@@ -336,6 +342,55 @@ h6 {
   letter-spacing: 0;
 }
 
+.archive-header-shared {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
+  gap: 32px;
+  align-items: stretch;
+}
+
+.archive-header-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.archive-header-shared .archive-kicker {
+  margin: 0;
+  color: var(--paper-accent);
+  font-family: var(--font-ui-label);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.archive-header-shared .archive-title {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--paper-ink);
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  line-height: 1.08;
+}
+
+.archive-header-shared .archive-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 260px;
+  margin: 0;
+  color: var(--paper-ink-soft);
+  font-family: var(--font-article);
+  font-size: 1.03rem;
+  line-height: 1.76;
+  text-align: center;
+}
+
+.page-header-spacing {
+  margin-bottom: var(--page-header-spacing);
+}
+
 @keyframes card-in {
   from {
     opacity: 0;
@@ -355,5 +410,27 @@ h6 {
     animation-duration: 1ms !important;
     scroll-behavior: auto !important;
     transition-duration: 1ms !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-header-spacing {
+    margin-bottom: var(--page-header-spacing-mobile);
+  }
+
+  .archive-header-shared {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .archive-header-shared .archive-note {
+    display: block;
+    max-width: none;
+    text-align: left;
+  }
+
+  .archive-header-shared .archive-title {
+    font-size: 2.08rem;
+    line-height: 1.1;
   }
 }

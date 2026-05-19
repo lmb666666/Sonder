@@ -1,8 +1,8 @@
 ---
 title: '荷塘月色'
 description: '一篇以夏夜荷塘为中心的中文散文改写：月光、荷叶、微风与独行的心绪，在静夜里缓慢铺开。'
-pubDate: 'Jul 08 2022'
-heroImage: '../../assets/blog-placeholder-3.jpg'
+pubDate: 'May 18 2025'
+heroImage: '/src/assets/figure/lotus.png'
 tags:
   - '散文'
   - '中文'

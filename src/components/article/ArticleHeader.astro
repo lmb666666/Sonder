@@ -30,13 +30,18 @@ const hasTags = tags.length > 0;
 const isArchiveHeader = variant === 'archive';
 ---
 
-<header class:list={['article-header', { 'article-header-archive': isArchiveHeader }]}>
+<header
+  class:list={[
+    'article-header',
+    { 'article-header-archive': isArchiveHeader, 'archive-header-shared': isArchiveHeader },
+  ]}
+>
   {
     isArchiveHeader ? (
       <>
-        <div class="archive-heading">
+        <div class="archive-heading archive-header-main">
           <p class="archive-kicker">{kicker}</p>
-          <h1>{title}</h1>
+          <h1 class="archive-title">{title}</h1>
           <div class="meta-line" aria-label="Article metadata">
             {pubDate && (
               <span class="meta-item">
@@ -99,9 +104,6 @@ const isArchiveHeader = variant === 'archive';
   }
 
   .article-header-archive {
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
-    gap: 32px;
-    align-items: end;
     max-width: none;
     margin-bottom: 54px;
   }
@@ -110,38 +112,12 @@ const isArchiveHeader = variant === 'archive';
     min-width: 0;
   }
 
-  .archive-kicker {
-    margin: 0;
-    color: var(--paper-accent);
-    font-family: var(--font-ui-label);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .archive-note {
-    max-width: 260px;
-    margin: 0;
-    color: var(--paper-ink-soft);
-    font-family: var(--font-article);
-    font-size: 1.03rem;
-    line-height: 1.76;
-  }
-
   h1 {
     margin: 0;
     color: var(--paper-ink);
     font-size: clamp(2.15rem, 4.8vw, 3.45rem);
     font-weight: 400;
     line-height: 1.08;
-    text-wrap: balance;
-  }
-
-  .archive-heading h1 {
-    max-width: 760px;
-    margin-top: 8px;
-    font-size: clamp(2.4rem, 5.5vw, 4rem);
   }
 
   .archive-heading .meta-line {
@@ -210,22 +186,12 @@ const isArchiveHeader = variant === 'archive';
     }
 
     .article-header-archive {
-      grid-template-columns: 1fr;
-      gap: 14px;
       margin-bottom: 34px;
-    }
-
-    .archive-note {
-      max-width: none;
     }
 
     h1 {
       font-size: 2.08rem;
       line-height: 1.1;
-    }
-
-    .archive-heading h1 {
-      font-size: 2.08rem;
     }
 
     .article-hero-image,
