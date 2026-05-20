@@ -115,4 +115,22 @@ const projects = defineCollection({
   schema: articleSchema,
 });
 
-export const collections = { about, blog, projects, siteConfig };
+const vibe = defineCollection({
+  loader: glob({ base: './src/content/vibe', pattern: '**/*.{md,mdx}' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string().optional(),
+      date: z.coerce.date(),
+      updatedDate: z.coerce.date().optional(),
+      draft: z.boolean().optional().default(false),
+      type: z.enum(['text', 'photo', 'quote', 'code', 'mixed']).optional().default('text'),
+      mood: z.string().optional(),
+      location: z.string().optional(),
+      images: z.array(image()).optional().default([]),
+      tags: z.array(z.string()).optional().default([]),
+      align: z.enum(['left', 'right', 'center']).optional(),
+      size: z.enum(['sm', 'md', 'lg']).optional().default('md'),
+    }),
+});
+
+export const collections = { about, blog, projects, vibe, siteConfig };
