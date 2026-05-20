@@ -2,11 +2,11 @@
 import { getCollection, render } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 import BlogArticle from '../../layouts/BlogArticle.astro';
-import { sortByLastmodDesc } from '../../utils/content-dates';
+import { sortByDateDesc } from '../../utils/content-dates';
 
 const projectEntries = await getCollection('projects');
 const projectIndex = projectEntries.find((entry) => entry.id === 'index');
-const projects = sortByLastmodDesc(
+const projects = sortByDateDesc(
   projectEntries.filter((entry) => entry.id !== 'index' && !entry.data.draft),
 );
 

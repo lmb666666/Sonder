@@ -6,7 +6,7 @@ import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import BaseHead from '../components/BaseHead.astro';
 import CommentSection from '../components/comments/CommentSection.astro';
-import { sortByLastmodDesc } from '../utils/content-dates';
+import { sortByDateDesc } from '../utils/content-dates';
 
 type SidebarConfig = {
   enable?: boolean;
@@ -85,7 +85,7 @@ const shouldRenderSidebar = sidebarConfig.enable ?? true;
 const shouldRenderToc = sidebarConfig.toc ?? true;
 const hasToc = shouldRenderToc && tocItems.length > 0;
 
-const relatedPosts = sortByLastmodDesc(
+const relatedPosts = sortByDateDesc(
   await getCollection('blog', ({ id, data }) => id !== post.id && !data.draft),
 ).slice(0, 3);
 const hasRelatedPosts =

@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
-import { getContentLastmod, sortByLastmodDesc } from './content-dates';
+import { sortByDateDesc } from './content-dates';
 
 export interface HeatmapPost {
   title: string;
@@ -48,12 +48,12 @@ export function getLevel(count: number): 0 | 1 | 2 | 3 | 4 {
 }
 
 export function getLatestPosts(posts: BlogPost[], count = 1): LatestPost[] {
-  return sortByLastmodDesc(posts)
+  return sortByDateDesc(posts)
     .slice(0, Math.max(1, count))
     .map((post) => ({
       title: post.data.title,
       href: `/blog/${post.id}/`,
-      date: getContentLastmod(post),
+      date: post.data.date,
     }));
 }
 
