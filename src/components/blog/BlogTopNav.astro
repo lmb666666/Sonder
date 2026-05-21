@@ -51,7 +51,7 @@ const routeLabels: Record<string, string> = {
 const activeRoute = Object.entries(routeLabels).find(
   ([route]) => currentPath === route || currentPath.startsWith(`${route}/`),
 );
-const brandTitle = activeRoute ? `${site.title} · ${activeRoute[1]}` : site.title;
+const brandRouteLabel = activeRoute?.[1];
 const shouldShowTocAction = showTocIcon && tocItems.length > 0;
 ---
 
@@ -69,7 +69,10 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
 
   <a class="brand" href={withBase('/')} aria-label={`Go to ${site.title} home`}>
     <span class="brand-mark" aria-hidden="true"></span>
-    <span>{brandTitle}</span>
+    <span class="brand-title">
+      <span>{site.title}</span>
+      {brandRouteLabel && <span class="brand-route"> · {brandRouteLabel}</span>}
+    </span>
   </a>
 
   <nav class="nav-links" aria-label="Article navigation">
@@ -404,7 +407,7 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
       font-size: 0.95rem;
     }
 
-    .brand span:last-child {
+    .brand-title {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -557,6 +560,10 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
   }
 
   @media (min-width: 721px) {
+    .brand-route {
+      display: none;
+    }
+
     .nav-actions .toc-action {
       display: none;
     }
