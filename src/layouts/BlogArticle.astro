@@ -24,7 +24,7 @@ interface Props {
       title: string;
       description: string;
       date: Date;
-      heroImage?: ImageMetadata;
+      heroImage?: ImageMetadata | string;
       showHeroImage?: boolean;
       tags?: string[];
       comments?: boolean;
@@ -39,7 +39,7 @@ interface Props {
   title?: string;
   description?: string;
   date?: Date;
-  heroImage?: ImageMetadata;
+  heroImage?: ImageMetadata | string;
   showHeroImage?: boolean;
   tags?: string[];
 }

@@ -15,6 +15,14 @@ const sidebarSchema = z
   })
   .optional();
 
+const remoteImageSchema = z
+  .string()
+  .url()
+  .refine((src) => /^https?:\/\//i.test(src), 'Remote images must start with http:// or https://');
+
+const contentImageSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
+  z.union([image(), remoteImageSchema]);
+
 const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
   z.object({
     title: z.string(),
@@ -22,7 +30,7 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     // Creation date. Accepts ISO 8601 strings and plain dates such as YYYY-MM-DD.
     date: z.coerce.date(),
     draft: z.boolean().optional().default(false),
-    heroImage: z.optional(image()),
+    heroImage: z.optional(contentImageSchema({ image })),
     showHeroImage: z.boolean().optional().default(true),
     tags: z.array(z.string()).optional().default([]),
     comments: z.boolean().optional().default(true),
@@ -231,7 +239,7 @@ const vibe = defineCollection({
       type: z.enum(['text', 'photo', 'quote', 'code', 'mixed']).optional().default('text'),
       mood: z.string().optional(),
       location: z.string().optional(),
-      images: z.array(image()).optional().default([]),
+      images: z.array(contentImageSchema({ image })).optional().default([]),
       tags: z.array(z.string()).optional().default([]),
       align: z.enum(['left', 'right', 'center']).optional(),
       size: z.enum(['sm', 'md', 'lg']).optional().default('md'),

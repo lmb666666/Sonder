@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import SmartImage from '../SmartImage.astro';
 import PageView from '../comments/PageView.astro';
 import FormattedDate from '../FormattedDate.astro';
 
@@ -10,7 +10,7 @@ interface Props {
   wordCount: number;
   readingTime: string;
   tags?: string[];
-  heroImage?: ImageMetadata;
+  heroImage?: ImageMetadata | string;
   showHeroImage?: boolean;
   variant?: 'default' | 'archive';
   kicker?: string;
@@ -97,7 +97,7 @@ const isArchiveHeader = variant === 'archive';
   {
     showHeroImage && heroImage && (
       <figure class="article-hero-image">
-        <Image width={1020} height={510} src={heroImage} alt="" />
+        <SmartImage width={1020} height={510} src={heroImage} alt="" />
       </figure>
     )
   }

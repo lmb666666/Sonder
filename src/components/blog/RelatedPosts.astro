@@ -1,7 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../FormattedDate.astro';
+import SmartImage from '../SmartImage.astro';
 
 interface Props {
   posts: CollectionEntry<'blog'>[];
@@ -29,7 +29,9 @@ function withBase(href: string) {
           class:list={[{ 'has-thumbnail': Boolean(post.data.heroImage) }]}
           href={withBase(`/blog/${post.id}/`)}
         >
-          {post.data.heroImage && <Image width={88} height={64} src={post.data.heroImage} alt="" />}
+          {post.data.heroImage && (
+            <SmartImage width={88} height={64} src={post.data.heroImage} alt="" />
+          )}
           <span>
             <strong>{post.data.title}</strong>
             <small>

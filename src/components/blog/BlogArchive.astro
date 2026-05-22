@@ -1,7 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../FormattedDate.astro';
+import SmartImage from '../SmartImage.astro';
 
 type BlogPost = CollectionEntry<'blog'>;
 
@@ -78,7 +78,7 @@ function getPageHref(pageNumber: number) {
             </div>
             {post.data.heroImage && (
               <span class="thumb-wrap">
-                <Image width={520} height={360} src={post.data.heroImage} alt="" />
+                <SmartImage width={520} height={360} src={post.data.heroImage} alt="" />
               </span>
             )}
           </a>
