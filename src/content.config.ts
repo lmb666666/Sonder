@@ -49,6 +49,52 @@ const paletteSchema = z.enum([
   'brown-soft',
 ]);
 
+const defaultGiscusConfig = {
+  repo: '',
+  repo_id: '',
+  category: '',
+  category_id: '',
+  mapping: 'pathname',
+  strict: '0',
+  reactions_enabled: '1',
+  emit_metadata: '0',
+  input_position: 'bottom',
+  theme: 'preferred_color_scheme',
+  lang: 'zh-CN',
+  loading: 'lazy',
+};
+
+const defaultUtterancesConfig = {
+  repo: '',
+  issue_term: 'pathname',
+  label: 'comment',
+  theme: 'github-light',
+};
+
+const defaultWalineConfig = {
+  server_url: '',
+  lang: 'zh-CN',
+  dark: 'html.dark',
+  pageview: true,
+  comment: true,
+};
+
+const defaultCommentsConfig = {
+  enabled: true,
+  provider: 'giscus',
+  show_on_posts: true,
+  giscus: defaultGiscusConfig,
+  utterances: defaultUtterancesConfig,
+  waline: defaultWalineConfig,
+} satisfies {
+  enabled: boolean;
+  provider: z.infer<typeof commentProviderSchema>;
+  show_on_posts: boolean;
+  giscus: typeof defaultGiscusConfig;
+  utterances: typeof defaultUtterancesConfig;
+  waline: typeof defaultWalineConfig;
+};
+
 const linkSchema = z.object({
   label: z.string(),
   href: z.string(),
@@ -109,7 +155,7 @@ const siteConfig = defineCollection({
             loading: z.string().optional().default('lazy'),
           })
           .optional()
-          .default({}),
+          .default(defaultGiscusConfig),
         utterances: z
           .object({
             repo: z.string().optional().default(''),
@@ -118,7 +164,7 @@ const siteConfig = defineCollection({
             theme: z.string().optional().default('github-light'),
           })
           .optional()
-          .default({}),
+          .default(defaultUtterancesConfig),
         waline: z
           .object({
             server_url: z.string().optional().default(''),
@@ -128,10 +174,10 @@ const siteConfig = defineCollection({
             comment: z.boolean().optional().default(true),
           })
           .optional()
-          .default({}),
+          .default(defaultWalineConfig),
       })
       .optional()
-      .default({}),
+      .default(defaultCommentsConfig),
     profile: z.object({
       name: z.string(),
       handle: z.string(),

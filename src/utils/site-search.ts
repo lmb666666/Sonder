@@ -120,7 +120,7 @@ function renderResults(root: HTMLElement, results: Awaited<ReturnType<PagefindRe
 }
 
 function debounce<T extends (...args: any[]) => void>(callback: T, delay: number) {
-  let timeout: ReturnType<typeof setTimeout> | undefined;
+  let timeout: number | undefined;
 
   return (...args: Parameters<T>) => {
     window.clearTimeout(timeout);
