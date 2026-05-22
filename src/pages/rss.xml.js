@@ -5,7 +5,7 @@ import { sortByDateDesc } from '../utils/content-dates';
 
 export async function GET(context) {
   const { site } = await getSiteConfig();
-  const posts = sortByDateDesc(await getCollection('blog'));
+  const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft));
   return rss({
     title: site.title,
     description: site.description,

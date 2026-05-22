@@ -4,7 +4,7 @@ import BlogArticle from '../../layouts/BlogArticle.astro';
 import ZoomableImage from '../../components/mdx/ZoomableImage.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
   return posts.map((post) => ({
     params: { slug: post.id },
     props: post,

@@ -9,7 +9,7 @@ import { sortByDateDesc } from '../../utils/content-dates';
 
 const { site, theme, blog } = await getSiteConfig();
 const palette = theme.palette;
-const posts = sortByDateDesc(await getCollection('blog'));
+const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft));
 const postsPerPage = blog.postsPerPage;
 const totalPages = Math.max(1, Math.ceil(posts.length / postsPerPage));
 const page = {
