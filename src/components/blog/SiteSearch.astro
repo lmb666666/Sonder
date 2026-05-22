@@ -32,7 +32,7 @@ const shortcutLabel = search.shortcut === 'mod+k' ? 'Ctrl K / Cmd K' : search.sh
     <Search size={17} stroke-width={2} />
   </button>
 
-  <div class="site-search-layer" data-site-search-backdrop>
+  <div class="site-search-layer" data-site-search-layer data-site-search-backdrop>
     <section
       class="site-search-dialog"
       id="site-search-dialog"
@@ -115,17 +115,17 @@ const shortcutLabel = search.shortcut === 'mod+k' ? 'Ctrl K / Cmd K' : search.sh
     display: grid;
     place-items: start center;
     padding: 96px 18px 24px;
-    background: rgba(17, 20, 17, 0.24);
+    background: rgba(17, 20, 17, 0.58);
     opacity: 0;
     pointer-events: none;
     transition: opacity 160ms ease;
   }
 
   :root[data-theme='dark'] .site-search-layer {
-    background: rgba(0, 0, 0, 0.42);
+    background: rgba(0, 0, 0, 0.68);
   }
 
-  .site-search[data-search-open='true'] .site-search-layer {
+  .site-search-layer[data-search-open='true'] {
     opacity: 1;
     pointer-events: auto;
   }
@@ -146,7 +146,7 @@ const shortcutLabel = search.shortcut === 'mod+k' ? 'Ctrl K / Cmd K' : search.sh
       opacity 160ms ease;
   }
 
-  .site-search[data-search-open='true'] .site-search-dialog {
+  .site-search-layer[data-search-open='true'] .site-search-dialog {
     transform: translateY(0) scale(1);
   }
 

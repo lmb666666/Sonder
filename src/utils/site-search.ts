@@ -30,6 +30,7 @@ const pagefindPath = `${baseUrl.replace(/\/$/, '')}/pagefind/pagefind.js`.replac
 
 let pagefindPromise: Promise<PagefindModule> | null = null;
 let lastFocusedElement: HTMLElement | null = null;
+const searchLayers = new WeakMap<HTMLElement, HTMLElement>();
 
 function normalizeResultUrl(url: string) {
   if (/^https?:\/\//.test(url)) return url;
@@ -66,6 +67,10 @@ function setStatus(root: HTMLElement, status: string) {
 
 function setExpanded(root: HTMLElement, expanded: boolean) {
   root.dataset.searchOpen = expanded ? 'true' : 'false';
+  const layer =
+    searchLayers.get(root) ?? root.querySelector<HTMLElement>('[data-site-search-layer]');
+
+  layer?.setAttribute('data-search-open', String(expanded));
   root
     .querySelector<HTMLButtonElement>('[data-site-search-trigger]')
     ?.setAttribute('aria-expanded', String(expanded));
@@ -136,10 +141,20 @@ export function initSiteSearch() {
     const trigger = root.querySelector<HTMLButtonElement>('[data-site-search-trigger]');
     const dialog = root.querySelector<HTMLElement>('[data-site-search-dialog]');
     const input = root.querySelector<HTMLInputElement>('[data-site-search-input]');
+    const layer = root.querySelector<HTMLElement>('[data-site-search-layer]');
     const closeButtons = root.querySelectorAll<HTMLButtonElement>('[data-site-search-close]');
     const maxResults = Number(root.dataset.searchMaxResults || 6);
 
-    if (!trigger || !dialog || !input) continue;
+    if (!trigger || !dialog || !input || !layer) continue;
+
+    for (const orphanedLayer of document.body.querySelectorAll<HTMLElement>(
+      '[data-site-search-layer]',
+    )) {
+      if (orphanedLayer !== layer) orphanedLayer.remove();
+    }
+
+    searchLayers.set(root, layer);
+    document.body.append(layer);
 
     const close = () => {
       setExpanded(root, false);
@@ -197,18 +212,19 @@ export function initSiteSearch() {
     }, 120);
 
     trigger.addEventListener('click', open);
+    root.addEventListener('site-search:open', open);
     input.addEventListener('input', runSearch);
 
     for (const button of closeButtons) {
       button.addEventListener('click', close);
     }
 
-    root.addEventListener('click', (event) => {
+    layer.addEventListener('click', (event) => {
       if ((event.target as Element).matches('[data-site-search-backdrop]')) close();
       if ((event.target as Element).closest('[data-site-search-results] a')) close();
     });
 
-    root.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', (event) => {
       if (root.dataset.searchOpen !== 'true') return;
       if (event.key === 'Escape') close();
       trapFocus(event, dialog);
@@ -221,8 +237,7 @@ document.addEventListener('keydown', (event) => {
   if (!isModK) return;
 
   const root = document.querySelector<HTMLElement>('[data-site-search-root]');
-  const trigger = root?.querySelector<HTMLButtonElement>('[data-site-search-trigger]');
-  if (!root || !trigger) return;
+  if (!root) return;
 
   event.preventDefault();
 
@@ -231,7 +246,7 @@ document.addEventListener('keydown', (event) => {
     return;
   }
 
-  trigger.click();
+  root.dispatchEvent(new CustomEvent('site-search:open'));
 });
 
 initSiteSearch();
