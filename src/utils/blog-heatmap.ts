@@ -157,7 +157,7 @@ export function createRecentBlogHeatmap(
     days,
     weeks: safeWeeks,
     startDate: getDateKey(start),
-    totalPosts: days.reduce((total, day) => total + day.count, 0),
+    totalPosts: posts.length,
     activeDays: days.filter((day) => day.count > 0).length,
     currentStreak,
     latestPosts: getLatestPosts(posts, latestCount),
