@@ -186,6 +186,67 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
       const tocTrigger = header.querySelector<HTMLButtonElement>('[data-mobile-toc-trigger]');
       const tocMenu = header.querySelector<HTMLElement>('[data-nav-toc-menu]');
 
+      if (!header.dataset.scrollHideReady) {
+        header.dataset.scrollHideReady = 'true';
+
+        const topRevealOffset = 24;
+        const hideAfterOffset = 96;
+        const scrollIntentDelta = 8;
+        let lastScrollY = window.scrollY;
+        let scrollFrame = 0;
+
+        const setNavHidden = (hidden: boolean) => {
+          header.dataset.navHidden = hidden ? 'true' : 'false';
+          header.toggleAttribute('inert', hidden);
+          header.toggleAttribute('aria-hidden', hidden);
+        };
+
+        const shouldKeepVisible = () =>
+          window.scrollY <= topRevealOffset ||
+          header.dataset.mobileMenuOpen === 'true' ||
+          header.dataset.mobileTocOpen === 'true' ||
+          header.matches(':focus-within');
+
+        const updateNavVisibility = () => {
+          scrollFrame = 0;
+          const currentScrollY = window.scrollY;
+          const scrollDelta = currentScrollY - lastScrollY;
+
+          if (shouldKeepVisible()) {
+            setNavHidden(false);
+            lastScrollY = currentScrollY;
+            return;
+          }
+
+          if (Math.abs(scrollDelta) < scrollIntentDelta) {
+            return;
+          }
+
+          setNavHidden(scrollDelta > 0 && currentScrollY > hideAfterOffset);
+          lastScrollY = currentScrollY;
+        };
+
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (scrollFrame) {
+              return;
+            }
+
+            scrollFrame = window.requestAnimationFrame(updateNavVisibility);
+          },
+          { passive: true },
+        );
+
+        window.addEventListener('resize', () => {
+          if (window.scrollY <= topRevealOffset) {
+            setNavHidden(false);
+          }
+        });
+
+        setNavHidden(false);
+      }
+
       if (toggle && menu && !header.dataset.mobileMenuReady) {
         header.dataset.mobileMenuReady = 'true';
 
@@ -213,6 +274,7 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
         toggle.addEventListener('click', () => {
           const nextOpen = header.dataset.mobileMenuOpen !== 'true';
           setMenuOpen(nextOpen);
+          header.dataset.navHidden = 'false';
           if (nextOpen) {
             setTocOpen(false);
           }
@@ -227,6 +289,7 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
         tocTrigger?.addEventListener('click', () => {
           const nextOpen = header.dataset.mobileTocOpen !== 'true';
           setTocOpen(nextOpen);
+          header.dataset.navHidden = 'false';
           if (nextOpen) {
             setMenuOpen(false);
           }
@@ -278,6 +341,18 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
     border-radius: 8px;
     background: var(--paper-nav);
     box-shadow: var(--paper-shadow);
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 180ms ease,
+      transform 220ms ease;
+    will-change: transform;
+  }
+
+  .blog-top-nav[data-nav-hidden='true'] {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(-100% - 24px));
   }
 
   .mobile-menu-toggle,
@@ -566,6 +641,12 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
 
     .nav-actions .toc-action {
       display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blog-top-nav {
+      transition: none;
     }
   }
 </style>
