@@ -128,9 +128,11 @@ const hasSidebar = shouldRenderSidebar && hasToc;
 <html lang="zh-CN" data-palette={palette}>
   <head>
     <BaseHead title={title} description={description} />
-    {comments.provider === 'waline' && comments.enabled && (
-      <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
-    )}
+    {
+      comments.provider === 'waline' && comments.enabled && (
+        <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+      )
+    }
   </head>
   <body class="blog-detail-page">
     <BlogTopNav showTocIcon={hasToc} tocItems={tocItems} />
