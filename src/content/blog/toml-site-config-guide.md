@@ -9,6 +9,10 @@ tags:
   - Astro
   - TOML
   - Configuration
+categories:
+  - 站点建设
+series:
+  - Navfolio 模块手册
 comments: true
 sidebar:
   enable: true

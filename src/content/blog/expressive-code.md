@@ -5,6 +5,10 @@ date: '2026-05-24T16:21:33.842Z'
 draft: false
 showHeroImage: false
 tags: []
+categories:
+  - 站点建设
+series:
+  - Navfolio 模块手册
 comments: true
 sidebar:
   enable: true

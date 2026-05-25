@@ -9,6 +9,10 @@ tags:
   - '散文'
   - '中文'
   - '荷塘月色'
+categories:
+  - 文学写作
+series:
+  - 荷塘月色三语阅读
 comments: true
 sidebar:
   enable: true

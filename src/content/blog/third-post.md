@@ -9,6 +9,10 @@ tags:
   - '随筆'
   - '日本語'
   - '月明かり'
+categories:
+  - 文学写作
+series:
+  - 荷塘月色三语阅读
 comments: true
 sidebar:
   enable: true

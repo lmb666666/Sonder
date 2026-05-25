@@ -8,6 +8,10 @@ showHeroImage: true
 tags:
   - 'Markdown'
   - '教程'
+categories:
+  - 内容管理
+series:
+  - Navfolio 模块手册
 comments: true
 sidebar:
   enable: true

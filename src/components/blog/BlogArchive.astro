@@ -22,9 +22,18 @@ interface Props {
     data: BlogPost[];
   };
   postOffset?: number;
+  headerKicker?: string;
+  headerTitle?: string;
+  headerNote?: string;
 }
 
-const { page, postOffset = 0 } = Astro.props;
+const {
+  page,
+  postOffset = 0,
+  headerKicker = 'Notebook archive',
+  headerTitle = 'Writing notes',
+  headerNote = 'Loose pages, technical margins, and small notes gathered into a readable stack.',
+} = Astro.props;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const hasPagination = page.lastPage > 1;
 
@@ -43,13 +52,12 @@ function getPageHref(pageNumber: number) {
 
 <header class="archive-hero archive-header-shared page-header-spacing">
   <div class="archive-header-main">
-    <p class="archive-kicker">Notebook archive</p>
-    <h1 class="archive-title">Writing notes</h1>
+    <p class="archive-kicker">{headerKicker}</p>
+    <h1 class="archive-title">{headerTitle}</h1>
   </div>
-  <p class="archive-note">
-    Loose pages, technical margins, and small notes gathered into a readable stack.
-  </p>
+  <p class="archive-note">{headerNote}</p>
 </header>
+<slot name="after-header" />
 <section>
   <ul class="post-stack">
     {
