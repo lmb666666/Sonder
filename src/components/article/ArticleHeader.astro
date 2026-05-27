@@ -197,9 +197,14 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
   h1 {
     margin: 0;
     color: var(--paper-ink);
+    font-family: var(--font-heading);
     font-size: clamp(2.15rem, 4.8vw, 3.45rem);
     font-weight: 400;
     line-height: 1.08;
+  }
+
+  :global(.blog-content-ui) h1 {
+    font-family: var(--font-page-heading);
   }
 
   .archive-heading .meta-line {

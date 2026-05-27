@@ -134,7 +134,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
       )
     }
   </head>
-  <body class="blog-detail-page">
+  <body class:list={['blog-detail-page', { 'blog-content-ui': contentFont === 'ui' }]}>
     <BlogTopNav showTocIcon={hasToc} tocItems={tocItems} />
     <div class="blog-background" aria-hidden="true"></div>
 
@@ -346,6 +346,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
     margin-top: 56px;
     margin-bottom: 20px;
     color: var(--paper-ink);
+    font-family: var(--font-heading);
     font-size: 1.9rem;
     line-height: 1.2;
   }
@@ -354,7 +355,22 @@ const hasSidebar = shouldRenderSidebar && hasToc;
     margin-top: 38px;
     margin-bottom: 16px;
     color: var(--paper-ink);
+    font-family: var(--font-heading);
     font-size: 1.35rem;
+  }
+
+  .article-content :global(h4),
+  .article-content :global(h5),
+  .article-content :global(h6) {
+    font-family: var(--font-heading);
+  }
+
+  .article-content-ui :global(h2),
+  .article-content-ui :global(h3),
+  .article-content-ui :global(h4),
+  .article-content-ui :global(h5),
+  .article-content-ui :global(h6) {
+    font-family: var(--font-page-heading);
   }
 
   .article-content :global(p) {
