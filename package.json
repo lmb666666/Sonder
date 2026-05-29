@@ -14,7 +14,8 @@
     "post:new": "bun scripts/new-content.ts blog",
     "vibe:new": "bun scripts/new-content.ts vibe",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
@@ -32,8 +33,13 @@
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
     "pagefind": "^1.5.2",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1"
+  },
+  "lint-staged": {
+    "*": "bun run format:check"
   }
 }

@@ -34,6 +34,8 @@ bun run format:check
 
 Run `bun install` only when dependencies are missing or changed. For meaningful code, route, schema, or config changes, run `bun run build` before submitting.
 
+We also add the `pre-commit` hook to help you do not forget checking.
+
 ## Review
 
 Maintainers review for project fit, scope, build health, reading comfort, mobile behavior, and maintenance cost. A PR may be closed if the idea is useful only for a personal fork or if the implementation expands beyond the issue agreement.
@@ -75,6 +77,8 @@ bun run format:check
 ```
 
 只有依赖缺失或变化时才运行 `bun install`。涉及代码、路由、schema 或配置的有效改动，提交前请运行 `bun run build`。
+
+我们同样也配置了 `pre-commit` 工具来帮助您不要忘记这些检查。
 
 ## Review
 
