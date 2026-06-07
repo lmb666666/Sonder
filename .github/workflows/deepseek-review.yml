@@ -1,32 +1,32 @@
-name: Code Review
-on:
-  pull_request_target:
-    types:
-      - labeled
+name: DeepSeek Inline Code Review
 
-permissions:
-  pull-requests: write
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 jobs:
-  setup-deepseek-review:
-    runs-on: ubuntu-latest
-    name: Code Review
+  review:
     if: contains(github.event.pull_request.labels.*.name, 'ai:review')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
-      - name: DeepSeek Code Review
-        uses: hustcer/deepseek-review@v1
-        with:
-          chat-token: ${{ secrets.DEEPSEEK_API_KEY }}
-          sys-prompt: |
-            你现在是一名资深的前端架构师。请对下面提供的代码进行全面的代码评审（Code Review）。请从以下几个维度进行审查：
-            1. 代码规范与风格：是否符合团队规范或行业最佳实践？
-            2. 潜在 Bug：是否存在空指针、边界条件遗漏、并发冲突等隐患？
-            3. 性能与效率：是否存在高时间/空间复杂度算法、不必要的循环或内存泄漏风险？
-            4. 安全性：是否存在 SQL 注入、硬编码敏感信息等安全漏洞？
-            5. 可读性与可维护性：变量/函数命名是否清晰，是否有过度设计的嫌疑？
-            6. 可测试性：是否容易编写单元测试？
-            请按以下格式输出：
-            - 问题级别：（致命/警告/建议）
-            - 定位：（指出具体哪一行或哪段代码）
-            - 原因分析：（解释为什么会有问题）
-            - 重构建议：（提供具体的优化方案或代码示例）
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: DeepSeek Inline Review
+        uses: 0xWelt/Lunar@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_BASE_URL: https://api.deepseek.com/v1
+          OPENAI_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          MODEL: deepseek-v4-flash
+          LANGUAGE: Chinese
+          TEMPERATURE: 0.2
+          PROMPT: |
+            你是一个严谨的资深系统工程师和架构师。请审查接下来的代码片段。
+            请重点指出潜在的 Bug、内存泄漏风险、代码边界条件漏洞以及性能瓶颈。
+            如果没有发现明显问题，请直接保持沉默，不要返回任何内容。
+            如果有建议，请简明扼要地用中文指出。
