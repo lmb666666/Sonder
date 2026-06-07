@@ -1,0 +1,32 @@
+name: Code Review
+on:
+  pull_request_target:
+    types:
+      - labeled
+
+permissions:
+  pull-requests: write
+
+jobs:
+  setup-deepseek-review:
+    runs-on: ubuntu-latest
+    name: Code Review
+    if: contains(github.event.pull_request.labels.*.name, 'ai:review')
+    steps:
+      - name: DeepSeek Code Review
+        uses: hustcer/deepseek-review@v1
+        with:
+          chat-token: ${{ secrets.DEEPSEEK_API_KEY }}
+          sys-prompt: |
+            你现在是一名资深的前端架构师。请对下面提供的代码进行全面的代码评审（Code Review）。请从以下几个维度进行审查：
+            1. 代码规范与风格：是否符合团队规范或行业最佳实践？
+            2. 潜在 Bug：是否存在空指针、边界条件遗漏、并发冲突等隐患？
+            3. 性能与效率：是否存在高时间/空间复杂度算法、不必要的循环或内存泄漏风险？
+            4. 安全性：是否存在 SQL 注入、硬编码敏感信息等安全漏洞？
+            5. 可读性与可维护性：变量/函数命名是否清晰，是否有过度设计的嫌疑？
+            6. 可测试性：是否容易编写单元测试？
+            请按以下格式输出：
+            - 问题级别：（致命/警告/建议）
+            - 定位：（指出具体哪一行或哪段代码）
+            - 原因分析：（解释为什么会有问题）
+            - 重构建议：（提供具体的优化方案或代码示例）
