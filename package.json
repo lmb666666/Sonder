@@ -34,6 +34,7 @@
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
+    "@astrojs/compiler": "^4.0.0",
     "@typescript-eslint/parser": "^8.60.1",
     "eslint-plugin-deprecation": "^3.0.0",
     "husky": "^9.1.7",
