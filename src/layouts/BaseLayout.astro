@@ -1,6 +1,7 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
+import FullFontWarmup from '../components/FullFontWarmup.astro';
 import { getThemePalette } from '../data/site';
 
 interface Props {
@@ -20,5 +21,6 @@ const palette = await getThemePalette();
   <body>
     <BlogTopNav />
     <slot />
+    <FullFontWarmup />
   </body>
 </html>
