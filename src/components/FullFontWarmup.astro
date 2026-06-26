@@ -42,7 +42,11 @@
   function queueFullFontPrefetch() {
     if (shouldSkipWarmup()) return;
     if (alreadyQueued()) return;
-    if (document.visibilityState === 'hidden') return;
+
+    if (document.visibilityState === 'hidden') {
+      document.addEventListener('visibilitychange', retryWhenVisible);
+      return;
+    }
 
     const link = document.createElement('link');
 
@@ -106,6 +110,4 @@
     document.removeEventListener('visibilitychange', retryWhenVisible);
     requestIdle(queueFullFontPrefetch);
   }
-
-  document.addEventListener('visibilitychange', retryWhenVisible);
 </script>
