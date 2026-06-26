@@ -1,0 +1,113 @@
+<script>
+  const FULL_FONT_URL = '/fonts/LXGWWenKai-Regular.ttf';
+  const FULL_FONT_TYPE = 'font/ttf';
+  const WARMUP_ATTR = 'data-navfolio-full-font-warmup';
+
+  interface ConnectionLike {
+    saveData?: boolean;
+    effectiveType?: string;
+  }
+
+  interface NavigatorWithConnection extends Navigator {
+    connection?: ConnectionLike;
+    mozConnection?: ConnectionLike;
+    webkitConnection?: ConnectionLike;
+  }
+
+  function getConnection() {
+    const connectionNavigator = navigator as NavigatorWithConnection;
+
+    return (
+      connectionNavigator.connection ||
+      connectionNavigator.mozConnection ||
+      connectionNavigator.webkitConnection
+    );
+  }
+
+  function shouldSkipWarmup() {
+    const connection = getConnection();
+
+    if (connection?.saveData) return true;
+    if (connection?.effectiveType && ['slow-2g', '2g'].includes(connection.effectiveType)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function alreadyQueued() {
+    return Boolean(document.querySelector(`link[${WARMUP_ATTR}]`));
+  }
+
+  function queueFullFontPrefetch() {
+    if (shouldSkipWarmup()) return;
+    if (alreadyQueued()) return;
+
+    if (document.visibilityState === 'hidden') {
+      document.addEventListener('visibilitychange', retryWhenVisible);
+      return;
+    }
+
+    const link = document.createElement('link');
+
+    link.setAttribute(WARMUP_ATTR, 'true');
+    link.rel = 'prefetch';
+    link.as = 'font';
+    link.type = FULL_FONT_TYPE;
+    link.href = FULL_FONT_URL;
+    link.crossOrigin = 'anonymous';
+
+    document.head.appendChild(link);
+  }
+
+  function requestIdle(callback: () => void) {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(callback, { timeout: 3000 });
+      return;
+    }
+
+    window.setTimeout(callback, 1500);
+  }
+
+  async function waitForCurrentPageFonts() {
+    if (!document.fonts?.ready) return;
+
+    let timeoutId: ReturnType<typeof window.setTimeout> | undefined;
+    const timeoutPromise = new Promise((resolve) => {
+      timeoutId = window.setTimeout(resolve, 2000);
+    });
+
+    try {
+      await Promise.race([document.fonts.ready, timeoutPromise]);
+    } catch {
+      // Warmup is progressive only. Ignore font readiness failures.
+    } finally {
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+    }
+  }
+
+  async function scheduleWarmupAfterFirstScreen() {
+    await waitForCurrentPageFonts();
+    requestIdle(queueFullFontPrefetch);
+  }
+
+  function runAfterPageLoad() {
+    if (document.readyState === 'complete') {
+      scheduleWarmupAfterFirstScreen();
+      return;
+    }
+
+    window.addEventListener('load', scheduleWarmupAfterFirstScreen, { once: true });
+  }
+
+  runAfterPageLoad();
+
+  function retryWhenVisible() {
+    if (document.visibilityState !== 'visible') return;
+
+    document.removeEventListener('visibilitychange', retryWhenVisible);
+    requestIdle(queueFullFontPrefetch);
+  }
+</script>
