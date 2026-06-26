@@ -603,7 +603,7 @@ const vibes = await Promise.all(
                 {entry.data.images.length > 0 && (
                   <div
                     class:list={['vibe-images', imageLayout.isCollapsible && 'is-collapsible']}
-                    style={`--vibe-image-columns: ${imageLayout.columns}; --vibe-image-visible-rows: ${imageLayout.visibleRows};`}
+                    style={`--vibe-image-columns: ${imageLayout.columns};`}
                     data-vibe-image-group
                     data-vibe-image-count={imageLayout.count}
                     data-vibe-image-columns={imageLayout.columns}
