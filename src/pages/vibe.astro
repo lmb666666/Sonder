@@ -6,6 +6,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import SmartImage from '../components/SmartImage.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
 import { getSiteConfig } from '../data/site';
+import { getVibeImageLayout } from '../utils/vibe-image-layout';
 
 const { site, vibe: vibeConfig, theme } = await getSiteConfig();
 const palette = theme.palette;
@@ -19,8 +20,9 @@ const vibes = await Promise.all(
   vibeEntries.map(async (entry, index) => {
     const { Content } = await render(entry);
     const align = entry.data.align ?? (index % 2 === 0 ? 'left' : 'right');
+    const imageLayout = getVibeImageLayout(entry.data.images.length);
 
-    return { entry, Content, align };
+    return { entry, Content, align, imageLayout };
   }),
 );
 ---
@@ -219,13 +221,11 @@ const vibes = await Promise.all(
         opacity: 0.78;
       }
 
-      .vibe-item.right .vibe-meta,
-      .vibe-item.right .vibe-images {
+      .vibe-item.right .vibe-meta {
         justify-content: flex-end;
       }
 
-      .vibe-item.center .vibe-meta,
-      .vibe-item.center .vibe-images {
+      .vibe-item.center .vibe-meta {
         justify-content: center;
       }
 
@@ -282,21 +282,55 @@ const vibes = await Promise.all(
       }
 
       .vibe-images {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: flex-start;
+        --vibe-image-active-columns: var(--vibe-image-columns);
+        --vibe-image-gap: 10px;
+        --vibe-image-cell: clamp(132px, 21vw, 172px);
+
+        display: grid;
+        grid-template-columns: repeat(var(--vibe-image-active-columns), minmax(0, 1fr));
+        gap: var(--vibe-image-gap);
         margin: 16px 0 18px;
+        width: min(
+          100%,
+          calc(
+            (var(--vibe-image-columns) * var(--vibe-image-cell)) +
+              ((var(--vibe-image-columns) - 1) * var(--vibe-image-gap))
+          )
+        );
+      }
+
+      .vibe-item.right .vibe-images {
+        margin-left: auto;
+      }
+
+      .vibe-item.center .vibe-images {
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .vibe-images[data-vibe-image-count='1'] {
+        width: min(100%, 420px);
       }
 
       .vibe-image {
-        flex: 1 1 210px;
-        max-width: min(100%, 420px);
         margin: 0;
         overflow: hidden;
+        aspect-ratio: 1;
         border-radius: 10px;
         opacity: 0.94;
         rotate: -0.6deg;
+      }
+
+      .vibe-images[data-vibe-image-count='1'] .vibe-image {
+        aspect-ratio: auto;
+      }
+
+      .vibe-image.is-extra {
+        display: none;
+      }
+
+      .vibe-images.is-expanded .vibe-image.is-extra {
+        display: block;
       }
 
       .vibe-image:nth-child(even) {
@@ -306,9 +340,48 @@ const vibes = await Promise.all(
       .vibe-image img {
         display: block;
         width: 100%;
-        height: auto;
+        height: 100%;
         border-radius: 10px;
         filter: saturate(0.86) contrast(0.98);
+        object-fit: cover;
+      }
+
+      .vibe-images[data-vibe-image-count='1'] .vibe-image img {
+        height: auto;
+        object-fit: initial;
+      }
+
+      .vibe-image-toggle {
+        grid-column: 1 / -1;
+        justify-self: center;
+        margin: 4px 0 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: var(--paper-ink-faint);
+        cursor: pointer;
+        font-family: var(--font-meta);
+        font-size: 0.68rem;
+        line-height: 1.8;
+        text-decoration: underline;
+        text-decoration-color: color-mix(in srgb, currentColor 28%, transparent);
+        text-underline-offset: 0.28em;
+        opacity: 0.78;
+        transition:
+          color 160ms ease,
+          opacity 160ms ease;
+      }
+
+      .vibe-image-toggle:hover,
+      .vibe-image-toggle:focus-visible {
+        color: var(--paper-ink-soft);
+        opacity: 1;
+      }
+
+      .vibe-image-toggle:focus-visible {
+        outline: 1px solid color-mix(in srgb, var(--paper-accent) 42%, transparent);
+        outline-offset: 4px;
       }
 
       .vibe-item.quote .vibe-body {
@@ -395,9 +468,18 @@ const vibes = await Promise.all(
           line-height: 1.86;
         }
 
-        .vibe-image {
-          flex-basis: 100%;
-          max-width: 100%;
+        .vibe-images[data-vibe-image-columns='3'],
+        .vibe-images[data-vibe-image-columns='4'] {
+          --vibe-image-active-columns: 2;
+        }
+
+        .vibe-images {
+          width: 100%;
+        }
+
+        .vibe-image-toggle {
+          min-height: 34px;
+          font-size: 0.72rem;
         }
       }
     </style>
@@ -440,7 +522,7 @@ const vibes = await Promise.all(
             )
           }
           {
-            vibes.map(({ entry, Content, align }, index) => (
+            vibes.map(({ entry, Content, align, imageLayout }, index) => (
               <article
                 class:list={['vibe-item', align, entry.data.size, entry.data.type]}
                 style={`--vibe-index: ${index}`}
@@ -462,9 +544,23 @@ const vibes = await Promise.all(
                 {entry.data.title && <h2 class="vibe-heading">{entry.data.title}</h2>}
 
                 {entry.data.images.length > 0 && (
-                  <div class="vibe-images" aria-label={`${entry.data.title ?? entry.id} images`}>
-                    {entry.data.images.map((image) => (
-                      <figure class="vibe-image">
+                  <div
+                    class:list={['vibe-images', imageLayout.isCollapsible && 'is-collapsible']}
+                    style={`--vibe-image-columns: ${imageLayout.columns}; --vibe-image-visible-rows: ${imageLayout.visibleRows};`}
+                    data-vibe-image-group
+                    data-vibe-image-count={imageLayout.count}
+                    data-vibe-image-columns={imageLayout.columns}
+                    aria-label={`${entry.data.title ?? entry.id} images`}
+                  >
+                    {entry.data.images.map((image, imageIndex) => (
+                      <figure
+                        class:list={[
+                          'vibe-image',
+                          imageLayout.isCollapsible &&
+                            imageIndex >= imageLayout.visibleCount &&
+                            'is-extra',
+                        ]}
+                      >
                         <SmartImage
                           src={image}
                           alt=""
@@ -473,6 +569,18 @@ const vibes = await Promise.all(
                         />
                       </figure>
                     ))}
+                    {imageLayout.isCollapsible && (
+                      <button
+                        class="vibe-image-toggle"
+                        type="button"
+                        aria-expanded="false"
+                        data-vibe-image-toggle
+                        data-expand-label={`展开 ${imageLayout.hiddenCount} 张`}
+                        data-collapse-label="收起图片"
+                      >
+                        展开 {imageLayout.hiddenCount} 张
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -491,5 +599,26 @@ const vibes = await Promise.all(
         <script>import {mountVibeThread} from '../utils/vibe-thread'; mountVibeThread();</script>
       )
     }
+    <script>
+      const mountVibeImageToggles = () => {
+        document
+          .querySelectorAll<HTMLButtonElement>('[data-vibe-image-toggle]')
+          .forEach((button) => {
+            button.addEventListener('click', () => {
+              const group = button.closest<HTMLElement>('[data-vibe-image-group]');
+
+              if (!group) return;
+
+              const isExpanded = group.classList.toggle('is-expanded');
+              button.setAttribute('aria-expanded', String(isExpanded));
+              button.textContent = isExpanded
+                ? (button.dataset.collapseLabel ?? '收起图片')
+                : (button.dataset.expandLabel ?? '展开图片');
+            });
+          });
+      };
+
+      mountVibeImageToggles();
+    </script>
   </body>
 </html>
