@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import SmartImage from '../components/SmartImage.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
+import ZoomableImage from '../components/mdx/ZoomableImage.astro';
 import { getSiteConfig } from '../data/site';
 import { getVibeImageLayout } from '../utils/vibe-image-layout';
 
@@ -313,12 +314,19 @@ const vibes = await Promise.all(
       }
 
       .vibe-image {
+        position: relative;
         margin: 0;
         overflow: hidden;
         aspect-ratio: 1;
         border-radius: 10px;
+        cursor: zoom-in;
         opacity: 0.94;
         rotate: -0.6deg;
+      }
+
+      .vibe-image:focus-visible {
+        outline: 2px solid color-mix(in srgb, var(--paper-accent) 36%, transparent);
+        outline-offset: 4px;
       }
 
       .vibe-images[data-vibe-image-count='1'] .vibe-image {
@@ -335,6 +343,50 @@ const vibes = await Promise.all(
 
       .vibe-image:nth-child(even) {
         rotate: 0.7deg;
+      }
+
+      .vibe-image::before,
+      .vibe-image::after {
+        position: absolute;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0;
+        transition:
+          opacity 160ms ease,
+          transform 160ms ease;
+        content: '';
+      }
+
+      .vibe-image::before {
+        inset: 0;
+        background: color-mix(in srgb, var(--paper-ink) 24%, transparent);
+      }
+
+      .vibe-image::after {
+        right: 10px;
+        bottom: 10px;
+        width: 34px;
+        height: 34px;
+        border: 1px solid color-mix(in srgb, var(--paper-surface) 72%, transparent);
+        border-radius: 999px;
+        background-color: color-mix(in srgb, var(--paper-surface) 88%, transparent);
+        background-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23343c35' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3M11 8v6M8 11h6'/%3E%3C/g%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        box-shadow: 0 8px 20px color-mix(in srgb, var(--paper-ink) 10%, transparent);
+        transform: translateY(2px) scale(0.96);
+      }
+
+      .vibe-image:hover::before,
+      .vibe-image:hover::after,
+      .vibe-image:focus-visible::before,
+      .vibe-image:focus-visible::after {
+        opacity: 1;
+      }
+
+      .vibe-image:hover::after,
+      .vibe-image:focus-visible::after {
+        transform: translateY(0) scale(1);
       }
 
       .vibe-image img {
@@ -481,6 +533,11 @@ const vibes = await Promise.all(
           min-height: 34px;
           font-size: 0.72rem;
         }
+
+        .vibe-image::before,
+        .vibe-image::after {
+          display: none;
+        }
       }
     </style>
   </head>
@@ -560,12 +617,17 @@ const vibes = await Promise.all(
                             imageIndex >= imageLayout.visibleCount &&
                             'is-extra',
                         ]}
+                        data-zoomable-image
+                        role="button"
+                        tabindex="0"
+                        aria-label={`${entry.data.title ?? entry.id} image ${imageIndex + 1}`}
                       >
                         <SmartImage
                           src={image}
                           alt=""
                           widths={[360, 520, 720]}
                           sizes="(max-width: 720px) 100vw, 420px"
+                          data-zoomable-image-target
                         />
                       </figure>
                     ))}
@@ -620,5 +682,6 @@ const vibes = await Promise.all(
 
       mountVibeImageToggles();
     </script>
+    <ZoomableImage />
   </body>
 </html>
