@@ -1,13 +1,14 @@
 ---
 import { getSiteConfig } from '../../data/site';
-import { shouldRenderWalinePageView } from '../../utils/comments';
+import { resolveCommentsConfig, shouldRenderWalinePageView } from '../../utils/comments';
 
 interface Props {
   pathname: string;
 }
 
 const { pathname } = Astro.props;
-const { comments } = await getSiteConfig();
+const { comments: rawComments } = await getSiteConfig();
+const comments = resolveCommentsConfig(rawComments);
 const showPageView = shouldRenderWalinePageView(comments);
 ---
 

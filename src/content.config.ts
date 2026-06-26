@@ -98,8 +98,8 @@ const defaultWalineConfig = {
 };
 
 const defaultCommentsConfig = {
-  enabled: true,
-  provider: 'giscus',
+  enabled: false,
+  provider: 'none',
   show_on_posts: true,
   giscus: defaultGiscusConfig,
   utterances: defaultUtterancesConfig,
@@ -165,8 +165,8 @@ const siteConfig = defineCollection({
       .default(defaultCodeConfig),
     comments: z
       .object({
-        enabled: z.boolean().optional().default(true),
-        provider: commentProviderSchema.optional().default('giscus'),
+        enabled: z.boolean().optional().default(false),
+        provider: commentProviderSchema.optional().default('none'),
         show_on_posts: z.boolean().optional().default(true),
         giscus: z
           .object({

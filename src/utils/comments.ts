@@ -4,6 +4,59 @@ export type CommentProvider = SiteConfig['comments']['provider'];
 export type CommentsConfig = SiteConfig['comments'];
 
 const giscusRequiredFields = ['repo', 'repo_id', 'category', 'category_id'] as const;
+const commentProviders = ['giscus', 'utterances', 'waline', 'none'] as const;
+
+function envValue(key: string) {
+  return import.meta.env[key]?.trim() ?? '';
+}
+
+function envBoolean(key: string) {
+  const value = envValue(key).toLowerCase();
+
+  if (['1', 'true', 'yes', 'on'].includes(value)) {
+    return true;
+  }
+
+  if (['0', 'false', 'no', 'off'].includes(value)) {
+    return false;
+  }
+
+  return undefined;
+}
+
+function envProvider(key: string): CommentProvider | undefined {
+  const value = envValue(key);
+
+  return commentProviders.includes(value as CommentProvider)
+    ? (value as CommentProvider)
+    : undefined;
+}
+
+function withEnvString<T extends Record<string, unknown>, K extends keyof T>(
+  config: T,
+  key: K,
+  envKey: string,
+) {
+  const value = envValue(envKey);
+
+  return value ? { ...config, [key]: value } : config;
+}
+
+export function resolveCommentsConfig(config: CommentsConfig): CommentsConfig {
+  const enabled = envBoolean('NAVFOLIO_COMMENTS_ENABLED') ?? config.enabled;
+  const provider = envProvider('NAVFOLIO_COMMENTS_PROVIDER') ?? config.provider;
+  let giscus = withEnvString(config.giscus, 'repo', 'NAVFOLIO_GISCUS_REPO');
+  giscus = withEnvString(giscus, 'repo_id', 'NAVFOLIO_GISCUS_REPO_ID');
+  giscus = withEnvString(giscus, 'category', 'NAVFOLIO_GISCUS_CATEGORY');
+  giscus = withEnvString(giscus, 'category_id', 'NAVFOLIO_GISCUS_CATEGORY_ID');
+
+  return {
+    ...config,
+    enabled,
+    provider,
+    giscus,
+  };
+}
 
 export function warnMissingCommentConfig(provider: CommentProvider, fields: string[]) {
   if (!import.meta.env.DEV || fields.length === 0) {

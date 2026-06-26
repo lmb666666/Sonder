@@ -23,8 +23,8 @@ preserveIndent = true
 collapseStyle = "collapsible-auto"
 
 [config.comments]
-enabled = true
-provider = "giscus"
+enabled = false
+provider = "none"
 show_on_posts = true
 
 [config.search]
@@ -37,10 +37,10 @@ maxResults = 6
 postsPerPage = 6
 
 [config.comments.giscus]
-repo = "dodolalorc/astro-navfolio"
-repo_id = "R_kgDOSaQejw"
-category = "Announcements"
-category_id = "DIC_kwDOSaQej84C9di9"
+repo = ""
+repo_id = ""
+category = ""
+category_id = ""
 mapping = "pathname"
 strict = "0"
 reactions_enabled = "1"

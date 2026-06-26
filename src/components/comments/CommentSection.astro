@@ -1,6 +1,6 @@
 ---
 import { getSiteConfig } from '../../data/site';
-import { canRenderProvider, getCommentProvider } from '../../utils/comments';
+import { canRenderProvider, getCommentProvider, resolveCommentsConfig } from '../../utils/comments';
 import GiscusComment from './GiscusComment.astro';
 import UtterancesComment from './UtterancesComment.astro';
 import WalineComment from './WalineComment.astro';
@@ -13,7 +13,8 @@ interface Props {
 }
 
 const { frontmatter, pathname } = Astro.props;
-const { comments } = await getSiteConfig();
+const { comments: rawComments } = await getSiteConfig();
+const comments = resolveCommentsConfig(rawComments);
 const provider = frontmatter.comments === false ? null : getCommentProvider(comments);
 const shouldRender = provider ? canRenderProvider(comments, provider) : false;
 ---

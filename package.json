@@ -14,8 +14,8 @@
     "post:new": "bun scripts/new-content.ts blog",
     "vibe:new": "bun scripts/new-content.ts vibe",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "bun run lint && prettier --check .",
+    "format": "prettier --write --ignore-unknown .",
+    "format:check": "bun run lint && prettier --check --ignore-unknown .",
     "prepare": "husky"
   },
   "dependencies": {
