@@ -1,0 +1,257 @@
+---
+import TocTree from './TocTree.astro';
+import type { TocItem } from '../../utils/toc-tree';
+import { normalizeHash } from '../../utils/toc-hash';
+
+interface Props {
+  items: TocItem[];
+  level?: number;
+  path?: string;
+  idPrefix?: string;
+  navLink?: boolean;
+}
+
+const { items, level = 1, path = '', idPrefix = 'toc', navLink = false } = Astro.props;
+---
+
+<ol class:list={['toc-tree', { 'toc-tree-nested': level > 1 }]}>
+  {
+    items.map((item, index) => {
+      const normalizedHref = normalizeHash(item.href) || item.href;
+      const branchKey = path ? `${path}-${index + 1}` : `${index + 1}`;
+      const branchId = `${idPrefix}-${branchKey}-children`;
+      const numberLabel = branchKey.replace(/-/g, '.');
+      const hasChildren = item.children.length > 0;
+
+      return (
+        <li
+          class:list={['toc-tree-item', { 'has-children': hasChildren }]}
+          data-toc-expanded={hasChildren ? 'false' : undefined}
+        >
+          <div class="toc-row">
+            {hasChildren ? (
+              <button
+                class="toc-branch-toggle"
+                type="button"
+                aria-label="Expand section"
+                aria-expanded="false"
+                aria-controls={branchId}
+                data-toc-toggle
+              >
+                <i aria-hidden="true" />
+              </button>
+            ) : (
+              <span class="toc-branch-spacer" aria-hidden="true" />
+            )}
+            <a
+              href={normalizedHref}
+              data-nav-toc-link={navLink ? '' : undefined}
+              data-toc-link
+              data-toc-hash={normalizedHref}
+            >
+              <span>{numberLabel}</span>
+              {item.label}
+            </a>
+          </div>
+          {hasChildren && (
+            <div class="toc-children" id={branchId} data-toc-branch>
+              <TocTree
+                items={item.children}
+                level={level + 1}
+                path={branchKey}
+                idPrefix={idPrefix}
+                navLink={navLink}
+              />
+            </div>
+          )}
+        </li>
+      );
+    })
+  }
+</ol>
+
+<style is:global>
+  .toc-tree {
+    display: grid;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc-card .toc-list-wrap {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 125, 109, 0.24) transparent;
+  }
+
+  .toc-card.collapsible .toc-list-wrap {
+    max-height: none;
+    overflow: hidden;
+    padding-right: 0;
+  }
+
+  .toc-tree-nested {
+    gap: 4px;
+    padding-top: 4px;
+    padding-left: 13px;
+    border-left: 1px solid rgba(102, 125, 109, 0.14);
+  }
+
+  .toc-tree-item {
+    position: relative;
+  }
+
+  .toc-row {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 2px;
+    align-items: start;
+  }
+
+  .toc-branch-toggle,
+  .toc-branch-spacer {
+    width: 18px;
+    height: 36px;
+  }
+
+  .toc-branch-toggle {
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--paper-ink-faint);
+    cursor: pointer;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .toc-branch-toggle:hover,
+  .toc-branch-toggle:focus-visible {
+    background: rgba(102, 125, 109, 0.1);
+    color: var(--paper-accent);
+  }
+
+  .toc-branch-toggle i {
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateX(-1px) rotate(-45deg);
+    transition: transform 160ms ease;
+  }
+
+  .toc-tree-item[data-toc-expanded='true'] > .toc-row .toc-branch-toggle i {
+    transform: translateY(-1px) rotate(45deg);
+  }
+
+  .toc-tree-item[data-toc-expanded='false'] > .toc-children {
+    display: none;
+  }
+
+  .toc-card .toc-tree a,
+  .mobile-toc-panel .toc-tree a {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+    min-height: 36px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-serif-cn);
+    font-size: 0.84rem;
+    line-height: 1.35;
+    text-decoration: none;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      opacity 160ms ease;
+  }
+
+  .toc-card[data-font='article'] .toc-tree a {
+    font-family: var(--font-article);
+  }
+
+  .toc-card .toc-tree a > span,
+  .mobile-toc-panel .toc-tree a > span {
+    color: var(--paper-ink-faint);
+    font-family: var(--font-ui-label);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .toc-card .toc-tree a[data-state='past'],
+  .mobile-toc-panel .toc-tree a[data-state='past'] {
+    color: var(--paper-ink-faint);
+    opacity: 0.62;
+  }
+
+  .toc-card .toc-tree a[data-state='future'],
+  .mobile-toc-panel .toc-tree a[data-state='future'] {
+    color: var(--paper-ink-soft);
+    opacity: 1;
+  }
+
+  .toc-card .toc-tree a[data-state='active'],
+  .toc-card .toc-tree a[aria-current='true'],
+  .mobile-toc-panel .toc-tree a[data-state='active'],
+  .mobile-toc-panel .toc-tree a[aria-current='true'] {
+    background: rgba(102, 125, 109, 0.16);
+    color: var(--paper-accent);
+    box-shadow: inset 2px 0 0 rgba(102, 125, 109, 0.5);
+  }
+
+  .toc-card .toc-tree a[data-state]:not([data-state='active']):not([aria-current='true']):hover,
+  .mobile-toc-panel
+    .toc-tree
+    a[data-state]:not([data-state='active']):not([aria-current='true']):hover {
+    background: rgba(102, 125, 109, 0.1);
+    color: var(--paper-accent);
+  }
+
+  @media (max-width: 900px) {
+    .toc-card .toc-list-wrap {
+      max-height: none;
+      overflow: hidden;
+      padding-right: 0;
+    }
+
+    .toc-card.can-collapse .toc-list-wrap {
+      max-height: 132px;
+      transition: max-height 180ms ease;
+    }
+
+    .toc-card.can-collapse[data-expanded='true'] .toc-list-wrap {
+      max-height: none;
+    }
+
+    .toc-tree-nested {
+      padding-left: 9px;
+    }
+
+    .toc-card .toc-tree a,
+    .mobile-toc-panel .toc-tree a {
+      grid-template-columns: 24px minmax(0, 1fr);
+      min-height: 38px;
+      padding: 8px;
+      font-size: 0.82rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toc-card.can-collapse .toc-list-wrap,
+    .toc-branch-toggle,
+    .toc-branch-toggle i,
+    .toc-card .toc-tree a,
+    .mobile-toc-panel .toc-tree a {
+      transition: none;
+    }
+  }
+</style>
