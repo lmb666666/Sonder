@@ -20,7 +20,7 @@ const { items, level = 1, path = '', idPrefix = 'toc', navLink = false } = Astro
       const normalizedHref = normalizeHash(item.href) || item.href;
       const branchKey = path ? `${path}-${index + 1}` : `${index + 1}`;
       const branchId = `${idPrefix}-${branchKey}-children`;
-      const numberLabel = branchKey.replaceAll('-', '.');
+      const numberLabel = branchKey.replace(/-/g, '.');
       const hasChildren = item.children.length > 0;
 
       return (
