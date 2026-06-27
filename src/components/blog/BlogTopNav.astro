@@ -1,11 +1,13 @@
 ---
 import { Github, ListTree, Menu, Moon, Sun } from 'lucide-astro';
 import SiteSearch from './SiteSearch.astro';
+import TocTree from './TocTree.astro';
 import { getSiteConfig } from '../../data/site';
+import type { TocItem } from '../../utils/toc-tree';
 
 interface Props {
   showTocIcon?: boolean;
-  tocItems?: { href: string; label: string }[];
+  tocItems?: TocItem[];
 }
 
 const { showTocIcon = false, tocItems = [] } = Astro.props;
@@ -161,18 +163,10 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
         aria-label="Article table of contents"
         data-nav-toc-menu
         data-toc-root
+        data-toc-scroll
       >
         <p>Table of contents</p>
-        <ol>
-          {tocItems.map((item, index) => (
-            <li>
-              <a href={item.href} data-nav-toc-link data-toc-link data-toc-hash={item.href}>
-                <span>{index + 1}</span>
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ol>
+        <TocTree items={tocItems} idPrefix="nav-toc" navLink />
       </nav>
     )
   }
@@ -596,41 +590,6 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
       font-weight: 700;
       line-height: 1.2;
       text-transform: uppercase;
-    }
-
-    .mobile-toc-panel ol {
-      display: grid;
-      gap: 4px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .mobile-toc-panel a {
-      display: grid;
-      grid-template-columns: 22px minmax(0, 1fr);
-      gap: 8px;
-      align-items: center;
-      min-height: 36px;
-      padding: 8px 10px;
-      border-radius: 7px;
-      color: var(--paper-ink-soft);
-      font-size: 0.86rem;
-      line-height: 1.35;
-    }
-
-    .mobile-toc-panel a:hover,
-    .mobile-toc-panel a[aria-current='true'],
-    .mobile-toc-panel a[data-state='active'] {
-      background: var(--paper-control-hover);
-      color: var(--paper-accent);
-    }
-
-    .mobile-toc-panel span {
-      color: var(--paper-ink-faint);
-      font-family: var(--font-ui-label);
-      font-size: 0.72rem;
-      font-weight: 700;
     }
   }
 

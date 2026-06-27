@@ -41,11 +41,54 @@ const getSectionFromHash = (hash: string): HTMLElement | null => {
   const normalizedId = normalizedHash.slice(1);
   const articleHeadings = Array.from(
     document.querySelectorAll<HTMLElement>(
-      '.article-content h1[id], .article-content h2[id], .article-content h3[id]',
+      '.article-content h2[id], .article-content h3[id], .article-content h4[id], .article-content h5[id], .article-content h6[id]',
     ),
   );
 
   return articleHeadings.find((heading) => normalizeIdValue(heading.id) === normalizedId) ?? null;
+};
+
+const setBranchExpanded = (item: HTMLElement, expanded: boolean): void => {
+  item.dataset.tocExpanded = String(expanded);
+
+  const toggle = item.querySelector<HTMLButtonElement>(':scope > .toc-row [data-toc-toggle]');
+  if (!toggle) {
+    return;
+  }
+
+  toggle.setAttribute('aria-expanded', String(expanded));
+  toggle.setAttribute('aria-label', expanded ? 'Collapse section' : 'Expand section');
+};
+
+const expandLinkAncestors = (link: TocLink): void => {
+  let parent = link.parentElement?.closest<HTMLElement>('.toc-tree-item[data-toc-expanded]');
+
+  while (parent) {
+    setBranchExpanded(parent, true);
+    parent =
+      parent.parentElement?.closest<HTMLElement>('.toc-tree-item[data-toc-expanded]') ?? null;
+  }
+};
+
+const keepLinkVisible = (link: TocLink): void => {
+  const scrollArea = link.closest<HTMLElement>('[data-toc-scroll]');
+  if (!scrollArea || scrollArea.scrollHeight <= scrollArea.clientHeight) {
+    return;
+  }
+
+  const linkRect = link.getBoundingClientRect();
+  const areaRect = scrollArea.getBoundingClientRect();
+  const margin = 12;
+
+  if (linkRect.top >= areaRect.top + margin && linkRect.bottom <= areaRect.bottom - margin) {
+    return;
+  }
+
+  link.scrollIntoView({
+    block: 'nearest',
+    inline: 'nearest',
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+  });
 };
 
 const getSections = (): HTMLElement[] => {
@@ -100,10 +143,41 @@ const setActiveLink = (activeHash: string): void => {
 
       if (isActive) {
         link.setAttribute('aria-current', 'true');
+        expandLinkAncestors(link);
+        keepLinkVisible(link);
       } else {
         link.removeAttribute('aria-current');
       }
     }
+  }
+};
+
+const initBranchToggles = (signal: AbortSignal): void => {
+  for (const toggle of document.querySelectorAll<HTMLButtonElement>('[data-toc-toggle]')) {
+    if (toggle.dataset.tocToggleReady) {
+      continue;
+    }
+
+    const item = toggle.closest<HTMLElement>('.toc-tree-item[data-toc-expanded]');
+    if (!item) {
+      continue;
+    }
+
+    toggle.dataset.tocToggleReady = 'true';
+    toggle.addEventListener(
+      'click',
+      () => {
+        const expanded = item.dataset.tocExpanded === 'true';
+        const hasActiveChild = Boolean(item.querySelector('[data-toc-link][aria-current="true"]'));
+
+        if (expanded && hasActiveChild) {
+          return;
+        }
+
+        setBranchExpanded(item, !expanded);
+      },
+      { signal },
+    );
   }
 };
 
@@ -119,6 +193,7 @@ const initNavfolioToc = (): (() => void) | null => {
   let ticking = false;
   let freezeActiveFromScroll = false;
   let observer: IntersectionObserver | null = null;
+  initBranchToggles(signal);
 
   const setActiveByHash = (hash: string): boolean => {
     const section = getSectionFromHash(hash);
@@ -233,13 +308,16 @@ const initNavfolioToc = (): (() => void) | null => {
         event.preventDefault();
         history.pushState(null, '', normalizedHash);
         freezeActiveFromScroll = true;
+        expandLinkAncestors(link);
         scrollToHeading(normalizedHash);
       },
       { signal },
     );
   }
 
-  if ('IntersectionObserver' in window) {
+  const supportsIntersectionObserver = typeof globalThis.IntersectionObserver === 'function';
+
+  if (supportsIntersectionObserver) {
     observer = new IntersectionObserver(
       () => {
         scheduleUpdateActiveSection();
@@ -254,6 +332,8 @@ const initNavfolioToc = (): (() => void) | null => {
     for (const section of sections) {
       observer.observe(section);
     }
+  } else {
+    window.addEventListener('scroll', scheduleUpdateActiveSection, { passive: true, signal });
   }
 
   const onPopstate = () => {
@@ -271,7 +351,6 @@ const initNavfolioToc = (): (() => void) | null => {
     }
   };
 
-  window.addEventListener('scroll', scheduleUpdateActiveSection, { passive: true, signal });
   window.addEventListener('resize', scheduleUpdateActiveSection, { passive: true, signal });
   window.addEventListener('wheel', unlockActiveFromScroll, { passive: true, signal });
   window.addEventListener('touchstart', unlockActiveFromScroll, { passive: true, signal });
