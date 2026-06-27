@@ -76,19 +76,30 @@ const keepLinkVisible = (link: TocLink): void => {
     return;
   }
 
-  const linkRect = link.getBoundingClientRect();
-  const areaRect = scrollArea.getBoundingClientRect();
-  const margin = 12;
-
-  if (linkRect.top >= areaRect.top + margin && linkRect.bottom <= areaRect.bottom - margin) {
+  const style = window.getComputedStyle(scrollArea);
+  if (style.display === 'none' || style.opacity === '0' || style.visibility === 'hidden') {
     return;
   }
 
-  link.scrollIntoView({
-    block: 'nearest',
-    inline: 'nearest',
-    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-  });
+  const linkRect = link.getBoundingClientRect();
+  const areaRect = scrollArea.getBoundingClientRect();
+  const margin = 12;
+  const relativeTop = linkRect.top - areaRect.top + scrollArea.scrollTop;
+  const relativeBottom = relativeTop + linkRect.height;
+  let targetScrollTop = scrollArea.scrollTop;
+
+  if (relativeTop < scrollArea.scrollTop + margin) {
+    targetScrollTop = relativeTop - margin;
+  } else if (relativeBottom > scrollArea.scrollTop + scrollArea.clientHeight - margin) {
+    targetScrollTop = relativeBottom - scrollArea.clientHeight + margin;
+  }
+
+  if (targetScrollTop !== scrollArea.scrollTop) {
+    scrollArea.scrollTo({
+      top: targetScrollTop,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+  }
 };
 
 const getSections = (): HTMLElement[] => {
