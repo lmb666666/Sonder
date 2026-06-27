@@ -321,7 +321,7 @@ const initNavfolioToc = (): (() => void) | null => {
     );
   }
 
-  const supportsIntersectionObserver = typeof globalThis.IntersectionObserver === 'function';
+  const supportsIntersectionObserver = typeof IntersectionObserver === 'function';
 
   if (supportsIntersectionObserver) {
     observer = new IntersectionObserver(
