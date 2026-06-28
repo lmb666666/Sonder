@@ -12,6 +12,10 @@ export interface SeriesGroup extends ContentGroup {
   posts: BlogPost[];
 }
 
+export interface TagGroup extends ContentGroup {
+  posts: BlogPost[];
+}
+
 export interface SeriesContext {
   name: string;
   slug: string;
@@ -30,7 +34,9 @@ function getComparableName(name: string) {
   return name.trim().replace(/\s+/g, ' ').toLocaleLowerCase();
 }
 
-function getGroupItems(post: BlogPost, field: 'categories' | 'series') {
+type GroupField = 'categories' | 'series' | 'tags';
+
+function getGroupItems(post: BlogPost, field: GroupField) {
   const seen = new Set<string>();
 
   return (post.data[field] ?? [])
@@ -73,7 +79,7 @@ export function slugifyGroupName(name: string) {
   return normalized || 'untitled';
 }
 
-function createGroupMap(posts: BlogPost[], field: 'categories' | 'series') {
+function createGroupMap(posts: BlogPost[], field: GroupField) {
   const groups = new Map<string, { name: string; slug: string; posts: BlogPost[] }>();
 
   posts.filter(isPublished).forEach((post) => {
@@ -108,6 +114,25 @@ export function getPostsByCategory(posts: BlogPost[], categorySlug: string) {
     (post) =>
       isPublished(post) &&
       getGroupItems(post, 'categories').some((name) => slugifyGroupName(name) === categorySlug),
+  );
+}
+
+export function getAllTags(posts: BlogPost[]): TagGroup[] {
+  return [...createGroupMap(posts, 'tags').values()]
+    .map(({ name, slug, posts: groupPosts }) => ({
+      name,
+      slug,
+      posts: groupPosts,
+      count: groupPosts.length,
+    }))
+    .sort((a, b) => b.count - a.count || sortByName(a, b));
+}
+
+export function getPostsByTag(posts: BlogPost[], tagSlug: string) {
+  return posts.filter(
+    (post) =>
+      isPublished(post) &&
+      getGroupItems(post, 'tags').some((name) => slugifyGroupName(name) === tagSlug),
   );
 }
 
