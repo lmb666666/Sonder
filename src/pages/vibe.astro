@@ -605,6 +605,7 @@ const vibes = await Promise.all(
                     class:list={['vibe-images', imageLayout.isCollapsible && 'is-collapsible']}
                     style={`--vibe-image-columns: ${imageLayout.columns};`}
                     data-vibe-image-group
+                    data-zoomable-gallery
                     data-vibe-image-count={imageLayout.count}
                     data-vibe-image-columns={imageLayout.columns}
                     aria-label={`${entry.data.title ?? entry.id} images`}
