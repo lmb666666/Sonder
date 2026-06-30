@@ -16,7 +16,7 @@ let lightboxElements: LightboxElements | undefined;
 let previousActiveElement: HTMLElement | undefined;
 let activeGallery: HTMLImageElement[] = [];
 let activeGalleryIndex = -1;
-let shouldRestoreFocusOnClose = false;
+const boundLightboxRoots = new WeakSet<HTMLDialogElement>();
 
 const LIGHTBOX_SELECTOR = '[data-zoomable-lightbox]';
 const LIGHTBOX_IMAGE_SELECTOR = '[data-zoomable-lightbox-image]';
@@ -137,7 +137,6 @@ const closePreview = () => {
     return;
   }
 
-  shouldRestoreFocusOnClose = true;
   lightbox.root.classList.remove('is-open');
 
   if (lightbox.root.open) {
@@ -162,12 +161,8 @@ const cleanupPreview = () => {
   activeGalleryIndex = -1;
   syncGalleryControls();
 
-  if (shouldRestoreFocusOnClose) {
-    previousActiveElement?.focus({ preventScroll: true });
-  }
-
+  previousActiveElement?.focus({ preventScroll: true });
   previousActiveElement = undefined;
-  shouldRestoreFocusOnClose = false;
 };
 
 const createLightboxRoot = () => {
@@ -183,14 +178,11 @@ const createLightboxRoot = () => {
 };
 
 const bindLightboxRoot = (root: HTMLDialogElement) => {
-  if (root.dataset.zoomableLightboxBound === 'true') {
+  if (boundLightboxRoots.has(root)) {
     return;
   }
 
-  root.dataset.zoomableLightboxBound = 'true';
-  root.addEventListener('cancel', () => {
-    shouldRestoreFocusOnClose = true;
-  });
+  boundLightboxRoots.add(root);
   root.addEventListener('close', cleanupPreview);
 };
 
@@ -238,7 +230,6 @@ const openPreview = (sourceImage: HTMLImageElement) => {
 
   previousActiveElement =
     document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
-  shouldRestoreFocusOnClose = true;
   activeGallery = gallery.images;
   activeGalleryIndex = gallery.index;
   setPreviewImage(sourceImage);
@@ -320,12 +311,6 @@ export const initZoomableImages = () => {
   document.addEventListener('keydown', (event) => {
     const lightbox = getLightbox();
     const isOpen = lightbox?.root.open;
-
-    if (event.key === 'Escape' && isOpen) {
-      event.preventDefault();
-      closePreview();
-      return;
-    }
 
     if (isOpen) {
       if (event.key === 'ArrowLeft') {
