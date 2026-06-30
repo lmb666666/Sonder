@@ -38,7 +38,11 @@ const hasImageSource = resolvedSrc !== undefined && resolvedSrc !== null;
         </span>
       </span>
     </span>
-  ) : (
+  ) : null
+}
+
+{
+  !hasImageSource ? (
     <dialog class="zoomable-image-lightbox" data-zoomable-lightbox aria-label="Image preview">
       <button
         class="zoomable-image-lightbox__close"
@@ -73,7 +77,7 @@ const hasImageSource = resolvedSrc !== undefined && resolvedSrc !== null;
         <ChevronRight size={24} strokeWidth={1.8} aria-hidden="true" />
       </button>
     </dialog>
-  )
+  ) : null
 }
 
 <script>
@@ -268,7 +272,16 @@ const hasImageSource = resolvedSrc !== undefined && resolvedSrc !== null;
     -webkit-tap-highlight-color: transparent;
     transition:
       opacity 180ms ease,
-      visibility 180ms ease;
+      visibility 180ms ease,
+      display 180ms ease allow-discrete,
+      overlay 180ms ease allow-discrete;
+  }
+
+  @starting-style {
+    :global(.zoomable-image-lightbox[open]) {
+      opacity: 0;
+      visibility: hidden;
+    }
   }
 
   :global(.zoomable-image-lightbox:not([open])) {

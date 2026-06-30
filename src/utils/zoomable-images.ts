@@ -16,6 +16,7 @@ let lightboxElements: LightboxElements | undefined;
 let previousActiveElement: HTMLElement | undefined;
 let activeGallery: HTMLImageElement[] = [];
 let activeGalleryIndex = -1;
+const boundLightboxRoots = new WeakSet<HTMLDialogElement>();
 
 const LIGHTBOX_SELECTOR = '[data-zoomable-lightbox]';
 const LIGHTBOX_IMAGE_SELECTOR = '[data-zoomable-lightbox-image]';
@@ -24,6 +25,25 @@ const LIGHTBOX_PREV_SELECTOR = '[data-zoomable-lightbox-prev]';
 const LIGHTBOX_NEXT_SELECTOR = '[data-zoomable-lightbox-next]';
 const ZOOMABLE_TARGET_SELECTOR = '[data-zoomable-image-target]';
 const ZOOMABLE_GALLERY_SELECTOR = '[data-zoomable-gallery], astro-carousel';
+
+const LIGHTBOX_MARKUP = `
+  <button class="zoomable-image-lightbox__close" type="button" aria-label="Close image preview" data-zoomable-lightbox-close>
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22">
+      <path d="M18 6 6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+    </svg>
+  </button>
+  <button class="zoomable-image-lightbox__nav zoomable-image-lightbox__nav--prev" type="button" aria-label="Previous image" data-zoomable-lightbox-prev hidden>
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24">
+      <path d="m15 18-6-6 6-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+    </svg>
+  </button>
+  <img class="zoomable-image-lightbox__image" alt="" draggable="false" data-zoomable-lightbox-image />
+  <button class="zoomable-image-lightbox__nav zoomable-image-lightbox__nav--next" type="button" aria-label="Next image" data-zoomable-lightbox-next hidden>
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24">
+      <path d="m9 18 6-6-6-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+    </svg>
+  </button>
+`;
 
 const isPlainMarkdownImage = (target: HTMLImageElement) =>
   Boolean(target.closest('.article-content')) &&
@@ -118,23 +138,62 @@ const closePreview = () => {
   }
 
   lightbox.root.classList.remove('is-open');
-  lightbox.root.close();
-  lightbox.image.removeAttribute('src');
-  lightbox.image.alt = '';
-  lightbox.image.removeAttribute('title');
+
+  if (lightbox.root.open) {
+    lightbox.root.close();
+    return;
+  }
+
+  cleanupPreview();
+};
+
+const cleanupPreview = () => {
+  const lightbox = lightboxElements;
+
+  if (lightbox) {
+    lightbox.root.classList.remove('is-open');
+    lightbox.image.removeAttribute('src');
+    lightbox.image.alt = '';
+    lightbox.image.removeAttribute('title');
+  }
+
   activeGallery = [];
   activeGalleryIndex = -1;
   syncGalleryControls();
+
   previousActiveElement?.focus({ preventScroll: true });
   previousActiveElement = undefined;
 };
 
-const getLightbox = (): LightboxElements | undefined => {
+const createLightboxRoot = () => {
+  const root = document.createElement('dialog');
+
+  root.className = 'zoomable-image-lightbox';
+  root.setAttribute('aria-label', 'Image preview');
+  root.setAttribute('data-zoomable-lightbox', '');
+  root.innerHTML = LIGHTBOX_MARKUP;
+  document.body.append(root);
+
+  return root;
+};
+
+const bindLightboxRoot = (root: HTMLDialogElement) => {
+  if (boundLightboxRoots.has(root)) {
+    return;
+  }
+
+  boundLightboxRoots.add(root);
+  root.addEventListener('close', cleanupPreview);
+};
+
+const getLightbox = (createIfMissing = false): LightboxElements | undefined => {
   if (lightboxElements?.root.isConnected) {
     return lightboxElements;
   }
 
-  const root = document.querySelector(LIGHTBOX_SELECTOR);
+  const root =
+    document.querySelector(LIGHTBOX_SELECTOR) ??
+    (createIfMissing ? createLightboxRoot() : undefined);
 
   if (!(root instanceof HTMLDialogElement)) {
     return undefined;
@@ -155,11 +214,12 @@ const getLightbox = (): LightboxElements | undefined => {
   }
 
   lightboxElements = { root, image, closeButton, prevButton, nextButton };
+  bindLightboxRoot(root);
   return lightboxElements;
 };
 
 const openPreview = (sourceImage: HTMLImageElement) => {
-  const lightbox = getLightbox();
+  const lightbox = getLightbox(true);
 
   if (!lightbox) {
     return;
@@ -251,11 +311,6 @@ export const initZoomableImages = () => {
   document.addEventListener('keydown', (event) => {
     const lightbox = getLightbox();
     const isOpen = lightbox?.root.open;
-
-    if (event.key === 'Escape' && isOpen) {
-      closePreview();
-      return;
-    }
 
     if (isOpen) {
       if (event.key === 'ArrowLeft') {
