@@ -151,10 +151,9 @@ const closePreview = () => {
 const cleanupPreview = () => {
   const lightbox = lightboxElements;
 
-  lightbox?.root.classList.remove('is-open');
-  lightbox?.image.removeAttribute('src');
-
-  if (lightbox?.image) {
+  if (lightbox) {
+    lightbox.root.classList.remove('is-open');
+    lightbox.image.removeAttribute('src');
     lightbox.image.alt = '';
     lightbox.image.removeAttribute('title');
   }
