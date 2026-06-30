@@ -6,11 +6,11 @@ import BlogTopNav from '../../components/blog/BlogTopNav.astro';
 import BlogArchive from '../../components/blog/BlogArchive.astro';
 import GroupNav from '../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../data/site';
-import { sortByDateDesc } from '../../utils/content-dates';
+import { sortBlogPostsForArchive } from '../../utils/content-dates';
 
 const { site, theme, blog } = await getSiteConfig();
 const palette = theme.palette;
-const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft));
+const posts = sortBlogPostsForArchive(await getCollection('blog', ({ data }) => !data.draft));
 const postsPerPage = blog.postsPerPage;
 const totalPages = Math.max(1, Math.ceil(posts.length / postsPerPage));
 const page = {

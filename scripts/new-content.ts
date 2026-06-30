@@ -116,6 +116,7 @@ title: "${escapeYamlString(title)}"
 description: ""
 date: "${isoDate}"
 draft: true
+sticky: false
 showHeroImage: false
 tags: []
 categories: []
