@@ -40,7 +40,7 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
 
 const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
   articleSchema(context).extend({
-    sticky: z.union([z.boolean(), z.number()]).optional().default(false),
+    sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
   });
 
 const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';
