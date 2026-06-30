@@ -38,6 +38,11 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     sidebar: sidebarSchema,
   });
 
+const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
+  articleSchema(context).extend({
+    sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
+  });
+
 const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';
 const contentBase = contentSource === 'docs' ? './src/docs' : './src/content';
 
@@ -306,7 +311,7 @@ const siteConfig = defineCollection({
 const blog = defineCollection({
   loader: glob({ base: `${contentBase}/blog`, pattern: '**/*.{md,mdx}' }),
   // Type-check frontmatter using a schema
-  schema: articleSchema,
+  schema: blogArticleSchema,
 });
 
 const about = defineCollection({

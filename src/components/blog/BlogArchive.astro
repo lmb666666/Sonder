@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../FormattedDate.astro';
 import SmartImage from '../SmartImage.astro';
 import { slugifyGroupName } from '../../utils/content-groups';
+import { isStickyEntry } from '../../utils/content-dates';
 
 type BlogPost = CollectionEntry<'blog'>;
 
@@ -72,6 +73,7 @@ function getPageHref(pageNumber: number) {
                   <a class="title-link" href={withBase(`/blog/${post.id}/`)}>
                     {post.data.title}
                   </a>
+                  {isStickyEntry(post) && <span class="post-pin">Pinned</span>}
                 </h2>
                 <div class="date">
                   <FormattedDate date={post.data.date} />
@@ -238,6 +240,10 @@ function getPageHref(pageNumber: number) {
   }
 
   .title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    align-items: baseline;
     margin: 0;
     font-size: clamp(1.28rem, 2vw, 1.72rem);
     line-height: 1.24;
@@ -251,6 +257,22 @@ function getPageHref(pageNumber: number) {
 
   .title-link:hover {
     color: var(--paper-accent);
+  }
+
+  .post-pin {
+    display: inline-flex;
+    align-items: center;
+    min-height: 21px;
+    padding: 1px 7px;
+    border: 1px solid var(--paper-line);
+    border-radius: 6px;
+    background: var(--paper-control);
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.2;
+    vertical-align: 0.12em;
   }
 
   .post-link.without-thumb .title {
@@ -469,6 +491,7 @@ function getPageHref(pageNumber: number) {
 
     .title,
     .post-item:first-child .title {
+      display: block;
       min-width: 0;
       max-width: 100%;
       font-size: 1.45rem;
@@ -481,6 +504,10 @@ function getPageHref(pageNumber: number) {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .post-pin {
+      margin-top: 7px;
     }
 
     .date {

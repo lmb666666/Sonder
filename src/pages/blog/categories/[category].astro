@@ -7,13 +7,13 @@ import BlogArchive from '../../../components/blog/BlogArchive.astro';
 import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { getAllCategories, getPostsByCategory } from '../../../utils/content-groups';
-import { sortByDateDesc } from '../../../utils/content-dates';
+import { sortBlogPostsForArchive } from '../../../utils/content-dates';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
 
   return getAllCategories(posts).map((category) => {
-    const categoryPosts = sortByDateDesc(getPostsByCategory(posts, category.slug));
+    const categoryPosts = sortBlogPostsForArchive(getPostsByCategory(posts, category.slug));
 
     return {
       params: { category: category.slug },
