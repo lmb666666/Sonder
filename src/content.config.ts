@@ -38,6 +38,12 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     sidebar: sidebarSchema,
   });
 
+const contentSourceSchema = z.enum(['content', 'docs']);
+const contentSource = contentSourceSchema
+  .catch('content')
+  .parse(process.env.NAVFOLIO_CONTENT_SOURCE);
+const contentBase = contentSource === 'docs' ? './src/docs' : './src/content';
+
 const commentProviderSchema = z.enum(['giscus', 'utterances', 'waline', 'none']);
 const mathRendererSchema = z.enum(['katex', 'mathjax']);
 const paletteSchema = z.enum([
@@ -301,24 +307,23 @@ const siteConfig = defineCollection({
 });
 
 const blog = defineCollection({
-  // Load Markdown and MDX files in the `src/content/blog/` directory.
-  loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: `${contentBase}/blog`, pattern: '**/*.{md,mdx}' }),
   // Type-check frontmatter using a schema
   schema: articleSchema,
 });
 
 const about = defineCollection({
-  loader: glob({ base: './src/content', pattern: 'about.{md,mdx}' }),
+  loader: glob({ base: contentBase, pattern: 'about.{md,mdx}' }),
   schema: articleSchema,
 });
 
 const projects = defineCollection({
-  loader: glob({ base: './src/content/projects', pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: `${contentBase}/projects`, pattern: '**/*.{md,mdx}' }),
   schema: articleSchema,
 });
 
 const vibe = defineCollection({
-  loader: glob({ base: './src/content/vibe', pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: `${contentBase}/vibe`, pattern: '**/*.{md,mdx}' }),
   schema: ({ image }) =>
     z.object({
       title: z.string().optional(),
