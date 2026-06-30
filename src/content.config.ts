@@ -38,10 +38,7 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     sidebar: sidebarSchema,
   });
 
-const contentSourceSchema = z.enum(['content', 'docs']);
-const contentSource = contentSourceSchema
-  .catch('content')
-  .parse(process.env.NAVFOLIO_CONTENT_SOURCE);
+const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';
 const contentBase = contentSource === 'docs' ? './src/docs' : './src/content';
 
 const commentProviderSchema = z.enum(['giscus', 'utterances', 'waline', 'none']);
