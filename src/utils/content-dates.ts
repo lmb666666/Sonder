@@ -16,12 +16,13 @@ export function sortByDateDesc<T extends DatedContentEntry>(entries: T[]) {
 }
 
 export function getStickyPriority(entry: StickyContentEntry) {
-  if (entry.data.sticky === true) {
+  const sticky = entry?.data?.sticky;
+  if (sticky === true) {
     return 1;
   }
 
-  if (typeof entry.data.sticky === 'number' && entry.data.sticky > 0) {
-    return entry.data.sticky;
+  if (typeof sticky === 'number' && sticky > 0) {
+    return sticky;
   }
 
   return 0;
