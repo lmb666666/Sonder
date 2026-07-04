@@ -39,8 +39,9 @@ export async function getStaticPaths() {
   });
 }
 
-const { site, theme } = await getSiteConfig();
+const { site, theme, pages } = await getSiteConfig();
 const palette = theme.palette;
+const pageMeta = pages.blog;
 const { page, postOffset } = Astro.props;
 ---
 
@@ -48,8 +49,8 @@ const { page, postOffset } = Astro.props;
 <html lang="zh-CN" data-palette={palette}>
   <head>
     <BaseHead
-      title={`${site.title} | Blog page ${page.currentPage}`}
-      description={site.description}
+      title={`${pageMeta.title} | Page ${page.currentPage} | ${site.title}`}
+      description={pageMeta.subtitle}
     />
     <style>
       main {
@@ -68,7 +69,14 @@ const { page, postOffset } = Astro.props;
   <body>
     <BlogTopNav />
     <main data-pagefind-body>
-      <BlogArchive page={page} postOffset={postOffset} />
+      <BlogArchive
+        page={page}
+        postOffset={postOffset}
+        headerKicker={pageMeta.kicker}
+        headerTitle={pageMeta.title}
+        headerSubtitle={pageMeta.subtitle}
+        headerNote={pageMeta.note}
+      />
     </main>
     <Footer />
   </body>

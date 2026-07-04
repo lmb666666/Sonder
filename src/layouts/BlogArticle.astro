@@ -46,6 +46,7 @@ interface Props {
   sidebar?: SidebarConfig;
   headerVariant?: 'default' | 'archive';
   headerKicker?: string;
+  headerNote?: string;
   title?: string;
   description?: string;
   date?: Date;
@@ -162,6 +163,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
             showHeroImage={showHeroImage}
             variant={props.headerVariant}
             kicker={props.headerKicker}
+            note={props.headerNote}
             pathname={Astro.url.pathname}
             showPageView={isBlogPost}
           />

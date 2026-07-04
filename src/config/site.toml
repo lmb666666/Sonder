@@ -6,9 +6,6 @@ pageDescription = "A calm AI-native personal publication space for notes, links,
 repository = "https://github.com/dodolalorc/astro-navfolio"
 footerNote = "Released as an open-source starter."
 
-[config.vibe]
-showTrail = true
-
 [config.theme]
 # Available palettes:
 # green-soft, green-vivid, rose-soft, pink-soft, purple-soft, blue-soft, orange-soft, brown-soft
@@ -47,6 +44,25 @@ maxResults = 6
 
 [config.blog]
 postsPerPage = 6
+
+[config.pages.blog]
+title = "Writing notes"
+kicker = "Notebook archive"
+subtitle = "Notes from the margins."
+note = "Field notes, drafts, and technical margins arranged for slow browsing."
+
+[config.pages.projects]
+title = "Projects"
+kicker = "Project shelf"
+subtitle = "Small tools and site systems."
+note = "A compact shelf for implementation choices, releases, and publishing experiments."
+
+[config.pages.vibe]
+title = "vibe"
+kicker = ""
+subtitle = "Life and coding fragments."
+note = "Not formal enough for blog posts, but still part of the story."
+showTrail = true
 
 [config.comments.giscus]
 repo = ""

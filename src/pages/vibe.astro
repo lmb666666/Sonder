@@ -9,9 +9,10 @@ import ZoomableImage from '../components/mdx/ZoomableImage.astro';
 import { getSiteConfig } from '../data/site';
 import { getVibeImageLayout } from '../utils/vibe-image-layout';
 
-const { site, vibe: vibeConfig, theme } = await getSiteConfig();
+const { site, theme, pages } = await getSiteConfig();
 const palette = theme.palette;
-const showTrail = vibeConfig.showTrail;
+const pageMeta = pages.vibe;
+const showTrail = pageMeta.showTrail;
 
 const vibeEntries = (await getCollection('vibe'))
   .filter((item) => !item.data.draft)
@@ -31,7 +32,7 @@ const vibes = await Promise.all(
 <!doctype html>
 <html lang="zh-CN" data-palette={palette}>
   <head>
-    <BaseHead title={`vibe | ${site.title}`} description="Small fragments of life and coding." />
+    <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
     <style>
       html {
         scroll-behavior: smooth;
@@ -81,7 +82,7 @@ const vibes = await Promise.all(
         max-width: 30ch;
         margin: 18px 0 0;
         color: var(--paper-ink-soft);
-        font-family: var(--font-serif-cn);
+        font-family: var(--font-ui-label);
         font-size: clamp(0.98rem, 1.7vw, 1.16rem);
         line-height: 1.68;
       }
@@ -546,9 +547,9 @@ const vibes = await Promise.all(
     <main data-pagefind-body>
       <div class="vibe-shell">
         <header class="vibe-hero">
-          <h1 class="vibe-title">vibe</h1>
-          <p class="vibe-subtitle">small fragments of life &amp; coding.</p>
-          <p class="vibe-note">Not formal enough for blog posts, but still part of the story.</p>
+          <h1 class="vibe-title">{pageMeta.title}</h1>
+          <p class="vibe-subtitle">{pageMeta.subtitle}</p>
+          <p class="vibe-note">{pageMeta.note}</p>
         </header>
 
         <section class="vibe-stream" aria-label="Vibe notes">

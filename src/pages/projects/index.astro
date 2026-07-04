@@ -2,8 +2,11 @@
 import { getCollection, render } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 import BlogArticle from '../../layouts/BlogArticle.astro';
+import { getSiteConfig } from '../../data/site';
 import { sortByDateDesc } from '../../utils/content-dates';
 
+const { pages } = await getSiteConfig();
+const pageMeta = pages.projects;
 const projectEntries = await getCollection('projects');
 const projectIndex = projectEntries.find((entry) => entry.id === 'index');
 const projects = sortByDateDesc(
@@ -15,6 +18,14 @@ if (!projectIndex) {
 }
 
 const { Content, headings } = await render(projectIndex);
+const projectIndexPage = {
+  ...projectIndex,
+  data: {
+    ...projectIndex.data,
+    title: pageMeta.title,
+    description: pageMeta.subtitle,
+  },
+};
 
 const relatedProjects = projects;
 
@@ -30,11 +41,12 @@ function withBase(href: string) {
 ---
 
 <BlogArticle
-  post={projectIndex}
+  post={projectIndexPage}
   headings={headings}
   sidebar={{ enable: false, ...projectIndex.data.sidebar }}
   headerVariant="archive"
-  headerKicker="Project shelf"
+  headerKicker={pageMeta.kicker}
+  headerNote={pageMeta.note}
   contentFont="ui"
 >
   <Content />
@@ -107,6 +119,7 @@ function withBase(href: string) {
     min-height: 210px;
     padding: 22px;
     color: var(--paper-ink);
+    font-family: var(--font-ui-label);
     text-decoration: none;
     transition:
       transform 180ms ease,
@@ -132,6 +145,7 @@ function withBase(href: string) {
   .project-empty h2 {
     margin: 0;
     color: var(--paper-ink);
+    font-family: var(--font-ui-label);
     font-size: 1.32rem;
     line-height: 1.28;
   }

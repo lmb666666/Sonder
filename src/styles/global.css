@@ -48,8 +48,8 @@
   --font-ui-cjk: var(--font-config-zh-subset), var(--font-config-zh), var(--font-cjk-system);
   --font-serif-cn: var(--font-ui-cjk);
   --font-mono:
-    var(--font-config-en), var(--font-config-zh-subset), ui-monospace, SFMono-Regular, Menlo,
-    Monaco, Consolas, monospace;
+    var(--font-config-en), var(--font-config-zh-subset), var(--font-config-zh), ui-monospace,
+    SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-body: var(--font-mono);
   --font-display: var(--font-mono);
   --font-note: var(--font-mono);
@@ -341,7 +341,7 @@ h6 {
 
 .archive-header-shared {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
   gap: 32px;
   align-items: stretch;
 }
@@ -371,17 +371,44 @@ h6 {
   line-height: 1.08;
 }
 
-.archive-header-shared .archive-note {
+.archive-header-shared .archive-copy {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 260px;
+  max-width: 300px;
+  margin: 0;
+  text-align: center;
+}
+
+.archive-header-shared .archive-subtitle {
+  max-width: 30ch;
   margin: 0;
   color: var(--paper-ink-soft);
-  font-family: var(--font-serif-cn);
+  font-family: var(--font-ui-label);
   font-size: 1.03rem;
   line-height: 1.76;
+}
+
+.archive-header-shared .archive-note {
+  max-width: 42ch;
+  margin: 14px 0 0;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.7rem;
+  line-height: 1.75;
   text-align: center;
+}
+
+.archive-header-shared > .archive-note {
+  align-self: center;
+  justify-self: center;
+  max-width: 300px;
+  margin: 0;
+  color: var(--paper-ink-soft);
+  font-family: var(--font-ui-label);
+  font-size: 1.03rem;
+  line-height: 1.76;
 }
 
 .page-header-spacing {
@@ -420,6 +447,7 @@ h6 {
     gap: 14px;
   }
 
+  .archive-header-shared .archive-copy,
   .archive-header-shared .archive-note {
     display: block;
     max-width: none;

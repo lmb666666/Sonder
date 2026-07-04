@@ -34,7 +34,15 @@ const lightweightContentFiles = [
 ];
 const sourceExtensions = new Set(['.astro', '.ts', '.js', '.mjs', '.cjs', '.json', '.toml']);
 const frontmatterExtensions = new Set(['.md', '.mdx']);
-const frontmatterKeys = new Set(['title', 'description', 'tags', 'categories', 'series']);
+const frontmatterKeys = new Set([
+  'title',
+  'description',
+  'subtitle',
+  'note',
+  'tags',
+  'categories',
+  'series',
+]);
 const cjkPattern =
   /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u3000-\u303f\uff00-\uffef]/u;
 

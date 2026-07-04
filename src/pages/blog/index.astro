@@ -8,8 +8,9 @@ import GroupNav from '../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../data/site';
 import { sortBlogPostsForArchive } from '../../utils/content-dates';
 
-const { site, theme, blog } = await getSiteConfig();
+const { site, theme, blog, pages } = await getSiteConfig();
 const palette = theme.palette;
+const pageMeta = pages.blog;
 const posts = sortBlogPostsForArchive(await getCollection('blog', ({ data }) => !data.draft));
 const postsPerPage = blog.postsPerPage;
 const totalPages = Math.max(1, Math.ceil(posts.length / postsPerPage));
@@ -29,7 +30,7 @@ const page = {
 <!doctype html>
 <html lang="zh-CN" data-palette={palette}>
   <head>
-    <BaseHead title={site.title} description={site.description} />
+    <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
     <style>
       main {
         width: min(100%, var(--layout-shell-width));
@@ -47,7 +48,13 @@ const page = {
   <body>
     <BlogTopNav />
     <main data-pagefind-body>
-      <BlogArchive page={page}>
+      <BlogArchive
+        page={page}
+        headerKicker={pageMeta.kicker}
+        headerTitle={pageMeta.title}
+        headerSubtitle={pageMeta.subtitle}
+        headerNote={pageMeta.note}
+      >
         <GroupNav slot="after-header" />
       </BlogArchive>
     </main>
