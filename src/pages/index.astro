@@ -1,5 +1,6 @@
 ---
 import IntroCard from '../components/cards/IntroCard.astro';
+import ConnectCard from '../components/cards/ConnectCard.astro';
 import NavigationCard from '../components/cards/NavigationCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
@@ -18,11 +19,11 @@ const { home, profile, site } = await getSiteConfig();
       <ProfileCard profile={profile} />
     </Fragment>
 
-    <Fragment slot="hero">
+    <Fragment slot="intro">
       <IntroCard intro={home.intro} quote={home.quote} />
     </Fragment>
 
-    <Fragment slot="activity">
+    <Fragment slot="latest">
       <BlogHeatmap
         weeks={home.latest.heatmapWeeks}
         showLatest={home.latest.showHeatmapLatest}
@@ -33,11 +34,15 @@ const { home, profile, site } = await getSiteConfig();
       />
     </Fragment>
 
-    <Fragment slot="links">
+    <Fragment slot="navigation">
       <NavigationCard items={home.navigation} />
     </Fragment>
 
-    <Fragment slot="recently">
+    <Fragment slot="connect">
+      <ConnectCard links={home.links} />
+    </Fragment>
+
+    <Fragment slot="doing">
       <DoingCard items={home.doing} />
     </Fragment>
   </DashboardFlow>

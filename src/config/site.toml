@@ -3,6 +3,7 @@ title = "navfolio"
 description = "A personal navigation portfolio starter built with Astro."
 pageTitle = "navfolio | Digital Publication Space"
 pageDescription = "A calm AI-native personal publication space for notes, links, and writing."
+url = "https://astro.navfolio.site"
 repository = "https://github.com/dodolalorc/astro-navfolio"
 footerNote = "Released as an open-source starter."
 
@@ -180,30 +181,71 @@ title = "Open Source"
 subtitle = "Code, experiments, and tools"
 href = "https://github.com/dodolalorc/astro-navfolio"
 
-[[config.home.connect]]
+[[config.home.links]]
 label = "GitHub"
-href = "https://github.com/dodolalorc/astro-navfolio"
 icon = "github"
+tooltip = "https://github.com/dodolalorc/astro-navfolio"
+copy = false
 
-[[config.home.connect]]
-label = "Website"
-href = "https://astro.navfolio.site/"
-icon = "compass"
+[[config.home.links]]
+label = "LinkedIn"
+icon = "linkedin"
+tooltip = "https://www.linkedin.com/"
+copy = false
 
-[[config.home.connect]]
-label = "Blog"
-href = "/blog"
-icon = "book"
+[[config.home.links]]
+label = "X"
+icon = "x"
+tooltip = "" # 内容为空的时候不会展示
+copy = false
 
-[[config.home.connect]]
-label = "Projects"
-href = "/projects"
-icon = "repo"
+[[config.home.links]]
+label = "RSS"
+icon = "rss"
+tooltip = "/rss.xml"
+copy = false
 
-[[config.home.connect]]
+[[config.home.links]]
 label = "Email"
-href = "mailto:hello@navfolio.site"
 icon = "mail"
+tooltip = "hello@navfolio.site"
+copy = true
+
+[[config.home.links]]
+label = "QQ"
+icon = "qq"
+tooltip = "123456789"
+copy = true
+
+[[config.home.links]]
+label = "WeChat"
+icon = "wechat"
+tooltip = "navfolio"
+copy = true
+
+[[config.home.links]]
+label = "Weibo"
+icon = "weibo"
+tooltip = "https://weibo.com/"
+copy = false
+
+[[config.home.links]]
+label = "Xiaohongshu"
+icon = "xiaohongshu"
+tooltip = "https://www.xiaohongshu.com/"
+copy = false
+
+[[config.home.links]]
+label = "Zhihu"
+icon = "zhihu"
+tooltip = "https://www.zhihu.com/"
+copy = false
+
+[[config.home.links]]
+label = "Bilibili"
+icon = "bilibili"
+tooltip = "https://www.bilibili.com/"
+copy = false
 
 [[config.home.doing]]
 text = "Shipping a personal dashboard template"

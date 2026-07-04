@@ -154,6 +154,13 @@ const navigationItemSchema = z.object({
   href: z.string(),
 });
 
+const homeLinkSchema = z.object({
+  label: z.string(),
+  icon: z.string(),
+  tooltip: z.string().trim(),
+  copy: z.boolean(),
+});
+
 const defaultPagesConfig = {
   blog: {
     title: 'Writing notes',
@@ -206,6 +213,7 @@ const siteConfig = defineCollection({
       description: z.string(),
       pageTitle: z.string(),
       pageDescription: z.string(),
+      url: z.url(),
       repository: z.url(),
       footerNote: z.string(),
     }),
@@ -363,7 +371,7 @@ const siteConfig = defineCollection({
           dateArchiveBaseHref: '',
         }),
       navigation: z.array(navigationItemSchema),
-      connect: z.array(linkSchema.required({ icon: true })),
+      links: z.array(homeLinkSchema).optional().default([]),
       doing: z.array(
         z.object({
           text: z.string(),
