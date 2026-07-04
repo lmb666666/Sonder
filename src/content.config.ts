@@ -154,6 +154,50 @@ const navigationItemSchema = z.object({
   href: z.string(),
 });
 
+const defaultPagesConfig = {
+  blog: {
+    title: 'Writing notes',
+    kicker: 'Notebook archive',
+    subtitle: 'Notes from the margins.',
+    note: 'Field notes, drafts, and technical margins arranged for slow browsing.',
+  },
+  projects: {
+    title: 'Projects',
+    kicker: 'Project shelf',
+    subtitle: 'Small tools and site systems.',
+    note: 'A compact shelf for implementation choices, releases, and publishing experiments.',
+  },
+  vibe: {
+    title: 'vibe',
+    kicker: '',
+    subtitle: 'Life and coding fragments.',
+    note: 'Not formal enough for blog posts, but still part of the story.',
+    showTrail: true,
+  },
+} as const;
+
+const blogPageSchema = z.object({
+  title: z.string().optional().default(defaultPagesConfig.blog.title),
+  kicker: z.string().optional().default(defaultPagesConfig.blog.kicker),
+  subtitle: z.string().optional().default(defaultPagesConfig.blog.subtitle),
+  note: z.string().optional().default(defaultPagesConfig.blog.note),
+});
+
+const projectsPageSchema = z.object({
+  title: z.string().optional().default(defaultPagesConfig.projects.title),
+  kicker: z.string().optional().default(defaultPagesConfig.projects.kicker),
+  subtitle: z.string().optional().default(defaultPagesConfig.projects.subtitle),
+  note: z.string().optional().default(defaultPagesConfig.projects.note),
+});
+
+const vibePageSchema = z.object({
+  title: z.string().optional().default(defaultPagesConfig.vibe.title),
+  kicker: z.string().optional().default(defaultPagesConfig.vibe.kicker),
+  subtitle: z.string().optional().default(defaultPagesConfig.vibe.subtitle),
+  note: z.string().optional().default(defaultPagesConfig.vibe.note),
+  showTrail: z.boolean().optional().default(defaultPagesConfig.vibe.showTrail),
+});
+
 const siteConfig = defineCollection({
   loader: file('./src/config/site.toml'),
   schema: z.object({
@@ -165,12 +209,6 @@ const siteConfig = defineCollection({
       repository: z.url(),
       footerNote: z.string(),
     }),
-    vibe: z
-      .object({
-        showTrail: z.boolean().optional().default(true),
-      })
-      .optional()
-      .default({ showTrail: true }),
     theme: z
       .object({
         palette: paletteSchema.optional().default('green-soft'),
@@ -286,6 +324,14 @@ const siteConfig = defineCollection({
       .default({
         postsPerPage: 6,
       }),
+    pages: z
+      .object({
+        blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
+        projects: projectsPageSchema.optional().default(defaultPagesConfig.projects),
+        vibe: vibePageSchema.optional().default(defaultPagesConfig.vibe),
+      })
+      .optional()
+      .default(defaultPagesConfig),
     home: z.object({
       layout: z.enum(['grid']),
       quote: z.object({

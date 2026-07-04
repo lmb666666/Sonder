@@ -26,6 +26,7 @@ interface Props {
   postOffset?: number;
   headerKicker?: string;
   headerTitle?: string;
+  headerSubtitle?: string;
   headerNote?: string;
 }
 
@@ -34,8 +35,13 @@ const {
   postOffset = 0,
   headerKicker = 'Notebook archive',
   headerTitle = 'Writing notes',
-  headerNote = 'Loose pages, technical margins, and small notes gathered into a readable stack.',
+  headerSubtitle,
+  headerNote,
 } = Astro.props;
+const defaultHeaderSubtitle =
+  'Loose pages, technical margins, and small notes gathered into a readable stack.';
+const resolvedHeaderSubtitle = headerSubtitle ?? headerNote ?? defaultHeaderSubtitle;
+const resolvedHeaderNote = headerSubtitle !== undefined ? headerNote : undefined;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const hasPagination = page.lastPage > 1;
 
@@ -57,7 +63,10 @@ function getPageHref(pageNumber: number) {
     <p class="archive-kicker">{headerKicker}</p>
     <h1 class="archive-title">{headerTitle}</h1>
   </div>
-  <p class="archive-note">{headerNote}</p>
+  <div class="archive-copy">
+    <p class="archive-subtitle">{resolvedHeaderSubtitle}</p>
+    {resolvedHeaderNote && <p class="archive-note">{resolvedHeaderNote}</p>}
+  </div>
 </header>
 <slot name="after-header" />
 <section>

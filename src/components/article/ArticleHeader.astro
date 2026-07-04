@@ -20,6 +20,7 @@ interface Props {
   showHeroImage?: boolean;
   variant?: 'default' | 'archive';
   kicker?: string;
+  note?: string;
   pathname?: string;
   showPageView?: boolean;
 }
@@ -37,6 +38,7 @@ const {
   showHeroImage = true,
   variant = 'default',
   kicker = 'Notebook entry',
+  note,
   pathname = Astro.url.pathname,
   showPageView = false,
 } = Astro.props;
@@ -117,7 +119,12 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
             </div>
           )}
         </div>
-        {description && <p class="archive-note">{description}</p>}
+        {(description || note) && (
+          <div class="archive-copy">
+            {description && <p class="archive-subtitle">{description}</p>}
+            {note && <p class="archive-note">{note}</p>}
+          </div>
+        )}
       </>
     ) : (
       <>
@@ -252,7 +259,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   .tag {
     color: var(--paper-accent);
-    font-family: var(--font-serif-cn);
+    font-family: var(--font-meta);
     font-weight: 700;
     text-decoration: none;
     transition: color 180ms ease;
