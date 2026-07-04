@@ -65,7 +65,6 @@ const { links } = Astro.props as { links: ConnectLink[] };
     }
   };
 
-  initConnectCopy();
   if (document.documentElement.dataset.connectCopyListener !== 'true') {
     document.documentElement.dataset.connectCopyListener = 'true';
     document.addEventListener('astro:page-load', initConnectCopy);
