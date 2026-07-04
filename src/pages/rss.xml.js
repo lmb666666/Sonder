@@ -16,7 +16,7 @@ export async function GET(context) {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date,
-      categories: Array.from(new Set([...(post.data.categories ?? []), ...(post.data.tags ?? [])])),
+      categories: post.data.categories ?? [],
       link: `/blog/${post.id}/`,
     })),
   });

@@ -11,64 +11,66 @@ const { links } = Astro.props as { links: ConnectLink[] };
 </article>
 
 <script>
-  const initConnectCopy = () => {
-    const cards = document.querySelectorAll('[data-connect-card]');
-
-    for (const card of cards) {
-      const buttons = card.querySelectorAll<HTMLButtonElement>('[data-copy-value]');
-
-      for (const button of buttons) {
-        if (button.dataset.copyReady === 'true') continue;
-
-        button.dataset.copyReady = 'true';
-        const originalTooltip = button.dataset.tooltip ?? '';
-        const bubbleLabel = button.querySelector<HTMLElement>('.connect-bubble-label');
-        let timeoutId: number | undefined;
-
-        button.addEventListener('click', async () => {
-          const value = button.dataset.copyValue ?? '';
-          if (!value) return;
-
-          if (timeoutId !== undefined) {
-            window.clearTimeout(timeoutId);
-            timeoutId = undefined;
-          }
-
-          try {
-            if (!navigator.clipboard) {
-              throw new Error('Clipboard API not available');
-            }
-
-            await navigator.clipboard.writeText(value);
-            button.dataset.tooltip = 'Copied';
-            if (bubbleLabel) bubbleLabel.textContent = 'Copied';
-            button.classList.add('is-copied');
-            timeoutId = window.setTimeout(() => {
-              button.dataset.tooltip = originalTooltip;
-              if (bubbleLabel) bubbleLabel.textContent = originalTooltip;
-              button.classList.remove('is-copied');
-              timeoutId = undefined;
-            }, 1200);
-          } catch {
-            button.dataset.tooltip = 'Copy failed';
-            if (bubbleLabel) bubbleLabel.textContent = 'Copy failed';
-            button.classList.add('is-copied');
-            timeoutId = window.setTimeout(() => {
-              button.dataset.tooltip = originalTooltip;
-              if (bubbleLabel) bubbleLabel.textContent = originalTooltip;
-              button.classList.remove('is-copied');
-              timeoutId = undefined;
-            }, 1200);
-          }
-        });
-      }
-    }
+  type ConnectCopyWindow = Window & {
+    __navfolioConnectCopyHandler?: (event: MouseEvent) => void;
   };
 
-  if (document.documentElement.dataset.connectCopyListener !== 'true') {
-    document.documentElement.dataset.connectCopyListener = 'true';
-    document.addEventListener('astro:page-load', initConnectCopy);
+  const connectWindow = window as ConnectCopyWindow;
+  const copyTimeouts = new WeakMap<HTMLButtonElement, number>();
+  const resetDelay = 1200;
+
+  const setCopyState = (button: HTMLButtonElement, text: string) => {
+    const bubbleLabel = button.querySelector<HTMLElement>('.connect-bubble-label');
+
+    button.dataset.tooltip = text;
+    if (bubbleLabel) bubbleLabel.textContent = text;
+    button.classList.add('is-copied');
+  };
+
+  const resetCopyState = (button: HTMLButtonElement, text: string) => {
+    const bubbleLabel = button.querySelector<HTMLElement>('.connect-bubble-label');
+
+    button.dataset.tooltip = text;
+    if (bubbleLabel) bubbleLabel.textContent = text;
+    button.classList.remove('is-copied');
+    copyTimeouts.delete(button);
+  };
+
+  const handleConnectCopyClick = async (event: MouseEvent) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const button = target?.closest<HTMLButtonElement>('[data-connect-card] [data-copy-value]');
+    if (!button) return;
+
+    const value = button.dataset.copyValue ?? '';
+    if (!value) return;
+
+    const originalTooltip = button.dataset.tooltip ?? '';
+    const previousTimeout = copyTimeouts.get(button);
+    if (previousTimeout !== undefined) {
+      window.clearTimeout(previousTimeout);
+    }
+
+    try {
+      if (!navigator.clipboard) {
+        throw new Error('Clipboard API not available');
+      }
+
+      await navigator.clipboard.writeText(value);
+      setCopyState(button, 'Copied');
+    } catch {
+      setCopyState(button, 'Copy failed');
+    }
+
+    const timeoutId = window.setTimeout(() => resetCopyState(button, originalTooltip), resetDelay);
+    copyTimeouts.set(button, timeoutId);
+  };
+
+  if (connectWindow.__navfolioConnectCopyHandler) {
+    document.removeEventListener('click', connectWindow.__navfolioConnectCopyHandler);
   }
+
+  connectWindow.__navfolioConnectCopyHandler = handleConnectCopyClick;
+  document.addEventListener('click', handleConnectCopyClick);
 </script>
 
 <style>
