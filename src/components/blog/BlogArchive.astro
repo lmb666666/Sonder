@@ -40,9 +40,8 @@ const {
 } = Astro.props;
 const defaultHeaderSubtitle =
   'Loose pages, technical margins, and small notes gathered into a readable stack.';
-const defaultHeaderNote = 'Field notes, drafts, and technical margins arranged for slow browsing.';
 const resolvedHeaderSubtitle = headerSubtitle ?? headerNote ?? defaultHeaderSubtitle;
-const resolvedHeaderNote = headerSubtitle ? (headerNote ?? defaultHeaderNote) : undefined;
+const resolvedHeaderNote = headerSubtitle !== undefined ? headerNote : undefined;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const hasPagination = page.lastPage > 1;
 

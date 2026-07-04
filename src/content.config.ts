@@ -154,13 +154,6 @@ const navigationItemSchema = z.object({
   href: z.string(),
 });
 
-const pageMetaSchema = z.object({
-  title: z.string(),
-  kicker: z.string().optional().default(''),
-  subtitle: z.string(),
-  note: z.string(),
-});
-
 const defaultPagesConfig = {
   blog: {
     title: 'Writing notes',
@@ -183,7 +176,25 @@ const defaultPagesConfig = {
   },
 } as const;
 
-const vibePageSchema = pageMetaSchema.extend({
+const blogPageSchema = z.object({
+  title: z.string().optional().default(defaultPagesConfig.blog.title),
+  kicker: z.string().optional().default(defaultPagesConfig.blog.kicker),
+  subtitle: z.string().optional().default(defaultPagesConfig.blog.subtitle),
+  note: z.string().optional().default(defaultPagesConfig.blog.note),
+});
+
+const projectsPageSchema = z.object({
+  title: z.string().optional().default(defaultPagesConfig.projects.title),
+  kicker: z.string().optional().default(defaultPagesConfig.projects.kicker),
+  subtitle: z.string().optional().default(defaultPagesConfig.projects.subtitle),
+  note: z.string().optional().default(defaultPagesConfig.projects.note),
+});
+
+const vibePageSchema = z.object({
+  title: z.string().optional().default(defaultPagesConfig.vibe.title),
+  kicker: z.string().optional().default(defaultPagesConfig.vibe.kicker),
+  subtitle: z.string().optional().default(defaultPagesConfig.vibe.subtitle),
+  note: z.string().optional().default(defaultPagesConfig.vibe.note),
   showTrail: z.boolean().optional().default(defaultPagesConfig.vibe.showTrail),
 });
 
@@ -315,8 +326,8 @@ const siteConfig = defineCollection({
       }),
     pages: z
       .object({
-        blog: pageMetaSchema.optional().default(defaultPagesConfig.blog),
-        projects: pageMetaSchema.optional().default(defaultPagesConfig.projects),
+        blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
+        projects: projectsPageSchema.optional().default(defaultPagesConfig.projects),
         vibe: vibePageSchema.optional().default(defaultPagesConfig.vibe),
       })
       .optional()
