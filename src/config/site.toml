@@ -196,7 +196,7 @@ copy = false
 [[config.home.links]]
 label = "X"
 icon = "x"
-tooltip = "" # 内容为空的时候不会展示
+tooltip = "" # Empty tooltip hides this link item.
 copy = false
 
 [[config.home.links]]

@@ -12,7 +12,6 @@ export async function GET(context) {
     description: site.description,
     site: context.site,
     items: posts.map((post) => ({
-      ...post.data,
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date,
