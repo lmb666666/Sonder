@@ -12,10 +12,11 @@ export async function GET(context) {
     description: site.description,
     site: context.site,
     items: posts.map((post) => ({
+      ...post.data,
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date,
-      categories: [...post.data.categories, ...post.data.tags],
+      categories: Array.from(new Set([...post.data.categories, ...post.data.tags])),
       link: `/blog/${post.id}/`,
     })),
   });

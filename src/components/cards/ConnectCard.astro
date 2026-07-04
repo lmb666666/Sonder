@@ -12,43 +12,64 @@ const { links } = Astro.props as { links: ConnectLink[] };
 
 <script>
   const initConnectCopy = () => {
-    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-copy-value]');
+    const cards = document.querySelectorAll('[data-connect-card]');
 
-    for (const button of buttons) {
-      if (button.dataset.copyReady === 'true') continue;
+    for (const card of cards) {
+      const buttons = card.querySelectorAll<HTMLButtonElement>('[data-copy-value]');
 
-      button.dataset.copyReady = 'true';
-      const originalTooltip = button.dataset.tooltip ?? '';
-      const bubbleLabel = button.querySelector<HTMLElement>('.connect-bubble-label');
+      for (const button of buttons) {
+        if (button.dataset.copyReady === 'true') continue;
 
-      button.addEventListener('click', async () => {
-        const value = button.dataset.copyValue ?? '';
-        if (!value) return;
+        button.dataset.copyReady = 'true';
+        const originalTooltip = button.dataset.tooltip ?? '';
+        const bubbleLabel = button.querySelector<HTMLElement>('.connect-bubble-label');
+        let timeoutId: number | undefined;
 
-        try {
-          await navigator.clipboard.writeText(value);
-          button.dataset.tooltip = 'Copied';
-          if (bubbleLabel) bubbleLabel.textContent = 'Copied';
-          button.classList.add('is-copied');
-          window.setTimeout(() => {
-            button.dataset.tooltip = originalTooltip;
-            if (bubbleLabel) bubbleLabel.textContent = originalTooltip;
-            button.classList.remove('is-copied');
-          }, 1200);
-        } catch {
-          button.dataset.tooltip = 'Copy failed';
-          if (bubbleLabel) bubbleLabel.textContent = 'Copy failed';
-          window.setTimeout(() => {
-            button.dataset.tooltip = originalTooltip;
-            if (bubbleLabel) bubbleLabel.textContent = originalTooltip;
-          }, 1200);
-        }
-      });
+        button.addEventListener('click', async () => {
+          const value = button.dataset.copyValue ?? '';
+          if (!value) return;
+
+          if (timeoutId !== undefined) {
+            window.clearTimeout(timeoutId);
+            timeoutId = undefined;
+          }
+
+          try {
+            if (!navigator.clipboard) {
+              throw new Error('Clipboard API not available');
+            }
+
+            await navigator.clipboard.writeText(value);
+            button.dataset.tooltip = 'Copied';
+            if (bubbleLabel) bubbleLabel.textContent = 'Copied';
+            button.classList.add('is-copied');
+            timeoutId = window.setTimeout(() => {
+              button.dataset.tooltip = originalTooltip;
+              if (bubbleLabel) bubbleLabel.textContent = originalTooltip;
+              button.classList.remove('is-copied');
+              timeoutId = undefined;
+            }, 1200);
+          } catch {
+            button.dataset.tooltip = 'Copy failed';
+            if (bubbleLabel) bubbleLabel.textContent = 'Copy failed';
+            button.classList.add('is-copied');
+            timeoutId = window.setTimeout(() => {
+              button.dataset.tooltip = originalTooltip;
+              if (bubbleLabel) bubbleLabel.textContent = originalTooltip;
+              button.classList.remove('is-copied');
+              timeoutId = undefined;
+            }, 1200);
+          }
+        });
+      }
     }
   };
 
   initConnectCopy();
-  document.addEventListener('astro:page-load', initConnectCopy);
+  if (document.documentElement.dataset.connectCopyListener !== 'true') {
+    document.documentElement.dataset.connectCopyListener = 'true';
+    document.addEventListener('astro:page-load', initConnectCopy);
+  }
 </script>
 
 <style>
