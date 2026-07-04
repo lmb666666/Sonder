@@ -50,6 +50,10 @@ kicker = "Notebook archive"
 subtitle = "Notes from the margins."
 note = "Field notes, drafts, and technical margins arranged for slow browsing."
 postsPerPage = 6
+# Date format pattern used by date-fns.
+dateFormat = "yyyy-MM-dd"
+# Metadata separator. Use a symbol such as "|", "/", or the special value "icon".
+metadataSeparator = "icon"
 # Article list cover style: "card" keeps a framed thumbnail, "mask" blends it into the right side.
 coverImageStyle = "mask"
 

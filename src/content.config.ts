@@ -179,6 +179,8 @@ const defaultPagesConfig = {
     subtitle: 'Notes from the margins.',
     note: 'Field notes, drafts, and technical margins arranged for slow browsing.',
     postsPerPage: 6,
+    dateFormat: 'MMM d, yyyy',
+    metadataSeparator: '·',
     coverImageStyle: 'card',
     categories: {
       title: 'Categories',
@@ -219,6 +221,8 @@ const blogPageSchema = z.object({
     .positive()
     .optional()
     .default(defaultPagesConfig.blog.postsPerPage),
+  dateFormat: nonEmptyStringSchema(defaultPagesConfig.blog.dateFormat),
+  metadataSeparator: nonEmptyStringSchema(defaultPagesConfig.blog.metadataSeparator),
   coverImageStyle: blogCoverImageStyleSchema
     .optional()
     .default(defaultPagesConfig.blog.coverImageStyle),

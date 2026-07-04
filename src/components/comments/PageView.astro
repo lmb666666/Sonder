@@ -1,6 +1,7 @@
 ---
 import { getSiteConfig } from '../../data/site';
 import { resolveCommentsConfig, shouldRenderWalinePageView } from '../../utils/comments';
+import MetadataItem from '../MetadataItem.astro';
 
 interface Props {
   pathname: string;
@@ -14,12 +15,12 @@ const showPageView = shouldRenderWalinePageView(comments);
 
 {
   showPageView && (
-    <span class="meta-item page-view">
+    <MetadataItem kind="default" class="page-view">
       Pageviews{' '}
       <span class="waline-pageview-count" data-path={pathname} aria-live="polite">
         --
       </span>
-    </span>
+    </MetadataItem>
   )
 }
 
