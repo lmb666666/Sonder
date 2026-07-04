@@ -93,7 +93,7 @@ const defaultMathConfig = {
 
 const defaultFontConfig = {
   en: 'Maple Mono',
-  code: 'Maple Mono',
+  code: 'Monaco',
   zh: 'ChillRoundM',
   file: '/fonts/ChillRoundM.ttf',
 };
