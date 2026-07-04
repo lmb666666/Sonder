@@ -93,8 +93,7 @@ const defaultMathConfig = {
 
 const defaultFontConfig = {
   en: 'Maple Mono',
-  code: 'Maple Mono',
-  codeEn: 'Monaco',
+  code: 'Monaco',
   zh: 'ChillRoundM',
   file: '/fonts/ChillRoundM.ttf',
 };
@@ -286,7 +285,6 @@ const siteConfig = defineCollection({
       .object({
         en: nonEmptyStringSchema(defaultFontConfig.en),
         code: nonEmptyStringSchema(defaultFontConfig.code),
-        codeEn: nonEmptyStringSchema(defaultFontConfig.codeEn),
         zh: nonEmptyStringSchema(defaultFontConfig.zh),
         file: nonEmptyStringSchema(defaultFontConfig.file),
       })
