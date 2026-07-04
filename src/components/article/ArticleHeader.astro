@@ -3,6 +3,7 @@ import SmartImage from '../SmartImage.astro';
 import PageView from '../comments/PageView.astro';
 import FormattedDate from '../FormattedDate.astro';
 import Icon from '../Icon.astro';
+import MetadataItem from '../MetadataItem.astro';
 import { slugifyGroupName } from '../../utils/content-groups';
 
 type TagLink = string | { name: string; slug: string };
@@ -70,21 +71,23 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
           </h1>
           <div class="meta-line" aria-label="Article metadata">
             {date && (
-              <span class="meta-item">
+              <MetadataItem kind="date" separated={false}>
                 <FormattedDate date={date} />
-              </span>
+              </MetadataItem>
             )}
-            <span class="meta-item">{wordCountLabel}</span>
-            <span class="meta-item">{readingTime}</span>
+            <MetadataItem kind="words" separated={Boolean(date)}>
+              {wordCountLabel}
+            </MetadataItem>
+            <MetadataItem kind="reading">{readingTime}</MetadataItem>
             {showPageView && <PageView pathname={pathname} />}
             {hasTags && (
-              <span class="meta-item tag-list">
+              <MetadataItem kind="tags" class="tag-list">
                 {tagLinks.map((tag) => (
                   <a class="tag" href={`${basePath}/tags/${tag.slug}/`}>
                     #{tag.name}
                   </a>
                 ))}
-              </span>
+              </MetadataItem>
             )}
           </div>
           {hasGroups && (
@@ -132,21 +135,23 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
         <div class="meta-line" aria-label="Article metadata">
           {date && (
-            <span class="meta-item">
+            <MetadataItem kind="date" separated={false}>
               <FormattedDate date={date} />
-            </span>
+            </MetadataItem>
           )}
-          <span class="meta-item">{wordCountLabel}</span>
-          <span class="meta-item">{readingTime}</span>
+          <MetadataItem kind="words" separated={Boolean(date)}>
+            {wordCountLabel}
+          </MetadataItem>
+          <MetadataItem kind="reading">{readingTime}</MetadataItem>
           {showPageView && <PageView pathname={pathname} />}
           {hasTags && (
-            <span class="meta-item tag-list">
+            <MetadataItem kind="tags" class="tag-list">
               {tagLinks.map((tag) => (
                 <a class="tag" href={`${basePath}/tags/${tag.slug}/`}>
                   #{tag.name}
                 </a>
               ))}
-            </span>
+            </MetadataItem>
           )}
         </div>
         {hasGroups && (
@@ -240,19 +245,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
     line-height: 1.5;
   }
 
-  .meta-item {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .meta-item + .meta-item::before {
-    margin: 0 9px;
-    color: var(--paper-ink-faint);
-    content: '\00b7';
-    opacity: 0.7;
-  }
-
-  .tag-list {
+  :global(.tag-list) {
     flex-wrap: wrap;
     gap: 6px;
   }

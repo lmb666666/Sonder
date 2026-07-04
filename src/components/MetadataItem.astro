@@ -1,0 +1,128 @@
+---
+import { getSiteConfig } from '../data/site';
+import Icon from './Icon.astro';
+
+type MetadataKind = 'date' | 'words' | 'reading' | 'tags' | 'categories' | 'series' | 'default';
+
+interface Props {
+  kind?: MetadataKind;
+  separated?: boolean;
+  class?: string;
+}
+
+const { kind = 'default', separated = true, class: className } = Astro.props;
+const { pages } = await getSiteConfig();
+const metadataSeparator = pages.blog.metadataSeparator;
+const useIconSeparator = metadataSeparator.trim().toLowerCase() === 'icon';
+const iconByKind: Record<MetadataKind, string | undefined> = {
+  date: 'pencil-sparkles',
+  words: 'pen-tool',
+  reading: 'book-open-check',
+  tags: 'tags',
+  categories: 'folder',
+  series: 'layers',
+  default: 'sparkle',
+};
+const iconName = iconByKind[kind];
+---
+
+<span
+  class:list={[
+    'metadata-item',
+    `metadata-item-${kind}`,
+    {
+      'metadata-item-separated': separated,
+      'metadata-item-icon': useIconSeparator && iconName,
+    },
+    className,
+  ]}
+>
+  {
+    separated && !useIconSeparator && (
+      <span class="metadata-separator" aria-hidden="true">
+        {metadataSeparator}
+      </span>
+    )
+  }
+  {useIconSeparator && iconName && <Icon name={iconName} size={14} class="metadata-icon" />}
+  <span class="metadata-content"><slot /></span>
+</span>
+
+<style>
+  .metadata-item {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .metadata-separator {
+    margin: 0 9px;
+    color: var(--paper-ink-faint);
+    opacity: 0.72;
+  }
+
+  .metadata-item-icon {
+    gap: 8px;
+  }
+
+  .metadata-item-icon.metadata-item-separated {
+    margin-inline-start: 12px;
+  }
+
+  .metadata-item-icon :global(.metadata-icon) {
+    flex: 0 0 auto;
+    margin-inline: 2px 1px;
+    color: var(--metadata-icon-color, var(--paper-accent));
+    opacity: 0.96;
+  }
+
+  .metadata-item-date {
+    --metadata-icon-color: #d88742;
+  }
+
+  .metadata-item-words {
+    --metadata-icon-color: #3f9c6a;
+  }
+
+  .metadata-item-reading {
+    --metadata-icon-color: #4d83d6;
+  }
+
+  .metadata-item-tags {
+    --metadata-icon-color: #c8649f;
+  }
+
+  .metadata-item-categories {
+    --metadata-icon-color: #8b76df;
+  }
+
+  .metadata-item-series {
+    --metadata-icon-color: #c69a2e;
+  }
+
+  .metadata-content {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-width: 0;
+  }
+
+  @media (max-width: 640px) {
+    .metadata-item-icon {
+      display: inline;
+      min-width: auto;
+    }
+
+    .metadata-item-icon :global(.metadata-icon) {
+      margin-inline: 0.08em 0.42em;
+      vertical-align: -0.18em;
+    }
+
+    .metadata-content {
+      display: inline;
+      max-width: 100%;
+      overflow: visible;
+      white-space: normal;
+    }
+  }
+</style>

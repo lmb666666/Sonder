@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { ChevronsRight } from 'lucide-astro';
 import FormattedDate from '../FormattedDate.astro';
+import MetadataItem from '../MetadataItem.astro';
 import SmartImage from '../SmartImage.astro';
 import { slugifyGroupName } from '../../utils/content-groups';
 import { isStickyEntry } from '../../utils/content-dates';
@@ -101,9 +102,11 @@ function getPageHref(pageNumber: number) {
                   {isStickyEntry(post) && <span class="post-pin">Pinned</span>}
                 </h2>
                 <div class="date">
-                  <FormattedDate date={post.data.date} />
+                  <MetadataItem kind="date" separated={false}>
+                    <FormattedDate date={post.data.date} />
+                  </MetadataItem>
                   {post.data.categories.length > 0 && (
-                    <span class="post-groups">
+                    <MetadataItem kind="categories" class="post-groups">
                       <span class="meta-label">Categories</span>
                       {post.data.categories.map((category) => (
                         <a
@@ -113,10 +116,10 @@ function getPageHref(pageNumber: number) {
                           {category}
                         </a>
                       ))}
-                    </span>
+                    </MetadataItem>
                   )}
                   {post.data.series.length > 0 && (
-                    <span class="post-groups">
+                    <MetadataItem kind="series" class="post-groups">
                       <span class="meta-label">Series</span>
                       {post.data.series.map((series) => (
                         <a
@@ -126,16 +129,16 @@ function getPageHref(pageNumber: number) {
                           {series}
                         </a>
                       ))}
-                    </span>
+                    </MetadataItem>
                   )}
                   {post.data.tags && post.data.tags.length > 0 && (
-                    <span class="post-tags">
+                    <MetadataItem kind="tags" class="post-tags">
                       {post.data.tags.map((tag) => (
                         <a class="post-tag" href={withBase(`/tags/${slugifyGroupName(tag)}/`)}>
                           #{tag}
                         </a>
                       ))}
-                    </span>
+                    </MetadataItem>
                   )}
                 </div>
               </div>
@@ -441,17 +444,11 @@ function getPageHref(pageNumber: number) {
     font-weight: 600;
   }
 
-  .post-tags {
+  :global(.post-tags) {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0;
-  }
-
-  .post-tags::before {
-    margin: 0 9px;
-    color: var(--paper-ink-faint);
-    content: '\00b7';
   }
 
   .post-tag {
@@ -480,22 +477,20 @@ function getPageHref(pageNumber: number) {
     content: '\00b7';
   }
 
-  .post-groups {
+  :global(.post-groups) {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0;
   }
 
-  .post-groups::before {
-    margin: 0 9px;
-    color: var(--paper-ink-faint);
-    content: '\00b7';
-  }
-
   .meta-label {
     margin-right: 6px;
     color: var(--paper-ink-faint);
+  }
+
+  :global(.metadata-item-icon) .meta-label {
+    display: none;
   }
 
   .post-group {
@@ -748,36 +743,35 @@ function getPageHref(pageNumber: number) {
     .date {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px 9px;
+      gap: 4px 12px;
       margin-top: 8px;
       font-size: 0.78rem;
       line-height: 1.45;
     }
 
-    .post-tags,
-    .post-groups {
-      display: flex;
-      flex-wrap: nowrap;
-      min-width: 0;
-      max-width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
+    .date :global(.metadata-item-icon.metadata-item-separated) {
+      margin-inline-start: 0;
     }
 
-    .post-tags::before,
-    .post-groups::before {
-      content: none;
+    :global(.post-tags),
+    :global(.post-groups) {
+      display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
+      max-width: 100%;
+      overflow: visible;
+      white-space: normal;
     }
 
     .meta-label {
       display: none;
     }
 
-    .post-groups {
-      max-width: min(44%, 12rem);
+    :global(.post-groups) {
+      max-width: 100%;
     }
 
-    .post-tags {
+    :global(.post-tags) {
       flex-basis: 100%;
       max-width: 100%;
     }
@@ -785,8 +779,7 @@ function getPageHref(pageNumber: number) {
     .post-tag,
     .post-group {
       min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-wrap: anywhere;
     }
 
     .archive-pagination {

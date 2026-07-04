@@ -1,17 +1,15 @@
 ---
+import { format } from 'date-fns';
+
+import { getSiteConfig } from '../data/site';
+
 interface Props {
   date: Date;
 }
 
 const { date } = Astro.props;
+const { pages } = await getSiteConfig();
+const formattedDate = format(date, pages.blog.dateFormat);
 ---
 
-<time datetime={date.toISOString()}>
-  {
-    date.toLocaleDateString('en-us', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-  }
-</time>
+<time datetime={date.toISOString()}>{formattedDate}</time>
