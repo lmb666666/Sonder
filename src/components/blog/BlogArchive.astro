@@ -743,20 +743,24 @@ function getPageHref(pageNumber: number) {
     .date {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px 9px;
+      gap: 4px 12px;
       margin-top: 8px;
       font-size: 0.78rem;
       line-height: 1.45;
     }
 
+    .date :global(.metadata-item-icon.metadata-item-separated) {
+      margin-inline-start: 0;
+    }
+
     :global(.post-tags),
     :global(.post-groups) {
       display: flex;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       min-width: 0;
       max-width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
+      overflow: visible;
+      white-space: normal;
     }
 
     .meta-label {
@@ -764,7 +768,7 @@ function getPageHref(pageNumber: number) {
     }
 
     :global(.post-groups) {
-      max-width: min(44%, 12rem);
+      max-width: 100%;
     }
 
     :global(.post-tags) {
@@ -775,8 +779,7 @@ function getPageHref(pageNumber: number) {
     .post-tag,
     .post-group {
       min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-wrap: anywhere;
     }
 
     .archive-pagination {

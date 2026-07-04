@@ -8,7 +8,7 @@ repository = "https://github.com/dodolalorc/astro-navfolio"
 footerNote = "Released as an open-source starter."
 
 [config.theme]
-# Available palettes:
+# 可用色盘：
 # green-soft, green-vivid, rose-soft, pink-soft, purple-soft, blue-soft, orange-soft, brown-soft
 palette = "green-soft"
 
@@ -50,11 +50,11 @@ kicker = "Notebook archive"
 subtitle = "Notes from the margins."
 note = "Field notes, drafts, and technical margins arranged for slow browsing."
 postsPerPage = 6
-# Date format pattern used by date-fns.
+# date-fns 使用的日期格式模板。
 dateFormat = "yyyy-MM-dd"
-# Metadata separator. Use a symbol such as "|", "/", or the special value "icon".
+# 元信息分隔符。可以使用 "|"、"/" 等符号，也可以使用特殊值 "icon"。
 metadataSeparator = "icon"
-# Article list cover style: "card" keeps a framed thumbnail, "mask" blends it into the right side.
+# 文章列表封面样式："card" 保留带边框的缩略图，"mask" 会将图片融合到右侧。
 coverImageStyle = "mask"
 
 [config.pages.blog.categories]
