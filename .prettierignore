@@ -4,3 +4,7 @@ node_modules
 bun.lock
 homepage.png
 public/favicon.ico
+
+# Preserve author-chosen frontmatter quote style in content files.
+src/content/**/*.md
+src/content/**/*.mdx
