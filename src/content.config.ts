@@ -19,6 +19,15 @@ const remoteImageSchema = z
   .url()
   .refine((src) => /^https?:\/\//i.test(src), 'Remote images must start with http:// or https://');
 
+const siteUrlSchema = z.preprocess((value) => {
+  if (typeof value !== 'string') return value;
+
+  const trimmed = value.trim();
+  if (!trimmed || /^[a-z][a-z\d+.-]*:\/\//i.test(trimmed)) return trimmed;
+
+  return `https://${trimmed}`;
+}, z.url());
+
 const contentImageSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
   z.union([image(), remoteImageSchema]);
 
@@ -154,6 +163,13 @@ const navigationItemSchema = z.object({
   href: z.string(),
 });
 
+const homeLinkSchema = z.object({
+  label: z.string(),
+  icon: z.string(),
+  tooltip: z.string().trim(),
+  copy: z.boolean(),
+});
+
 const defaultPagesConfig = {
   blog: {
     title: 'Writing notes',
@@ -206,6 +222,7 @@ const siteConfig = defineCollection({
       description: z.string(),
       pageTitle: z.string(),
       pageDescription: z.string(),
+      url: siteUrlSchema,
       repository: z.url(),
       footerNote: z.string(),
     }),
@@ -363,7 +380,7 @@ const siteConfig = defineCollection({
           dateArchiveBaseHref: '',
         }),
       navigation: z.array(navigationItemSchema),
-      connect: z.array(linkSchema.required({ icon: true })),
+      links: z.array(homeLinkSchema).optional().default([]),
       doing: z.array(
         z.object({
           text: z.string(),

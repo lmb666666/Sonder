@@ -1,14 +1,15 @@
 <main class="flow-shell" data-pagefind-body>
   <section class="flow-grid" aria-label="navfolio personal publication">
     <section class="flow-column main-column">
-      <slot name="hero" />
-      <slot name="recently" />
+      <slot name="intro" />
+      <slot name="doing" />
     </section>
 
     <aside class="flow-column side-column">
       <slot name="profile" />
-      <slot name="activity" />
-      <slot name="links" />
+      <slot name="latest" />
+      <slot name="navigation" />
+      <slot name="connect" />
     </aside>
   </section>
 </main>
@@ -61,6 +62,10 @@
     padding: 2px 0 0;
   }
 
+  .flow-grid :global(.connect-card) {
+    padding: 14px 0 0;
+  }
+
   .flow-grid :global(.intro-card) {
     min-height: 0;
     padding: 0 0 8px;
@@ -94,7 +99,7 @@
     }
 
     .flow-grid :global(.intro-card) {
-      order: 4;
+      order: 5;
       min-height: auto;
       padding: 0;
       scroll-margin-top: 88px;
@@ -107,15 +112,21 @@
     }
 
     .flow-grid :global(.nav-card) {
-      order: 2;
-    }
-
-    .flow-grid :global(.heatmap-card) {
       order: 3;
     }
 
+    .flow-grid :global(.connect-card) {
+      order: 2;
+      margin-block: -18px -10px;
+    }
+
+    .flow-grid :global(.heatmap-card) {
+      order: 4;
+      margin-top: -8px;
+    }
+
     .flow-grid :global(.doing-card) {
-      order: 5;
+      order: 6;
     }
 
     :global(html) {

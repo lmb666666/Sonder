@@ -1,102 +1,222 @@
 ---
-import Icon from '../Icon.astro';
+import ConnectIcon, { type ConnectLink } from './ConnectIcon.astro';
 
-interface ConnectItem {
-  label: string;
-  href: string;
-  icon: string;
-}
-
-const { items } = Astro.props as { items: ConnectItem[] };
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-
-function withBase(href: string) {
-  if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
-    return href;
-  }
-
-  if (href === '/') {
-    return `${basePath}/` || '/';
-  }
-
-  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
-}
+const { links } = Astro.props as { links: ConnectLink[] };
 ---
 
-<article class="glass-card connect-card">
-  <h2><Icon name="link" /> Connect</h2>
-  <div class="connect-list">
-    {
-      items.map((item) => (
-        <a href={withBase(item.href)} aria-label={item.label}>
-          <Icon name={item.icon} />
-          <span>{item.label}</span>
-        </a>
-      ))
-    }
+<article class="connect-card" data-connect-card>
+  <div class="connect-list" aria-label="Connect links">
+    {links.map((item) => <ConnectIcon item={item} />)}
   </div>
 </article>
 
+<script>
+  type ConnectCopyWindow = Window & {
+    __navfolioConnectCopyController?: AbortController;
+  };
+
+  const connectWindow = window as ConnectCopyWindow;
+  const copyTimeouts = new WeakMap<HTMLButtonElement, number>();
+  const resetDelay = 1200;
+
+  const setCopyState = (button: HTMLButtonElement, text: string) => {
+    const bubbleLabel = button.querySelector<HTMLElement>('.connect-bubble-label');
+
+    button.dataset.tooltip = text;
+    if (bubbleLabel) bubbleLabel.textContent = text;
+    button.classList.add('is-copied');
+  };
+
+  const resetCopyState = (button: HTMLButtonElement, text: string) => {
+    const bubbleLabel = button.querySelector<HTMLElement>('.connect-bubble-label');
+
+    button.dataset.tooltip = text;
+    if (bubbleLabel) bubbleLabel.textContent = text;
+    button.classList.remove('is-copied');
+    copyTimeouts.delete(button);
+  };
+
+  const handleConnectCopyClick = async (event: MouseEvent) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const button = target?.closest<HTMLButtonElement>('[data-connect-card] [data-copy-value]');
+    if (!button) return;
+
+    const value = button.dataset.copyValue ?? '';
+    if (!value) return;
+
+    const originalTooltip = button.dataset.tooltip ?? '';
+    const previousTimeout = copyTimeouts.get(button);
+    if (previousTimeout !== undefined) {
+      window.clearTimeout(previousTimeout);
+    }
+
+    try {
+      if (!navigator.clipboard) {
+        throw new Error('Clipboard API not available');
+      }
+
+      await navigator.clipboard.writeText(value);
+      setCopyState(button, 'Copied');
+    } catch {
+      setCopyState(button, 'Copy failed');
+    }
+
+    const timeoutId = window.setTimeout(() => resetCopyState(button, originalTooltip), resetDelay);
+    copyTimeouts.set(button, timeoutId);
+  };
+
+  connectWindow.__navfolioConnectCopyController?.abort();
+
+  connectWindow.__navfolioConnectCopyController = new AbortController();
+  document.addEventListener('click', handleConnectCopyClick, {
+    signal: connectWindow.__navfolioConnectCopyController.signal,
+  });
+</script>
+
 <style>
   .connect-card {
-    padding: 18px 24px 24px;
-  }
-
-  h2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0 0 14px;
-    color: var(--paper-ink);
-    font-size: 1.05rem;
-  }
-
-  h2 svg {
-    width: 20px;
-    height: 20px;
-    color: var(--paper-accent);
+    width: 100%;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .connect-list {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
-  a {
+  :global(.connect-icon) {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    min-height: 48px;
-    padding: 0 12px;
-    border: 1px solid var(--paper-line);
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
     border-radius: 8px;
-    background: var(--paper-control);
+    background: transparent;
     color: var(--paper-ink);
+    font: inherit;
     text-decoration: none;
-    box-shadow: var(--paper-shadow);
+    box-shadow: none;
+    cursor: pointer;
     transition:
       transform 180ms ease,
       background 180ms ease,
       color 180ms ease;
   }
 
-  a:hover {
-    background: var(--paper-control-hover);
+  :global(.connect-icon:hover),
+  :global(.connect-icon:focus-visible),
+  :global(.connect-icon.is-copied) {
+    background: transparent;
     color: var(--paper-accent);
     transform: translateY(-1px);
   }
 
-  svg {
-    width: 20px;
-    height: 20px;
+  :global(.connect-icon:focus-visible) {
+    outline: 2px solid color-mix(in srgb, var(--paper-accent) 34%, transparent);
+    outline-offset: 3px;
+  }
+
+  :global(.connect-icon svg) {
+    width: 18px;
+    height: 18px;
     flex: 0 0 auto;
   }
 
-  @media (max-width: 640px) {
+  :global(.connect-icon-stage) {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+  }
+
+  :global(.connect-primary-icon),
+  :global(.connect-action-icon) {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  :global(.connect-action-icon) {
+    color: var(--paper-accent);
+    opacity: 0;
+    transform: translateY(3px) scale(0.78);
+  }
+
+  :global(.connect-icon:hover .connect-primary-icon),
+  :global(.connect-icon:focus-visible .connect-primary-icon),
+  :global(.connect-icon.is-copied .connect-primary-icon) {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.78);
+  }
+
+  :global(.connect-icon:hover .connect-action-icon),
+  :global(.connect-icon:focus-visible .connect-action-icon),
+  :global(.connect-icon.is-copied .connect-action-icon) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  :global(.connect-bubble) {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    display: block;
+    width: max-content;
+    max-width: min(220px, calc(100vw - 32px));
+    padding: 6px 8px;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-bg);
+    color: var(--paper-ink);
+    box-shadow: var(--paper-shadow);
+    font-size: 0.74rem;
+    line-height: 1.35;
+    opacity: 0;
+    pointer-events: none;
+    text-align: center;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    transform: translate(-50%, 4px);
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+
+  :global(.connect-bubble-label.is-link) {
+    color: var(--paper-accent);
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  :global(.connect-icon:hover .connect-bubble),
+  :global(.connect-icon:focus-visible .connect-bubble),
+  :global(.connect-icon.is-copied .connect-bubble) {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  @media (max-width: 820px) {
+    .connect-card {
+      padding: 0;
+    }
+
     .connect-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      justify-content: center;
     }
   }
 </style>

@@ -14,8 +14,17 @@ import tailwindcss from '@tailwindcss/vite';
 import expressiveCode from 'astro-expressive-code';
 
 const siteToml = parse(fs.readFileSync(new URL('./src/config/site.toml', import.meta.url), 'utf8'));
+const configuredSiteUrl = siteToml.config?.site?.url;
 const configuredMathRenderer = siteToml.config?.math?.render;
 const mathRenderer = configuredMathRenderer === 'mathjax' ? 'mathjax' : 'katex';
+const normalizeSiteUrl = (value) => {
+  if (typeof value !== 'string') return undefined;
+
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+
+  return /^[a-z][a-z\d+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+};
 
 const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
 const customSite = process.env.SITE_URL;
@@ -33,7 +42,10 @@ const githubPagesSite =
     : undefined;
 
 const resolvedSite =
-  customSite || (isGitHubActions && githubPagesSite ? githubPagesSite : 'https://example.com');
+  normalizeSiteUrl(customSite) ||
+  (isGitHubActions && githubPagesSite ? githubPagesSite : undefined) ||
+  normalizeSiteUrl(configuredSiteUrl) ||
+  'https://example.com';
 
 const resolvedBase =
   customBase || (isGitHubActions && isProjectPage && repositoryName ? `/${repositoryName}` : '/');

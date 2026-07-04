@@ -1,0 +1,84 @@
+---
+import Icon from '../Icon.astro';
+
+export interface ConnectLink {
+  label: string;
+  icon: string;
+  tooltip: string;
+  copy: boolean;
+}
+
+interface Props {
+  item: ConnectLink;
+}
+
+const { item } = Astro.props;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const tooltip = item.tooltip.trim();
+const shouldRender = tooltip.length > 0;
+const bubbleText = item.copy ? tooltip : item.label;
+const actionIcon = item.copy ? 'copy' : 'external';
+
+function withBase(link: string) {
+  if (
+    link.startsWith('http') ||
+    link.startsWith('mailto:') ||
+    link.startsWith('#') ||
+    link.startsWith('tel:')
+  ) {
+    return link;
+  }
+
+  if (link === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${link.startsWith('/') ? link : `/${link}`}`;
+}
+---
+
+{
+  shouldRender &&
+    (item.copy ? (
+      <button
+        class="connect-icon"
+        type="button"
+        aria-label={`Copy ${item.label}`}
+        data-copy-value={tooltip}
+        data-tooltip={tooltip}
+      >
+        <span class="connect-icon-stage" aria-hidden="true">
+          <span class="connect-primary-icon">
+            <Icon name={item.icon} />
+          </span>
+          <span class="connect-action-icon">
+            <Icon name={actionIcon} />
+          </span>
+        </span>
+        <span class="connect-bubble" role="status">
+          <span class="connect-bubble-label">{bubbleText}</span>
+        </span>
+      </button>
+    ) : (
+      <a
+        class="connect-icon"
+        href={withBase(tooltip)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={item.label}
+        data-tooltip={tooltip}
+      >
+        <span class="connect-icon-stage" aria-hidden="true">
+          <span class="connect-primary-icon">
+            <Icon name={item.icon} />
+          </span>
+          <span class="connect-action-icon">
+            <Icon name={actionIcon} />
+          </span>
+        </span>
+        <span class="connect-bubble">
+          <span class="connect-bubble-label is-link">{bubbleText}</span>
+        </span>
+      </a>
+    ))
+}
