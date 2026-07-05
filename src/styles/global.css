@@ -186,6 +186,23 @@ table {
   width: 100%;
 }
 
+.markdown-table-scroll {
+  max-width: 100%;
+  margin: 28px 0 30px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.markdown-table-scroll table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.markdown-table-scroll th {
+  white-space: nowrap;
+}
+
 img {
   max-width: 100%;
   height: auto;
