@@ -13,6 +13,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 import expressiveCode from 'astro-expressive-code';
 
+import rehypeResponsiveTables from './src/utils/rehype-responsive-tables';
+
 const siteToml = parse(fs.readFileSync(new URL('./src/config/site.toml', import.meta.url), 'utf8'));
 const configuredSiteUrl = siteToml.config?.site?.url;
 const configuredMathRenderer = siteToml.config?.math?.render;
@@ -56,7 +58,10 @@ export default defineConfig({
   base: resolvedBase,
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [mathRenderer === 'mathjax' ? rehypeMathjax : rehypeKatex],
+    rehypePlugins: [
+      mathRenderer === 'mathjax' ? rehypeMathjax : rehypeKatex,
+      rehypeResponsiveTables,
+    ],
   },
   integrations: [expressiveCode(), mdx(), sitemap()],
 
