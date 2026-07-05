@@ -8,6 +8,7 @@ import { getSiteConfig } from '../../data/site';
 import { slugifyGroupName } from '../../utils/content-groups';
 import { isStickyEntry } from '../../utils/content-dates';
 import { getUiText } from '../../utils/ui-text';
+import Icon from '../Icon.astro';
 
 type BlogPost = CollectionEntry<'blog'>;
 type CoverImageStyle = 'card' | 'mask';
@@ -102,7 +103,12 @@ function getPageHref(pageNumber: number) {
                   <a class="title-link" href={withBase(`/blog/${post.id}/`)}>
                     {post.data.title}
                   </a>
-                  {isStickyEntry(post) && <span class="post-pin">{ui.article.pinned}</span>}
+                  {isStickyEntry(post) && (
+                    <span class="post-pin">
+                      <Icon name="pin" size={18} />
+                      {ui.article.pinned}
+                    </span>
+                  )}
                 </h2>
                 <div class="date">
                   <MetadataItem kind="date" separated={false}>
@@ -422,7 +428,7 @@ function getPageHref(pageNumber: number) {
     display: inline-flex;
     align-items: center;
     min-height: 21px;
-    padding: 1px 7px;
+    padding: 2px 7px;
     border: 1px solid var(--paper-line);
     border-radius: 6px;
     background: var(--paper-control);
@@ -432,6 +438,10 @@ function getPageHref(pageNumber: number) {
     font-weight: 700;
     line-height: 1.2;
     vertical-align: 0.12em;
+  }
+
+  .post-pin > svg {
+    margin-right: 4px;
   }
 
   .post-link.without-thumb .title {

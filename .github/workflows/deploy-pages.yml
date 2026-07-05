@@ -40,7 +40,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Ensure docs submodule is available
-        run: git submodule update --init --recursive
+        run: git submodule update --init --recursive --remote
 
       - name: Build site
         env:

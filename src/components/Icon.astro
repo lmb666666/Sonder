@@ -32,6 +32,7 @@ import {
   PencilLine,
   Twitter,
   Tv,
+  Pin,
   type Props as LucideProps,
 } from 'lucide-astro';
 
@@ -80,6 +81,7 @@ const icons = {
   x: Twitter,
   xiaohongshu: BookOpen,
   zhihu: MessageCircle,
+  pin: Pin,
 };
 
 const IconComponent = icons[name as keyof typeof icons] ?? Sparkles;
