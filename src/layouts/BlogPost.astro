@@ -6,6 +6,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import SmartImage from '../components/SmartImage.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
+import MermaidRenderer from '../components/mdx/MermaidRenderer.astro';
 import { getSiteConfig } from '../data/site';
 import { getHtmlLang } from '../utils/ui-text';
 
@@ -80,6 +81,31 @@ const htmlLang = getHtmlLang(siteConfig);
         color: var(--paper-accent);
         text-underline-offset: 4px;
       }
+      .prose :global(.mermaid-diagram) {
+        overflow-x: auto;
+        margin: 30px 0 34px;
+        padding: 22px;
+        border: 1px solid var(--paper-line-strong);
+        border-radius: 8px;
+        background: var(--paper-surface-muted);
+      }
+      .prose :global(.mermaid-diagram .mermaid) {
+        min-width: max-content;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        color: var(--paper-ink);
+        font-family: var(--font-article);
+        font-size: 0.95rem;
+        text-align: center;
+      }
+      .prose :global(.mermaid-diagram svg) {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+      }
 
       @media (max-width: 640px) {
         main {
@@ -110,5 +136,6 @@ const htmlLang = getHtmlLang(siteConfig);
     </main>
     <ScrollToTopButton />
     <Footer />
+    <MermaidRenderer />
   </body>
 </html>

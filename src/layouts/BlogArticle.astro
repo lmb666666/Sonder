@@ -7,6 +7,7 @@ import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import BaseHead from '../components/BaseHead.astro';
 import CommentSection from '../components/comments/CommentSection.astro';
+import MermaidRenderer from '../components/mdx/MermaidRenderer.astro';
 import ZoomableImage from '../components/mdx/ZoomableImage.astro';
 import { getThemePalette, getSiteConfig } from '../data/site';
 import { resolveCommentsConfig } from '../utils/comments';
@@ -228,6 +229,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
     </main>
     <ScrollToTopButton />
     <ZoomableImage />
+    <MermaidRenderer />
   </body>
 </html>
 
@@ -482,6 +484,35 @@ const hasSidebar = shouldRenderSidebar && hasToc;
     display: inline-block;
     line-height: 0;
     vertical-align: -0.08em;
+  }
+
+  .article-content :global(.mermaid-diagram) {
+    overflow-x: auto;
+    margin: 30px 0 34px;
+    padding: 22px;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 8px;
+    background: var(--paper-surface-muted);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper-surface) 72%, transparent);
+  }
+
+  .article-content :global(.mermaid-diagram .mermaid) {
+    min-width: max-content;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--paper-ink);
+    font-family: var(--font-article);
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .article-content :global(.mermaid-diagram svg) {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
   }
 
   .article-content :global(.expressive-code) {
