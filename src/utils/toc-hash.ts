@@ -1,6 +1,9 @@
-import { slug } from 'github-slugger';
+import GithubSlugger from 'github-slugger';
 
-const normalizeIdValue = (value: string): string => slug(value.trim().normalize('NFKC'));
+const normalizeIdValue = (value: string): string => {
+  const slugger = new GithubSlugger();
+  return slugger.slug(value.trim().normalize('NFKC'));
+};
 
 const safeDecodeHashPart = (value: string): string => {
   let decoded = value;
