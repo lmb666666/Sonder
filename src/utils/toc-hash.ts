@@ -1,4 +1,6 @@
-const normalizeIdValue = (value: string): string => value.trim().normalize('NFKC');
+import { slug } from 'github-slugger';
+
+const normalizeIdValue = (value: string): string => slug(value.trim().normalize('NFKC'));
 
 const safeDecodeHashPart = (value: string): string => {
   let decoded = value;
