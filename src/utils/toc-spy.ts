@@ -7,7 +7,7 @@ type TocWindow = Window & {
   __navfolioTocSpyPageKey?: string;
 };
 
-import { buildHashIdCandidates, normalizeHash, normalizeIdValue } from './toc-hash';
+import { buildHashIdCandidates, normalizeHash } from './toc-hash';
 
 const getTocRoots = (): TocRoot[] =>
   Array.from(document.querySelectorAll<TocRoot>('[data-toc-root]'));
@@ -38,14 +38,7 @@ const getSectionFromHash = (hash: string): HTMLElement | null => {
     }
   }
 
-  const normalizedId = normalizedHash.slice(1);
-  const articleHeadings = Array.from(
-    document.querySelectorAll<HTMLElement>(
-      '.article-content h2[id], .article-content h3[id], .article-content h4[id], .article-content h5[id], .article-content h6[id]',
-    ),
-  );
-
-  return articleHeadings.find((heading) => normalizeIdValue(heading.id) === normalizedId) ?? null;
+  return null;
 };
 
 const setBranchExpanded = (item: HTMLElement, expanded: boolean): void => {
@@ -103,7 +96,7 @@ const keepLinkVisible = (link: TocLink): void => {
 };
 
 const getSections = (): HTMLElement[] => {
-  const normalizedIds = new Set<string>();
+  const sectionIds = new Set<string>();
   const uniqueHashes = new Set(
     getTocLinks()
       .map((link) => getNormalizedLinkHash(link))
@@ -117,12 +110,11 @@ const getSections = (): HTMLElement[] => {
         return false;
       }
 
-      const normalizedId = normalizeIdValue(section.id);
-      if (normalizedIds.has(normalizedId)) {
+      if (sectionIds.has(section.id)) {
         return false;
       }
 
-      normalizedIds.add(normalizedId);
+      sectionIds.add(section.id);
       return true;
     });
 };
