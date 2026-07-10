@@ -8,8 +8,9 @@ coding work should use `.agents/` as the coordination directory.
 1. Read `.agents/README.md`.
 2. Read `.agents/context/issue-68-summary.md`.
 3. Read `.agents/context/quartz-reference.md`.
-4. Pick the workflow in `.agents/workflows/` that matches the task.
-5. Update `.agents/plans/` when architecture assumptions change.
+4. Read `.agents/skills/super-power-skill.md` for skill routing.
+5. Pick the workflow in `.agents/workflows/` that matches the task.
+6. Update `.agents/plans/` when architecture assumptions change.
 
 ## Current Branch Intent
 
@@ -35,6 +36,7 @@ focused community/official package repositories.
 - Keep core independent from the default theme.
 - Prefer Astro Integration-compatible plugin APIs.
 - Use `rg` to inspect imports before moving files.
+- Use `grill-with-docs` before making broad RFC package-boundary decisions.
 - Do not edit `src/docs` as part of core refactor work unless the task
   explicitly includes documentation content.
 
