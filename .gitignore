@@ -23,7 +23,6 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-.agents/
 AGENTS.md
 
 # generated font files
