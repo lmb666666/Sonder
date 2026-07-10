@@ -4,7 +4,7 @@ const hashSlugger = new GithubSlugger();
 
 const normalizeIdValue = (value: string): string => {
   hashSlugger.reset();
-  return hashSlugger.slug(value.trim().normalize('NFKC'));
+  return hashSlugger.slug(value);
 };
 
 const safeDecodeHashPart = (value: string): string => {
@@ -44,19 +44,5 @@ export const normalizeHash = (value: string): string => {
 
 export const buildHashIdCandidates = (hash: string): string[] => {
   const normalizedHash = normalizeHash(hash);
-  if (!normalizedHash) {
-    return [];
-  }
-
-  const normalizedId = normalizedHash.slice(1);
-  return Array.from(
-    new Set([
-      normalizedId,
-      safeDecodeHashPart(normalizedId),
-      encodeURIComponent(normalizedId),
-      safeDecodeHashPart(encodeURIComponent(normalizedId)),
-    ]),
-  );
+  return normalizedHash ? [normalizedHash.slice(1)] : [];
 };
-
-export { normalizeIdValue, safeDecodeHashPart };
