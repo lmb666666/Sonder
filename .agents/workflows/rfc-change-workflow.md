@@ -27,8 +27,11 @@ Use this workflow for every RFC refactor change.
 
 - Run `bun run format:check`.
 - Run the narrowest build command that covers the touched area.
-- For docs content builds, use `NAVFOLIO_CONTENT_SOURCE=docs bun run build`
-  or `bun run docs:build`.
+- Because article content comes from the docs sub-repository mounted at
+  `src/docs`, use `bun run docs:dev` for content-aware preview and
+  `bun run docs:build` for build verification.
+- Use plain `bun run dev` or `bun run build` only when intentionally checking
+  the starter/default `src/content` mode.
 - For package boundary edits, run import searches with `rg`.
 
 ## 5. Record

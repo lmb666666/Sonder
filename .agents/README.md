@@ -22,6 +22,10 @@ work without rediscovering the architecture intent.
 - Prefer small, dated documents that can be reviewed independently.
 - Link decisions back to GitHub issues, PRs, and source files.
 - Treat `AGENT.md` at the repository root as the entry point for future agents.
+- Treat `src/docs` as content from the separate docs sub-repository. Use
+  `bun run docs:dev` for content-aware preview and `bun run docs:build` for
+  build verification unless a task explicitly targets the starter
+  `src/content` mode.
 - Keep English identifiers for package names and commands, but use Chinese prose
   when describing Navfolio product intent and RFC decisions.
 - Treat https://github.com/navfolio as the future home for official packages

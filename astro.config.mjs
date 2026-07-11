@@ -4,17 +4,12 @@ import fs from 'node:fs';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
-import rehypeKatex from 'rehype-katex';
-import rehypeMathjax from 'rehype-mathjax';
-import remarkMath from 'remark-math';
 import { parse } from 'smol-toml';
 
 import tailwindcss from '@tailwindcss/vite';
 
-import expressiveCode from 'astro-expressive-code';
-
-import rehypeResponsiveTables from './src/utils/rehype-responsive-tables';
-import remarkMermaid from './src/utils/remark-mermaid';
+import navfolioConfig from './navfolio.config';
+import { getAstroPluginConfig } from './src/plugins/config';
 
 /**
  * @param {unknown} value
@@ -29,6 +24,7 @@ const mathConfig = isRecord(configToml.math) ? configToml.math : {};
 const configuredSiteUrl = siteConfig.url;
 const configuredMathRenderer = mathConfig.render;
 const mathRenderer = configuredMathRenderer === 'mathjax' ? 'mathjax' : 'katex';
+const astroPluginConfig = getAstroPluginConfig(navfolioConfig, { mathRenderer });
 /**
  * @param {unknown} value
  */
@@ -70,13 +66,10 @@ export default defineConfig({
   site: resolvedSite,
   base: resolvedBase,
   markdown: {
-    remarkPlugins: [remarkMath, remarkMermaid],
-    rehypePlugins: [
-      mathRenderer === 'mathjax' ? rehypeMathjax : rehypeKatex,
-      rehypeResponsiveTables,
-    ],
+    remarkPlugins: astroPluginConfig.remarkPlugins,
+    rehypePlugins: astroPluginConfig.rehypePlugins,
   },
-  integrations: [expressiveCode(), mdx(), sitemap()],
+  integrations: [...astroPluginConfig.integrations, mdx(), sitemap()],
 
   vite: {
     plugins: [tailwindcss()],

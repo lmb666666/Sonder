@@ -10,7 +10,7 @@
 
 ## Before PR
 
-- [ ] The site still builds.
+- [ ] The docs-backed site still builds with `bun run docs:build`.
 - [ ] No package imports depend on future unpublished package names without an
       adapter or plan note.
 - [ ] Theme code and feature behavior are not mixed in one extraction.

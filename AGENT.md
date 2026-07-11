@@ -39,6 +39,9 @@ created there after their Phase 1 boundaries are accepted.
 ## Guardrails
 
 - Keep the current site buildable while refactoring.
+- Article content is sourced from the separate docs sub-repository mounted at
+  `src/docs`. For content-aware local preview and build checks, prefer
+  `bun run docs:dev` and `bun run docs:build`.
 - Do not move UI and data contracts in the same step unless the plan says why.
 - Keep core independent from the default theme.
 - Prefer Astro Integration-compatible plugin APIs.
@@ -50,7 +53,12 @@ created there after their Phase 1 boundaries are accepted.
 ## Verification Defaults
 
 - `bun run format:check`
-- `ASTRO_TELEMETRY_DISABLED=1 NAVFOLIO_CONTENT_SOURCE=docs bunx astro build`
+- `bun run docs:build`
+
+For local preview during refactor work, use `bun run docs:dev` so the app reads
+article content from the docs sub-repository. Use the plain `bun run dev` or
+`bun run build` path only when intentionally checking the starter/default
+`src/content` mode.
 
 The local pre-commit hook may require Python fonttools. On managed Python
 environments, use the repository Vercel pattern: create a virtual environment
