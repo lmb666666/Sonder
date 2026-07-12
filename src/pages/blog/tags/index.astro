@@ -1,0 +1,205 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import BackLink from '../../../components/blog/BackLink.astro';
+import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import { getSiteConfig } from '../../../data/site';
+import { getAllTags } from '../../../utils/content-groups';
+import { getUiText } from '../../../utils/ui-text';
+
+const tagColors = [
+  '#2f8f5b',
+  '#bd6b1e',
+  '#6e8f3f',
+  '#a34d78',
+  '#3f7f96',
+  '#9a5f2e',
+  '#516fb0',
+  '#8b6f2f',
+  '#4f8a72',
+  '#b1554b',
+  '#687a32',
+  '#6f5a9a',
+  '#2f7f89',
+  '#a07836',
+  '#86615b',
+  '#4d7c4f',
+  '#8a6ea7',
+  '#a85b36',
+  '#427a67',
+  '#8a7d3a',
+];
+
+const siteConfig = await getSiteConfig();
+const { site, theme } = siteConfig;
+const palette = theme.palette;
+const tags = getAllTags(await getCollection('blog', ({ data }) => !data.draft));
+const ui = getUiText(siteConfig);
+const maxCount = Math.max(1, ...tags.map((tag) => tag.count));
+const minCount = Math.min(...tags.map((tag) => tag.count), maxCount);
+const countRange = Math.max(1, maxCount - minCount);
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pageTitle = '标签云';
+const pageNote = '从文章内容里长出来的关键词地图。字号、粗细和颜色会随关联文章数量变化。';
+
+function getTagWeight(count: number) {
+  return (count - minCount) / countRange;
+}
+---
+
+<!doctype html>
+<html lang={ui.locale} data-palette={palette}>
+  <head>
+    <BaseHead title={`${pageTitle} | ${site.title}`} description={pageNote} />
+    <style>
+      main {
+        width: min(100%, var(--layout-shell-width));
+        max-width: none;
+        padding: 118px var(--layout-page-gutter) var(--layout-page-bottom);
+      }
+
+      .tag-cloud {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(10px, 1.8vw, 22px) clamp(14px, 2.4vw, 30px);
+        align-items: center;
+        justify-content: center;
+        max-width: 860px;
+        min-height: clamp(360px, 48vw, 560px);
+        margin: 0 auto;
+        padding: clamp(30px, 5vw, 74px) clamp(10px, 3vw, 42px);
+        border-radius: 50%;
+      }
+
+      .tag-cloud::before {
+        position: absolute;
+        inset: 10%;
+        border: 1px solid color-mix(in srgb, var(--paper-line) 56%, transparent);
+        border-radius: 50%;
+        content: '';
+        pointer-events: none;
+      }
+
+      .tag-cloud::after {
+        position: absolute;
+        inset: 23% 16%;
+        border: 1px dashed color-mix(in srgb, var(--paper-line) 58%, transparent);
+        border-radius: 50%;
+        content: '';
+        pointer-events: none;
+        transform: rotate(-8deg);
+      }
+
+      .tag-cloud a {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        gap: 5px;
+        align-items: baseline;
+        color: var(--tag-color);
+        font-family: var(--font-page-heading);
+        font-size: calc(0.92rem + var(--tag-weight) * 1.18rem);
+        font-weight: calc(540 + var(--tag-weight) * 240);
+        line-height: 1.08;
+        text-decoration: none;
+        transform: rotate(var(--tag-tilt)) translateY(0) scale(1);
+        transition:
+          color 180ms ease,
+          opacity 180ms ease,
+          transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .tag-cloud a:nth-child(3n + 1) {
+        margin-top: 22px;
+      }
+
+      .tag-cloud a:nth-child(4n + 2) {
+        margin-bottom: 28px;
+      }
+
+      .tag-cloud a:hover,
+      .tag-cloud a:focus-visible {
+        color: var(--paper-accent);
+        opacity: 1;
+        transform: rotate(0deg) translateY(-4px) scale(1.06);
+      }
+
+      .tag-cloud small {
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.62em;
+        font-weight: 700;
+      }
+
+      .empty-note {
+        max-width: 620px;
+        margin: 0;
+        color: var(--paper-ink-soft);
+        font-family: var(--font-serif-cn);
+        font-size: 1rem;
+        line-height: 1.75;
+      }
+
+      @media (max-width: 720px) {
+        main {
+          padding-top: 88px;
+        }
+
+        .tag-cloud {
+          justify-content: flex-start;
+          min-height: auto;
+          padding: 22px 0;
+          border-radius: 0;
+        }
+
+        .tag-cloud::before,
+        .tag-cloud::after {
+          content: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <BlogTopNav />
+    <main data-pagefind-body>
+      <BackLink href="/blog/" label={ui.groups.back} />
+      <header class="archive-hero archive-header-shared page-header-spacing">
+        <div class="archive-header-main">
+          <p class="archive-kicker">TAG CONSTELLATION</p>
+          <h1 class="archive-title">{pageTitle}</h1>
+        </div>
+        <div class="archive-copy">
+          <p class="archive-subtitle">{pageNote}</p>
+          <p class="archive-note">{ui.groups.publishedCount(tags.length)}</p>
+        </div>
+      </header>
+
+      {
+        tags.length > 0 ? (
+          <section class="tag-cloud" aria-label={pageTitle}>
+            {tags.map((tag, index) => {
+              const weight = getTagWeight(tag.count);
+
+              return (
+                <a
+                  href={`${basePath}/tags/${tag.slug}/`}
+                  style={`--tag-color: ${tagColors[index % tagColors.length]}; --tag-weight: ${weight.toFixed(
+                    3,
+                  )}; --tag-tilt: ${((index % 7) - 3) * 1.35}deg;`}
+                >
+                  <span>#{tag.name}</span>
+                  <small>{tag.count}</small>
+                </a>
+              );
+            })}
+          </section>
+        ) : (
+          <p class="empty-note">还没有可展示的标签。</p>
+        )
+      }
+    </main>
+    <Footer />
+  </body>
+</html>

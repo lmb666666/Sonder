@@ -16,6 +16,11 @@ export interface TagGroup extends ContentGroup {
   posts: BlogPost[];
 }
 
+export const uncategorizedCategory = {
+  name: '无分类',
+  slug: 'uncategorized',
+} as const;
+
 export interface SeriesContext {
   name: string;
   slug: string;
@@ -100,20 +105,43 @@ function createGroupMap(posts: BlogPost[], field: GroupField) {
 }
 
 export function getAllCategories(posts: BlogPost[]): ContentGroup[] {
-  return [...createGroupMap(posts, 'categories').values()]
+  const categories = [...createGroupMap(posts, 'categories').values()]
     .map(({ name, slug, posts: groupPosts }) => ({
       name,
       slug,
       count: groupPosts.length,
     }))
     .sort((a, b) => b.count - a.count || sortByName(a, b));
+  const uncategorizedPosts = getUncategorizedPosts(posts);
+
+  if (uncategorizedPosts.length === 0) {
+    return categories;
+  }
+
+  return [
+    ...categories,
+    {
+      ...uncategorizedCategory,
+      count: uncategorizedPosts.length,
+    },
+  ];
 }
 
 export function getPostsByCategory(posts: BlogPost[], categorySlug: string) {
+  if (categorySlug === uncategorizedCategory.slug) {
+    return getUncategorizedPosts(posts);
+  }
+
   return posts.filter(
     (post) =>
       isPublished(post) &&
       getGroupItems(post, 'categories').some((name) => slugifyGroupName(name) === categorySlug),
+  );
+}
+
+export function getUncategorizedPosts(posts: BlogPost[]) {
+  return posts.filter(
+    (post) => isPublished(post) && getGroupItems(post, 'categories').length === 0,
   );
 }
 

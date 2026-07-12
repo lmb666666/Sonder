@@ -76,9 +76,13 @@ const ui = getUiText(await getSiteConfig());
   }
 
   h2 {
+    min-width: 0;
     margin: 0;
-    font-size: clamp(1.35rem, 2.6vw, 2rem);
+    overflow: hidden;
+    font-size: clamp(1.18rem, 2.1vw, 1.62rem);
     line-height: 1.18;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   h2 a,
@@ -127,8 +131,11 @@ const ui = getUiText(await getSiteConfig());
   .series-posts span {
     grid-column: 2;
     min-width: 0;
+    overflow: hidden;
     font-size: 1rem;
     line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .series-posts small {

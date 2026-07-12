@@ -146,6 +146,10 @@ const vibes = await Promise.all(
         animation-delay: calc(var(--vibe-index) * 72ms);
       }
 
+      .vibe-item.is-vibe-hidden {
+        display: none;
+      }
+
       .vibe-dot {
         position: absolute;
         top: 0.5rem;
@@ -585,8 +589,16 @@ const vibes = await Promise.all(
           {
             vibes.map(({ entry, Content, align, imageLayout }, index) => (
               <article
-                class:list={['vibe-item', align, entry.data.size, entry.data.type]}
+                class:list={[
+                  'vibe-item',
+                  align,
+                  entry.data.size,
+                  entry.data.type,
+                  index >= 6 && 'is-vibe-hidden',
+                ]}
                 style={`--vibe-index: ${index}`}
+                data-vibe-item
+                data-vibe-index={index}
               >
                 {showTrail && <span class="vibe-dot" data-vibe-dot aria-hidden="true" />}
                 <div class="vibe-meta">
@@ -667,6 +679,66 @@ const vibes = await Promise.all(
       )
     }
     <script>
+      const mountVibeProgressiveStream = () => {
+        const stream = document.querySelector<HTMLElement>('.vibe-stream');
+        const items = Array.from(document.querySelectorAll<HTMLElement>('[data-vibe-item]'));
+
+        if (!stream || stream.dataset.vibeProgressiveBound === 'true' || items.length <= 6) return;
+
+        stream.dataset.vibeProgressiveBound = 'true';
+
+        let visibleCount = Math.min(6, items.length);
+        let observer: IntersectionObserver | undefined;
+
+        const revealUntil = (nextCount: number) => {
+          visibleCount = Math.min(nextCount, items.length);
+
+          items.forEach((item, index) => {
+            item.classList.toggle('is-vibe-hidden', index >= visibleCount);
+          });
+
+          window.dispatchEvent(new Event('resize'));
+        };
+
+        const observeTrigger = () => {
+          observer?.disconnect();
+
+          if (visibleCount >= items.length) return;
+
+          const trigger = items[Math.max(0, visibleCount - 3)];
+
+          observer = new IntersectionObserver(
+            (entries) => {
+              if (entries.some((entry) => entry.isIntersecting)) {
+                revealUntil(visibleCount + 6);
+                observeTrigger();
+              }
+            },
+            {
+              rootMargin: '0px 0px 32% 0px',
+              threshold: 0.1,
+            },
+          );
+          observer.observe(trigger);
+        };
+
+        if (!('IntersectionObserver' in window)) {
+          revealUntil(items.length);
+          return;
+        }
+
+        revealUntil(visibleCount);
+        observeTrigger();
+
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            observer?.disconnect();
+          },
+          { once: true },
+        );
+      };
+
       const mountVibeImageToggles = () => {
         document
           .querySelectorAll<HTMLButtonElement>('[data-vibe-image-toggle]')
@@ -691,7 +763,9 @@ const vibes = await Promise.all(
           });
       };
 
+      document.addEventListener('astro:page-load', mountVibeProgressiveStream);
       document.addEventListener('astro:page-load', mountVibeImageToggles);
+      mountVibeProgressiveStream();
       mountVibeImageToggles();
     </script>
     <ZoomableImage />

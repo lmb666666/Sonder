@@ -20,7 +20,7 @@ const clearVibeThread = (): void => {
 const getDotPositions = (stream: HTMLElement): VibeDotPosition[] => {
   const streamBox = stream.getBoundingClientRect();
   const dots = Array.from(stream.querySelectorAll('[data-vibe-dot]')).filter(
-    (dot): dot is HTMLElement => dot instanceof HTMLElement,
+    (dot): dot is HTMLElement => dot instanceof HTMLElement && dot.getClientRects().length > 0,
   );
 
   return dots.map((dot) => {

@@ -1,0 +1,238 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import BackLink from '../../../components/blog/BackLink.astro';
+import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import { getSiteConfig } from '../../../data/site';
+import { slugifyGroupName } from '../../../utils/content-groups';
+import { sortByDateDesc } from '../../../utils/content-dates';
+import { getUiText } from '../../../utils/ui-text';
+
+const siteConfig = await getSiteConfig();
+const { site, theme } = siteConfig;
+const palette = theme.palette;
+const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft));
+const ui = getUiText(siteConfig);
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pageTitle = '年份归档';
+const pageNote = '按发布时间回看所有文章，只保留标题、日期和前三个标签。';
+const archiveYears = [
+  ...posts.reduce((years, post) => {
+    const year = post.data.date.getFullYear();
+    const group = years.get(year) ?? [];
+
+    group.push(post);
+    years.set(year, group);
+
+    return years;
+  }, new Map<number, typeof posts>()),
+].sort(([yearA], [yearB]) => yearB - yearA);
+
+function formatMonthDay(date: Date) {
+  return `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(
+    2,
+    '0',
+  )}`;
+}
+---
+
+<!doctype html>
+<html lang={ui.locale} data-palette={palette}>
+  <head>
+    <BaseHead title={`${pageTitle} | ${site.title}`} description={pageNote} />
+    <style>
+      main {
+        width: min(100%, var(--layout-shell-width));
+        max-width: none;
+        padding: 118px var(--layout-page-gutter) var(--layout-page-bottom);
+      }
+
+      .year-stack {
+        display: grid;
+        gap: 34px;
+      }
+
+      .year-group {
+        display: grid;
+        gap: 0;
+        border-top: 1px solid var(--paper-line);
+      }
+
+      .year-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 22px 0 10px;
+      }
+
+      .year-heading h2 {
+        margin: 0;
+        font-size: clamp(1.7rem, 3.8vw, 3.4rem);
+        line-height: 1;
+      }
+
+      .year-heading span {
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .archive-list {
+        display: grid;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .archive-list li {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: baseline;
+        border-top: 1px solid var(--paper-line);
+      }
+
+      .archive-row {
+        display: grid;
+        grid-template-columns: 54px minmax(0, 1fr);
+        gap: 18px;
+        align-items: baseline;
+        padding: 13px 0;
+        color: var(--paper-ink);
+        text-decoration: none;
+      }
+
+      .archive-date {
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .archive-post-title {
+        min-width: 0;
+        overflow: hidden;
+        font-size: 1rem;
+        line-height: 1.5;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .archive-row:hover .archive-post-title {
+        color: var(--paper-accent);
+      }
+
+      .archive-tags {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        justify-content: flex-end;
+        max-width: 340px;
+        padding: 13px 0;
+        font-family: var(--font-meta);
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .archive-tags a {
+        overflow: hidden;
+        color: var(--paper-accent);
+        text-decoration: none;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .archive-tags a:hover {
+        color: var(--paper-ink);
+      }
+
+      .empty-note {
+        max-width: 620px;
+        margin: 0;
+        color: var(--paper-ink-soft);
+        font-family: var(--font-serif-cn);
+        font-size: 1rem;
+        line-height: 1.75;
+      }
+
+      @media (max-width: 720px) {
+        main {
+          padding-top: 88px;
+        }
+
+        .archive-row {
+          grid-template-columns: 48px minmax(0, 1fr);
+          gap: 10px 14px;
+        }
+
+        .archive-list li {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+
+        .archive-tags {
+          justify-content: flex-start;
+          max-width: 100%;
+          padding: 0 0 12px 62px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <BlogTopNav />
+    <main data-pagefind-body>
+      <BackLink href="/blog/" label={ui.groups.back} />
+      <header class="archive-hero archive-header-shared page-header-spacing">
+        <div class="archive-header-main">
+          <p class="archive-kicker">YEAR ARCHIVE</p>
+          <h1 class="archive-title">{pageTitle}</h1>
+        </div>
+        <div class="archive-copy">
+          <p class="archive-subtitle">{pageNote}</p>
+          <p class="archive-note">{ui.groups.publishedArticles(posts.length)}</p>
+        </div>
+      </header>
+
+      {
+        archiveYears.length > 0 ? (
+          <section class="year-stack" aria-label={pageTitle}>
+            {archiveYears.map(([year, yearPosts]) => (
+              <section class="year-group" aria-labelledby={`archive-${year}`}>
+                <header class="year-heading">
+                  <h2 id={`archive-${year}`}>{year}</h2>
+                  <span>{ui.groups.articleCount(yearPosts.length)}</span>
+                </header>
+                <ol class="archive-list">
+                  {yearPosts.map((post) => (
+                    <li>
+                      <a class="archive-row" href={`${basePath}/blog/${post.id}/`}>
+                        <time class="archive-date" datetime={post.data.date.toISOString()}>
+                          {formatMonthDay(post.data.date)}
+                        </time>
+                        <span class="archive-post-title">{post.data.title}</span>
+                      </a>
+                      {post.data.tags.length > 0 && (
+                        <span class="archive-tags">
+                          {post.data.tags.slice(0, 3).map((tag) => (
+                            <a href={`${basePath}/tags/${slugifyGroupName(tag)}/`}>#{tag}</a>
+                          ))}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ))}
+          </section>
+        ) : (
+          <p class="empty-note">还没有可归档的文章。</p>
+        )
+      }
+    </main>
+    <Footer />
+  </body>
+</html>
