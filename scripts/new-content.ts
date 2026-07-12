@@ -193,6 +193,7 @@ description: ""
 date: "${isoDate}"
 draft: true
 sticky: false
+heroImage: ""
 showHeroImage: false
 tags: []
 categories: []
@@ -227,6 +228,7 @@ title: "${escapeYamlString(title)}"
 description: ""
 date: "${isoDate}"
 draft: true
+heroImage: ""
 showHeroImage: false
 tags: []
 categories: []
