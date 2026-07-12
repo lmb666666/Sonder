@@ -28,7 +28,7 @@ const ui = getUiText(await getSiteConfig());
 
   <ol class="series-posts">
     {
-      posts.slice(0, 4).map((post) => (
+      posts.slice(0, 5).map((post) => (
         <li>
           <a href={`${basePath}/blog/${post.id}/`}>
             <span>{post.data.title}</span>
@@ -42,9 +42,9 @@ const ui = getUiText(await getSiteConfig());
   </ol>
 
   {
-    posts.length > 4 && (
+    posts.length > 5 && (
       <a class="series-more" href={href}>
-        {ui.groups.viewMore(posts.length - 4)}
+        {ui.groups.viewMore(posts.length - 5)}
       </a>
     )
   }
