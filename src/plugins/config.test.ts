@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { projectsModule, vibeModule } from '@navfolio/pages';
 
 import {
   defineNavfolioConfig,
@@ -9,7 +10,6 @@ import {
   isPageModuleEnabled,
   normalizeModuleRoute,
 } from './config';
-import { projectsModule, vibeModule } from '../modules';
 import type { NavfolioPlugin } from './types';
 
 describe('navfolio plugin config', () => {

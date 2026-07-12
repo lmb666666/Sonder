@@ -1,12 +1,12 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import navfolioConfig from '../navfolio.config';
-import { getConfiguredPageModules, getResolvedPageModuleScaffolds } from '../src/plugins/config';
 import type {
   NavfolioContentExtension,
   NavfolioPageModuleScaffold,
   NavfolioScaffoldTemplateContext,
-} from '../src/modules';
+} from '@navfolio/pages';
+import navfolioConfig from '../navfolio.config';
+import { getConfiguredPageModules, getResolvedPageModuleScaffolds } from '../src/plugins/config';
 
 type ScaffoldTemplate = NonNullable<NavfolioPageModuleScaffold['template']>;
 

@@ -6,7 +6,7 @@ import {
   getResolvedPageModules,
   normalizeModuleRoute,
 } from '../plugins/config';
-import type { NavfolioPageModuleId } from '../modules';
+import type { NavfolioPageModuleId } from '@navfolio/pages';
 import type { NavfolioConfig } from '../plugins/types';
 
 export async function getSiteConfig() {

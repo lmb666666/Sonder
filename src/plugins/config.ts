@@ -1,102 +1,31 @@
+import {
+  getConfiguredPageModules,
+  getPageModuleRoute,
+  getResolvedPageModule,
+  getResolvedPageModuleScaffolds,
+  getResolvedPageModules,
+  isPageModuleEnabled,
+  normalizeModuleRoute,
+  type NavfolioPageModuleRoute,
+} from '@navfolio/pages';
 import type { NavfolioAstroPluginConfig, NavfolioConfig, NavfolioPluginContext } from './types';
-import { projectsModule, vibeModule } from '../modules';
-import type {
-  NavfolioPageModule,
-  NavfolioPageModuleId,
-  ResolvedNavfolioPageModule,
-} from '../modules/types';
+
+export {
+  getConfiguredPageModules,
+  getPageModuleRoute,
+  getResolvedPageModule,
+  getResolvedPageModuleScaffolds,
+  getResolvedPageModules,
+  isPageModuleEnabled,
+  normalizeModuleRoute,
+} from '@navfolio/pages';
 
 const defaultPluginContext: NavfolioPluginContext = {
   mathRenderer: 'katex',
 };
 
-const defaultPageModules = [projectsModule(), vibeModule()] satisfies NavfolioPageModule[];
-
 export function defineNavfolioConfig(config: NavfolioConfig): NavfolioConfig {
   return config;
-}
-
-export function normalizeModuleRoute(route: string): string {
-  const trimmed = route.trim();
-
-  if (!trimmed) {
-    throw new Error('Navfolio page module route cannot be empty.');
-  }
-
-  const withoutSlashes = trimmed.replace(/^\/+|\/+$/g, '');
-
-  if (!withoutSlashes) return '/';
-
-  return `/${withoutSlashes}`;
-}
-
-export function getConfiguredPageModules(config: NavfolioConfig): NavfolioPageModule[] {
-  return config.modules ?? defaultPageModules;
-}
-
-export function getResolvedPageModules(config: NavfolioConfig): ResolvedNavfolioPageModule[] {
-  const modules = getConfiguredPageModules(config);
-  const routeOwners = new Map<string, string>();
-
-  return modules.flatMap((module) => {
-    if (module.enabled === false) return [];
-
-    const route = normalizeModuleRoute(module.route);
-    const existingOwner = routeOwners.get(route);
-
-    if (existingOwner) {
-      throw new Error(
-        `Duplicate Navfolio page module route "${route}" for "${existingOwner}" and "${module.id}".`,
-      );
-    }
-
-    routeOwners.set(route, module.id);
-
-    return [
-      {
-        ...module,
-        enabled: true,
-        route,
-        nav: {
-          ...module.nav,
-          href: route,
-        },
-      },
-    ];
-  });
-}
-
-export function getResolvedPageModule(
-  config: NavfolioConfig,
-  moduleId: NavfolioPageModuleId,
-): ResolvedNavfolioPageModule | undefined {
-  return getResolvedPageModules(config).find((module) => module.id === moduleId);
-}
-
-export function getPageModuleRoute(config: NavfolioConfig, moduleId: NavfolioPageModuleId): string {
-  return getResolvedPageModule(config, moduleId)?.route ?? `/${moduleId}`;
-}
-
-export function isPageModuleEnabled(
-  config: NavfolioConfig,
-  moduleId: NavfolioPageModuleId,
-): boolean {
-  return getResolvedPageModule(config, moduleId) !== undefined;
-}
-
-export function getResolvedPageModuleScaffolds(config: NavfolioConfig) {
-  return getResolvedPageModules(config).flatMap((module) => {
-    if (!module.scaffold) return [];
-
-    return [
-      {
-        moduleId: module.id,
-        ...module.scaffold,
-        collection: module.scaffold.collection,
-        defaultExtension: module.scaffold.defaultExtension ?? 'md',
-      },
-    ];
-  });
 }
 
 function createPageModuleRoutesIntegration(
@@ -109,6 +38,18 @@ function createPageModuleRoutesIntegration(
     hooks: {
       'astro:config:setup': ({ injectRoute }) => {
         for (const module of modules) {
+          if (module.routes?.length) {
+            for (const route of module.routes) {
+              injectRoute({
+                pattern: getModuleRoutePattern(route, module.route),
+                entrypoint: route.entrypoint,
+                prerender: route.prerender ?? true,
+              });
+            }
+
+            continue;
+          }
+
           if (module.id === 'vibe') {
             injectRoute({
               pattern: module.route,
@@ -133,6 +74,14 @@ function createPageModuleRoutesIntegration(
       },
     },
   };
+}
+
+function getModuleRoutePattern(route: NavfolioPageModuleRoute, moduleRoute: string): string {
+  if (typeof route.pattern === 'function') {
+    return route.pattern(moduleRoute);
+  }
+
+  return route.pattern ?? moduleRoute;
 }
 
 export function getAstroPluginConfig(

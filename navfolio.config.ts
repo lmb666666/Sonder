@@ -1,6 +1,6 @@
+import { pages, projectsModule, vibeModule } from '@navfolio/pages';
 import { markdownPlugin } from '@navfolio/plugin-markdown';
 
-import { projectsModule, vibeModule } from './src/modules';
 import { defineNavfolioConfig } from './src/plugins/config';
 
 export default defineNavfolioConfig({
@@ -14,5 +14,6 @@ export default defineNavfolioConfig({
       mermaid: true,
       responsiveTables: true,
     }),
+    pages(),
   ],
 });
