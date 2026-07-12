@@ -4,6 +4,7 @@ import { ChevronsRight } from 'lucide-astro';
 import FormattedDate from '../FormattedDate.astro';
 import MetadataItem from '../MetadataItem.astro';
 import SmartImage from '../SmartImage.astro';
+import BlogArchiveHeader from './BlogArchiveHeader.astro';
 import { getSiteConfig } from '../../data/site';
 import { slugifyGroupName } from '../../utils/content-groups';
 import { isStickyEntry } from '../../utils/content-dates';
@@ -46,10 +47,6 @@ const {
   headerNote,
   coverImageStyle = 'card',
 } = Astro.props;
-const defaultHeaderSubtitle =
-  'Loose pages, technical margins, and small notes gathered into a readable stack.';
-const resolvedHeaderSubtitle = headerSubtitle ?? headerNote ?? defaultHeaderSubtitle;
-const resolvedHeaderNote = headerSubtitle !== undefined ? headerNote : undefined;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const hasPagination = page.lastPage > 1;
 const ui = getUiText(await getSiteConfig());
@@ -67,16 +64,12 @@ function getPageHref(pageNumber: number) {
 }
 ---
 
-<header class="archive-hero archive-header-shared page-header-spacing">
-  <div class="archive-header-main">
-    <p class="archive-kicker">{headerKicker}</p>
-    <h1 class="archive-title">{headerTitle}</h1>
-  </div>
-  <div class="archive-copy">
-    <p class="archive-subtitle">{resolvedHeaderSubtitle}</p>
-    {resolvedHeaderNote && <p class="archive-note">{resolvedHeaderNote}</p>}
-  </div>
-</header>
+<BlogArchiveHeader
+  kicker={headerKicker}
+  title={headerTitle}
+  subtitle={headerSubtitle}
+  note={headerNote}
+/>
 <slot name="after-header" />
 <section>
   <ul class="post-stack">

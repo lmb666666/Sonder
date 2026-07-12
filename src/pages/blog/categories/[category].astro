@@ -2,11 +2,15 @@
 import { getCollection } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
-import BackLink from '../../../components/blog/BackLink.astro';
 import BlogArchive from '../../../components/blog/BlogArchive.astro';
 import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
-import { getAllCategories, getPostsByCategory } from '../../../utils/content-groups';
+import {
+  getAllCategories,
+  getPostsByCategory,
+  uncategorizedCategory,
+} from '../../../utils/content-groups';
 import { sortBlogPostsForArchive } from '../../../utils/content-dates';
 import { getUiText } from '../../../utils/ui-text';
 
@@ -41,12 +45,14 @@ const palette = theme.palette;
 const pageMeta = pages.blog;
 const { category, page } = Astro.props;
 const ui = getUiText(siteConfig);
+const categoryName =
+  category.slug === uncategorizedCategory.slug ? ui.groups.uncategorized : category.name;
 ---
 
 <!doctype html>
 <html lang={ui.locale} data-palette={palette}>
   <head>
-    <BaseHead title={`${category.name} | ${site.title}`} description={site.description} />
+    <BaseHead title={`${categoryName} | ${site.title}`} description={site.description} />
     <style>
       main {
         width: min(100%, var(--layout-shell-width));
@@ -64,14 +70,16 @@ const ui = getUiText(siteConfig);
   <body>
     <BlogTopNav />
     <main data-pagefind-body>
-      <BackLink href="/blog/categories/" label={ui.groups.back} />
       <BlogArchive
         page={page}
-        headerKicker={ui.groups.category}
-        headerTitle={category.name}
-        headerNote={ui.groups.categoryNote(category.count)}
+        headerKicker={pageMeta.kicker}
+        headerTitle={pageMeta.title}
+        headerSubtitle={pageMeta.subtitle}
+        headerNote={pageMeta.note}
         coverImageStyle={pageMeta.coverImageStyle}
-      />
+      >
+        <GroupNav slot="after-header" activeCategory={category.slug} />
+      </BlogArchive>
     </main>
     <Footer />
   </body>

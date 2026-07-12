@@ -2,21 +2,23 @@
 import { getCollection } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
-import BackLink from '../../../components/blog/BackLink.astro';
+import BlogArchiveHeader from '../../../components/blog/BlogArchiveHeader.astro';
 import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { slugifyGroupName } from '../../../utils/content-groups';
 import { sortByDateDesc } from '../../../utils/content-dates';
 import { getUiText } from '../../../utils/ui-text';
 
 const siteConfig = await getSiteConfig();
-const { site, theme } = siteConfig;
+const { site, theme, pages } = siteConfig;
 const palette = theme.palette;
+const pageMeta = pages.blog;
 const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft));
 const ui = getUiText(siteConfig);
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const pageTitle = '年份归档';
-const pageNote = '按发布时间回看所有文章，只保留标题、日期和前三个标签。';
+const pageTitle = ui.groups.yearArchives;
+const pageNote = ui.groups.yearArchivesNote;
 const archiveYears = [
   ...posts.reduce((years, post) => {
     const year = post.data.date.getFullYear();
@@ -185,17 +187,13 @@ function formatMonthDay(date: Date) {
   <body>
     <BlogTopNav />
     <main data-pagefind-body>
-      <BackLink href="/blog/" label={ui.groups.back} />
-      <header class="archive-hero archive-header-shared page-header-spacing">
-        <div class="archive-header-main">
-          <p class="archive-kicker">YEAR ARCHIVE</p>
-          <h1 class="archive-title">{pageTitle}</h1>
-        </div>
-        <div class="archive-copy">
-          <p class="archive-subtitle">{pageNote}</p>
-          <p class="archive-note">{ui.groups.publishedArticles(posts.length)}</p>
-        </div>
-      </header>
+      <BlogArchiveHeader
+        kicker={pageMeta.kicker}
+        title={pageMeta.title}
+        subtitle={pageMeta.subtitle}
+        note={pageMeta.note}
+      />
+      <GroupNav activeView="archives" />
 
       {
         archiveYears.length > 0 ? (
@@ -229,7 +227,7 @@ function formatMonthDay(date: Date) {
             ))}
           </section>
         ) : (
-          <p class="empty-note">还没有可归档的文章。</p>
+          <p class="empty-note">{ui.groups.emptyArchives}</p>
         )
       }
     </main>

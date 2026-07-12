@@ -2,8 +2,9 @@
 import { getCollection } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
-import BackLink from '../../../components/blog/BackLink.astro';
+import BlogArchiveHeader from '../../../components/blog/BlogArchiveHeader.astro';
 import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { getAllTags } from '../../../utils/content-groups';
 import { getUiText } from '../../../utils/ui-text';
@@ -32,16 +33,17 @@ const tagColors = [
 ];
 
 const siteConfig = await getSiteConfig();
-const { site, theme } = siteConfig;
+const { site, theme, pages } = siteConfig;
 const palette = theme.palette;
+const pageMeta = pages.blog;
 const tags = getAllTags(await getCollection('blog', ({ data }) => !data.draft));
 const ui = getUiText(siteConfig);
 const maxCount = Math.max(1, ...tags.map((tag) => tag.count));
 const minCount = Math.min(...tags.map((tag) => tag.count), maxCount);
 const countRange = Math.max(1, maxCount - minCount);
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const pageTitle = '标签云';
-const pageNote = '从文章内容里长出来的关键词地图。字号、粗细和颜色会随关联文章数量变化。';
+const pageTitle = ui.groups.tagCloud;
+const pageNote = ui.groups.tagCloudNote;
 
 function getTagWeight(count: number) {
   return (count - minCount) / countRange;
@@ -164,17 +166,13 @@ function getTagWeight(count: number) {
   <body>
     <BlogTopNav />
     <main data-pagefind-body>
-      <BackLink href="/blog/" label={ui.groups.back} />
-      <header class="archive-hero archive-header-shared page-header-spacing">
-        <div class="archive-header-main">
-          <p class="archive-kicker">TAG CONSTELLATION</p>
-          <h1 class="archive-title">{pageTitle}</h1>
-        </div>
-        <div class="archive-copy">
-          <p class="archive-subtitle">{pageNote}</p>
-          <p class="archive-note">{ui.groups.publishedCount(tags.length)}</p>
-        </div>
-      </header>
+      <BlogArchiveHeader
+        kicker={pageMeta.kicker}
+        title={pageMeta.title}
+        subtitle={pageMeta.subtitle}
+        note={pageMeta.note}
+      />
+      <GroupNav activeView="tags" />
 
       {
         tags.length > 0 ? (
@@ -196,7 +194,7 @@ function getTagWeight(count: number) {
             })}
           </section>
         ) : (
-          <p class="empty-note">还没有可展示的标签。</p>
+          <p class="empty-note">{ui.groups.emptyTags}</p>
         )
       }
     </main>

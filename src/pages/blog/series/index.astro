@@ -2,8 +2,9 @@
 import { getCollection } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
-import BackLink from '../../../components/blog/BackLink.astro';
+import BlogArchiveHeader from '../../../components/blog/BlogArchiveHeader.astro';
 import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import GroupNav from '../../../components/blog/GroupNav.astro';
 import SeriesCard from '../../../components/blog/SeriesCard.astro';
 import { getSiteConfig } from '../../../data/site';
 import { getAllSeries } from '../../../utils/content-groups';
@@ -12,7 +13,7 @@ import { getUiText } from '../../../utils/ui-text';
 const siteConfig = await getSiteConfig();
 const { site, theme, pages } = siteConfig;
 const palette = theme.palette;
-const pageMeta = pages.blog.series;
+const pageMeta = pages.blog;
 const series = getAllSeries(await getCollection('blog', ({ data }) => !data.draft));
 const ui = getUiText(siteConfig);
 ---
@@ -62,17 +63,13 @@ const ui = getUiText(siteConfig);
   <body>
     <BlogTopNav />
     <main data-pagefind-body>
-      <BackLink href="/blog/" label={ui.groups.back} />
-      <header class="archive-hero archive-header-shared page-header-spacing">
-        <div class="archive-header-main">
-          <p class="archive-kicker">{pageMeta.kicker}</p>
-          <h1 class="archive-title">{pageMeta.title}</h1>
-        </div>
-        <div class="archive-copy">
-          {pageMeta.subtitle && <p class="archive-subtitle">{pageMeta.subtitle}</p>}
-          {pageMeta.note && <p class="archive-note">{pageMeta.note}</p>}
-        </div>
-      </header>
+      <BlogArchiveHeader
+        kicker={pageMeta.kicker}
+        title={pageMeta.title}
+        subtitle={pageMeta.subtitle}
+        note={pageMeta.note}
+      />
+      <GroupNav activeView="series" />
 
       {
         series.length > 0 ? (

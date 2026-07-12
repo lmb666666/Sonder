@@ -17,7 +17,7 @@ export interface TagGroup extends ContentGroup {
 }
 
 export const uncategorizedCategory = {
-  name: '无分类',
+  name: 'Uncategorized',
   slug: 'uncategorized',
 } as const;
 

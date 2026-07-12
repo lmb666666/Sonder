@@ -4,6 +4,7 @@ import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
 import BlogArchive from '../../../components/blog/BlogArchive.astro';
 import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { sortBlogPostsForArchive } from '../../../utils/content-dates';
 import { getHtmlLang } from '../../../utils/ui-text';
@@ -80,7 +81,9 @@ const { page, postOffset } = Astro.props;
         headerSubtitle={pageMeta.subtitle}
         headerNote={pageMeta.note}
         coverImageStyle={pageMeta.coverImageStyle}
-      />
+      >
+        <GroupNav slot="after-header" />
+      </BlogArchive>
     </main>
     <Footer />
   </body>

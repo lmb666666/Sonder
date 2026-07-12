@@ -1,9 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
 import { getSiteConfig } from '../../data/site';
-import { getAllCategories, getAllSeries, getAllTags } from '../../utils/content-groups';
+import {
+  getAllCategories,
+  getAllSeries,
+  getAllTags,
+  uncategorizedCategory,
+} from '../../utils/content-groups';
 import { getUiText } from '../../utils/ui-text';
 
+interface Props {
+  activeView?: 'posts' | 'series' | 'tags' | 'archives';
+  activeCategory?: string;
+}
+
+const { activeView = 'posts', activeCategory } = Astro.props;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 const categories = getAllCategories(posts);
@@ -15,19 +26,32 @@ const ui = getUiText(await getSiteConfig());
 function withBase(href: string) {
   return `${basePath}${href}`;
 }
+
+function getCategoryName(name: string, slug: string) {
+  return slug === uncategorizedCategory.slug ? ui.groups.uncategorized : name;
+}
 ---
 
 <nav class="group-nav" aria-label={ui.groups.blogBrowsingGroups} data-group-nav>
   <div class="topic-panel">
     <div class="topic-list" data-topic-list>
-      <a class="topic-chip is-active" href={withBase('/blog/')}>
-        <span>全部文章</span>
+      <a
+        class:list={['topic-chip', activeView === 'posts' && !activeCategory && 'is-active']}
+        href={withBase('/blog/')}
+      >
+        <span>{ui.groups.allArticles}</span>
         <b>{posts.length}</b>
       </a>
       {
         categories.map((category) => (
-          <a class="topic-chip" href={withBase(`/blog/categories/${category.slug}/`)}>
-            <span>{category.name}</span>
+          <a
+            class:list={[
+              'topic-chip',
+              activeView === 'posts' && activeCategory === category.slug && 'is-active',
+            ]}
+            href={withBase(`/blog/categories/${category.slug}/`)}
+          >
+            <span>{getCategoryName(category.name, category.slug)}</span>
             <b>{category.count}</b>
           </a>
         ))
@@ -35,19 +59,32 @@ function withBase(href: string) {
     </div>
     {
       categories.length > 5 && (
-        <button class="topic-toggle" type="button" data-topic-toggle aria-expanded="false">
-          <span data-topic-toggle-label>展开</span>
+        <button
+          class="topic-toggle"
+          type="button"
+          data-topic-toggle
+          data-expand-label={ui.groups.expand}
+          data-collapse-label={ui.groups.collapse}
+          aria-expanded="false"
+        >
+          <span data-topic-toggle-label>{ui.groups.expand}</span>
         </button>
       )
     }
   </div>
 
   <div class="group-links" aria-label="Blog views">
-    <a href={withBase('/blog/series/')}>系列</a>
+    <a class:list={[activeView === 'series' && 'is-active']} href={withBase('/blog/series/')}>
+      {ui.groups.series}
+    </a>
     <span aria-hidden="true">·</span>
-    <a href={withBase('/blog/tags/')}>标签</a>
+    <a class:list={[activeView === 'tags' && 'is-active']} href={withBase('/blog/tags/')}>
+      {ui.groups.tags}
+    </a>
     <span aria-hidden="true">·</span>
-    <a href={withBase('/blog/archives/')}>年份</a>
+    <a class:list={[activeView === 'archives' && 'is-active']} href={withBase('/blog/archives/')}>
+      {ui.groups.years}
+    </a>
   </div>
 
   <span class="group-counts" aria-hidden="true">
@@ -55,25 +92,10 @@ function withBase(href: string) {
   </span>
 </nav>
 
-<script is:inline>
-  (() => {
-    document.querySelectorAll('[data-group-nav]').forEach((nav) => {
-      const list = nav.querySelector('[data-topic-list]');
-      const toggle = nav.querySelector('[data-topic-toggle]');
-      const label = nav.querySelector('[data-topic-toggle-label]');
+<script>
+  import { mountGroupNav } from '../../utils/group-nav';
 
-      if (!(list instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return;
-
-      toggle.addEventListener('click', () => {
-        const expanded = nav.classList.toggle('is-expanded');
-        toggle.setAttribute('aria-expanded', String(expanded));
-
-        if (label) {
-          label.textContent = expanded ? '收起' : '展开';
-        }
-      });
-    });
-  })();
+  mountGroupNav();
 </script>
 
 <style>
@@ -99,7 +121,9 @@ function withBase(href: string) {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    max-height: 38px;
+    max-height: 42px;
+    margin-top: -2px;
+    padding: 2px 0;
     overflow: hidden;
   }
 
@@ -190,7 +214,8 @@ function withBase(href: string) {
       text-decoration-color 180ms ease;
   }
 
-  .group-links a:hover {
+  .group-links a:hover,
+  .group-links a.is-active {
     color: var(--paper-accent);
     text-decoration-color: currentColor;
   }
@@ -214,7 +239,7 @@ function withBase(href: string) {
     }
 
     .topic-list {
-      max-height: 84px;
+      max-height: 88px;
     }
 
     .group-links {
