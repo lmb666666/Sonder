@@ -1,7 +1,7 @@
 # AGENT.md
 
-This repository is preparing an RFC refactor for Navfolio v1.0.0. Future AI
-coding work should use `.agents/` as the coordination directory.
+This repository is preparing the Navfolio v1 refactor. Future AI coding work
+should use `.agents/` as the coordination directory.
 
 ## Start Here
 
@@ -16,8 +16,9 @@ coding work should use `.agents/` as the coordination directory.
 
 ## Current Branch Intent
 
-The `rfc-refactor` branch is for planning and staging the migration from a
-single Astro theme repository to a core framework plus plugin ecosystem.
+The `v1` branch is the active refactor branch for moving Navfolio from a single
+Astro theme repository toward a core framework plus plugin and page-module
+ecosystem.
 
 The target architecture follows issue #68:
 

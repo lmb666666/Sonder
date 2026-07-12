@@ -1,6 +1,6 @@
 # RFC Refactor Plan
 
-Branch: `rfc-refactor`
+Branch: `v1`
 
 Issue: https://github.com/dodolalorc/astro-navfolio/issues/68
 
