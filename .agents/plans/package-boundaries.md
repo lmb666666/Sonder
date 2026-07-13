@@ -59,6 +59,7 @@ create-navfolio
 - `navfolio/plugin-comments` for `@navfolio/plugin-comments`
 - `navfolio/plugin-mdx` for `@navfolio/plugin-mdx`
 - `navfolio/mdx-components` for `@navfolio/mdx-components`
+- `navfolio/friend-circle-sync` for `@navfolio/friend-circle-sync`
 - `navfolio/plugin-math` for `@navfolio/plugin-math`
 - `navfolio/create-navfolio` for `create-navfolio`
 - `navfolio/docs` for documentation, already known to exist
@@ -71,3 +72,5 @@ create-navfolio
 - Publishing package APIs before migration examples prove them.
 - Creating plugin hooks that duplicate Astro lifecycle hooks without a reason.
 - Putting MDX authoring components into the Markdown rendering plugin.
+- Making a theme component responsible for RSS crawling, cache policy, or CI
+  orchestration. Those responsibilities belong to `friend-circle-sync`.

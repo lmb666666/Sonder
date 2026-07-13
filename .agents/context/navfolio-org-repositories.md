@@ -17,6 +17,8 @@ can be versioned, reviewed, and maintained independently.
 - `navfolio/mdx-components`: official Astro/MDX content component library. It
   now owns author-imported components such as friend links, friend circles,
   carousels, long images, Mermaid initialization, and zoomable images.
+- `navfolio/friend-circle-sync`: framework-independent CLI and composite
+  GitHub Action for synchronizing friend RSS/Atom feeds into static JSON.
 
 ## Target Official Package Repositories
 
@@ -24,21 +26,22 @@ Create these repositories only after the Phase 1 package boundary RFC is
 accepted. Until then, keep design notes in `.agents/` and prototype code in the
 current RFC branch.
 
-| Repository                 | Package                     | Responsibility                                                                                           |
-| -------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `navfolio/core`            | `@navfolio/core`            | Astro integration factory, config orchestration, plugin registration, content pipeline coordination      |
-| `navfolio/types`           | `@navfolio/types`           | Public TypeScript contracts for config, plugins, themes, content entries, navigation, and render context |
-| `navfolio/utils`           | `@navfolio/utils`           | Shared pure helpers that are not tied to one feature plugin or theme                                     |
-| `navfolio/theme-default`   | `@navfolio/theme-default`   | Default layouts, components, styles, theme-level slots, and visual defaults                              |
-| `navfolio/plugin-blog`     | `@navfolio/plugin-blog`     | Blog content collection contract, article/archive/RSS behavior, Markdown/MDX-facing blog features        |
-| `navfolio/plugin-vibe`     | `@navfolio/plugin-vibe`     | Vibe content feature and data contract                                                                   |
-| `navfolio/plugin-projects` | `@navfolio/plugin-projects` | Project content feature and data contract                                                                |
-| `navfolio/plugin-search`   | `@navfolio/plugin-search`   | Search indexing and runtime search integration, including Pagefind-oriented build behavior               |
-| `navfolio/plugin-comments` | `@navfolio/plugin-comments` | Comment provider contracts and adapters                                                                  |
-| `navfolio/plugin-mdx`      | `@navfolio/plugin-mdx`      | MDX integration helpers, MDX component contracts, remark/rehype defaults that are not blog-only          |
-| `navfolio/mdx-components`  | `@navfolio/mdx-components`  | Optional author-facing Astro components imported directly from MDX; not a rendering pipeline plugin      |
-| `navfolio/plugin-math`     | `@navfolio/plugin-math`     | Math rendering integration and KaTeX/remark-math style configuration                                     |
-| `navfolio/create-navfolio` | `create-navfolio`           | Project scaffold, migration entry points, starter selection                                              |
+| Repository                    | Package                        | Responsibility                                                                                           |
+| ----------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `navfolio/core`               | `@navfolio/core`               | Astro integration factory, config orchestration, plugin registration, content pipeline coordination      |
+| `navfolio/types`              | `@navfolio/types`              | Public TypeScript contracts for config, plugins, themes, content entries, navigation, and render context |
+| `navfolio/utils`              | `@navfolio/utils`              | Shared pure helpers that are not tied to one feature plugin or theme                                     |
+| `navfolio/theme-default`      | `@navfolio/theme-default`      | Default layouts, components, styles, theme-level slots, and visual defaults                              |
+| `navfolio/plugin-blog`        | `@navfolio/plugin-blog`        | Blog content collection contract, article/archive/RSS behavior, Markdown/MDX-facing blog features        |
+| `navfolio/plugin-vibe`        | `@navfolio/plugin-vibe`        | Vibe content feature and data contract                                                                   |
+| `navfolio/plugin-projects`    | `@navfolio/plugin-projects`    | Project content feature and data contract                                                                |
+| `navfolio/plugin-search`      | `@navfolio/plugin-search`      | Search indexing and runtime search integration, including Pagefind-oriented build behavior               |
+| `navfolio/plugin-comments`    | `@navfolio/plugin-comments`    | Comment provider contracts and adapters                                                                  |
+| `navfolio/plugin-mdx`         | `@navfolio/plugin-mdx`         | MDX integration helpers, MDX component contracts, remark/rehype defaults that are not blog-only          |
+| `navfolio/mdx-components`     | `@navfolio/mdx-components`     | Optional author-facing Astro components imported directly from MDX; not a rendering pipeline plugin      |
+| `navfolio/friend-circle-sync` | `@navfolio/friend-circle-sync` | CLI and GitHub Action that discovers RSS/Atom feeds and writes portable static friend-circle JSON        |
+| `navfolio/plugin-math`        | `@navfolio/plugin-math`        | Math rendering integration and KaTeX/remark-math style configuration                                     |
+| `navfolio/create-navfolio`    | `create-navfolio`              | Project scaffold, migration entry points, starter selection                                              |
 
 ## Dependency Direction
 
@@ -61,6 +64,10 @@ create-navfolio
 @navfolio/mdx-components
   -> astro peer dependency
   -> optional UI/runtime peer dependencies
+
+@navfolio/friend-circle-sync
+  -> no Astro or theme dependency
+  -> JSON output consumed by any static-site runtime
 
 @navfolio/theme-default
   -> @navfolio/types
