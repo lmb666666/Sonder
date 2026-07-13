@@ -19,6 +19,10 @@ describe('getPaginationItems', () => {
     expect(getPaginationItems(9, 15)).toEqual([1, 'ellipsis', 9, 10, 11, 12, 'ellipsis', 15]);
   });
 
+  test('shows the trailing six pages instead of hiding a single trailing page', () => {
+    expect(getPaginationItems(10, 15)).toEqual([1, 'ellipsis', 10, 11, 12, 13, 14, 15]);
+  });
+
   test('shows the trailing six pages in the final five-page zone', () => {
     expect(getPaginationItems(12, 15)).toEqual([1, 'ellipsis', 10, 11, 12, 13, 14, 15]);
     expect(getPaginationItems(15, 15)).toEqual([1, 'ellipsis', 10, 11, 12, 13, 14, 15]);

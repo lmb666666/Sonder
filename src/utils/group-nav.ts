@@ -33,7 +33,13 @@ function mountCurrentGroupNav() {
       }
     };
 
+    let lastMeasuredWidth: number | undefined;
+
     const updateOverflow = () => {
+      const currentWidth = nav.clientWidth;
+      if (currentWidth === lastMeasuredWidth) return;
+      lastMeasuredWidth = currentWidth;
+
       const wasExpanded = nav.classList.contains('is-expanded');
 
       toggle.hidden = true;

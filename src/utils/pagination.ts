@@ -14,7 +14,7 @@ export function getPaginationItems(currentPage: number, lastPage: number): Pagin
     return [...range(1, 6), 'ellipsis', lastPage];
   }
 
-  if (current >= lastPage - 4) {
+  if (current >= lastPage - 5) {
     return [1, 'ellipsis', ...range(lastPage - 5, lastPage)];
   }
 
