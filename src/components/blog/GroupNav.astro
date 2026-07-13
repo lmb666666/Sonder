@@ -8,6 +8,7 @@ import {
   uncategorizedCategory,
 } from '../../utils/content-groups';
 import { getUiText } from '../../utils/ui-text';
+import Icon from '../Icon.astro';
 
 interface Props {
   activeView?: 'posts' | 'series' | 'tags' | 'archives';
@@ -58,16 +59,18 @@ function getCategoryName(name: string, slug: string) {
       }
     </div>
     {
-      categories.length > 5 && (
+      categories.length > 0 && (
         <button
           class="topic-toggle"
           type="button"
+          hidden
           data-topic-toggle
           data-expand-label={ui.groups.expand}
           data-collapse-label={ui.groups.collapse}
           aria-expanded="false"
         >
           <span data-topic-toggle-label>{ui.groups.expand}</span>
+          <Icon name="chevron-down" size={15} class="topic-toggle-icon" />
         </button>
       )
     }
@@ -75,14 +78,17 @@ function getCategoryName(name: string, slug: string) {
 
   <div class="group-links" aria-label="Blog views">
     <a class:list={[activeView === 'series' && 'is-active']} href={withBase('/blog/series/')}>
+      <Icon name="layers" size={15} />
       {ui.groups.series}
     </a>
     <span aria-hidden="true">·</span>
     <a class:list={[activeView === 'tags' && 'is-active']} href={withBase('/blog/tags/')}>
+      <Icon name="tags" size={15} />
       {ui.groups.tags}
     </a>
     <span aria-hidden="true">·</span>
     <a class:list={[activeView === 'archives' && 'is-active']} href={withBase('/blog/archives/')}>
+      <Icon name="calendar" size={15} />
       {ui.groups.years}
     </a>
   </div>
@@ -186,9 +192,38 @@ function getCategoryName(name: string, slug: string) {
   }
 
   .topic-toggle {
+    gap: 4px;
     justify-content: center;
-    padding: 0 12px;
+    min-height: 36px;
+    padding: 0 2px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
     cursor: pointer;
+  }
+
+  .topic-toggle[hidden] {
+    display: none;
+  }
+
+  .topic-toggle:hover {
+    border-color: transparent;
+    background: transparent;
+    transform: none;
+  }
+
+  .topic-toggle:focus-visible {
+    border-radius: 4px;
+    outline: 2px solid var(--paper-line-strong);
+    outline-offset: 3px;
+  }
+
+  .topic-toggle :global(.topic-toggle-icon) {
+    transition: transform 180ms ease;
+  }
+
+  .group-nav.is-expanded .topic-toggle :global(.topic-toggle-icon) {
+    transform: rotate(180deg);
   }
 
   .group-links {
@@ -205,6 +240,9 @@ function getCategoryName(name: string, slug: string) {
   }
 
   .group-links a {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
     color: var(--paper-ink);
     text-decoration: underline;
     text-decoration-color: var(--paper-line-strong);
@@ -212,6 +250,11 @@ function getCategoryName(name: string, slug: string) {
     transition:
       color 180ms ease,
       text-decoration-color 180ms ease;
+  }
+
+  .group-links a :global(.site-icon) {
+    color: var(--paper-accent);
+    opacity: 0.82;
   }
 
   .group-links a:hover,

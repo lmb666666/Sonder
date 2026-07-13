@@ -4,6 +4,7 @@ import BlogArchiveHeader from './BlogArchiveHeader.astro';
 import BlogPostList from './BlogPostList.astro';
 import { getSiteConfig } from '../../data/site';
 import { getUiText } from '../../utils/ui-text';
+import { getPaginationItems } from '../../utils/pagination';
 
 type BlogPost = CollectionEntry<'blog'>;
 type CoverImageStyle = 'card' | 'mask';
@@ -82,8 +83,16 @@ function getPageHref(pageNumber: number) {
         class="pagination-pages"
         aria-label={ui.pagination.page(page.currentPage, page.lastPage)}
       >
-        {Array.from({ length: page.lastPage }, (_, index) => {
-          const pageNumber = index + 1;
+        {getPaginationItems(page.currentPage, page.lastPage).map((item) => {
+          if (item === 'ellipsis') {
+            return (
+              <span class="pagination-ellipsis" aria-hidden="true">
+                …
+              </span>
+            );
+          }
+
+          const pageNumber = item;
           const isCurrent = pageNumber === page.currentPage;
 
           return (
@@ -153,6 +162,16 @@ function getPageHref(pageNumber: number) {
   .pagination-number {
     min-width: 36px;
     padding: 0 10px;
+  }
+
+  .pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    min-height: 36px;
+    color: var(--paper-ink-faint);
+    user-select: none;
   }
 
   .pagination-link:hover,
