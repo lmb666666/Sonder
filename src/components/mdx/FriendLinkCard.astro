@@ -1,32 +1,17 @@
 ---
-interface FriendLinkItem {
-  name: string;
-  url: string;
-  bio?: string;
-  avatar?: string | null;
-  backgroundImage?: string | null;
-}
+import {
+  normalizeFriendLinkItems,
+  resolveFriendLinkItemsSafely,
+  type FriendLinkItem,
+} from './friend-links';
 
 interface Props {
-  items: FriendLinkItem[];
+  items?: FriendLinkItem[];
+  src?: string;
 }
 
-const { items } = Astro.props;
-
-const normalizedItems = items.map((item) => {
-  const name = item.name.trim();
-  const summary = item.bio?.trim() ?? '';
-  const backgroundImageUrl = item.backgroundImage?.trim() ?? '';
-
-  return {
-    ...item,
-    name,
-    summary,
-    backgroundImageUrl,
-    hasBackgroundImage: backgroundImageUrl.length > 0,
-    fallbackInitial: (name.charAt(0) || '?').toUpperCase(),
-  };
-});
+const items = await resolveFriendLinkItemsSafely(Astro.props);
+const normalizedItems = normalizeFriendLinkItems(items);
 ---
 
 <div class="friend-link-list">
