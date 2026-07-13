@@ -14,6 +14,9 @@ can be versioned, reviewed, and maintained independently.
 
 - `navfolio/docs`: documentation repository. This already exists and is used by
   the current project as the documentation source.
+- `navfolio/mdx-components`: official Astro/MDX content component library. It
+  now owns author-imported components such as friend links, friend circles,
+  carousels, long images, Mermaid initialization, and zoomable images.
 
 ## Target Official Package Repositories
 
@@ -33,6 +36,7 @@ current RFC branch.
 | `navfolio/plugin-search`   | `@navfolio/plugin-search`   | Search indexing and runtime search integration, including Pagefind-oriented build behavior               |
 | `navfolio/plugin-comments` | `@navfolio/plugin-comments` | Comment provider contracts and adapters                                                                  |
 | `navfolio/plugin-mdx`      | `@navfolio/plugin-mdx`      | MDX integration helpers, MDX component contracts, remark/rehype defaults that are not blog-only          |
+| `navfolio/mdx-components`  | `@navfolio/mdx-components`  | Optional author-facing Astro components imported directly from MDX; not a rendering pipeline plugin      |
 | `navfolio/plugin-math`     | `@navfolio/plugin-math`     | Math rendering integration and KaTeX/remark-math style configuration                                     |
 | `navfolio/create-navfolio` | `create-navfolio`           | Project scaffold, migration entry points, starter selection                                              |
 
@@ -54,6 +58,10 @@ create-navfolio
   -> @navfolio/utils
   -> astro
 
+@navfolio/mdx-components
+  -> astro peer dependency
+  -> optional UI/runtime peer dependencies
+
 @navfolio/theme-default
   -> @navfolio/types
   -> official plugin data contracts
@@ -70,6 +78,9 @@ create-navfolio
   license, release policy, and compatibility note.
 - Keep `@navfolio/core` independent from `@navfolio/theme-default`.
 - Keep feature plugins independent from default theme components.
+- Keep `@navfolio/mdx-components` separate from `@navfolio/plugin-markdown`:
+  the latter configures the Markdown/MDX pipeline, while the former exports
+  optional content blocks for authors to import.
 - Keep the current Astro site buildable while code is staged and extracted.
 
 ## Open Decisions
