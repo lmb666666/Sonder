@@ -13,6 +13,7 @@ type FontConfig = {
 
 const projectRoot = process.cwd();
 const uiCharsPath = join(projectRoot, 'scripts/fonts/ui-chars.txt');
+const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
 const fontConfig = readFontConfig();
 const subsetFontUrl = getSubsetFontUrl(fontConfig.file);
 const outputFontPath = resolveProjectPath(subsetFontUrl);
@@ -167,6 +168,27 @@ function extractFrontmatterFields(frontmatter: string) {
   return values.join('\n');
 }
 
+function collectFriendCircleChars(chars: Set<string>) {
+  if (!existsSync(friendCirclePath)) return;
+
+  try {
+    const data: unknown = JSON.parse(readFileSync(friendCirclePath, 'utf8'));
+    const collectStrings = (value: unknown): void => {
+      if (typeof value === 'string') {
+        collectCjk(chars, value);
+      } else if (Array.isArray(value)) {
+        for (const item of value) collectStrings(item);
+      } else if (value && typeof value === 'object') {
+        for (const nestedValue of Object.values(value)) collectStrings(nestedValue);
+      }
+    };
+
+    collectStrings(data);
+  } catch (error) {
+    console.warn(`Unable to collect friend-circle characters from ${friendCirclePath}:`, error);
+  }
+}
+
 function runSubset() {
   const args = [
     sourceFontPath,
@@ -271,6 +293,9 @@ for (const file of lightweightContentFiles) {
   const path = join(projectRoot, file);
   if (existsSync(path)) collectCjk(chars, readFileSync(path, 'utf8'));
 }
+
+// The sync Action writes RSS-derived display text before this build step.
+collectFriendCircleChars(chars);
 
 const uiChars = [...chars].sort((a, b) => a.codePointAt(0)! - b.codePointAt(0)!).join('');
 if (!uiChars) throw new Error('No CJK UI characters were found for font subsetting.');
