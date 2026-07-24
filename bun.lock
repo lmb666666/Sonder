@@ -298,9 +298,9 @@
 
     "@navfolio/plugin-markdown": ["@navfolio/plugin-markdown@github:navfolio/plugin-markdown#224fc89", { "dependencies": { "@navfolio/plugin-callout": "github:navfolio/plugin-callout", "@navfolio/plugin-markdown-layouts": "github:navfolio/plugin-markdown-layouts", "astro-expressive-code": "^0.44.0", "rehype-katex": "^7.0.1", "rehype-mathjax": "^7.1.0", "remark-math": "^6.0.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-224fc89", "sha512-iGAHQMTHa2yhgexcMCzKPMw9rwKmRTRiLcSamIn+tDJip/fV3Tt0TrEMmI7MbIaMEOj4jg9r18pFN8uAT/Hg/g=="],
 
-    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#ec2a3aa", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-ec2a3aa", "sha512-EJpWmb1xah4SUC8KseG3dk1LbQGhH2SCConYPt/M7RRThKSkcuvMoxmWv/XwmDY2qdPsjnBm4ImRSP4apj+DKA=="],
+    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#b433690", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-b433690", "sha512-19PHe4i2nSaR6iXRngwBbB5uh595Up26KigYxInsXn92us2lON107JxIsiXKs+Zd5DLaMaCHfG7SpD7gZ1eeaQ=="],
 
-    "@navfolio/theme-default": ["@navfolio/theme-default@github:navfolio/theme-default#c6da4dc", { "dependencies": { "@fontsource/maple-mono": "^5.2.6", "@navfolio/core": "github:navfolio/core", "lucide-astro": "^0.556.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-theme-default-c6da4dc", "sha512-9RMaAsojn2PeJIY6cthTjbimfyC4LiyR83XExepFqBJIVDllNWD+IDfr0pNJvsKxDkRD2gclLD8tHr2h7a2ekQ=="],
+    "@navfolio/theme-default": ["@navfolio/theme-default@github:navfolio/theme-default#77b8709", { "dependencies": { "@fontsource/maple-mono": "^5.2.6", "@navfolio/core": "github:navfolio/core", "lucide-astro": "^0.556.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-theme-default-77b8709", "sha512-QwaQ14JFAFGQ5D1dU7yGxwrzc81tXG/EgGhO8vXiCOIdAfhq3554Xwtfsyqumg8QokjcZx9YJHruD1Hk3BaN2A=="],
 
     "@nodable/entities": ["@nodable/entities@2.1.0", "https://registry.npmmirror.com/@nodable/entities/-/entities-2.1.0.tgz", {}, "sha512-nyT7T3nbMyBI/lvr6L5TyWbFJAI9FTgVRakNoBqCD+PmID8DzFrrNdLLtHMwMszOtqZa8PAOV24ZqDnQrhQINA=="],
 
@@ -1573,6 +1573,8 @@
     "@eslint/eslintrc/minimatch": ["minimatch@3.1.5", "https://registry.npmmirror.com/minimatch/-/minimatch-3.1.5.tgz", { "dependencies": { "brace-expansion": "^1.1.7" } }, "sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w=="],
 
     "@humanwhocodes/config-array/minimatch": ["minimatch@3.1.5", "https://registry.npmmirror.com/minimatch/-/minimatch-3.1.5.tgz", { "dependencies": { "brace-expansion": "^1.1.7" } }, "sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w=="],
+
+    "@navfolio/theme-default/@navfolio/core": ["@navfolio/core@github:navfolio/core#1e7954f", {}, "navfolio-core-1e7954f", "sha512-QOYG+sFq379L9t9ND8ZU0di50akeTaEgA+o4pnjes5q7dL+Tmm0wogB38nEH2P4+jwh3Dzns+LgqPK+GCD+UYA=="],
 
     "@rollup/pluginutils/estree-walker": ["estree-walker@2.0.2", "https://registry.npmmirror.com/estree-walker/-/estree-walker-2.0.2.tgz", {}, "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w=="],
 
