@@ -298,7 +298,7 @@
 
     "@navfolio/plugin-markdown": ["@navfolio/plugin-markdown@github:navfolio/plugin-markdown#224fc89", { "dependencies": { "@navfolio/plugin-callout": "github:navfolio/plugin-callout", "@navfolio/plugin-markdown-layouts": "github:navfolio/plugin-markdown-layouts", "astro-expressive-code": "^0.44.0", "rehype-katex": "^7.0.1", "rehype-mathjax": "^7.1.0", "remark-math": "^6.0.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-224fc89", "sha512-iGAHQMTHa2yhgexcMCzKPMw9rwKmRTRiLcSamIn+tDJip/fV3Tt0TrEMmI7MbIaMEOj4jg9r18pFN8uAT/Hg/g=="],
 
-    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#e4b9c39", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-e4b9c39", "sha512-lGT3VxFH5xT3K10GBYDjLvlf/8LufYqEK0Ag6QyahJGLZiBVTuqKw/CK7IiEyh80TvlKzyckuMFqDZMMysWXyw=="],
+    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#ec2a3aa", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-ec2a3aa", "sha512-EJpWmb1xah4SUC8KseG3dk1LbQGhH2SCConYPt/M7RRThKSkcuvMoxmWv/XwmDY2qdPsjnBm4ImRSP4apj+DKA=="],
 
     "@navfolio/theme-default": ["@navfolio/theme-default@github:navfolio/theme-default#c6da4dc", { "dependencies": { "@fontsource/maple-mono": "^5.2.6", "@navfolio/core": "github:navfolio/core", "lucide-astro": "^0.556.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-theme-default-c6da4dc", "sha512-9RMaAsojn2PeJIY6cthTjbimfyC4LiyR83XExepFqBJIVDllNWD+IDfr0pNJvsKxDkRD2gclLD8tHr2h7a2ekQ=="],
 
