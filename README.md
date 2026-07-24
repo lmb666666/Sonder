@@ -42,6 +42,32 @@ Navfolio 把个人导航、作品集、博客、项目文档和轻量数字花�
 
 ## 快速开始
 
+### 环境要求
+
+除 Bun 和 Git 外，生产构建还**硬依赖 Python 3、FontTools 和 Brotli**。`bun run build` 会根据站点 UI 与内容中的中日韩字符生成 WOFF2 字体子集；缺少这些工具时构建会失败。
+
+建议将 Python 依赖安装在项目虚拟环境中。无需激活虚拟环境，Navfolio 的构建脚本会自动优先使用 `.venv`：
+
+macOS / Linux：
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip fonttools brotli
+```
+
+Windows（PowerShell 或命令提示符）：
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
+```
+
+可用下面的命令验证字体子集化环境：
+
+```sh
+bun run fonts:ui
+```
+
 安装依赖：
 
 ```sh

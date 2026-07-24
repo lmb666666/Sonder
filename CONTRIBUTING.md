@@ -49,6 +49,22 @@ Use demo content that explains Navfolio itself. Avoid long sample articles that 
 
 ## Local Checks
 
+The production build requires Python 3, FontTools, and Brotli to generate the CJK UI font subset. Install them in a project-local virtual environment before running build checks; the script automatically uses `.venv`, so activation is not required.
+
+macOS / Linux:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip fonttools brotli
+```
+
+Windows (PowerShell or Command Prompt):
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
+```
+
 ```sh
 bun install
 bun run dev
@@ -118,6 +134,22 @@ Navfolio 是一个基于 Astro 的个人发布、项目展示、轻量笔记和�
 演示内容应优先解释 Navfolio 本身。除非是为了展示特定功能，否则不要加入会分散注意力的长篇示例文章。
 
 ## 本地检查
+
+生产构建依赖 Python 3、FontTools 和 Brotli 来生成中日韩 UI 字体子集。请在运行构建检查前将它们安装到项目虚拟环境中；无需激活虚拟环境，脚本会自动使用 `.venv`。
+
+macOS / Linux：
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip fonttools brotli
+```
+
+Windows（PowerShell 或命令提示符）：
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
+```
 
 ```sh
 bun install

@@ -42,6 +42,32 @@ Useful links:
 
 ## Quick Start
 
+### Prerequisites
+
+In addition to Bun and Git, production builds **require Python 3, FontTools, and Brotli**. `bun run build` generates a WOFF2 font subset from the CJK characters used by the UI and content, and fails if those tools are unavailable.
+
+Install the Python tools in a project-local virtual environment. You do not need to activate it: Navfolio's build script automatically prefers `.venv`.
+
+macOS / Linux:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip fonttools brotli
+```
+
+Windows (PowerShell or Command Prompt):
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
+```
+
+Verify the font-subsetting setup with:
+
+```sh
+bun run fonts:ui
+```
+
 Install dependencies:
 
 ```sh
