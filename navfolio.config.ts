@@ -8,6 +8,7 @@ export default defineNavfolioConfig({
   plugins: [
     markdownPlugin({
       expressiveCode: true,
+      layouts: true,
       math: {
         enabled: true,
       },
