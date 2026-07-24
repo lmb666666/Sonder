@@ -1,51 +1,19 @@
-# Navfolio AI Engineering Workspace
+# Navfolio 主站 Agent 工作区
 
-This directory is the shared workspace for AI-assisted development on the
-Navfolio RFC refactor. It keeps planning material, repeatable workflows, and
-task-specific skills close to the repository so future agents can continue the
-work without rediscovering the architecture intent.
+这里仅保存 `astro-navfolio` 自己的当前工作记忆。跨仓库所有权、依赖图和变更顺序由
+上层 `../../.agents/` 维护，避免两套生态地图漂移。
 
-## Directory Map
+读取顺序：
 
-- `plans/`: RFC plans, package boundaries, milestones, and migration strategy.
-- `workflows/`: Repeatable development workflows for refactor tasks.
-- `skills/`: Focused agent skills for alignment, architecture, extraction, and
-  review.
-- `context/`: External references and project-specific background.
-- `checklists/`: Readiness and review checklists for RFC milestones.
-- `templates/`: Templates for RFC notes, package proposals, and follow-up tasks.
+1. `../AGENT.md`
+2. `context/current-design.md`
+3. `context/current-progress.md`
+4. 跨仓库任务再读上层 `../../.agents/context/ecosystem-map.md` 与对应 workflow
 
-## Operating Rules
+维护规则：
 
-- Keep this directory documentation-first. Do not place generated build output,
-  secrets, dependency caches, or large artifacts here.
-- Prefer small, dated documents that can be reviewed independently.
-- Link decisions back to GitHub issues, PRs, and source files.
-- Treat `AGENT.md` at the repository root as the entry point for future agents.
-- Treat `src/docs` as content from the separate docs sub-repository. Use
-  `bun run docs:dev` for content-aware preview and `bun run docs:build` for
-  build verification unless a task explicitly targets the starter
-  `src/content` mode.
-- Keep English identifiers for package names and commands, but use Chinese prose
-  when describing Navfolio product intent and RFC decisions.
-- Treat https://github.com/navfolio as the future home for official packages
-  once Phase 1 boundaries are accepted.
-
-## Phase 1 Memory
-
-- `plans/phase-one-deliverables.md`: first-stage sequence and acceptance
-  criteria for the RFC refactor.
-- `context/navfolio-org-repositories.md`: target GitHub organization and
-  repository layout for `@navfolio/*` packages.
-
-## Useful Skills
-
-- `skills/super-power-skill.md`: route a task to the right local skill and
-  workflow before starting implementation.
-- `skills/grill-with-docs.md`: evidence-backed alignment for RFC decisions.
-- `skills/grill-me.md`: quick stress-test for a plan or design.
-- `skills/architecture-rfc.md`: preserve the long-term core plus plugin
-  direction.
-- `skills/package-extraction.md`: guide code movement into package boundaries.
-- `skills/plugin-contract-review.md`: review plugin API shape before it
-  hardens.
+- `current-design.md` 只记录当前产品形态和真实实现边界。
+- `current-progress.md` 只记录已落地、过渡中、未接入状态，不保存历史任务清单。
+- 当前源码、manifest、lockfile 和 workflow 高于这些文档；发现漂移就同步修正。
+- 不保存 secret、生成数据、缓存、构建产物或已完成的大型计划。
+- docs 内容属于 `src/docs` submodule，按上层跨仓库 workflow 操作。
