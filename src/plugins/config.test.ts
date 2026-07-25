@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { existsSync } from 'node:fs';
 import { mediaModule, projectsModule, vibeModule } from '@navfolio/pages';
 
 import {
@@ -106,20 +107,28 @@ describe('navfolio plugin config', () => {
     expect(() => getResolvedPageModules(config)).toThrow('Duplicate Navfolio page module route');
   });
 
-  test('resolves scaffold metadata from enabled page modules', () => {
+  test('resolves scaffold metadata and templates from enabled page modules', () => {
     const config = defineNavfolioConfig({
       modules: [projectsModule(), vibeModule({ enabled: false }), mediaModule({ enabled: false })],
     });
 
-    expect(getResolvedPageModuleScaffolds(config)).toEqual([
-      {
-        moduleId: 'projects',
-        command: 'project',
-        collection: 'projects',
-        directory: 'src/content/projects',
-        defaultExtension: 'mdx',
-        template: 'project',
-      },
-    ]);
+    const [scaffold] = getResolvedPageModuleScaffolds(config);
+    if (!scaffold) throw new Error('Expected the Projects scaffold.');
+
+    expect({
+      moduleId: scaffold.moduleId,
+      command: scaffold.command,
+      collection: scaffold.collection,
+      directory: scaffold.directory,
+      defaultExtension: scaffold.defaultExtension,
+    }).toEqual({
+      moduleId: 'projects',
+      command: 'project',
+      collection: 'projects',
+      directory: 'src/content/projects',
+      defaultExtension: 'mdx',
+    });
+    expect(scaffold.template instanceof URL).toBe(true);
+    expect(existsSync(scaffold.template)).toBe(true);
   });
 });

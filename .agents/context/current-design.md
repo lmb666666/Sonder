@@ -1,7 +1,7 @@
 # 当前设计与架构
 
 最后核对：2026-07-25  
-证据：`v1` 分支 `25ec454`、`package.json`、`bun.lock`、当前源码、deploy workflow
+证据：当前功能分支、`package.json`、`bun.lock`、当前源码、deploy workflow
 与上层生态地图。
 
 ## 产品与配置
@@ -37,7 +37,13 @@ resolved modules
 | Media    | `page-media` 的 descriptor、shelf/review routes、UI | runtime adapter、schema/config 与集成                       |
 
 `pages` 定义公共 protocol、route/enablement 解析、重复 route 校验、scaffold/i18n
-聚合及官方 factory 导出。它默认只启用 Projects；本 starter 显式启用三者。
+聚合、标准模板变量渲染及官方 factory 导出。它默认只启用 Projects；本 starter
+显式启用三者。
+
+每个带内容 scaffold 的 page package 都发布 `templates/default.md`，descriptor
+通过 URL 指向它。`scripts/new-content.ts` 只负责标准
+`<command>:new <filename> [output-directory]` 参数、模板渲染和安全写入；Blog 的
+宿主模板位于 `scripts/templates/post.md`。
 
 `src/content.config.ts` 当前仍拥有具体 schemas。关闭 module 后，对应 route、
 collection、默认 navigation、scaffold 和 i18n contribution 都应消失。

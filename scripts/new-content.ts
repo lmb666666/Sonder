@@ -1,39 +1,40 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import type {
-  NavfolioContentExtension,
-  NavfolioPageModuleScaffold,
-  NavfolioScaffoldTemplateContext,
-} from '@navfolio/pages';
+import { renderScaffoldTemplate } from '@navfolio/pages';
+import type { NavfolioContentExtension, NavfolioScaffoldTemplateContext } from '@navfolio/pages';
 import navfolioConfig from '../navfolio.config';
 import { getConfiguredPageModules, getResolvedPageModuleScaffolds } from '../src/plugins/config';
-
-type ScaffoldTemplate = NonNullable<NavfolioPageModuleScaffold['template']>;
 
 interface ContentScaffold {
   command: string;
   collection: string;
   directory: string;
   defaultExtension: NavfolioContentExtension;
-  fileName?: (slug: string, now: Date) => string;
-  template: ScaffoldTemplate;
-  frontmatter?: (context: NavfolioScaffoldTemplateContext) => string;
-  body?: (context: NavfolioScaffoldTemplateContext) => string;
+  template: URL;
 }
 
 const coreScaffolds = [
   {
-    command: 'blog',
+    command: 'post',
     collection: 'blog',
     directory: 'src/content/blog',
     defaultExtension: 'md',
-    template: 'article',
+    template: new URL('./templates/post.md', import.meta.url),
   },
 ] satisfies ContentScaffold[];
 
 const args = process.argv.slice(2);
-const commandArg = args[0];
-const filenameArg = args.find((arg, index) => index > 0 && arg !== '--mdx' && arg !== '--md');
+const supportedOptions = new Set(['--', '--md', '--mdx']);
+const unknownOption = args.find((arg) => arg.startsWith('--') && !supportedOptions.has(arg));
+
+if (unknownOption) {
+  console.error(`Unsupported option: ${unknownOption}`);
+  process.exit(1);
+}
+
+const positionalArgs = args.filter((arg) => !supportedOptions.has(arg));
+const [rawCommandArg, filenameArg, outputDirectoryArg, ...extraArgs] = positionalArgs;
+const commandArg = rawCommandArg === 'blog' ? 'post' : rawCommandArg;
 
 const scaffolds = getContentScaffolds();
 const scaffold = scaffolds.find((item) => item.command === commandArg);
@@ -47,6 +48,11 @@ if (!scaffold) {
     printUnsupportedContentType(commandArg, scaffolds);
   }
 
+  process.exit(1);
+}
+
+if (extraArgs.length > 0) {
+  printTooManyArguments(scaffold.command);
   process.exit(1);
 }
 
@@ -64,16 +70,17 @@ if (!slug) {
 
 const now = new Date();
 const isoDate = now.toISOString();
-const extension = resolveExtension(args, scaffold.defaultExtension);
-const title = createTitle(slug);
+const extension = resolveExtension(args, filenameArg, scaffold.defaultExtension);
+const title = slug;
 const templateContext = {
   title,
   slug,
   isoDate,
+  date: isoDate.slice(0, 10),
   now,
 } satisfies NavfolioScaffoldTemplateContext;
-const baseName = scaffold.fileName?.(slug, now) ?? slug;
-const relativePath = path.join(scaffold.directory, `${baseName}.${extension}`);
+const outputDirectory = outputDirectoryArg ?? scaffold.directory;
+const relativePath = path.join(outputDirectory, `${slug}.${extension}`);
 const targetPath = path.resolve(relativePath);
 
 if (existsSync(targetPath)) {
@@ -81,12 +88,11 @@ if (existsSync(targetPath)) {
   process.exit(1);
 }
 
+const template = readScaffoldTemplate(scaffold);
+const content = renderScaffoldTemplate(template, templateContext);
+
 mkdirSync(path.dirname(targetPath), { recursive: true });
-writeFileSync(
-  targetPath,
-  `${createFrontmatter(scaffold, templateContext)}\n\n${createBody(scaffold, templateContext)}\n`,
-  'utf8',
-);
+writeFileSync(targetPath, `${content.trimEnd()}\n`, 'utf8');
 
 console.log(`Created new ${scaffold.collection} file:`);
 console.log(relativePath);
@@ -97,10 +103,7 @@ function getContentScaffolds(): ContentScaffold[] {
     collection: scaffold.collection,
     directory: scaffold.directory,
     defaultExtension: scaffold.defaultExtension,
-    fileName: scaffold.fileName,
-    template: scaffold.template ?? 'article',
-    frontmatter: scaffold.frontmatter,
-    body: scaffold.body,
+    template: scaffold.template,
   }));
 
   return rejectDuplicateCommands([...coreScaffolds, ...moduleScaffolds]);
@@ -130,10 +133,18 @@ function getDisabledModuleScaffold(command: string | undefined) {
 
 function resolveExtension(
   args: string[],
+  filename: string,
   defaultExtension: NavfolioContentExtension,
 ): NavfolioContentExtension {
+  if (args.includes('--md') && args.includes('--mdx')) {
+    console.error('Choose only one extension option: --md or --mdx.');
+    process.exit(1);
+  }
+
   if (args.includes('--mdx')) return 'mdx';
   if (args.includes('--md')) return 'md';
+  if (/\.mdx$/i.test(filename)) return 'mdx';
+  if (/\.md$/i.test(filename)) return 'md';
 
   return defaultExtension;
 }
@@ -149,128 +160,22 @@ function normalizeFilename(value: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-function createTitle(slug: string): string {
-  return slug
-    .split(/[-_]+/g)
-    .filter(Boolean)
-    .map((part) => {
-      if (!/[A-Za-z]/.test(part)) {
-        return part;
-      }
-
-      return part.charAt(0).toUpperCase() + part.slice(1);
-    })
-    .join(' ');
-}
-
-function createFrontmatter(
-  scaffold: ContentScaffold,
-  context: NavfolioScaffoldTemplateContext,
-): string {
-  if (scaffold.frontmatter) return scaffold.frontmatter(context);
-
-  if (scaffold.template === 'vibe') return createVibeFrontmatter(context.title, context.isoDate);
-  if (scaffold.template === 'project') {
-    return createProjectFrontmatter(context.title, context.isoDate);
+function readScaffoldTemplate(scaffold: ContentScaffold): string {
+  try {
+    return readFileSync(scaffold.template, 'utf8');
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.error(`Unable to read the ${scaffold.command} content template.`);
+    console.error(reason);
+    process.exit(1);
   }
-
-  return createArticleFrontmatter(context.title, context.isoDate);
-}
-
-function createBody(scaffold: ContentScaffold, context: NavfolioScaffoldTemplateContext): string {
-  if (scaffold.body) return scaffold.body(context);
-
-  if (scaffold.template === 'vibe') return createVibeBody();
-  if (scaffold.template === 'project') return createProjectBody(context.title);
-
-  return createArticleBody(context.title);
-}
-
-function createArticleFrontmatter(title: string, isoDate: string): string {
-  return `---
-title: "${escapeYamlString(title)}"
-description: ""
-date: "${isoDate}"
-draft: true
-sticky: false
-heroImage: ""
-showHeroImage: false
-tags: []
-categories: []
-series: []
-comments: true
-sidebar:
-  enable: true
-  toc: true
-  relatedPosts: true
----`;
-}
-
-function createVibeFrontmatter(title: string, isoDate: string): string {
-  return `---
-title: "${escapeYamlString(title)}"
-date: "${isoDate}"
-updatedDate: "${isoDate}"
-draft: true
-type: text
-mood: ""
-location: ""
-images: []
-tags: []
-align: left
-size: md
----`;
-}
-
-function createProjectFrontmatter(title: string, isoDate: string): string {
-  return `---
-title: "${escapeYamlString(title)}"
-description: ""
-date: "${isoDate}"
-draft: true
-sticky: false
-heroImage: ""
-showHeroImage: false
-icon: github
-iconColor: ""
-authors: []
-links: []
-tags: []
-categories: []
-series: []
-comments: true
-sidebar:
-  enable: false
-  toc: true
-  relatedPosts: false
----`;
-}
-
-function createArticleBody(title: string): string {
-  return `# ${title}
-
-Start writing here.`;
-}
-
-function createVibeBody(): string {
-  return 'A small note from today.';
-}
-
-function createProjectBody(title: string): string {
-  return `# ${title}
-
-Describe the project, the decisions behind it, and useful links.`;
-}
-
-function escapeYamlString(value: string): string {
-  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
 function printMissingFilename(scaffolds: ContentScaffold[]): void {
   console.error(`Please provide a filename.
 
 Examples:
-${scaffolds.map((scaffold) => `bun scripts/new-content.ts ${scaffold.command} my-slug`).join('\n')}`);
+${scaffolds.map((scaffold) => `bun run ${scaffold.command}:new my-slug`).join('\n')}`);
 }
 
 function printUnsupportedContentType(
@@ -280,9 +185,16 @@ function printUnsupportedContentType(
   console.error(`Unsupported content scaffold command: ${command ?? ''}
 
 Supported commands:
-${scaffolds.map((scaffold) => `- ${scaffold.command}`).join('\n')}`);
+${scaffolds.map((scaffold) => `- bun run ${scaffold.command}:new <filename> [output-directory]`).join('\n')}`);
 }
 
 function printDisabledContentType(command: string): void {
   console.error(`The ${command} content module is disabled in navfolio.config.ts.`);
+}
+
+function printTooManyArguments(command: string): void {
+  console.error(`Too many arguments.
+
+Usage:
+bun run ${command}:new <filename> [output-directory] [--md|--mdx]`);
 }

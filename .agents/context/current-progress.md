@@ -1,8 +1,8 @@
 # 当前进度
 
 最后核对：2026-07-25  
-证据：`v1` 分支 `25ec454`、当前 manifests、lockfile、source、deploy workflow 与
-上层生态地图。
+证据：当前功能分支、当前 manifests、lockfile、source、deploy workflow 与上层
+生态地图。
 
 ## 已落地
 
@@ -11,7 +11,9 @@
 - `theme-default` 的首批 layout/base/blog components、palette/global/blog/layout
   styles，以及主站 compatibility wrappers。
 - `pages` protocol、module resolution/validation、官方 factory 导出、scaffold/i18n
-  聚合。
+  聚合，以及页面包自带 Markdown 模板的标准变量渲染。
+- `post:new`、`project:new`、`vibe:new`、`media:new` 统一使用
+  `<filename> [output-directory]` 参数；默认 frontmatter 和正文不再硬编码在脚本。
 - Projects、Vibe、Media 的 starter 显式注册；Vibe 和 Media 的 package-owned
   routes。
 - Markdown preset 对 Expressive Code、callout、columns/timeline、responsive
