@@ -77,7 +77,6 @@ const templateContext = {
   slug,
   isoDate,
   date: isoDate.slice(0, 10),
-  now,
 } satisfies NavfolioScaffoldTemplateContext;
 const outputDirectory = outputDirectoryArg ?? scaffold.directory;
 const relativePath = path.join(outputDirectory, `${slug}.${extension}`);
@@ -89,7 +88,7 @@ if (existsSync(targetPath)) {
 }
 
 const template = readScaffoldTemplate(scaffold);
-const content = renderScaffoldTemplate(template, templateContext);
+const content = renderContentTemplate(scaffold, template, templateContext);
 
 mkdirSync(path.dirname(targetPath), { recursive: true });
 writeFileSync(targetPath, `${content.trimEnd()}\n`, 'utf8');
@@ -166,6 +165,21 @@ function readScaffoldTemplate(scaffold: ContentScaffold): string {
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     console.error(`Unable to read the ${scaffold.command} content template.`);
+    console.error(reason);
+    process.exit(1);
+  }
+}
+
+function renderContentTemplate(
+  scaffold: ContentScaffold,
+  template: string,
+  context: NavfolioScaffoldTemplateContext,
+): string {
+  try {
+    return renderScaffoldTemplate(template, context);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.error(`Unable to render the ${scaffold.command} content template.`);
     console.error(reason);
     process.exit(1);
   }
