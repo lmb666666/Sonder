@@ -110,11 +110,20 @@ Create content with the built-in scripts:
 ```sh
 bun run post:new my-first-post
 bun run post:new my-interactive-post --mdx
+bun run project:new my-project
 bun run vibe:new today-cloud
-bun run vibe:new photo-note --mdx
+bun run media:new my-favourite-book
+bun run post:new private-draft src/content/drafts
 ```
 
-The command argument is the file slug, not the final title. Blog files are created in `src/content/blog/`; Vibe files are created in `src/content/vibe/` with the existing date-prefixed filename convention.
+Every page-content script follows
+`bun run <page-shorthand>:new <filename> [optional-output-directory]`. The
+sanitized filename becomes both the output basename and initial `title`; when
+the directory is omitted, the page template's default content directory is
+used. `--md`, `--mdx`, or an extension in the filename can override the default
+extension. Page packages publish editable defaults in `templates/default.md`;
+the Blog default lives in `scripts/templates/post.md`, so frontmatter and
+starter content can change without editing TypeScript.
 
 ## Routes
 

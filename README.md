@@ -110,11 +110,18 @@ public/images/              Logo、头像、站点预览和静态图片
 ```sh
 bun run post:new my-first-post
 bun run post:new my-interactive-post --mdx
+bun run project:new my-project
 bun run vibe:new today-cloud
-bun run vibe:new photo-note --mdx
+bun run media:new my-favourite-book
+bun run post:new private-draft src/content/drafts
 ```
 
-命令参数是文件 slug，不是最终标题。博客文件会生成到 `src/content/blog/`，Vibe 文件会按现有约定生成到 `src/content/vibe/` 并带日期前缀。
+所有页面内容脚本都遵循
+`bun run <页面简称>:new <文件名> [可选输出目录]`。文件名经安全清理后同时作为
+输出 basename 和初始 `title`；不指定目录时使用对应模板声明的默认内容目录。
+`--md`、`--mdx` 或文件名扩展名可以覆盖模板的默认扩展名。默认 frontmatter 和
+正文位于各页面包发布的 `templates/default.md`，博客模板位于
+`scripts/templates/post.md`，可以直接修改而无需改 TypeScript。
 
 ## 路由
 
