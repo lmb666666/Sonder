@@ -294,11 +294,11 @@
 
     "@navfolio/pages": ["@navfolio/pages@github:navfolio/pages#cd6e6fc", { "dependencies": { "@navfolio/page-media": "github:navfolio/page-media", "@navfolio/page-projects": "github:navfolio/page-projects", "@navfolio/page-vibe": "github:navfolio/page-vibe" }, "peerDependencies": { "@navfolio/core": ">=0.1.0" }, "optionalPeers": ["@navfolio/core"] }, "navfolio-pages-cd6e6fc", "sha512-wBbP9HPgU7xX3mc5lbuWxvlomiPxNwgNuJZwk8w+6401Czypwus239vwsYjBs/oIHoPi6aofdg1nn1t9KG53wA=="],
 
-    "@navfolio/plugin-callout": ["@navfolio/plugin-callout@github:navfolio/plugin-callout#9d6ecca", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-callout-9d6ecca"],
+    "@navfolio/plugin-callout": ["@navfolio/plugin-callout@github:navfolio/plugin-callout#9d6ecca", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-callout-9d6ecca", "sha512-stWzBXSUhK2mFFH+f/P1GcZ62Sp5JBUHpPKr5wbPzzmK0HMiVqTFhqZQtffSk94oXs4DAqJICRcmBz2Al+LQRg=="],
 
-    "@navfolio/plugin-markdown": ["@navfolio/plugin-markdown@github:navfolio/plugin-markdown#224fc89", { "dependencies": { "@navfolio/plugin-callout": "github:navfolio/plugin-callout", "@navfolio/plugin-markdown-layouts": "github:navfolio/plugin-markdown-layouts", "astro-expressive-code": "^0.44.0", "rehype-katex": "^7.0.1", "rehype-mathjax": "^7.1.0", "remark-math": "^6.0.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-224fc89"],
+    "@navfolio/plugin-markdown": ["@navfolio/plugin-markdown@github:navfolio/plugin-markdown#a5f6923", { "dependencies": { "@navfolio/plugin-callout": "github:navfolio/plugin-callout", "@navfolio/plugin-markdown-layouts": "github:navfolio/plugin-markdown-layouts", "astro-expressive-code": "^0.44.0", "rehype-katex": "^7.0.1", "rehype-mathjax": "^7.1.0", "remark-math": "^6.0.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-a5f6923", "sha512-/faWFq00zhu10D3/hOyZ0mroxfQznBLInPPq2vhSL61+oj0DZNHDfrH5kJsHwXjClGJZV6F9BZ2vmj1b4CJv2w=="],
 
-    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#b433690", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-b433690"],
+    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#25180a1", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-25180a1", "sha512-I2GbfBXzx+k9IS35+5vf2i/VBh5z/p8AVcfui3qg+d+EMMXJFcorFQKz8IaZEirBNjumFt7bM7DVE9E1uxvFoA=="],
 
     "@navfolio/theme-default": ["@navfolio/theme-default@github:navfolio/theme-default#77b8709", { "dependencies": { "@fontsource/maple-mono": "^5.2.6", "@navfolio/core": "github:navfolio/core", "lucide-astro": "^0.556.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-theme-default-77b8709"],
 
@@ -1576,8 +1576,6 @@
 
     "@navfolio/page-media/@navfolio/mdx-components": ["@navfolio/mdx-components@github:navfolio/mdx-components#6997956", { "dependencies": { "fast-xml-parser": "^5.3.3" }, "peerDependencies": { "astro": "^5.0.0 || ^6.0.0 || ^7.0.0", "lucide-astro": "^0.556.0", "mermaid": "^11.0.0" } }, "navfolio-mdx-components-6997956"],
 
-    "@navfolio/plugin-markdown/astro-expressive-code": ["astro-expressive-code@0.44.0", "https://registry.npmmirror.com/astro-expressive-code/-/astro-expressive-code-0.44.0.tgz", { "dependencies": { "rehype-expressive-code": "^0.44.0", "url-extras": "^0.1.0" }, "peerDependencies": { "astro": "^4.0.0-beta || ^5.0.0-beta || ^3.3.0 || ^6.0.0-beta || ^7.0.0" } }, "sha512-b1wN/ZvbJprzxlGKIpIes2kQrCY5KRLwys2tWbZAZyjGZcW5ZtgneZnBwzNRiBna9/48d4mQl19KLjcRuhO1hw=="],
-
     "@navfolio/theme-default/@fontsource/maple-mono": ["@fontsource/maple-mono@5.2.6", "https://registry.npmmirror.com/@fontsource/maple-mono/-/maple-mono-5.2.6.tgz", {}, "sha512-+VAD7z8nyTkaiz2/Ww639Z5Kp/YJIL4dNMQxydqSMafNb5nKxFeoRq6W3g9WJ04IcBjdBmn0dKFNk90lyz7K+w=="],
 
     "@rollup/pluginutils/estree-walker": ["estree-walker@2.0.2", "https://registry.npmmirror.com/estree-walker/-/estree-walker-2.0.2.tgz", {}, "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w=="],
@@ -1658,8 +1656,6 @@
 
     "@humanwhocodes/config-array/minimatch/brace-expansion": ["brace-expansion@1.1.15", "https://registry.npmmirror.com/brace-expansion/-/brace-expansion-1.1.15.tgz", { "dependencies": { "balanced-match": "^1.0.0", "concat-map": "0.0.1" } }, "sha512-EwOCDEex4quD37XhqM3omwtMoJjr//isUZz1JopUNWms+4Z2ViyM/k1YIRePpoVNnQhENnxtFjLaxNHrT7xIUg=="],
 
-    "@navfolio/plugin-markdown/astro-expressive-code/rehype-expressive-code": ["rehype-expressive-code@0.44.0", "https://registry.npmmirror.com/rehype-expressive-code/-/rehype-expressive-code-0.44.0.tgz", { "dependencies": { "expressive-code": "^0.44.0" } }, "sha512-5r74C5F2sMR3X+QJH8OKWgZBO/cqRw5W1fLT6GVlSfLqepk+4j8tGFkyPqZYWjwntsBHzKPDH2zI68sZ7ScLfA=="],
-
     "@typescript-eslint/utils/@typescript-eslint/scope-manager/@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@7.18.0", "https://registry.npmmirror.com/@typescript-eslint/visitor-keys/-/visitor-keys-7.18.0.tgz", { "dependencies": { "@typescript-eslint/types": "7.18.0", "eslint-visitor-keys": "^3.4.3" } }, "sha512-cDF0/Gf81QpY3xYyJKDV14Zwdmid5+uuENhjH2EqFaF0ni+yAyq/LzMaIJdhNJXZI7uLzwIlA+V7oWoyn6Curg=="],
 
     "@typescript-eslint/utils/@typescript-eslint/typescript-estree/@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@7.18.0", "https://registry.npmmirror.com/@typescript-eslint/visitor-keys/-/visitor-keys-7.18.0.tgz", { "dependencies": { "@typescript-eslint/types": "7.18.0", "eslint-visitor-keys": "^3.4.3" } }, "sha512-cDF0/Gf81QpY3xYyJKDV14Zwdmid5+uuENhjH2EqFaF0ni+yAyq/LzMaIJdhNJXZI7uLzwIlA+V7oWoyn6Curg=="],
@@ -1684,8 +1680,6 @@
 
     "@humanwhocodes/config-array/minimatch/brace-expansion/balanced-match": ["balanced-match@1.0.2", "https://registry.npmmirror.com/balanced-match/-/balanced-match-1.0.2.tgz", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
 
-    "@navfolio/plugin-markdown/astro-expressive-code/rehype-expressive-code/expressive-code": ["expressive-code@0.44.0", "https://registry.npmmirror.com/expressive-code/-/expressive-code-0.44.0.tgz", { "dependencies": { "@expressive-code/core": "^0.44.0", "@expressive-code/plugin-frames": "^0.44.0", "@expressive-code/plugin-shiki": "^0.44.0", "@expressive-code/plugin-text-markers": "^0.44.0" } }, "sha512-JXVWVNCKlLuZLMQH8cOiDUSosT0Bb+elwE/dbAkpwFwDFmyFyWlECoWZIohh2FkIF1iI67TQJ+Ts9k7oNDh2qA=="],
-
     "@typescript-eslint/utils/@typescript-eslint/scope-manager/@typescript-eslint/visitor-keys/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "https://registry.npmmirror.com/eslint-visitor-keys/-/eslint-visitor-keys-3.4.3.tgz", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 
     "@typescript-eslint/utils/@typescript-eslint/typescript-estree/@typescript-eslint/visitor-keys/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "https://registry.npmmirror.com/eslint-visitor-keys/-/eslint-visitor-keys-3.4.3.tgz", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
@@ -1696,16 +1690,6 @@
 
     "glob/minimatch/brace-expansion/balanced-match": ["balanced-match@1.0.2", "https://registry.npmmirror.com/balanced-match/-/balanced-match-1.0.2.tgz", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
 
-    "@navfolio/plugin-markdown/astro-expressive-code/rehype-expressive-code/expressive-code/@expressive-code/core": ["@expressive-code/core@0.44.0", "https://registry.npmmirror.com/@expressive-code/core/-/core-0.44.0.tgz", { "dependencies": { "@ctrl/tinycolor": "^4.0.4", "hast-util-select": "^6.0.2", "hast-util-to-html": "^9.0.1", "hast-util-to-text": "^4.0.1", "hastscript": "^9.0.0", "postcss": "^8.4.38", "postcss-nested": "^6.0.1", "unist-util-visit": "^5.0.0", "unist-util-visit-parents": "^6.0.1" } }, "sha512-xgiF2P6tYUbrhi3+x0S8xHZWT1t3Bvb3U91tAtRbLb9HLejLvYc5GZUqKICKLaUN4iSGhhNJu2fM/aH8e5yCMg=="],
-
-    "@navfolio/plugin-markdown/astro-expressive-code/rehype-expressive-code/expressive-code/@expressive-code/plugin-frames": ["@expressive-code/plugin-frames@0.44.0", "https://registry.npmmirror.com/@expressive-code/plugin-frames/-/plugin-frames-0.44.0.tgz", { "dependencies": { "@expressive-code/core": "^0.44.0" } }, "sha512-V6M6+zVc1GzqCvXkQHc2m5rcFOIVzJgMq5gnfrMnVf2gwtj/sg4H93c1f/mGeqHycubwkHFUDyParAOiGeDZeA=="],
-
-    "@navfolio/plugin-markdown/astro-expressive-code/rehype-expressive-code/expressive-code/@expressive-code/plugin-shiki": ["@expressive-code/plugin-shiki@0.44.0", "https://registry.npmmirror.com/@expressive-code/plugin-shiki/-/plugin-shiki-0.44.0.tgz", { "dependencies": { "@expressive-code/core": "^0.44.0", "shiki": "^4.0.2" } }, "sha512-RZsdaqlbGqyAQKuoX4myQXxjmiE2l5KBpJ/gKPh62tCdIdpWyjbzVqSo8+5XsezZxkfi8AJ/J6EUaBTPROFX/Q=="],
-
-    "@navfolio/plugin-markdown/astro-expressive-code/rehype-expressive-code/expressive-code/@expressive-code/plugin-text-markers": ["@expressive-code/plugin-text-markers@0.44.0", "https://registry.npmmirror.com/@expressive-code/plugin-text-markers/-/plugin-text-markers-0.44.0.tgz", { "dependencies": { "@expressive-code/core": "^0.44.0" } }, "sha512-0/m3A5b+lz2upyNq+wzZ1S69HRoJmyFs5LsR42lVZ9pmGRlBiSBYQpvqlji4DBj1+Riamxc0AvcCr5kuzOQeWA=="],
-
     "@typescript-eslint/utils/@typescript-eslint/typescript-estree/minimatch/brace-expansion/balanced-match": ["balanced-match@1.0.2", "https://registry.npmmirror.com/balanced-match/-/balanced-match-1.0.2.tgz", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
-
-    "@navfolio/plugin-markdown/astro-expressive-code/rehype-expressive-code/expressive-code/@expressive-code/core/postcss": ["postcss@8.5.14", "https://registry.npmmirror.com/postcss/-/postcss-8.5.14.tgz", { "dependencies": { "nanoid": "^3.3.11", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg=="],
   }
 }
