@@ -19,7 +19,7 @@
 - Markdown preset 对 Expressive Code、callout、columns/timeline、responsive
   tables、Mermaid 和 math 的组合。
 - `mdx-components` 的显式内容 components/runtime helpers，包括友链申请表单、
-  JSON 复制与 GitHub Issue/Issue Form 预填。
+  字段数据复制与 GitHub Issue/Issue Form 预填。
 - 首页 dashboard、Blog archive/category/series/tag、搜索、评论、多语言 UI。
 - starter 与 docs/demo 双内容模式。
 - Friend Circle build-time sync、静态 JSON consumer 和字体子集联动。
