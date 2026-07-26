@@ -296,11 +296,11 @@
 
     "@navfolio/plugin-callout": ["@navfolio/plugin-callout@github:navfolio/plugin-callout#9d6ecca", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-callout-9d6ecca", "sha512-stWzBXSUhK2mFFH+f/P1GcZ62Sp5JBUHpPKr5wbPzzmK0HMiVqTFhqZQtffSk94oXs4DAqJICRcmBz2Al+LQRg=="],
 
-    "@navfolio/plugin-markdown": ["@navfolio/plugin-markdown@github:navfolio/plugin-markdown#a5f6923", { "dependencies": { "@navfolio/plugin-callout": "github:navfolio/plugin-callout", "@navfolio/plugin-markdown-layouts": "github:navfolio/plugin-markdown-layouts", "astro-expressive-code": "^0.44.0", "rehype-katex": "^7.0.1", "rehype-mathjax": "^7.1.0", "remark-math": "^6.0.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-a5f6923", "sha512-/faWFq00zhu10D3/hOyZ0mroxfQznBLInPPq2vhSL61+oj0DZNHDfrH5kJsHwXjClGJZV6F9BZ2vmj1b4CJv2w=="],
+    "@navfolio/plugin-markdown": ["@navfolio/plugin-markdown@github:navfolio/plugin-markdown#dfba520", { "dependencies": { "@navfolio/plugin-callout": "github:navfolio/plugin-callout", "@navfolio/plugin-markdown-layouts": "github:navfolio/plugin-markdown-layouts", "astro-expressive-code": "^0.44.0", "rehype-katex": "^7.0.1", "rehype-mathjax": "^7.1.0", "remark-math": "^6.0.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-dfba520", "sha512-OexijSi07ojHxMITsrq3FnNx/a+4B8poWe5sTSkKkziLf6PR/mJxb2Lchjdp/11RoUL519AS4nfReFfNK+Ubnw=="],
 
-    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#25180a1", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-25180a1", "sha512-I2GbfBXzx+k9IS35+5vf2i/VBh5z/p8AVcfui3qg+d+EMMXJFcorFQKz8IaZEirBNjumFt7bM7DVE9E1uxvFoA=="],
+    "@navfolio/plugin-markdown-layouts": ["@navfolio/plugin-markdown-layouts@github:navfolio/plugin-markdown-layouts#6b44c38", { "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-plugin-markdown-layouts-6b44c38", "sha512-lGcbZZskjRah/C4kHaLRycLdQeWrPbfJuQJeiMd469jUB9QhQdGzaX6a8Cfn8fcWVjMlnyjQnOwasUBSCAFhAw=="],
 
-    "@navfolio/theme-default": ["@navfolio/theme-default@github:navfolio/theme-default#77b8709", { "dependencies": { "@fontsource/maple-mono": "^5.2.6", "@navfolio/core": "github:navfolio/core", "lucide-astro": "^0.556.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-theme-default-77b8709"],
+    "@navfolio/theme-default": ["@navfolio/theme-default@github:navfolio/theme-default#c6aadb4", { "dependencies": { "@fontsource/maple-mono": "^5.2.6", "@navfolio/core": "github:navfolio/core", "lucide-astro": "^0.556.0" }, "peerDependencies": { "astro": ">=7.0.0" } }, "navfolio-theme-default-c6aadb4", "sha512-qQQfSNQn3pbGXSvHzeadH7gCSCZ6OxC7++UKdCn6gClFxaWPrX7JL+gl6/4MU0WXwdSDfo7jSdUTZ2mMbWLTnQ=="],
 
     "@nodable/entities": ["@nodable/entities@2.1.0", "https://registry.npmmirror.com/@nodable/entities/-/entities-2.1.0.tgz", {}, "sha512-nyT7T3nbMyBI/lvr6L5TyWbFJAI9FTgVRakNoBqCD+PmID8DzFrrNdLLtHMwMszOtqZa8PAOV24ZqDnQrhQINA=="],
 
@@ -1576,7 +1576,7 @@
 
     "@navfolio/page-media/@navfolio/mdx-components": ["@navfolio/mdx-components@github:navfolio/mdx-components#6997956", { "dependencies": { "fast-xml-parser": "^5.3.3" }, "peerDependencies": { "astro": "^5.0.0 || ^6.0.0 || ^7.0.0", "lucide-astro": "^0.556.0", "mermaid": "^11.0.0" } }, "navfolio-mdx-components-6997956"],
 
-    "@navfolio/theme-default/@fontsource/maple-mono": ["@fontsource/maple-mono@5.2.6", "https://registry.npmmirror.com/@fontsource/maple-mono/-/maple-mono-5.2.6.tgz", {}, "sha512-+VAD7z8nyTkaiz2/Ww639Z5Kp/YJIL4dNMQxydqSMafNb5nKxFeoRq6W3g9WJ04IcBjdBmn0dKFNk90lyz7K+w=="],
+    "@navfolio/theme-default/@navfolio/core": ["@navfolio/core@github:navfolio/core#1e7954f", {}, "navfolio-core-1e7954f", "sha512-QOYG+sFq379L9t9ND8ZU0di50akeTaEgA+o4pnjes5q7dL+Tmm0wogB38nEH2P4+jwh3Dzns+LgqPK+GCD+UYA=="],
 
     "@rollup/pluginutils/estree-walker": ["estree-walker@2.0.2", "https://registry.npmmirror.com/estree-walker/-/estree-walker-2.0.2.tgz", {}, "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w=="],
 
