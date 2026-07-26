@@ -284,7 +284,7 @@
 
     "@navfolio/core": ["@navfolio/core@github:navfolio/core#1e7954f", {}, "navfolio-core-1e7954f"],
 
-    "@navfolio/mdx-components": ["@navfolio/mdx-components@github:navfolio/mdx-components#6997956", { "dependencies": { "fast-xml-parser": "^5.3.3" }, "peerDependencies": { "astro": "^5.0.0 || ^6.0.0 || ^7.0.0", "lucide-astro": "^0.556.0", "mermaid": "^11.0.0" } }, "navfolio-mdx-components-6997956"],
+    "@navfolio/mdx-components": ["@navfolio/mdx-components@github:navfolio/mdx-components#841116b", { "dependencies": { "fast-xml-parser": "^5.3.3" }, "peerDependencies": { "astro": "^5.0.0 || ^6.0.0 || ^7.0.0", "lucide-astro": "^0.556.0", "mermaid": "^11.0.0" } }, "navfolio-mdx-components-841116b", "sha512-CZp9V2JybdTcpUwhTSad9/l6Zh69UW39OapJDF7KVPObrbT0QviVUYR8chErMHQL3yIIa8BwcSCeZMKrmuhrlQ=="],
 
     "@navfolio/page-media": ["@navfolio/page-media@github:navfolio/page-media#788affd", { "dependencies": { "@navfolio/mdx-components": "github:navfolio/mdx-components" }, "peerDependencies": { "@navfolio/core": ">=0.1.0", "astro": ">=7.0.0" }, "optionalPeers": ["@navfolio/core"] }, "navfolio-page-media-788affd", "sha512-ZVL5z8KoL2VmMIpzwjHIVC0VIstl4M0l/386s1vDFFVF+9dUeBescN+pUl+lwDn3uM+fDqq6aTaRx1IARlVpfw=="],
 
@@ -1573,6 +1573,8 @@
     "@eslint/eslintrc/minimatch": ["minimatch@3.1.5", "https://registry.npmmirror.com/minimatch/-/minimatch-3.1.5.tgz", { "dependencies": { "brace-expansion": "^1.1.7" } }, "sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w=="],
 
     "@humanwhocodes/config-array/minimatch": ["minimatch@3.1.5", "https://registry.npmmirror.com/minimatch/-/minimatch-3.1.5.tgz", { "dependencies": { "brace-expansion": "^1.1.7" } }, "sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w=="],
+
+    "@navfolio/page-media/@navfolio/mdx-components": ["@navfolio/mdx-components@github:navfolio/mdx-components#6997956", { "dependencies": { "fast-xml-parser": "^5.3.3" }, "peerDependencies": { "astro": "^5.0.0 || ^6.0.0 || ^7.0.0", "lucide-astro": "^0.556.0", "mermaid": "^11.0.0" } }, "navfolio-mdx-components-6997956"],
 
     "@navfolio/plugin-markdown/astro-expressive-code": ["astro-expressive-code@0.44.0", "https://registry.npmmirror.com/astro-expressive-code/-/astro-expressive-code-0.44.0.tgz", { "dependencies": { "rehype-expressive-code": "^0.44.0", "url-extras": "^0.1.0" }, "peerDependencies": { "astro": "^4.0.0-beta || ^5.0.0-beta || ^3.3.0 || ^6.0.0-beta || ^7.0.0" } }, "sha512-b1wN/ZvbJprzxlGKIpIes2kQrCY5KRLwys2tWbZAZyjGZcW5ZtgneZnBwzNRiBna9/48d4mQl19KLjcRuhO1hw=="],
 

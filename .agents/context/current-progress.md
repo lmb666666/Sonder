@@ -1,6 +1,6 @@
 # 当前进度
 
-最后核对：2026-07-25  
+最后核对：2026-07-26
 证据：当前功能分支、当前 manifests、lockfile、source、deploy workflow 与上层
 生态地图。
 
@@ -18,7 +18,8 @@
   routes。
 - Markdown preset 对 Expressive Code、callout、columns/timeline、responsive
   tables、Mermaid 和 math 的组合。
-- `mdx-components` 的显式内容 components/runtime helpers。
+- `mdx-components` 的显式内容 components/runtime helpers，包括友链申请表单、
+  JSON 复制与 GitHub Issue/Issue Form 预填。
 - 首页 dashboard、Blog archive/category/series/tag、搜索、评论、多语言 UI。
 - starter 与 docs/demo 双内容模式。
 - Friend Circle build-time sync、静态 JSON consumer 和字体子集联动。
