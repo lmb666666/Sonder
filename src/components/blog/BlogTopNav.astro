@@ -175,6 +175,49 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
 </header>
 
 <script>
+  let navigationSequence = 0;
+  let activeNavigationId = 0;
+
+  const clearPendingNavigation = (navigationId?: number) => {
+    if (navigationId && navigationId !== activeNavigationId) {
+      return;
+    }
+
+    for (const header of document.querySelectorAll<HTMLElement>('.blog-top-nav')) {
+      delete header.dataset.navPending;
+      header.removeAttribute('aria-busy');
+
+      for (const link of header.querySelectorAll<HTMLElement>('[data-nav-link-pending]')) {
+        delete link.dataset.navLinkPending;
+      }
+    }
+
+    activeNavigationId = 0;
+  };
+
+  const startPendingNavigation = (sourceElement?: Element) => {
+    const sourceLink = sourceElement?.closest<HTMLAnchorElement>('.blog-top-nav a[href]');
+
+    if (!sourceLink) {
+      return 0;
+    }
+
+    const navigationId = ++navigationSequence;
+    const pendingHref = sourceLink.href;
+    activeNavigationId = navigationId;
+
+    for (const header of document.querySelectorAll<HTMLElement>('.blog-top-nav')) {
+      header.dataset.navPending = 'true';
+      header.setAttribute('aria-busy', 'true');
+
+      for (const link of header.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+        link.toggleAttribute('data-nav-link-pending', link.href === pendingHref);
+      }
+    }
+
+    return navigationId;
+  };
+
   const initMobileTopNav = () => {
     for (const header of document.querySelectorAll<HTMLElement>('.blog-top-nav')) {
       const toggle = header.querySelector<HTMLButtonElement>('[data-mobile-menu-toggle]');
@@ -315,6 +358,29 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
   };
 
   initMobileTopNav();
+  document.addEventListener('astro:before-preparation', (event) => {
+    const navigationId = startPendingNavigation(event.sourceElement);
+
+    if (!navigationId) {
+      return;
+    }
+
+    const loadPage = event.loader;
+
+    event.loader = async () => {
+      try {
+        await loadPage();
+
+        if (event.signal.aborted) {
+          clearPendingNavigation(navigationId);
+        }
+      } catch (error) {
+        clearPendingNavigation(navigationId);
+        throw error;
+      }
+    };
+  });
+  document.addEventListener('astro:after-swap', () => clearPendingNavigation());
   document.addEventListener('astro:page-load', initMobileTopNav);
 </script>
 
@@ -343,6 +409,37 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
       opacity 180ms ease,
       transform 220ms ease;
     will-change: transform;
+  }
+
+  .blog-top-nav::after {
+    position: absolute;
+    right: 14px;
+    bottom: -1px;
+    left: 14px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--paper-accent) 6%,
+      var(--paper-accent) 94%,
+      transparent
+    );
+    content: '';
+    opacity: 0;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: center;
+    will-change: opacity, transform;
+  }
+
+  .blog-top-nav[data-nav-pending='true'] {
+    cursor: progress;
+  }
+
+  .blog-top-nav[data-nav-pending='true']::after {
+    animation: nav-route-progress 900ms ease-in-out infinite;
+    opacity: 1;
   }
 
   .blog-top-nav[data-nav-hidden='true'] {
@@ -399,12 +496,14 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
   }
 
   a.nav-link:hover,
-  a.nav-link.active {
+  a.nav-link.active,
+  a.nav-link[data-nav-link-pending] {
     background: var(--paper-control-hover);
     color: var(--paper-accent);
   }
 
-  .nav-link.active::after {
+  .nav-link.active::after,
+  .nav-link[data-nav-link-pending]::after {
     position: absolute;
     bottom: 5px;
     left: 50%;
@@ -414,6 +513,11 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
     background: var(--paper-accent);
     content: '';
     transform: translateX(-50%);
+  }
+
+  .nav-link[data-nav-link-pending]::after,
+  .brand[data-nav-link-pending] .brand-mark {
+    animation: nav-pending-pulse 620ms ease-in-out infinite alternate;
   }
 
   .nav-link-placeholder {
@@ -574,7 +678,8 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
     }
 
     .mobile-menu-link:hover,
-    .mobile-menu-link.active {
+    .mobile-menu-link.active,
+    .mobile-menu-link[data-nav-link-pending] {
       background: var(--paper-control-hover);
       color: var(--paper-accent);
     }
@@ -605,9 +710,51 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
     }
   }
 
+  @keyframes nav-route-progress {
+    0% {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+
+    12% {
+      opacity: 1;
+    }
+
+    72% {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes nav-pending-pulse {
+    from {
+      opacity: 0.42;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .blog-top-nav {
       transition: none;
+    }
+
+    .blog-top-nav[data-nav-pending='true']::after {
+      animation: none;
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+    .nav-link[data-nav-link-pending]::after,
+    .brand[data-nav-link-pending] .brand-mark {
+      animation: none;
     }
   }
 </style>
