@@ -1,0 +1,41 @@
+diff --git a/dist/runtime/utils/index.js b/dist/runtime/utils/index.js
+index 580aa9479c9f29cfb7f71cf884f38e58c43f0bc4..24acaf1f82c7fd26000d4df909c55b5a9a20e7c4 100644
+--- a/dist/runtime/utils/index.js
++++ b/dist/runtime/utils/index.js
+@@ -32,7 +32,7 @@ export function parseDensities(input = "") {
+   }
+   const densities = /* @__PURE__ */ new Set();
+   for (const density of input.split(" ")) {
+-    const d = Number.parseInt(density.replace("x", ""));
++    const d = Number.parseFloat(density.replace("x", ""));
+     if (d) {
+       densities.add(d);
+     }
+diff --git a/dist/runtime/server/routes/_ipx.js b/dist/runtime/server/routes/_ipx.js
+--- a/dist/runtime/server/routes/_ipx.js
++++ b/dist/runtime/server/routes/_ipx.js
+@@ -1,6 +1,6 @@
+ import { fileURLToPath } from "node:url";
+-import { createIPX, createIPXNodeHandler, parseIPXURL, ipxFSStorage, ipxHttpStorage } from "ipx";
+-import { lazyEventHandler, fromNodeMiddleware } from "h3";
++import { createIPX, createIPXFetchHandler, parseIPXURL, ipxFSStorage, ipxHttpStorage } from "ipx";
++import { lazyEventHandler, fromWebHandler } from "h3";
+ import { isAbsolute } from "pathe";
+ import { useRuntimeConfig } from "#imports";
+ export default lazyEventHandler(() => {
+@@ -18,7 +18,7 @@
+   };
+   const baseURL = (opts.baseURL || "/_ipx").replace(/\/+$/, "");
+   const ipx = createIPX(ipxOptions);
+-  const nodeHandler = createIPXNodeHandler(ipx, {
++  const fetchHandler = createIPXFetchHandler(ipx, {
+     parseURL(url) {
+       const parsedURL = new URL(url);
+       let pathname = parsedURL.pathname;
+@@ -28,5 +28,5 @@
+       return parseIPXURL(parsedURL.origin + pathname + parsedURL.search);
+     }
+   });
+-  return fromNodeMiddleware(nodeHandler);
++  return fromWebHandler(fetchHandler);
+ });
