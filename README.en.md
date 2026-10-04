@@ -87,7 +87,7 @@ Installation runs `prepare`: it clears `.data` and the dependency cache, then ru
 
 ### First configuration
 
-The template ships with the demo site's settings (name Sonder, author Your Name, domain `sonder.liang.one`). Before deploying, change at least:
+The template ships with the demo site's settings: the site name and author are both Sonder, and the domain is `sonder.liang.one`. Before deploying, change at least:
 
 1. `basicConfig` at the top of `blog.config.ts`: title, subtitle, author, email, and `url` (full address, no trailing slash)
 2. The `home` section: greeting, bio, career, skills, social links

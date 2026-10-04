@@ -1,6 +1,6 @@
 ---
 title: 使用指南
-author: Your Name
+author: Sonder
 description: 从环境准备、站点配置到写完第一篇文章并发布上线，Sonder 的完整上手流程。
 date: 2026-10-04
 updated: 2026-10-04
@@ -76,7 +76,7 @@ const basicConfig = {
 ```
 
 ::alert{type="warning" title="url 别写错"}
-`url` 要写完整的 HTTPS 地址、不带末尾斜杠，它决定 canonical、sitemap 和订阅里的绝对链接。示例文章 Front Matter 里的 `author: Your Name` 也记得一起替换。
+`url` 要写完整的 HTTPS 地址、不带末尾斜杠，它决定 canonical、sitemap 和订阅里的绝对链接。示例文章 Front Matter 里的 `author: Sonder` 也记得一起替换成自己的名字。
 ::
 
 其余配置按需改，每项都在注释里说明了用途：

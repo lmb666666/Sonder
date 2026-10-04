@@ -87,7 +87,7 @@ pnpm exec nuxt dev --host 127.0.0.1
 
 ### 第一次配置
 
-模板默认是演示站的设置（站点名 Sonder、作者 Your Name、域名指向演示站 `sonder.liang.one`），部署前至少改这几处：
+模板默认是演示站的设置（站点名和作者名都是 Sonder、域名指向 `sonder.liang.one`），部署前至少改这几处：
 
 1. `blog.config.ts` 顶部的 `basicConfig`：标题、副标题、作者、邮箱、`url`（完整地址，不带末尾斜杠）
 2. `home` 区块：主页问候语、简介、生涯经历、技能、社交链接

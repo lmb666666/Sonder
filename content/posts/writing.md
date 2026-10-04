@@ -1,6 +1,6 @@
 ---
 title: 写作手册
-author: Your Name
+author: Sonder
 description: 代码块、公式、图表，以及文章里可以直接调用的全部组件，都配上了效果和写法。
 date: 2026-10-04
 updated: 2026-10-04
@@ -172,7 +172,7 @@ active: 1
 ::poetry
 ---
 title: 留一行
-author: Your Name
+author: Sonder
 footer: 原创练习
 ---
 把复杂的问题，
@@ -184,7 +184,7 @@ footer: 原创练习
 ::poetry
 ---
 title: 留一行
-author: Your Name
+author: Sonder
 footer: 原创练习
 ---
 把复杂的问题，
@@ -328,7 +328,7 @@ id: BV1Yr421p7rW
 ---
 ::
 
-::audio-embed{src="/media/field-note.mp3" title="现场记录" artist="Your Name" cover="/images/cover.svg"}
+::audio-embed{src="/media/field-note.mp3" title="现场记录" artist="Sonder" cover="/images/cover.svg"}
 ::
 
 ::echo-music{songUrl="https://music.163.com/song?id=SONG_ID"}
@@ -396,11 +396,11 @@ link: https://example.org
 
 在吗
 
-{.Your Name}
+{.Sonder}
 
 在，正在写博客
 
-{:Your Name 撤回了一条消息}
+{:Sonder 撤回了一条消息}
 
 {路人}
 
@@ -431,7 +431,7 @@ link: https://example.org
 
 在吗
 
-{Your Name}
+{Sonder}
 
 在，正在写博客
 

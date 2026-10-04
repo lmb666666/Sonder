@@ -14,13 +14,13 @@ const basicConfig = {
 	description: 'Sonder 是一个基于 Nuxt 的博客程序。万千人生，各自成书。',
 	author: {
 		// 作者显示名称 / Author display name
-		name: 'Your Name',
+		name: 'Sonder',
 		// 作者头像图片地址 / Author avatar image URL
 		avatar: '/images/logo.svg',
 		// 联系邮箱 / Contact email
-		email: 'hello@example.com',
+		email: 'hello@sonder.liang.one',
 		// 作者主页 / Author homepage
-		homepage: 'https://example.com',
+		homepage: 'https://sonder.liang.one',
 	},
 	copyright: {
 		// 版权名称 / Copyright name

@@ -1,6 +1,6 @@
 ---
 title: 友链说明
-author: Your Name
+author: Sonder
 description: 交换友链的说明，以及需要提供的信息。
 date: '2026-10-04'
 updated: '2026-10-04'
@@ -14,9 +14,9 @@ updated: '2026-10-04'
 
 评论默认是关闭的，发邮件给我就行：
 
-**hello@example.com**
+**hello@sonder.liang.one**
 
-> 这是模板里的示例邮箱，站点上线前记得在 `content/link.md` 和 `blog.config.ts` 里替换成你自己的。
+> 这是演示站的示例邮箱，站点上线前记得在 `content/link.md` 和 `blog.config.ts` 里替换成你自己的。
 
 邮件写「友链」就行，附上这三样：
 
