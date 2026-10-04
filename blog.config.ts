@@ -16,7 +16,7 @@ const basicConfig = {
 		// 作者显示名称 / Author display name
 		name: 'Your Name',
 		// 作者头像图片地址 / Author avatar image URL
-		avatar: '/images/avatar.svg',
+		avatar: '/images/logo.svg',
 		// 联系邮箱 / Contact email
 		email: 'hello@example.com',
 		// 作者主页 / Author homepage
@@ -29,7 +29,7 @@ const basicConfig = {
 		url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans',
 	},
 	// 网站图标地址 / Site favicon URL
-	favicon: '/images/avatar.svg',
+	favicon: '/images/logo.svg',
 	// 网站语言代码 / Site language code
 	language: 'zh-CN',
 	// 网站建立日期 / Site establishment date

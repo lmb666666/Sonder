@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./public/images/logo.svg" width="96" alt="Sonder 图标">
+
 # Sonder
 
 **每个人都是一部史诗**

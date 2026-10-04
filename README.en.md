@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./public/images/logo.svg" width="96" alt="Sonder logo">
+
 # Sonder
 
 **Every passerby is living an epic.**
