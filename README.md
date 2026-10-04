@@ -2,7 +2,7 @@
 
 # Sonder
 
-**用文字记录生活，用代码分享想法**
+**每个人都是一部史诗**
 
 ![Nuxt](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxt&logoColor=white)
 ![Vue](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white)
@@ -26,16 +26,14 @@
 
 <table width="100%" align="center">
   <tr>
-    <td align="center">
+    <td colspan="3" align="center">
       <img src="./docs/images/home-light.webp" alt="个人主页">
       <br>个人主页</td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/images/blog-light.webp" width="48%" alt="文章列表"><br>文章列表</td>
-    <td align="center"><img src="./docs/images/guide-light.webp" width="48%" alt="使用指南"><br>使用指南</td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="./docs/images/handbook-dark.webp" width="48%" alt="写作手册（暗色）"><br>写作手册（暗色）</td>
+    <td align="center"><img src="./docs/images/blog-light.webp" width="97%" alt="文章列表"><br>文章列表</td>
+    <td align="center"><img src="./docs/images/guide-light.webp" width="97%" alt="使用指南"><br>使用指南</td>
+    <td align="center"><img src="./docs/images/handbook-dark.webp" width="97%" alt="写作手册"><br>写作手册</td>
   </tr>
 </table>
 
@@ -87,7 +85,7 @@ pnpm exec nuxt dev --host 127.0.0.1
 
 ### 第一次配置
 
-模板默认写着占位信息（站点名 Sonder、作者 Your Name、域名 example.com），部署前至少改这几处：
+模板默认是演示站的设置（站点名 Sonder、作者 Your Name、域名指向演示站 `sonder.liang.one`），部署前至少改这几处：
 
 1. `blog.config.ts` 顶部的 `basicConfig`：标题、副标题、作者、邮箱、`url`（完整地址，不带末尾斜杠）
 2. `home` 区块：主页问候语、简介、生涯经历、技能、社交链接

@@ -11,7 +11,7 @@ const basicConfig = {
 	// 网站副标题 / Site subtitle
 	subtitle: '每个人都有自己的故事',
 	// 网站简介，会用于搜索引擎摘要 / Site description used for search snippets
-	description: 'Sonder 是一个基于 Nuxt 的博客程序。用文字记录生活，用代码分享想法。',
+	description: 'Sonder 是一个基于 Nuxt 的博客程序。每个人都是一部史诗，值得被写下、被看见。',
 	author: {
 		// 作者显示名称 / Author display name
 		name: 'Your Name',
@@ -37,7 +37,7 @@ const basicConfig = {
 	// 日期显示使用的时区 / Time zone used for dates
 	timeZone: 'Asia/Shanghai',
 	// 网站完整网址，不要带末尾斜杠 / Canonical site URL, without trailing slash
-	url: 'https://example.com',
+	url: 'https://sonder.liang.one',
 	// 未指定分类时使用的名称 / Category used when none is specified
 	defaultCategory: '未分类',
 }

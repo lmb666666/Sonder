@@ -2,7 +2,7 @@
 
 # Sonder
 
-**Write your life down, share your ideas in code**
+**Every passerby is living an epic.**
 
 ![Nuxt](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxt&logoColor=white)
 ![Vue](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white)
@@ -26,16 +26,14 @@
 
 <table width="100%" align="center">
   <tr>
-    <td align="center">
+    <td colspan="3" align="center">
       <img src="./docs/images/home-light.webp" alt="Homepage">
       <br>Homepage</td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/images/blog-light.webp" width="48%" alt="Article list"><br>Article list</td>
-    <td align="center"><img src="./docs/images/guide-light.webp" width="48%" alt="Usage guide"><br>Usage guide</td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="./docs/images/handbook-dark.webp" width="48%" alt="Writing handbook (dark)"><br>Writing handbook (dark)</td>
+    <td align="center"><img src="./docs/images/blog-light.webp" width="97%" alt="Article list"><br>Article list</td>
+    <td align="center"><img src="./docs/images/guide-light.webp" width="97%" alt="Usage guide"><br>Usage guide</td>
+    <td align="center"><img src="./docs/images/handbook-dark.webp" width="97%" alt="Writing handbook"><br>Writing handbook</td>
   </tr>
 </table>
 
@@ -87,7 +85,7 @@ Installation runs `prepare`: it clears `.data` and the dependency cache, then ru
 
 ### First configuration
 
-The template ships with placeholder values (site name Sonder, author Your Name, domain example.com). Before deploying, change at least:
+The template ships with the demo site's settings (name Sonder, author Your Name, domain `sonder.liang.one`). Before deploying, change at least:
 
 1. `basicConfig` at the top of `blog.config.ts`: title, subtitle, author, email, and `url` (full address, no trailing slash)
 2. The `home` section: greeting, bio, career, skills, social links
