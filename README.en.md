@@ -4,7 +4,7 @@
 
 # Sonder
 
-**Every passerby is living an epic.**
+**Every life, a book of its own.**
 
 ![Nuxt](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxt&logoColor=white)
 ![Vue](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white)
