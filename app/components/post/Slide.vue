@@ -4,11 +4,18 @@ import Autoplay from 'embla-carousel-autoplay'
 import emblaCarouselVue from 'embla-carousel-vue'
 import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures'
 
-const props = defineProps<{ list: ArticleProps[] }>()
+const props = defineProps<{
+	/** 进入精选位的文章 / Articles featured in the spotlight */
+	list: ArticleProps[]
+	/** 全站文章池，用于速览统计与随机阅读 / All posts, powering the overview stats and random reading */
+	pool: ArticleProps[]
+}>()
 
 const appConfig = useAppConfig()
 const fallbackCover = appConfig.ui.article.fallbackCover
 const reducedMotion = usePreferredReducedMotion()
+
+const showAside = computed(() => appConfig.ui.slide.aside.enabled)
 
 const autoplay = Autoplay({ delay: appConfig.ui.slide.autoplayDelay, playOnInit: false, stopOnInteraction: false, stopOnMouseEnter: true })
 const [carouselEl, carouselApi] = emblaCarouselVue({
@@ -32,23 +39,10 @@ watch(carouselApi, (api) => {
 	api.on('reInit', sync)
 })
 
-// 预取各封面主色并按封面缓存（响应式，取色完成后首屏即可生效）
-const coverColors = ref<Record<string, string | undefined>>({})
-const activeCoverSrc = computed(() => {
-	const article = props.list[selectedIndex.value] ?? props.list[0]
-	return article ? coverOf(article) : fallbackCover
-})
-const activeColor = computed(() => coverColors.value[activeCoverSrc.value])
-
-onMounted(async () => {
+onMounted(() => {
 	if (reducedMotion.value !== 'reduce' && props.list.length > 1)
 		autoplay.play()
-
-	await Promise.allSettled(props.list.map(async (article) => {
-		const src = coverOf(article)
-		if (typeof coverColors.value[src] === 'undefined')
-			coverColors.value[src] = await getCoverThemeColor(src, appConfig.ui.article.coverProxyHosts)
-	}))
+	rollRandom()
 })
 
 watch(reducedMotion, (preference) => {
@@ -60,6 +54,21 @@ watch(reducedMotion, (preference) => {
 
 function coverOf(article: ArticleProps) {
 	return article.image || fallbackCover
+}
+
+function goTo(index: number) {
+	autoplay.stop()
+	carouselApi.value?.scrollTo(index)
+}
+
+function scrollPrev() {
+	autoplay.stop()
+	carouselApi.value?.scrollPrev()
+}
+
+function scrollNext() {
+	autoplay.stop()
+	carouselApi.value?.scrollNext()
 }
 
 // 鼠标横向滚动 / Shift + 纵向滚轮事件
@@ -74,23 +83,30 @@ useEventListener(carouselEl, 'wheel', (e) => {
 	const delta = e.deltaX + (e.shiftKey ? e.deltaY : 0)
 	if (Math.abs(delta) < 80)
 		return
-	delta > 0 ? carouselApi.value?.scrollNext() : carouselApi.value?.scrollPrev()
+	delta > 0 ? scrollNext() : scrollPrev()
 }, { passive: false })
 
-function scrollTo(index: number) {
-	autoplay.stop()
-	carouselApi.value?.scrollTo(index)
-}
+// 站点速览统计 / Site overview stats
+const stats = computed(() => {
+	const pool = props.pool
+	return {
+		posts: pool.length,
+		categories: new Set(pool.flatMap(article => article.categories ?? [])).size,
+		words: pool.reduce((sum, article) => sum + (article.readingTime?.words ?? 0), 0),
+	}
+})
 
-function resumeAutoplay() {
-	if (reducedMotion.value !== 'reduce' && props.list.length > 1)
-		autoplay.play()
+// 「随机阅读」的目标：挂载后开掷，之后每次悬停或聚焦再掷一次 / Random reading target: rolled on mount, re-rolled on hover or focus
+const randomTarget = ref<string>()
+function rollRandom() {
+	const pick = props.pool[Math.floor(Math.random() * props.pool.length)]
+	randomTarget.value = pick?.path
 }
 </script>
 
 <template>
-<div class="z-slide">
-	<div class="z-slide-body" :style="activeColor ? { '--list-color': activeColor } : undefined">
+<section class="z-slide" :aria-label="appConfig.ui.slide.tag">
+	<div class="z-slide-body" :class="{ 'has-aside': showAside }">
 		<div ref="carouselEl" class="z-slide-hero" dir="ltr">
 			<div class="hero-track">
 				<UtilLink
@@ -104,13 +120,7 @@ function resumeAutoplay() {
 					:to="article.path"
 				>
 					<NuxtImg class="hero-cover" :src="coverOf(article)" :alt="article.title" />
-
-					<div class="hero-tag">
-						{{ appConfig.ui.slide.tag }}
-					</div>
-
-					<div class="hero-mask" />
-
+					<div class="hero-mask" aria-hidden="true" />
 					<div class="hero-info">
 						<h3 class="hero-title text-creative">
 							{{ article.title }}
@@ -119,49 +129,91 @@ function resumeAutoplay() {
 				</UtilLink>
 			</div>
 
-			<div v-if="list.length > 1" class="indicators" :aria-label="appConfig.ui.slide.tag">
-				<button
-					v-for="(article, index) in list"
-					:key="article.path"
-					class="indicator"
-					:class="{ active: index === selectedIndex }"
-					:aria-label="`查看「${article.title}」`"
-					:aria-pressed="index === selectedIndex"
-					@click="scrollTo(index)"
-				/>
+			<div class="hero-foot">
+				<span class="hero-tag">
+					<Icon name="tabler:star-filled" aria-hidden="true" />
+					<span class="hero-tag-text">{{ appConfig.ui.slide.tag }}</span>
+				</span>
+				<div v-if="list.length > 1" class="hero-dots">
+					<button
+						v-for="(article, index) in list"
+						:key="article.path"
+						class="hero-dot"
+						:class="{ 'is-active': index === selectedIndex }"
+						type="button"
+						:aria-label="`查看「${article.title}」`"
+						:aria-pressed="index === selectedIndex"
+						@click="goTo(index)"
+					/>
+				</div>
+				<div v-if="list.length > 1" class="hero-arrows">
+					<button class="arrow-btn" type="button" aria-label="上一篇精选" @click="scrollPrev">
+						<Icon name="tabler:chevron-left" aria-hidden="true" />
+					</button>
+					<button class="arrow-btn" type="button" aria-label="下一篇精选" @click="scrollNext">
+						<Icon name="tabler:chevron-right" aria-hidden="true" />
+					</button>
+				</div>
 			</div>
 		</div>
 
-		<div v-if="list.length > 1" class="z-slide-list">
-			<UtilLink
-				v-for="(article, index) in list"
-				:key="article.path"
-				class="list-item"
-				:class="{ active: index === selectedIndex }"
-				:aria-current="index === selectedIndex ? 'true' : undefined"
-				:title="article.description"
-				:to="article.path"
-				@mouseenter="scrollTo(index)"
-				@mouseleave="resumeAutoplay"
-				@focus="scrollTo(index)"
-				@blur="resumeAutoplay"
-			>
-				<NuxtImg class="list-thumb" :src="coverOf(article)" :alt="article.title" loading="lazy" />
-				<span class="list-title">{{ article.title }}</span>
-			</UtilLink>
-		</div>
+		<aside v-if="showAside" class="z-slide-aside">
+			<dl class="aside-stats">
+				<div class="stat">
+					<dt>文章</dt>
+					<dd>{{ stats.posts }}</dd>
+				</div>
+				<div class="stat">
+					<dt>分类</dt>
+					<dd>{{ stats.categories }}</dd>
+				</div>
+				<div class="stat">
+					<dt>字数</dt>
+					<dd>{{ formatNumber(stats.words) }}</dd>
+				</div>
+			</dl>
+
+			<div class="aside-actions">
+				<UtilLink
+					v-if="appConfig.ui.slide.aside.random"
+					class="action-btn action-primary"
+					:to="randomTarget"
+					@mouseenter="rollRandom"
+					@focus="rollRandom"
+				>
+					<Icon name="tabler:dice-5" aria-hidden="true" />
+					随机阅读
+				</UtilLink>
+				<UtilLink v-if="appConfig.ui.slide.aside.rss && appConfig.feed.enabled" class="action-btn action-ghost" to="/atom.xml">
+					<Icon name="tabler:rss" aria-hidden="true" />
+					RSS 订阅
+				</UtilLink>
+			</div>
+		</aside>
 	</div>
-</div>
+</section>
 </template>
 
 <style lang="scss" scoped>
 .z-slide {
+	container-type: inline-size;
 	margin: var(--sp-4);
 }
 
 .z-slide-body {
 	display: grid;
-	grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1fr);
+	align-items: stretch;
+	gap: var(--sp-4);
+	animation: float-in 0.3s ease backwards;
+
+	&.has-aside {
+		grid-template-columns: minmax(0, 2.55fr) minmax(0, 1fr);
+	}
+}
+
+.z-slide-hero,
+.z-slide-aside {
 	overflow: hidden;
 	border: 1px solid var(--c-border);
 	border-radius: var(--radius);
@@ -171,17 +223,21 @@ function resumeAutoplay() {
 
 .z-slide-hero {
 	position: relative;
-	overflow: hidden;
 	min-width: 0;
-	min-height: clamp(12.5rem, 24vw, 22rem);
+	min-height: clamp(14rem, 20vw, 16rem);
+	transition: border-color 0.2s ease;
 	cursor: grab;
 	user-select: none;
 
-	.hero-track {
-		display: flex;
-		position: absolute;
-		inset: 0;
+	&:hover,
+	&:focus-within {
+		border-color: color-mix(in srgb, var(--c-primary) 60%, var(--c-border));
 	}
+}
+
+.hero-track {
+	display: flex;
+	height: 100%;
 }
 
 .hero-slide {
@@ -190,35 +246,54 @@ function resumeAutoplay() {
 	position: relative;
 	overflow: hidden;
 	height: 100%;
-
-	> .hero-cover {
-		display: block;
-		width: 100%;
-		height: 100%;
-		transition: transform 0.5s ease;
-		will-change: transform;
-		object-fit: cover;
-	}
-
-	&:hover > .hero-cover,
-	&:focus-visible > .hero-cover {
-		transform: scale(1.04);
-	}
+	min-width: 0;
 
 	&:focus-visible {
 		outline: 2px solid var(--c-primary);
 		outline-offset: -2px;
 	}
-
-	&.is-active .hero-info {
-		animation: hero-info-in 0.45s ease both;
-	}
 }
 
-@keyframes hero-info-in {
+.hero-cover {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	transition: transform 0.6s ease;
+	will-change: transform;
+	object-fit: cover;
+}
+
+.hero-slide:hover .hero-cover,
+.hero-slide:focus-visible .hero-cover {
+	transform: scale(1.04);
+}
+
+/* 底部暗色渐变，保证标题与控制区可读 */
+.hero-mask {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgb(0 0 0 / 50%), rgb(0 0 0 / 15%) 38%, transparent 58%);
+	pointer-events: none;
+}
+
+.hero-info {
+	position: absolute;
+	inset-block-end: 0;
+	inset-inline: 0;
+	padding: var(--sp-5);
+	padding-block-end: 4.25rem;
+	pointer-events: none;
+}
+
+.hero-slide.is-active .hero-title {
+	animation: title-in 0.45s ease both;
+}
+
+@keyframes title-in {
 	from {
 		opacity: 0;
-		transform: translateY(0.6rem);
+		transform: translateY(0.5rem);
 	}
 
 	to {
@@ -227,178 +302,263 @@ function resumeAutoplay() {
 	}
 }
 
-.hero-mask {
-	position: absolute;
-	inset-block-end: 0;
-	inset-inline: 0;
-	height: clamp(4.5rem, 26%, 6.5rem);
-	background-image: linear-gradient(transparent, #0008);
-}
-
-.hero-info {
-	position: absolute;
-	inset-block-end: 0;
-	inset-inline: 0;
-	padding: var(--sp-4);
-	text-shadow: var(--text-shadow-black);
-	color: white;
-}
-
-.hero-tag {
-	position: absolute;
-	inset-block-start: var(--sp-4);
-	inset-inline-start: var(--sp-4);
-	padding: 0.2em 0.7em;
-	border-radius: var(--radius-full);
-	background-color: #0006;
-	font-size: var(--fs-xs);
-	line-height: 1.6;
-	color: white;
-	z-index: 1;
-}
-
 .hero-title {
 	display: -webkit-box;
 	overflow: hidden;
-	font-size: var(--fs-h1);
+	font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.6rem);
 	font-weight: 700;
-	-webkit-line-clamp: 2;
+	-webkit-line-clamp: 1;
 	line-height: var(--lh-tight);
+	text-shadow: var(--text-shadow-black);
+	color: white;
 	-webkit-box-orient: vertical;
 }
 
-.indicators {
-	display: none;
-	align-items: center;
-	gap: var(--sp-2);
+/* 标签、圆点指示器与前后箭头同一行，悬浮于轮播之上，不随幻灯片切换 */
+.hero-foot {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--sp-3);
 	position: absolute;
-	inset-block-start: var(--sp-4);
-	inset-inline-end: var(--sp-4);
+	inset-block-end: var(--sp-4);
+	inset-inline: var(--sp-5);
+	color: white;
+	pointer-events: none;
+	z-index: 2;
 }
 
-.indicator {
+.hero-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	min-width: 0;
+	font-size: var(--fs-sm);
+	font-weight: 600;
+	text-shadow: var(--text-shadow-black);
+
+	.iconify {
+		flex-shrink: 0;
+		font-size: 1em;
+	}
+}
+
+.hero-tag-text {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.hero-dots {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: var(--sp-2);
+	margin-block-end: 0.2rem;
+	pointer-events: auto;
+}
+
+.hero-dot {
 	width: 0.5rem;
 	height: 0.5rem;
 	padding: 0;
 	border-radius: var(--radius-full);
 	background-color: rgb(255 255 255 / 40%);
-	transition: width 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
+	transition: width 0.25s ease, background-color 0.25s ease;
+	cursor: pointer;
 
 	&:hover {
-		transform: scale(1.15);
+		background-color: rgb(255 255 255 / 70%);
 	}
 
-	&.active {
+	&.is-active {
 		width: 1.5rem;
-		border-radius: 4px;
-		background-color: rgb(255 255 255 / 90%);
+		background-color: white;
 	}
 }
 
-.z-slide-list {
+.hero-arrows {
 	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	min-width: 0;
-	min-height: 0;
+	flex-shrink: 0;
+	gap: var(--sp-2);
+	margin-inline-start: auto;
+	pointer-events: auto;
 }
 
-.list-item {
-	display: flex;
-	flex: 1;
-	align-items: center;
-	gap: 0.9375rem;
-	min-height: 0;
-	padding: var(--sp-4);
-	background-color: color-mix(in srgb, var(--list-color, var(--c-primary)) 74%, var(--surface-card));
+.arrow-btn {
+	display: grid;
+	place-items: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	padding: 0;
+	border-radius: var(--radius-full);
+	background-color: rgb(0 0 0 / 30%);
+	backdrop-filter: blur(0.5rem);
 	color: white;
-	transition: background-color 0.25s ease, box-shadow 0.25s ease;
-
-	&:first-child {
-		border-radius: 0 var(--radius) 0 0;
-	}
-
-	&:last-child {
-		border-radius: 0 0 var(--radius);
-	}
-
-	&.active {
-		background-color: var(--list-color, var(--c-primary));
-	}
+	transition: background-color 0.2s ease;
+	cursor: pointer;
 
 	&:hover,
 	&:focus-visible {
-		box-shadow: inset 0 0 0 1px rgb(255 255 255 / 25%);
-		background-color: var(--list-color, var(--c-primary));
+		background-color: rgb(0 0 0 / 50%);
+	}
+
+	.iconify {
+		font-size: 1.05rem;
 	}
 }
 
-.list-thumb {
-	flex-shrink: 0;
-	width: 2.25rem;
-	aspect-ratio: 1;
-	border-radius: var(--radius-sm);
-	transition: transform 0.3s ease;
-	object-fit: cover;
-
-	.list-item:hover &,
-	.list-item:focus-visible & {
-		transform: scale(1.06);
-	}
+.z-slide-aside {
+	container-type: inline-size;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-3);
+	min-width: 0;
+	padding: var(--sp-4);
 }
 
-.list-title {
-	overflow: hidden;
-	font-size: var(--fs-body);
-	line-height: var(--lh-tight);
-	white-space: nowrap;
-	text-overflow: ellipsis;
+.aside-stats {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--sp-2);
+	margin: 0;
 }
 
-@media (max-width: $breakpoint-widescreen) and (min-width: 769px) {
-	.list-item {
-		padding: var(--sp-2) var(--sp-3);
-	}
-}
+.stat {
+	display: flex;
+	flex-direction: column-reverse;
+	gap: 0.125rem;
+	min-width: 0;
+	text-align: center;
 
-@media (max-width: $breakpoint-mobile) {
-	.z-slide-body {
-		grid-template-columns: 1fr;
-		border-radius: var(--radius);
-	}
-
-	.z-slide-hero {
-		height: auto;
-		min-height: 0;
-		aspect-ratio: 16 / 9;
-	}
-
-	.hero-title {
+	dd {
+		margin: 0;
 		font-size: var(--fs-h2);
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.2;
 	}
 
-	.hero-mask {
-		height: 6rem;
+	dt {
+		font-size: var(--fs-xs);
+		color: var(--c-text-2);
+	}
+}
+
+.aside-actions {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-2);
+	margin-top: auto;
+}
+
+.action-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4em;
+	padding: 0.4rem 0.75rem;
+	border: 1px solid transparent;
+	border-radius: var(--radius-sm);
+	font-size: var(--fs-sm);
+	font-weight: 600;
+	transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+	cursor: pointer;
+
+	.iconify {
+		font-size: 1em;
+	}
+}
+
+.action-primary {
+	background-color: var(--c-primary-soft);
+	color: var(--c-primary);
+
+	&:hover,
+	&:focus-visible {
+		background-color: var(--c-primary);
+		color: var(--c-bg);
+	}
+}
+
+.action-ghost {
+	border-color: var(--c-border);
+	color: var(--c-text-1);
+
+	&:hover,
+	&:focus-visible {
+		border-color: color-mix(in srgb, var(--c-primary) 60%, var(--c-border));
+		color: var(--c-primary);
+	}
+}
+
+@container (width < 1000px) {
+	.hero-info {
+		padding-inline: var(--sp-4);
 	}
 
-	.indicators {
-		display: flex;
+	.hero-foot {
+		inset-inline: var(--sp-4);
+	}
+}
+
+/* 窄卡片下隐藏速览面板，精选位占满整行 */
+@container (width < 620px) {
+	.z-slide-body.has-aside {
+		grid-template-columns: 1fr;
 	}
 
-	.z-slide-list {
+	.z-slide-aside {
 		display: none;
 	}
 }
 
+/* 手机宽度：压低高度，收紧留白 */
+@container (width < 480px) {
+	.z-slide-hero {
+		min-height: 0;
+		aspect-ratio: 16 / 9;
+	}
+
+	.hero-info {
+		padding: var(--sp-4);
+		padding-block-end: 3.75rem;
+	}
+
+	.hero-foot {
+		gap: var(--sp-2);
+		inset-block-end: var(--sp-3);
+		inset-inline: var(--sp-4);
+	}
+
+	.arrow-btn {
+		width: 2rem;
+		height: 2rem;
+	}
+}
+
+/* 信息面板变窄时缩小数字，让三格始终排在一行、长数字（如 50.00万）也不挤破格子 */
+@container (width < 16.5rem) {
+	.stat dd {
+		font-size: var(--fs-h3);
+	}
+}
+
+@container (width < 13.5rem) {
+	.stat dd {
+		font-size: var(--fs-sm);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
-	.hero-slide.is-active .hero-info {
+	.z-slide-body,
+	.hero-slide.is-active .hero-title {
 		animation: none;
 	}
 
 	.hero-cover,
-	.list-item,
-	.list-thumb,
-	.indicator {
+	.hero-dot,
+	.arrow-btn,
+	.z-slide-hero {
 		transition: none;
 	}
 }

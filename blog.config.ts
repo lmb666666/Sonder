@@ -344,14 +344,23 @@ const blogConfig = {
 				imageBed: { enabled: false, name: '', icon: '' },
 			},
 		},
-		// 推荐文章轮播 / Recommended posts carousel
+		// 博客页顶部精选文章展示区 / Featured posts spotlight on top of the blog page
 		slide: {
-			// 是否启用；没有 recommend 文章时本来就不显示 / Whether to enable; the carousel is absent anyway without recommended posts
+			// 是否启用；没有 recommend 文章时本来就不显示 / Whether to enable; the spotlight is absent anyway without recommended posts
 			enabled: true,
-			// 轮播左上角徽章文字 / Badge text at the top-left corner of the carousel
+			// 左下角标签文字 / Tag text at the bottom-left of the spotlight
 			tag: '精选文章',
 			// 自动播放间隔（毫秒） / Autoplay interval in milliseconds
 			autoplayDelay: 3500,
+			// 右侧信息面板：站点速览统计与快捷操作 / Info panel on the right: site overview stats and quick actions
+			aside: {
+				// 是否显示整个面板 / Whether to show the whole panel
+				enabled: true,
+				// "随机阅读"按钮；关闭则隐藏该按钮 / "Random reading" button; hidden when disabled
+				random: true,
+				// "RSS 订阅"按钮；订阅源关闭时该按钮不会显示 / "RSS" button; not shown when the feed is disabled
+				rss: true,
+			},
 		},
 		// 外部样式表（字体等），以 media=print 异步加载，不阻塞渲染 / External stylesheets (fonts etc.), async-loaded via media=print without render blocking
 		externalStyles: [],

@@ -48,7 +48,7 @@ const { data: previewCount } = useAsyncData(
 
 <template>
 <UtilHydrateSafe>
-	<PostSlide v-if="appConfig.ui.slide.enabled && listRecommended.length && page === 1 && !category" :list="listRecommended" />
+	<PostSlide v-if="appConfig.ui.slide.enabled && listRecommended.length && page === 1 && !category" :list="listRecommended" :pool="listRaw" />
 
 	<div class="post-list">
 		<PostOrderToggle

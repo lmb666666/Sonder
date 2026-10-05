@@ -40,7 +40,7 @@ const config = blogConfig as typeof blogConfig & {
 	ui?: {
 		article?: { coverProxyHosts?: unknown, info?: Record<string, unknown>, copyright?: { enabled?: unknown, title?: unknown }, surround?: Record<string, unknown> }
 		sidebar?: { themeToggle?: unknown, blogInfo?: { enabled?: unknown, title?: unknown, uptime?: unknown, lastUpdated?: unknown, buildPlatform?: unknown, imageBed?: { enabled?: unknown, name?: unknown } } }
-		slide?: { enabled?: unknown, tag?: unknown, autoplayDelay?: unknown }
+		slide?: { enabled?: unknown, tag?: unknown, autoplayDelay?: unknown, aside?: { enabled?: unknown, random?: unknown, rss?: unknown } }
 		externalStyles?: unknown
 		preconnects?: unknown
 	}
@@ -153,6 +153,10 @@ if (typeof config.ui?.sidebar?.blogInfo?.imageBed?.enabled !== 'boolean' || (con
 	failures.push('blog.config.ui.sidebar.blogInfo.imageBed.enabled 必须为布尔值，启用时 imageBed.name 必须为非空字符串')
 if (typeof config.ui?.slide?.enabled !== 'boolean' || !isNonEmptyString(config.ui?.slide?.tag) || !isPositiveInteger(config.ui?.slide?.autoplayDelay))
 	failures.push('blog.config.ui.slide.enabled 必须为布尔值，slide.tag 必须为非空字符串，slide.autoplayDelay 必须为正整数')
+for (const row of ['enabled', 'random', 'rss'] as const) {
+	if (typeof config.ui?.slide?.aside?.[row] !== 'boolean')
+		failures.push(`blog.config.ui.slide.aside.${row} 必须为布尔值`)
+}
 for (const styles of ['externalStyles', 'preconnects'] as const) {
 	if (!Array.isArray(config.ui?.[styles]) || !config.ui[styles].every(item => isHttpUrl(item)))
 		failures.push(`blog.config.ui.${styles} 必须为 HTTP URL 数组`)

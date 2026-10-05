@@ -53,7 +53,7 @@
 
 - [x] Nuxt Content 3 + Markdown/MDC, with front matter for article metadata
 - [x] `tech` / `story` layouts, plus covers, categories, tags, TOC, reading time, and prev/next links
-- [x] A numeric `recommend` puts a post in the homepage carousel
+- [x] A numeric `recommend` puts a post in the blog-page featured spotlight
 - [x] MDC toolbox: Alert, Folding, Tab, Pic, LinkCard, Poetry, Timeline, Chat, and more
 - [x] Code highlighting (collapsing, indent guides, diff marks), KaTeX math, Mermaid diagrams, abcjs sheet music
 
@@ -125,7 +125,7 @@ Main blocks inside `blog.config.ts`:
 | `home` | Homepage mode (profile page / article list) and section content |
 | `nav`, `footer`, `header` | Sidebar, footer navigation, header settings |
 | `pages` | Toggles and copy for the home / blog / links / archive pages |
-| `theme`, `ui` | Default theme, sidebar, code blocks, carousel, alert styling |
+| `theme`, `ui` | Default theme, sidebar, code blocks, featured spotlight, alert styling |
 | `pagination`, `generator`, `scripts` | Pagination, post scaffolding script, site-wide scripts |
 
 Every field is documented in the comments of `blog.config.ts` — read it there while you edit. If you change config types, keep `shared/types/blog-config.ts` and the config audit in sync.
@@ -179,7 +179,7 @@ draft: false
 | `tags` | Free-form string array |
 | `draft` | Boolean; visible in dev, filtered from production builds — not a privacy mechanism |
 | `image` | Cover image; falls back to `ui.article.fallbackCover` |
-| `recommend` | Number that puts the post in the homepage carousel; `0` still counts |
+| `recommend` | Number that puts the post in the blog-page featured spotlight; `0` still counts |
 | `references` | Array of `{ title, link }` shown at the end of the post |
 
 If you must change the `postid` of a published post, add an old-to-new mapping in `redirects.json`.

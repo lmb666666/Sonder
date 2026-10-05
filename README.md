@@ -53,7 +53,7 @@
 
 - [x] Nuxt Content 3 + Markdown/MDC，Front Matter 声明文章元信息
 - [x] `tech` / `story` 两种版式，封面、分类、标签、目录、阅读时长、上下篇
-- [x] 数字 `recommend` 一键进首页推荐轮播
+- [x] 数字 `recommend` 一键进博客页精选展示位
 - [x] MDC 组件箱：Alert、Folding、Tab、Pic、LinkCard、Poetry、Timeline、Chat 等
 - [x] 代码高亮（折叠、缩进参考线、差异标记）、KaTeX 公式、Mermaid 图表、abcjs 乐谱
 
@@ -125,7 +125,7 @@ pnpm audit:config
 | `home` | 首页模式（个人主页 / 文章列表）与各区块内容 |
 | `nav`、`footer`、`header` | 侧边栏、页脚导航、标题栏设置 |
 | `pages` | 首页 / 博客 / 友链 / 归档页的开关与文案 |
-| `theme`、`ui` | 默认主题、侧边栏、代码块、轮播、提示框等外观参数 |
+| `theme`、`ui` | 默认主题、侧边栏、代码块、精选展示区、提示框等外观参数 |
 | `pagination`、`generator`、`scripts` | 分页、文章生成脚本、全站第三方脚本 |
 
 每个字段的说明都写在 `blog.config.ts` 的注释里，改配置时直接看那里就行。改了配置类型记得同步 `shared/types/blog-config.ts` 和配置审计。
@@ -179,7 +179,7 @@ draft: false
 | `tags` | 字符串数组，自由填写 |
 | `draft` | 布尔值；开发环境可以预览，生产构建会过滤掉，但别拿它当保密手段 |
 | `image` | 封面；不填就用 `ui.article.fallbackCover` |
-| `recommend` | 数字，进入首页推荐轮播，`0` 也算推荐 |
+| `recommend` | 数字，进入博客页精选展示位，`0` 也算推荐 |
 | `references` | `{ title, link }` 数组，显示在文末 |
 
 要给已发布文章换 `postid`，记得在 `redirects.json` 里补一条旧地址到新地址的映射。

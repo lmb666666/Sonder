@@ -70,7 +70,7 @@ const locationSegments = computed(() =>
 <template v-else>
 	<template v-if="appConfig.home.mode === 'articles'">
 		<UtilHydrateSafe>
-			<PostSlide v-if="appConfig.ui.slide.enabled && listRecommended.length && page === 1 && !category" :list="listRecommended" />
+			<PostSlide v-if="appConfig.ui.slide.enabled && listRecommended.length && page === 1 && !category" :list="listRecommended" :pool="listRaw" />
 			<div class="post-list">
 				<PostOrderToggle v-model:is-ascending="isAscending" v-model:sort-order="sortOrder" v-model:category="category" :categories />
 				<TransitionGroup tag="div" class="article-grid proper-height" name="float-in">

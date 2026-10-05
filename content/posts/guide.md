@@ -171,7 +171,7 @@ draft: false
 | `categories` / `tags` | 分类须在配置里存在，标签自由填 |
 | `draft` | 布尔值，`true` 时只在开发环境可见 |
 | `image` | 封面，不填用 `ui.article.fallbackCover` |
-| `recommend` | 数字，进入首页推荐轮播（`0` 也算） |
+| `recommend` | 数字，进入博客页精选展示位（`0` 也算） |
 
 给已发布文章换 `postid` 会让旧链接 404，必要时在 `redirects.json` 里补一条映射。发布后想确认文章能被搜到，按 :key{code="K" ctrl} 打开站内搜索，输入标题试试。
 

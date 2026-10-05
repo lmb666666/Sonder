@@ -134,8 +134,14 @@ export interface BlogConfig {
 				imageBed: { enabled: boolean, name: string, icon: string }
 			}
 		}
-		/** 推荐文章轮播 */
-		slide: { enabled: boolean, tag: string, autoplayDelay: number }
+		/** 精选文章展示区 */
+		slide: {
+			enabled: boolean
+			tag: string
+			autoplayDelay: number
+			/** 右侧信息面板：站点速览统计与快捷操作 */
+			aside: { enabled: boolean, random: boolean, rss: boolean }
+		}
 		/** 外部样式表（字体等），异步加载 */
 		externalStyles: string[]
 		/** 外部域名的 preconnect 提示 */
