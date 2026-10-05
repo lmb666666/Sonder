@@ -303,8 +303,6 @@ const blogConfig = {
 		article: {
 			// 没有文章封面时使用的图片 / Fallback cover image for articles without one
 			fallbackCover: '/images/cover.svg',
-			// 封面取色时走图像代理的域名白名单（图床无 CORS 头时必需）/ Domains proxied during cover color extraction (needed for image beds without CORS headers)
-			coverProxyHosts: [],
 			// 页头信息行开关；单篇文章仍可用 frontmatter meta.hideInfo 整体隐藏 / Post header info row switches; a single post can still hide them all via frontmatter meta.hideInfo
 			info: { date: true, updated: true, category: true, words: true },
 			// 文末版权块 / Copyright block at the end of posts

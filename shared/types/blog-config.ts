@@ -113,8 +113,6 @@ export interface BlogConfig {
 		alert: { defaultStyle: 'card' | 'flat' }
 		article: {
 			fallbackCover: string
-			/** 封面取色时走图像代理的域名白名单 */
-			coverProxyHosts: string[]
 			/** 文章页头信息行开关 */
 			info: { date: boolean, updated: boolean, category: boolean, words: boolean }
 			/** 文末版权块 */

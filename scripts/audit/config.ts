@@ -38,7 +38,7 @@ const config = blogConfig as typeof blogConfig & {
 	generator?: { useRandomPostid?: unknown }
 	pagination?: { perPage?: unknown }
 	ui?: {
-		article?: { coverProxyHosts?: unknown, info?: Record<string, unknown>, copyright?: { enabled?: unknown, title?: unknown }, surround?: Record<string, unknown> }
+		article?: { info?: Record<string, unknown>, copyright?: { enabled?: unknown, title?: unknown }, surround?: Record<string, unknown> }
 		sidebar?: { themeToggle?: unknown, blogInfo?: { enabled?: unknown, title?: unknown, uptime?: unknown, lastUpdated?: unknown, buildPlatform?: unknown, imageBed?: { enabled?: unknown, name?: unknown } } }
 		slide?: { enabled?: unknown, tag?: unknown, autoplayDelay?: unknown, aside?: { enabled?: unknown, random?: unknown, rss?: unknown } }
 		externalStyles?: unknown
@@ -133,8 +133,6 @@ for (const row of ['date', 'updated', 'category', 'words'] as const) {
 	if (typeof config.ui?.article?.info?.[row] !== 'boolean')
 		failures.push(`blog.config.ui.article.info.${row} 必须为布尔值`)
 }
-if (!Array.isArray(config.ui?.article?.coverProxyHosts) || !config.ui.article.coverProxyHosts.every(item => typeof item === 'string'))
-	failures.push('blog.config.ui.article.coverProxyHosts 必须为字符串数组')
 if (typeof config.ui?.article?.copyright?.enabled !== 'boolean' || !isNonEmptyString(config.ui?.article?.copyright?.title))
 	failures.push('blog.config.ui.article.copyright.enabled 必须为布尔值且 copyright.title 必须为非空字符串')
 for (const fallback of ['nextFallback', 'prevFallback'] as const) {
