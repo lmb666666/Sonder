@@ -3,6 +3,7 @@ import type { ArticleProps } from '~/types/article'
 import Autoplay from 'embla-carousel-autoplay'
 import emblaCarouselVue from 'embla-carousel-vue'
 import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures'
+import { Temporal } from 'temporal-polyfill'
 
 const props = defineProps<{
 	/** 进入精选位的文章 / Articles featured in the spotlight */
@@ -96,6 +97,34 @@ const stats = computed(() => {
 	}
 })
 
+// 写作节奏：近 12 个月每月发文数 / Writing rhythm: posts per month over the last 12 months
+const rhythm = computed(() => {
+	// 以站点时区的当前月为终点（timeZone 只在 blog.config 里，经 toZonedTemporal 取） / Anchor on the current month in the site timezone
+	const current = toZonedTemporal(Temporal.Now.instant().toString()).toPlainDate().toPlainYearMonth()
+	const months = Array.from({ length: 12 }, (_, index) => current.subtract({ months: 11 - index }))
+	const counts = new Map<string, number>()
+	for (const article of props.pool) {
+		if (!article.date)
+			continue
+		try {
+			const month = toZonedTemporal(article.date).toPlainDate().toPlainYearMonth().toString()
+			counts.set(month, (counts.get(month) ?? 0) + 1)
+		}
+		catch {
+			// 日期格式异常的文章不计入节奏 / Posts with an unparsable date are left out
+		}
+	}
+
+	const bars = months.map(month => ({ key: month.toString(), label: `${month.month}月`, count: counts.get(month.toString()) ?? 0 }))
+	const max = Math.max(1, ...bars.map(bar => bar.count))
+	return {
+		total: bars.reduce((sum, bar) => sum + bar.count, 0),
+		max,
+		first: bars[0]?.label,
+		bars: bars.map(bar => ({ ...bar, heat: Number((bar.count / max).toFixed(3)) })),
+	}
+})
+
 // 「随机阅读」的目标：挂载后开掷，之后每次悬停或聚焦再掷一次 / Random reading target: rolled on mount, re-rolled on hover or focus
 const randomTarget = ref<string>()
 function rollRandom() {
@@ -173,6 +202,28 @@ function rollRandom() {
 				</div>
 			</dl>
 
+			<!-- 写作节奏：近 12 个月每月发文数 / Writing rhythm: posts per month over the last 12 months -->
+			<div class="rhythm" role="img" :aria-label="`写作节奏：近 12 个月共 ${rhythm.total} 篇，最多的一月 ${rhythm.max} 篇`">
+				<div class="rhythm-head">
+					<span>写作节奏</span>
+					<span>近 12 个月 {{ rhythm.total }} 篇</span>
+				</div>
+				<div class="rhythm-bars">
+					<span
+						v-for="(bar, index) in rhythm.bars"
+						:key="bar.key"
+						class="rhythm-bar"
+						:class="{ 'is-empty': !bar.count }"
+						:style="{ '--heat': bar.heat, ...getFixedDelay(index * 0.04) }"
+						:title="`${bar.label} · ${bar.count} 篇`"
+					/>
+				</div>
+				<div class="rhythm-foot">
+					<span>{{ rhythm.first }}</span>
+					<span>本月</span>
+				</div>
+			</div>
+
 			<div class="aside-actions">
 				<UtilLink
 					v-if="appConfig.ui.slide.aside.random"
@@ -224,6 +275,8 @@ function rollRandom() {
 .z-slide-hero {
 	position: relative;
 	min-width: 0;
+
+	/* 高度与右侧信息面板的内容（三格 + 写作节奏 + 两个按钮）大致齐平，避免任一侧空出一大块 */
 	min-height: clamp(14rem, 20vw, 16rem);
 	transition: border-color 0.2s ease;
 	cursor: grab;
@@ -416,7 +469,7 @@ function rollRandom() {
 	padding: var(--sp-4);
 }
 
-/* 统计占满按钮以上的剩余高度、在其间垂直居中，避免面板中间空出一大块 */
+/* 统计吸收上方剩余高度并在其中垂直居中，把面板的高度变化留给写作节奏之上 */
 .aside-stats {
 	display: grid;
 	flex: 1;
@@ -444,6 +497,63 @@ function rollRandom() {
 	dt {
 		font-size: var(--fs-xs);
 		color: var(--c-text-2);
+	}
+}
+
+/* 写作节奏：近 12 个月每月一根柱子，颜色深浅随当月篇数 */
+.rhythm {
+	display: grid;
+	gap: var(--sp-1);
+	min-width: 0;
+}
+
+.rhythm-head,
+.rhythm-foot {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--sp-2);
+	font-size: var(--fs-xs);
+	line-height: 1.4;
+	color: var(--c-text-2);
+}
+
+.rhythm-foot {
+	color: var(--c-text-3);
+}
+
+.rhythm-bars {
+	display: flex;
+	align-items: flex-end;
+	gap: 3px;
+	height: 2.5rem;
+}
+
+.rhythm-bar {
+	flex: 1;
+	opacity: calc(0.35 + 0.65 * var(--heat, 0));
+	height: calc(0.5rem + 1.5rem * var(--heat, 0));
+	min-width: 0;
+	border-radius: 3px 3px 1px 1px;
+	background-color: var(--c-primary);
+	transform-origin: bottom;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+	animation: rhythm-grow 0.5s ease var(--delay) backwards;
+
+	&:hover {
+		opacity: 1;
+		transform: translateY(-2px);
+	}
+
+	&.is-empty {
+		opacity: 1;
+		height: 3px;
+		background-color: var(--c-border);
+	}
+}
+
+@keyframes rhythm-grow {
+	from {
+		transform: scaleY(0);
 	}
 }
 
@@ -553,13 +663,15 @@ function rollRandom() {
 
 @media (prefers-reduced-motion: reduce) {
 	.z-slide-body,
-	.hero-slide.is-active .hero-title {
+	.hero-slide.is-active .hero-title,
+	.rhythm-bar {
 		animation: none;
 	}
 
 	.hero-cover,
 	.hero-dot,
 	.arrow-btn,
+	.rhythm-bar,
 	.z-slide-hero {
 		transition: none;
 	}
