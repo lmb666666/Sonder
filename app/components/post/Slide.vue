@@ -416,9 +416,12 @@ function rollRandom() {
 	padding: var(--sp-4);
 }
 
+/* 统计占满按钮以上的剩余高度、在其间垂直居中，避免面板中间空出一大块 */
 .aside-stats {
 	display: grid;
+	flex: 1;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
+	align-content: center;
 	gap: var(--sp-2);
 	margin: 0;
 }
@@ -448,7 +451,6 @@ function rollRandom() {
 	display: flex;
 	flex-direction: column;
 	gap: var(--sp-2);
-	margin-top: auto;
 }
 
 .action-btn {
