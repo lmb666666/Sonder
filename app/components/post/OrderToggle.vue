@@ -64,9 +64,17 @@ function toggleDirection() {
 
 <style lang="scss" scoped>
 .order-toggle {
+	// 无占位内容时按钮整体靠右，与博客页占位容器 auto margin 撑出的效果一致
 	display: flex;
+	align-items: center;
+	justify-content: flex-end;
 	gap: 0.35rem;
 	color: var(--c-text-2);
+
+	// 分类按钮与右侧两个按钮统一为 flex 布局，消除行内基线造成的垂直错位
+	.dropdown {
+		display: flex;
+	}
 
 	:deep(button), :deep(a) {
 		display: inline-flex;
