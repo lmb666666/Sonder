@@ -52,6 +52,11 @@ const selectedAuthor = ref('')
 const selectedAuthorAvatar = ref('')
 const showAuthorModal = ref(false)
 const stats = ref<StatsData>({ friends_num: 0, article_num: 0, active_num: 0 })
+const headerStats = computed(() => [
+	{ icon: 'tabler:users', value: stats.value.friends_num, label: '位朋友' },
+	{ icon: 'tabler:file-text', value: stats.value.article_num, label: '篇' },
+	{ icon: 'tabler:flame', value: stats.value.active_num, label: '活跃' },
+])
 
 const pageSize = circleConfig.pageSize
 
@@ -159,29 +164,8 @@ onMounted(() => {
 		:title="circleConfig.title"
 		:description="circleConfig.description"
 		:background="circleConfig.background ?? appConfig.ui.article.fallbackCover"
+		:stats="circleConfig.enabled ? headerStats : undefined"
 	>
-		<template v-if="circleConfig.enabled" #stats>
-			<div class="circle-stats">
-				<div class="circle-stat">
-					<Icon name="tabler:users" class="circle-stat-icon" />
-					<strong>{{ stats.friends_num }}</strong>
-					<span>位朋友</span>
-				</div>
-				<div class="circle-stat-divider" />
-				<div class="circle-stat">
-					<Icon name="tabler:file-text" class="circle-stat-icon" />
-					<strong>{{ stats.article_num }}</strong>
-					<span>篇</span>
-				</div>
-				<div class="circle-stat-divider" />
-				<div class="circle-stat">
-					<Icon name="tabler:flame" class="circle-stat-icon" />
-					<strong>{{ stats.active_num }}</strong>
-					<span>活跃</span>
-				</div>
-			</div>
-		</template>
-
 		<template v-if="circleConfig.enabled && circleConfig.showPoweredBy" #powered>
 			<p class="circle-bottom-powered">
 				Powered by Friend-Circle-Lite
@@ -301,29 +285,11 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/css/stats" as stats;
-
 .circle-page {
-	max-width: 52rem;
+	// 内容区保持 64rem，和 PageHeader 的宽度一致 / Keep the content at 64rem to match PageHeader
+	max-width: calc(64rem + 3rem);
 	margin: 0 auto;
 	padding: 2rem 1.5rem;
-}
-
-// --- Stats ---
-.circle-stats {
-	@include stats.stats;
-}
-
-.circle-stat {
-	@include stats.stat;
-}
-
-.circle-stat-icon {
-	@include stats.stat-icon;
-}
-
-.circle-stat-divider {
-	@include stats.stat-divider;
 }
 
 .circle-bottom-powered {
@@ -656,10 +622,6 @@ onMounted(() => {
 @media (max-width: $breakpoint-phone) {
 	.circle-page {
 		padding: 1.5rem 0.8rem 1rem;
-	}
-
-	.circle-stat-divider {
-		margin: 0 0.3rem;
 	}
 
 	.circle-item {

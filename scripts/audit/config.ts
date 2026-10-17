@@ -113,7 +113,7 @@ if (!Array.isArray(config.seo?.antiMirrorBlacklist) || !config.seo.antiMirrorBla
 	failures.push('blog.config.seo.antiMirrorBlacklist 必须为字符串数组')
 if (config.footer?.copyright !== undefined && config.footer.copyright !== '' && !isNonEmptyString(config.footer.copyright))
 	failures.push('blog.config.footer.copyright 必须为字符串')
-for (const page of ['home', 'link', 'archive'] as const) {
+for (const page of ['home', 'link', 'archive', 'hobby'] as const) {
 	if (typeof config.pages?.[page]?.enabled !== 'boolean')
 		failures.push(`blog.config.pages.${page}.enabled 必须为布尔值`)
 }
@@ -129,6 +129,8 @@ for (const tab of ['mine', 'apply'] as const) {
 }
 if (!isNonEmptyString(config.pages?.archive?.title))
 	failures.push('blog.config.pages.archive.title 必须为非空字符串')
+if (!isNonEmptyString(config.pages?.hobby?.title) || !isNonEmptyString(config.pages?.hobby?.description))
+	failures.push('blog.config.pages.hobby.title 和 pages.hobby.description 必须为非空字符串')
 for (const row of ['date', 'updated', 'category', 'words'] as const) {
 	if (typeof config.ui?.article?.info?.[row] !== 'boolean')
 		failures.push(`blog.config.ui.article.info.${row} 必须为布尔值`)

@@ -54,6 +54,7 @@ pnpm --version
 | `public/` | 静态资源，`public/images/cover.svg` 在文章里写成 `/images/cover.svg` |
 | `blog.config.ts` | 日常配置入口：站点身份、主页、分类、导航、服务开关 |
 | `content/data/friend-feeds.ts` | 友链数据 |
+| `content/data/hobbies.ts` | 兴趣页数据与展区样式 |
 | `app/components/content/` | 文章里能用的组件，写法见[写作手册](/posts/writing) |
 
 ## ⚙️ 站点配置
@@ -118,6 +119,40 @@ const group = {
 ```
 
 友链页的标题、Tab 文案在 `pages.link` 里配置，页面正文（申请方式等）在 `content/link.md`。需要 JSON 数据喂给外部工具时运行 `pnpm generate-friend-json`，生成 `public/friend.json`。
+
+## 🎨 兴趣页
+
+`/hobby` 把音乐、追番、影视、书籍、游戏放在一页里。内容和展区样式都在 `content/data/hobbies.ts`：
+
+```ts
+const group = {
+  key: 'book',
+  name: '书籍',
+  icon: 'tabler:book-2',
+  color: '#6fb98f',
+  unit: '本',
+  layout: 'list', // shelf | list | grid
+  items: [
+    { title: '三体', creator: '刘慈欣', rating: 9.5, year: '2008', status: '已读', note: '给岁月以文明。' },
+  ],
+}
+```
+
+`layout` 可选 `shelf`（横向书架）、`list`（阅读索引）、`grid`（收藏柜网格）；数组顺序就是页面顺序。
+
+页面开关、标题和描述在 `pages.hobby`，导航项在 `nav`；关闭后导航、预渲染和 sitemap 会一起隐藏。
+
+- 分组常用字段：`key`（同步匹配键）、`name`、`icon`、`color`、`description`、`unit`、`layout`、`hidden`（隐藏自动条目）、`playlist`、`items`。
+- 条目常用字段：`title`、`originalTitle`、`creator`、`cover`、`rating`、`year`、`status`、`progress`、`note`、`link`、`tags`、`source` / `sourceId`。`note` 在 `list` 布局显示；`tags` 留给自定义组件。
+
+音乐分组用 `playlist` 填网易云或 QQ 音乐歌单链接，播放器通过 `features.music.metingApis` 里的 Meting 端点解析；填写 `playlist` 的分组只显示播放器。模板默认没有填端点，配好之后才会加载歌单。播放器支持上一首 / 下一首、进度拖动、1×–2× 倍速、音量，以及播放列表和歌词两个开关；歌词按 LRC 跟随，歌单缓存 30 分钟。`playlist` 还支持 `title` / `description` 覆盖播放器头部文案。
+
+想从 Bangumi / Steam 自动同步追番和游戏，在 `.env` 里填用户名与 API Key，然后运行：
+
+::copy{code="pnpm sync:hobbies"}
+::
+
+同步结果会写入 `anime` / `game` 两个分组；重命名这两个分组的 `key` 时要同步改脚本。`HOBBY_BANGUMI_STATUSES` 取 `1`–`5`（想看 / 在看 / 看过 / 搁置 / 抛弃，默认 `2,3`）；同步是全有或全无，任一来源失败时不会写文件。影视和书籍没有自动同步，直接在 `items` 里写。
 
 ## 🔌 可选服务
 

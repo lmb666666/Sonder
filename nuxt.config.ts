@@ -79,6 +79,7 @@ export default defineNuxtConfig({
 			ignore: [
 				...(!blogConfig.features.moments.enabled ? ['/moments'] : []),
 				...(!blogConfig.features.circle.enabled ? ['/circle'] : []),
+				...(!blogConfig.pages.hobby.enabled ? ['/hobby'] : []),
 			],
 		},
 	},
@@ -284,6 +285,7 @@ ${packageJson.homepage}
 		exclude: [
 			...(!blogConfig.features.moments.enabled ? ['/moments'] : []),
 			...(!blogConfig.features.circle.enabled ? ['/circle'] : []),
+			...(!blogConfig.pages.hobby.enabled ? ['/hobby'] : []),
 		],
 	},
 })

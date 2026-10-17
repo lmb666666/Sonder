@@ -93,20 +93,7 @@ const isMetingLoading = computed(() => sourceDecision.value.mode === 'meting' &&
 const SPEEDS = [1, 1.25, 1.5, 2]
 const displayTitle = computed(() => audioTitle.value?.trim() || '未命名音频')
 const displayArtist = computed(() => audioArtist.value?.trim() || '无作者')
-const lyrics = computed(() => {
-	const lines: { time: number, text: string }[] = []
-	for (const line of (audioLrc.value || '').split(/\r?\n/)) {
-		const matches = [...line.matchAll(/\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g)]
-		const text = line.replace(/(?:\[\d{1,2}:\d{2}(?:\.\d{1,3})?\])+/g, '').trim()
-		if (!text || /^(?:作词作曲|作詞作曲|作词|作詞|作曲|编曲|編曲|演唱|歌手|词曲|詞曲|制作人|製作人|制作|製作|填词|填詞|lyricist|lyrics by|composer|music by|arranger|arranged by|vocal(?:s|ist)?|singer|artist|producer|produced by)(?:\s*[:：-]|\s*$)/i.test(text))
-			continue
-		for (const match of matches) {
-			const fraction = match[3] ? Number(`0.${match[3]}`) : 0
-			lines.push({ time: Number(match[1]) * 60 + Number(match[2]) + fraction, text })
-		}
-	}
-	return lines.sort((a, b) => a.time - b.time)
-})
+const lyrics = computed(() => parseLrc(audioLrc.value))
 
 const audioEl = useTemplateRef<HTMLAudioElement>('audio')
 const progressTrack = useTemplateRef<HTMLElement>('track')
@@ -122,12 +109,7 @@ const buffered = ref(0)
 const speedIndex = ref(0)
 
 const speed = computed(() => SPEEDS[speedIndex.value] ?? SPEEDS[0]!)
-const activeLyricIndex = computed(() => {
-	let index = -1
-	for (let i = 0; i < lyrics.value.length && lyrics.value[i]!.time <= currentTime.value; i++)
-		index = i
-	return index
-})
+const activeLyricIndex = computed(() => findActiveLyricIndex(lyrics.value, currentTime.value))
 // 动态切换的图标强制 svg 模式：CSS 模式的类样式仅服务端生成，客户端切到未渲染过的类会丢 mask 导致图标消失
 const stateIcon = computed(() => {
 	if (isLoading.value)
@@ -141,17 +123,6 @@ const playedPct = computed(() => {
 	return `${Math.min(currentTime.value / duration.value * 100, 100)}%`
 })
 const ariaMax = computed(() => Number.isFinite(duration.value) ? Math.round(duration.value) : 0)
-
-function formatTime(seconds: number) {
-	if (!Number.isFinite(seconds) || seconds < 0)
-		return '00:00'
-	const s = Math.floor(seconds % 60).toString().padStart(2, '0')
-	const mm = (Math.floor(seconds / 60) % 60).toString().padStart(2, '0')
-	const h = Math.floor(seconds / 3600)
-	if (h > 0)
-		return `${h}:${mm}:${s}`
-	return `${mm}:${s}`
-}
 
 // --- 播放控制 ---
 async function togglePlay() {
@@ -432,7 +403,7 @@ let activeAudioEl: HTMLAudioElement | null = null
 					<button class="play-btn" :class="{ playing: isPlaying }" :aria-label="isPlaying ? '暂停播放' : '开始播放'" @click="togglePlay">
 						<Icon mode="svg" :name="stateIcon" :class="{ spin: isLoading }" />
 					</button>
-					<span class="time time-current" aria-hidden="true">{{ formatTime(currentTime) }}</span>
+					<span class="time time-current" aria-hidden="true">{{ formatAudioDuration(currentTime) }}</span>
 					<div
 						ref="track"
 						class="progress"
@@ -453,7 +424,7 @@ let activeAudioEl: HTMLAudioElement | null = null
 						<div class="progress-played" :style="{ width: playedPct }" />
 						<div class="progress-thumb" :style="{ left: playedPct }" />
 					</div>
-					<span class="time time-duration" aria-hidden="true">{{ formatTime(duration) }}</span>
+					<span class="time time-duration" aria-hidden="true">{{ formatAudioDuration(duration) }}</span>
 				</div>
 			</div>
 		</template>

@@ -24,7 +24,7 @@
 - ⚡ **Nuxt 4 + Vue 3 + TypeScript**: works as a static site or a Node server
 - ✍️ **Two article layouts**: `tech` for technical posts, `story` for centered prose
 - 🎨 **Configure and go**: site identity, homepage, navigation, categories, and theme all live in `blog.config.ts`
-- 📚 **Batteries included**: full-text search, archive, friend links, Atom feed, code highlighting, KaTeX, Mermaid, sheet music
+- 📚 **Batteries included**: full-text search, archive, friend links, hobby page, Atom feed, code highlighting, KaTeX, Mermaid, sheet music
 
 <table width="100%" align="center">
   <tr>
@@ -60,7 +60,7 @@
 ### Site
 
 - [x] Homepage: hero, profile, career, skills, social links, sponsors
-- [x] Full-text search (MiniSearch with CJK segmentation), archive, category filter, friend links
+- [x] Full-text search (MiniSearch with CJK segmentation), archive, category filter, friend links, hobby collection
 - [x] Atom feed, OPML export, sitemap, robots, llms.txt
 - [x] Light / dark / system theme, responsive layout
 - [x] Optional services: Twikoo comments, Ech0 moments, Friend-Circle-Lite, Meting music resolution
@@ -110,6 +110,7 @@ Day to day you only edit `blog.config.ts`; the other config files support it:
 | `nuxt.config.ts` | Modules, content plugins, SEO, routing, images, build settings |
 | `content.config.ts` | Content collections and front matter schema |
 | `content/data/friend-feeds.ts` | Friend-link groups and entries; `app/feeds.ts` merges in your own site info |
+| `content/data/hobbies.ts` | Hobby groups, entries, and presentation layouts; optional Bangumi / Steam sync |
 | `redirects.json` | Old-to-new 308 redirects |
 | `app/assets/css/`, `app/shiki.config.ts` | Global styles, font stacks, and syntax highlighting themes |
 
@@ -124,11 +125,84 @@ Main blocks inside `blog.config.ts`:
 | `feed` | Atom feed switch, item limit, XSLT styling |
 | `home` | Homepage mode (profile page / article list) and section content |
 | `nav`, `footer`, `header` | Sidebar, footer navigation, header settings |
-| `pages` | Toggles and copy for the home / blog / links / archive pages |
+| `pages` | Toggles and copy for the home / blog / hobby / links / archive pages |
 | `theme`, `ui` | Default theme, sidebar, code blocks, featured spotlight, alert styling |
 | `pagination`, `generator`, `scripts` | Pagination, post scaffolding script, site-wide scripts |
 
 Every field is documented in the comments of `blog.config.ts` — read it there while you edit. If you change config types, keep `shared/types/blog-config.ts` and the config audit in sync.
+
+## 🎨 Hobby page
+
+`/hobby` is a single-scroll personal collection: a music playlist player, an anime shelf, a film grid, a reading index, and a game cabinet. All content and presentation choices live in `content/data/hobbies.ts`:
+
+```ts
+const group = {
+	key: 'anime',
+	name: 'Anime',
+	icon: 'tabler:device-tv',
+	color: '#6f9fe0',
+	unit: 'shows',
+	layout: 'shelf', // shelf | list | grid
+	items: [{ title: 'Frieren', creator: 'MADHOUSE', rating: 9.4, year: '2023', status: 'Watched' }],
+}
+```
+
+- Groups and entries are free-form; the array order is the page order, and `layout` picks the presentation component.
+- The music group takes a NetEase or QQ Music `playlist` URL and resolves it through the Meting endpoints in `features.music.metingApis`; a group with a playlist renders only the player. The template ships with no Meting endpoint; add one to load the playlist.
+- Covers can be external URLs; failed images fall back to a neutral gradient with the group icon.
+- Anime and games can optionally sync from Bangumi / Steam. Films and books are manual only.
+
+The page switch, title, and description live in `pages.hobby`; the nav entry lives in `nav`. Disabling the page also hides its nav item, prerender route, and sitemap entry.
+
+| Group field | Description |
+| --- | --- |
+| `key` | Group key; sync writes `anime` / `game` by default |
+| `name` / `icon` / `color` | Section title, Iconify icon, and accent color |
+| `description` / `unit` | Section copy and count unit |
+| `layout` | `shelf` (default), `list`, or `grid` |
+| `hidden` | Hide synced entries by `steam:appid`, `bangumi:subjectId`, source ID, link, or title |
+| `playlist` | `{ url, title?, description? }`; NetEase / QQ Music playlist URL; that group then renders only the player |
+| `items` | Manual entries in display order |
+
+| Item field | Description |
+| --- | --- |
+| `title` | Required title |
+| `originalTitle` | Original or foreign title |
+| `creator` | Author, director, artist, or studio |
+| `cover` | External cover; failures show a neutral gradient with the group icon |
+| `rating` / `year` | 0–10 rating / year |
+| `status` / `progress` | Status (watching, read, played) and progress (EP12, 180 hours) |
+| `note` | One-line note; shown by the `list` layout |
+| `link` | Work page URL |
+| `tags` | Tags for custom components or future use |
+| `source` / `sourceId` | Sync source and platform ID used for deduplication |
+
+The player has previous / next, seek, 1×–2× speed, volume, and separate playlist / lyrics toggles; lyrics follow LRC timestamps. Playlists are resolved through Meting and cached for 30 minutes. Configure `features.music.metingApis` to enable it; the template ships with an empty array. `playlist.title` / `playlist.description` appear in the player header; the title falls back to the built-in default.
+
+### Optional: Bangumi / Steam sync
+
+Put credentials in `.env` (never committed):
+
+```sh
+HOBBY_BANGUMI_USER=your-bangumi-username
+# HOBBY_BANGUMI_TOKEN=…       # for private collections
+HOBBY_BANGUMI_STATUSES=2,3    # 2 = watching, 3 = watched
+HOBBY_BANGUMI_LIMIT=60
+
+HOBBY_STEAM_KEY=your-steam-web-api-key
+HOBBY_STEAM_ID=SteamID64 or vanity name
+HOBBY_STEAM_MIN_MINUTES=60
+HOBBY_STEAM_LIMIT=60
+```
+
+```sh
+pnpm sync:hobbies             # writes content/data/hobbies.generated.ts
+pnpm sync:hobbies --dry-run   # print counts only
+```
+
+Synced entries are merged into the `anime` and `game` groups; keep those group keys or update the adapters when renaming them. Manual entries win when a source ID or link matches. Steam profiles must be public; hide unwanted games with `steam:appid` in a group's `hidden` array. Commit the generated file so builds do not depend on external APIs.
+
+Bangumi status codes for `HOBBY_BANGUMI_STATUSES`: `1` wish, `2` watching, `3` watched, `4` on hold, `5` dropped; the default is `2,3`. Steam's `year` is the last-played year. Sync is all-or-nothing: if any enabled source fails, no file is written.
 
 ## 🔌 Optional services
 
@@ -244,6 +318,7 @@ Keep the complete `.output/` directory (including `server/` and `public/`), run 
 | `pnpm audit:dist` | Validate build output: post files, feed references, draft leaks |
 | `pnpm check:feed [query]` | Check friend-link feeds (makes network requests) |
 | `pnpm generate-friend-json` | Generate `public/friend.json` from friend-link data |
+| `pnpm sync:hobbies` | Sync hobby entries from Bangumi / Steam (requires `.env`) |
 
 Recommended before publishing:
 

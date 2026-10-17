@@ -253,6 +253,7 @@ const blogConfig = {
 				// 每项包含图标名、显示文字和站内或站外目标网址 / Each item has an icon name, label, and internal or external destination URL
 				{ icon: 'tabler:home', text: '首页', url: '/' },
 				{ icon: 'tabler:files', text: '博客', url: '/blog' },
+				{ icon: 'tabler:heart', text: '兴趣', url: '/hobby' },
 				{ icon: 'tabler:link', text: '友链', url: '/link' },
 				{ icon: 'tabler:archive', text: '归档', url: '/archive' },
 				{ icon: 'mingcute:moment-line', text: '动态', url: '/moments' },
@@ -273,6 +274,14 @@ const blogConfig = {
 		home: { enabled: true },
 		// 博客页标题，用于 <title> 与分页标题 / Blog page title, used in <title> and pagination titles
 		blog: { title: '博客' },
+		// 兴趣页：音乐歌单 + 追番 / 影视 / 书籍 / 游戏收藏 / Hobby page: a music playlist plus anime, screen, book and game collections
+		hobby: {
+			enabled: true,
+			// 页面标题，同时用于 SEO / Page title, also used for SEO
+			title: '兴趣',
+			// 页面描述，同时用于 SEO 与页头 / Page description, also used for SEO and the page header
+			description: '音乐、追番、影视、书籍与游戏。这里放着我认真喜欢过的东西。',
+		},
 		link: {
 			enabled: true,
 			remindNoFeed: true,

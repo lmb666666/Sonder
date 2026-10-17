@@ -1,9 +1,16 @@
 <script setup lang="ts">
+interface PageHeaderStat {
+	icon: string
+	value: string | number
+	label: string
+}
+
 defineProps<{
 	icon: string
 	title: string
 	description: string
 	background?: string
+	stats?: PageHeaderStat[]
 }>()
 </script>
 
@@ -15,15 +22,29 @@ defineProps<{
 	<div class="page-header-inner">
 		<div class="page-header-top">
 			<div class="page-header-icon">
-				<Icon :name="icon" />
+				<Icon :name="icon" aria-hidden="true" />
 			</div>
 			<h1 class="page-header-title text-creative">
 				{{ title }}
 			</h1>
+			<div v-if="$slots.actions" class="page-header-actions">
+				<slot name="actions" />
+			</div>
 		</div>
 
-		<div v-if="$slots.stats" class="page-header-stats">
-			<slot name="stats" />
+		<div v-if="stats?.length || $slots.stats" class="page-header-stats">
+			<slot name="stats">
+				<div class="page-header-stat-group">
+					<template v-for="(stat, index) in stats" :key="`${stat.icon}-${stat.label}`">
+						<span v-if="index" class="page-header-stat-divider" aria-hidden="true" />
+						<span class="page-header-stat">
+							<Icon :name="stat.icon" class="page-header-stat-icon" aria-hidden="true" />
+							<strong>{{ stat.value }}</strong>
+							<span>{{ stat.label }}</span>
+						</span>
+					</template>
+				</div>
+			</slot>
 		</div>
 
 		<div class="page-header-bottom">
@@ -39,9 +60,12 @@ defineProps<{
 </template>
 
 <style lang="scss" scoped>
+@use "@/assets/css/stats" as stats;
+
 .page-header {
 	position: relative;
 	overflow: hidden;
+	max-width: 64rem;
 	margin-bottom: 1rem;
 
 	// 底部 padding 收紧，使描述/来源行贴近卡片底边
@@ -97,21 +121,45 @@ defineProps<{
 
 .page-header-title {
 	overflow: hidden;
+	min-width: 0;
 	font-size: var(--fs-h1);
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	color: var(--c-text-1);
 }
 
-// 统计数据水平居中于头部中部
+.page-header-actions {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: 0.5rem;
+	margin-inline-start: auto;
+}
+
 .page-header-stats {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
+.page-header-stat-group {
+	@include stats.stats;
+}
+
+.page-header-stat {
+	@include stats.stat;
+}
+
+.page-header-stat-icon {
+	@include stats.stat-icon;
+}
+
+.page-header-stat-divider {
+	@include stats.stat-divider;
+}
+
 // stats 内部为固定 rem，且各页面 .X-stat 规则特异性为 (0,2,1)；
-// 此处多加一层 .page-header-inner 提升至 (0,3,1)，稳定放大三个页面的数字/单位/图标
+// 此处多加一层 .page-header-inner 提升至 (0,3,1)，稳定放大数字/单位/图标
 .page-header-inner .page-header-stats {
 	:deep(strong) {
 		font-size: 2.2rem;
@@ -185,6 +233,10 @@ defineProps<{
 		strong { color: #FFF; }
 		span { color: rgb(255 255 255 / 85%); }
 	}
+
+	.page-header-stat-icon {
+		color: rgb(255 255 255 / 70%);
+	}
 }
 
 @media (max-width: $breakpoint-phone) {
@@ -217,6 +269,15 @@ defineProps<{
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 0.3rem;
+	}
+
+	// 手机端隐藏统计图标并收紧分隔点，保证多组统计单行排下
+	.page-header-stat-icon {
+		display: none;
+	}
+
+	.page-header-stat-divider {
+		margin: 0 0.35rem;
 	}
 }
 </style>

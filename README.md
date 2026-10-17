@@ -24,7 +24,7 @@
 - ⚡ **Nuxt 4 + Vue 3 + TypeScript**：静态生成和服务端渲染都能跑
 - ✍️ **两种文章版式**：`tech` 技术排版，`story` 居中的故事排版
 - 🎨 **改配置就能用**：站点身份、主页、导航、分类、主题都集中在 `blog.config.ts`
-- 📚 **内容工具齐全**：全文搜索、归档、友链、Atom 订阅、代码高亮、KaTeX、Mermaid、乐谱
+- 📚 **内容工具齐全**：全文搜索、归档、友链、兴趣页、Atom 订阅、代码高亮、KaTeX、Mermaid、乐谱
 
 <table width="100%" align="center">
   <tr>
@@ -60,7 +60,7 @@
 ### 站点
 
 - [x] 个人主页：hero、资料、生涯经历、技能、社交链接、赞助
-- [x] 全文搜索（MiniSearch + 中文分词）、归档、分类筛选、友链
+- [x] 全文搜索（MiniSearch + 中文分词）、归档、分类筛选、友链、兴趣收藏
 - [x] Atom 订阅、OPML 导出、sitemap、robots、llms.txt
 - [x] 亮色 / 暗色 / 跟随系统主题，响应式布局
 - [x] 可选服务：Twikoo 评论、Ech0 动态、Friend-Circle-Lite 朋友圈、Meting 音乐解析
@@ -110,6 +110,7 @@ pnpm audit:config
 | `nuxt.config.ts` | 模块、内容插件、SEO、路由、图片、构建设置 |
 | `content.config.ts` | 内容集合与 Front Matter schema |
 | `content/data/friend-feeds.ts` | 友链分组与条目；`app/feeds.ts` 会自动合并本站信息 |
+| `content/data/hobbies.ts` | 兴趣页分组、条目与展区样式；可选 Bangumi / Steam 同步 |
 | `redirects.json` | 旧地址到新地址的 308 重定向 |
 | `app/assets/css/`、`app/shiki.config.ts` | 全局样式、字体栈与代码高亮主题 |
 
@@ -124,11 +125,95 @@ pnpm audit:config
 | `feed` | Atom 订阅开关、条数上限、XSLT 样式 |
 | `home` | 首页模式（个人主页 / 文章列表）与各区块内容 |
 | `nav`、`footer`、`header` | 侧边栏、页脚导航、标题栏设置 |
-| `pages` | 首页 / 博客 / 友链 / 归档页的开关与文案 |
+| `pages` | 首页 / 博客 / 兴趣 / 友链 / 归档页的开关与文案 |
 | `theme`、`ui` | 默认主题、侧边栏、代码块、精选展示区、提示框等外观参数 |
 | `pagination`、`generator`、`scripts` | 分页、文章生成脚本、全站第三方脚本 |
 
 每个字段的说明都写在 `blog.config.ts` 的注释里，改配置时直接看那里就行。改了配置类型记得同步 `shared/types/blog-config.ts` 和配置审计。
+
+## 🎨 兴趣页
+
+`/hobby` 是一页到底的私人收藏志：音乐歌单播放器、追番书架、影视网格、书籍阅读索引、游戏收藏柜。所有内容与展区样式都在 `content/data/hobbies.ts`：
+
+```ts
+const group = {
+	key: 'anime',
+	name: '追番',
+	icon: 'tabler:device-tv',
+	color: '#6f9fe0',
+	unit: '部',
+	layout: 'shelf', // shelf | list | grid
+	items: [
+		{
+			title: '葬送的芙莉莲',
+			creator: 'MADHOUSE',
+			cover: 'https://…',
+			rating: 9.4,
+			year: '2023',
+			status: '在看',
+			note: '时间拉长以后，告别也变得温柔。',
+			link: 'https://bgm.tv/subject/400602',
+		},
+	],
+}
+```
+
+- 分组和条目都可以增删；数组顺序就是页面顺序，`layout` 决定展区组件（横向书架 / 阅读索引 / 收藏柜网格）。
+- 音乐分组用 `playlist` 填网易云或 QQ 音乐歌单链接，播放器通过 `features.music.metingApis` 解析歌单；填写 `playlist` 的分组只显示播放器。模板默认没有填 Meting 端点，配置后才加载；两种平台的歌单链接都支持。
+- 封面直接写外链；加载失败会显示中性渐变和分类图标的占位图。
+- 影视、书籍直接手写；追番和游戏可选从 Bangumi / Steam 同步。
+
+页面开关、标题和描述在 `pages.hobby`，导航项在 `nav`；关闭后导航、预渲染和 sitemap 会一起隐藏。
+
+| 分组字段 | 说明 |
+| --- | --- |
+| `key` | 分组键；同步数据默认写入 `anime` / `game` |
+| `name` / `icon` / `color` | 展区标题、Iconify 图标和强调色 |
+| `description` / `unit` | 展区描述与数量单位（部 / 本 / 款） |
+| `layout` | `shelf` 横向书架（默认）、`list` 阅读索引、`grid` 网格 |
+| `hidden` | 隐藏自动同步条目；支持 `steam:appid`、`bangumi:subjectId`、来源 ID、链接或标题 |
+| `playlist` | `{ url, title?, description? }` 歌单；支持网易云 / QQ 音乐，填写后该分组只显示播放器 |
+| `items` | 手写条目；数组顺序就是展示顺序 |
+
+| 条目字段 | 说明 |
+| --- | --- |
+| `title` | 必填标题 |
+| `originalTitle` | 原名 / 外文名 |
+| `creator` | 作者、导演、歌手或开发商 |
+| `cover` | 外链封面；加载失败显示中性渐变 + 分类图标 |
+| `rating` / `year` | 0–10 评分 / 年份 |
+| `status` / `progress` | 状态（在看、已读、玩过）与进度（看到 EP12、180 小时） |
+| `note` | 一句话短评；`list` 布局会显示 |
+| `link` | 作品页链接 |
+| `tags` | 标签，供自定义组件或后续扩展使用 |
+| `source` / `sourceId` | 同步来源与平台 ID，用于去重 |
+
+播放器支持上一首 / 下一首、进度拖动、1×–2× 倍速、音量，以及播放列表和歌词两个开关；歌词按 LRC 自动跟随。歌单通过 Meting 解析并缓存 30 分钟，配置 `features.music.metingApis` 后生效，模板默认留空。`playlist.title` / `playlist.description` 会显示在播放器头部；不填标题时显示「歌单」。
+
+### 可选：Bangumi / Steam 同步
+
+把凭据写进 `.env`（该文件不进仓库）：
+
+```sh
+HOBBY_BANGUMI_USER=你的 Bangumi 用户名
+# HOBBY_BANGUMI_TOKEN=…       # 私有收藏需要
+HOBBY_BANGUMI_STATUSES=2,3    # 在看、看过
+HOBBY_BANGUMI_LIMIT=60
+
+HOBBY_STEAM_KEY=你的 Steam Web API Key
+HOBBY_STEAM_ID=SteamID64 或自定义 URL 名
+HOBBY_STEAM_MIN_MINUTES=60    # 只同步玩过 60 分钟以上的游戏
+HOBBY_STEAM_LIMIT=60
+```
+
+```sh
+pnpm sync:hobbies             # 写入 content/data/hobbies.generated.ts
+pnpm sync:hobbies --dry-run   # 只看数量，不写文件
+```
+
+同步结果会写入 `anime` / `game` 两个分组并和手写条目合并，重命名这两个分组的 `key` 时要同步修改适配器；手写条目的 `source:sourceId` 或链接命中时优先。Steam 档案需要公开；不想展示的游戏在分组的 `hidden` 里填 `steam:appid`。生成的 `hobbies.generated.ts` 需要一并提交，构建时不再请求外部接口。
+
+Bangumi 状态码 `HOBBY_BANGUMI_STATUSES`：`1` 想看、`2` 在看、`3` 看过、`4` 搁置、`5` 抛弃，默认 `2,3`；Steam 的 `year` 取最近游玩年份。同步是全有或全无：任一已启用来源失败时不会写入文件。
 
 ## 🔌 可选服务
 
@@ -244,6 +329,7 @@ NITRO_HOST=127.0.0.1 NITRO_PORT=3000 node .output/server/index.mjs
 | `pnpm audit:dist` | 检查生成产物：文章输出、订阅引用、草稿泄漏等 |
 | `pnpm check:feed [查询]` | 检查友链订阅可用性（会发网络请求） |
 | `pnpm generate-friend-json` | 从友链数据生成 `public/friend.json` |
+| `pnpm sync:hobbies` | 从 Bangumi / Steam 同步兴趣条目（需 `.env`） |
 
 发布前推荐跑完整流程：
 

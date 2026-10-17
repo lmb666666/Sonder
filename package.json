@@ -27,6 +27,7 @@
     "check:feed": "unrun scripts/framework/get-feed.ts",
     "check:feed/all": "unrun scripts/framework/check-all-feeds.ts",
     "generate-friend-json": "unrun scripts/generate-friend-json.ts",
+    "sync:hobbies": "unrun scripts/hobby/sync.ts",
     "audit:config": "unrun scripts/audit/config.ts",
     "audit:content": "unrun scripts/audit/content.ts",
     "audit:dist": "unrun scripts/audit/dist.ts"

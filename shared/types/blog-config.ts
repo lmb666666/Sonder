@@ -41,6 +41,11 @@ export interface BlogPagesConfig {
 		myInfo: { archs: Arch[], sitenick: string, comment: string }
 	}
 	archive: { enabled: boolean, title: string, description?: string }
+	hobby: {
+		enabled: boolean
+		title: string
+		description: string
+	}
 }
 
 export interface BlogExternalPageFeatureConfig extends BlogServiceFeatureConfig {

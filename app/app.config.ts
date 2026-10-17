@@ -75,6 +75,8 @@ export default defineAppConfig<AppRuntimeConfig>({
 				return blogConfig.pages.link.enabled
 			if (item.url === '/archive')
 				return blogConfig.pages.archive.enabled
+			if (item.url === '/hobby')
+				return blogConfig.pages.hobby.enabled
 			if (item.url === '/moments')
 				return blogConfig.features.moments.enabled
 			if (item.url === '/circle')

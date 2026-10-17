@@ -17,6 +17,9 @@ useSeoMeta({
 
 const items = ref<EchoItem[]>([])
 const total = ref(0)
+const headerStats = computed(() => [
+	{ icon: 'tabler:message-2', value: total.value, label: '条动态' },
+])
 const page = ref(1)
 const isLoading = ref(momentsConfig.enabled)
 const hasError = ref(false)
@@ -148,16 +151,8 @@ onMounted(() => {
 		:title="momentsConfig.title"
 		:description="momentsConfig.description"
 		:background="momentsConfig.background ?? appConfig.ui.article.fallbackCover"
+		:stats="momentsConfig.enabled ? headerStats : undefined"
 	>
-		<template v-if="momentsConfig.enabled" #stats>
-			<div class="moments-stats">
-				<div class="moments-stat">
-					<Icon name="tabler:message-2" class="moments-stat-icon" />
-					<strong>{{ total }}</strong>
-					<span>条动态</span>
-				</div>
-			</div>
-		</template>
 		<template v-if="momentsConfig.enabled" #powered>
 			<div class="moments-bottom-powered">
 				<span v-if="momentsConfig.showPoweredBy">Powered by Ech0</span>
@@ -313,25 +308,11 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/css/stats" as stats;
-
 .moments-page {
-	max-width: 52rem;
+	// 内容区保持 64rem，和 PageHeader 的宽度一致 / Keep the content at 64rem to match PageHeader
+	max-width: calc(64rem + 2rem);
 	margin: 0 auto;
 	padding: 2rem 1rem;
-}
-
-// --- Stats ---
-.moments-stats {
-	@include stats.stats;
-}
-
-.moments-stat {
-	@include stats.stat;
-}
-
-.moments-stat-icon {
-	@include stats.stat-icon;
 }
 
 .moments-bottom-powered {
