@@ -38,10 +38,9 @@ render = "katex" # "katex" | "mathjax"
 
 [config.music]
 # Meting API 实例地址，供 NeteasePlaylist 组件构建期解析歌单。
-# 支持 :server/:type/:id/:r 占位符，例如：
-# meting_api = "https://meting.example.com/api?server=:server&type=:type&id=:id&r=:r"
-# 实测可用示例：https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=:r
-meting_api = ""
+# 支持 :server/:type/:id/:r 占位符；默认使用社区公共实例，可换成自建实例。
+# 实例不可达时组件自动降级为打开歌单的链接卡片。
+meting_api = "https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=:r"
 
 [config.friendCircle]
 # Friend-Circle-Lite 订阅源（URL 或 public/ 下的文件路径）。

@@ -1,10 +1,14 @@
 ---
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import FriendCircle from '@navfolio/mdx-components/FriendCircle.astro';
 import FriendLinkApplication from '@navfolio/mdx-components/FriendLinkApplication.astro';
 import FriendLinkCard from '@navfolio/mdx-components/FriendLinkCard.astro';
-import type { FriendPost } from '@navfolio/mdx-components/lib/friend-data';
+import {
+  crawlFriendPosts,
+  parseFriendCircleFeed,
+  type FriendPost,
+} from '@navfolio/mdx-components/lib/friend-data';
 import {
   BaseHead,
   BlogTopNav,
@@ -40,12 +44,21 @@ const issueRepository = (() => {
 })();
 
 // 朋友圈 feed 源解析顺序：site.toml feed_src（URL 或 public/ 文件）→
-// public/friend-circle.json（FCL 工作流同步产物）→ 仓库内置演示数据
+// public/friend-circle.json（FCL 工作流同步产物）→ 构建期抓取友链 RSS → 内置演示数据
 let feedSrc = siteConfig.friendCircle.feed_src.trim();
 if (!feedSrc && existsSync(resolve(process.cwd(), 'public', 'friend-circle.json'))) {
   feedSrc = '/friend-circle.json';
 }
-const isDemoFeed = !feedSrc;
+
+const readFeedSource = async (source: string) => {
+  if (/^https?:\/\//i.test(source)) {
+    const response = await fetch(source);
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    return await response.text();
+  }
+  return readFile(resolve(process.cwd(), 'public', source.replace(/^\//, '')), 'utf8');
+};
+
 const demoPosts: FriendPost[] = (demoFeed.posts as Array<Record<string, unknown>>).map((post) => ({
   title: String(post.title ?? ''),
   url: String(post.url ?? ''),
@@ -55,6 +68,35 @@ const demoPosts: FriendPost[] = (demoFeed.posts as Array<Record<string, unknown>
   avatar: post.avatar ? String(post.avatar) : undefined,
   tags: Array.isArray(post.tags) ? post.tags.map(String) : [],
 }));
+
+let circlePosts: FriendPost[] = [];
+let circleFriendsCount = allFriendLinks.length;
+let feedNotice = '';
+
+if (feedSrc) {
+  try {
+    const feed = parseFriendCircleFeed(JSON.parse(await readFeedSource(feedSrc)));
+    circlePosts = feed.posts;
+    if (feed.friends.length) circleFriendsCount = feed.friends.length;
+  } catch (error) {
+    feedNotice = `feed 解析失败（${error instanceof Error ? error.message : error}），回退演示数据。`;
+  }
+} else {
+  // 无 feed 时构建期抓取友链 RSS；全部失败则回退演示数据
+  const crawled = await crawlFriendPosts(allFriendLinks);
+  if (crawled.length) {
+    circlePosts = crawled;
+  } else {
+    circlePosts = demoPosts;
+    feedNotice =
+      '当前展示内置演示数据；配置 feed_src 或同步 public/friend-circle.json 后自动切换。';
+  }
+}
+
+const pageSize = siteConfig.friendCircle.pageSize;
+const activeAuthors = new Set(circlePosts.map((post) => post.author)).size;
+const initialCount = Math.min(circlePosts.length, pageSize);
+const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
 ---
 
 <!doctype html>
@@ -89,32 +131,78 @@ const demoPosts: FriendPost[] = (demoFeed.posts as Array<Record<string, unknown>
       <section class="links-circle" aria-label="朋友圈">
         <div class="links-group-heading">
           <h2>朋友圈</h2>
-          <p>来自朋友订阅源的最新文章。</p>
+          <p>
+            {circleFriendsCount} 位朋友 · {activeAuthors} 位活跃 · {circlePosts.length} 篇动态
+          </p>
         </div>
+
+        <div class="circle-grid" data-circle-list data-circle-size={pageSize}>
+          {
+            circlePosts.map((post, index) => (
+              <article
+                class:list={['circle-card', { 'circle-card--hidden': index >= initialCount }]}
+                data-circle-card
+              >
+                <a
+                  class="circle-card__author"
+                  href={post.authorUrl || post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="circle-card__avatar" aria-hidden="true">
+                    {post.avatar ? (
+                      <img src={post.avatar} alt="" loading="lazy" decoding="async" />
+                    ) : (
+                      <span>{(post.author[0] || '?').toUpperCase()}</span>
+                    )}
+                  </span>
+                  <span class="circle-card__name">{post.author}</span>
+                </a>
+                <a
+                  class="circle-card__title"
+                  href={post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {post.title}
+                </a>
+                <footer class="circle-card__meta">
+                  {post.tags?.length ? (
+                    <span class="circle-card__tags">
+                      {post.tags.slice(0, 3).map((tag) => (
+                        <span>#{tag}</span>
+                      ))}
+                    </span>
+                  ) : null}
+                  {post.date && <time datetime={shortDate(post)}>{shortDate(post)}</time>}
+                </footer>
+              </article>
+            ))
+          }
+        </div>
+
         {
-          isDemoFeed ? (
-            <>
-              <FriendCircle
-                posts={demoPosts}
-                items={allFriendLinks}
-                limit={siteConfig.friendCircle.pageSize}
-                title="朋友动态"
-                refreshLabel="刷新动态"
-              />
-              <p class="links-circle-note">
-                当前展示内置演示数据；在 site.toml 配置
-                <code>[config.friendCircle].feed_src</code>
-                或由 FCL 工作流同步 <code>public/friend-circle.json</code> 后自动切换为真实数据。
-              </p>
-            </>
-          ) : (
-            <FriendCircle
-              feedSrc={feedSrc}
-              items={allFriendLinks}
-              limit={siteConfig.friendCircle.pageSize}
-              title="朋友动态"
-              refreshLabel="刷新动态"
-            />
+          circlePosts.length > pageSize && (
+            <div class="circle-actions">
+              <button class="circle-more" type="button" data-circle-more>
+                展开更多
+              </button>
+            </div>
+          )
+        }
+
+        {
+          feedNotice && (
+            <p class="links-circle-note">
+              {feedNotice}
+              {feedNotice.includes('演示数据') && (
+                <>
+                  {' '}
+                  在 site.toml 配置 <code>[config.friendCircle].feed_src</code>
+                  或由 FCL 工作流同步 <code>public/friend-circle.json</code>。
+                </>
+              )}
+            </p>
           )
         }
       </section>
@@ -214,6 +302,152 @@ const demoPosts: FriendPost[] = (demoFeed.posts as Array<Record<string, unknown>
         border-top: 1px solid var(--paper-line);
       }
 
+      .circle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 12px;
+      }
+
+      .circle-card {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+        padding: 14px 16px;
+        border: 1px solid var(--paper-line-strong);
+        border-radius: 0.75rem;
+        background: var(--paper-surface);
+        box-shadow: var(--paper-shadow);
+        font-family: var(--font-meta);
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s,
+          transform 0.2s;
+      }
+
+      .circle-card:hover {
+        border-color: var(--paper-accent);
+        box-shadow: var(--paper-shadow-lift);
+        transform: translateY(-1px);
+      }
+
+      .circle-card--hidden {
+        display: none;
+      }
+
+      .circle-card__author {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--paper-ink-soft);
+        font-size: 0.78rem;
+        text-decoration: none;
+      }
+
+      .circle-card__author:hover .circle-card__name {
+        color: var(--paper-accent);
+      }
+
+      .circle-card__avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        overflow: hidden;
+        border: 1px solid var(--paper-line);
+        border-radius: 999px;
+        background: var(--paper-surface-muted);
+        color: var(--paper-ink-faint);
+        font-size: 0.72rem;
+      }
+
+      .circle-card__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .circle-card__name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .circle-card__title {
+        display: -webkit-box;
+        overflow: hidden;
+        color: var(--paper-ink);
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.5;
+        text-decoration: none;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+      }
+
+      .circle-card__title:hover {
+        color: var(--paper-accent);
+      }
+
+      .circle-card__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--paper-ink-faint);
+        font-size: 0.72rem;
+      }
+
+      .circle-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        overflow: hidden;
+      }
+
+      .circle-card__tags span {
+        max-width: 12ch;
+        overflow: hidden;
+        padding: 2px 8px;
+        border: 1px solid var(--paper-line);
+        border-radius: 999px;
+        color: var(--paper-ink-soft);
+        font-size: 0.7rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .circle-card__meta time {
+        flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .circle-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 18px;
+      }
+
+      .circle-more {
+        padding: 8px 22px;
+        border: 1px solid var(--paper-line-strong);
+        border-radius: 999px;
+        background: var(--paper-surface);
+        color: var(--paper-ink-soft);
+        font-family: var(--font-meta);
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+      }
+
+      .circle-more:hover {
+        border-color: var(--paper-accent);
+        color: var(--paper-accent);
+      }
+
       .links-circle-note {
         max-width: 58ch;
         margin: 18px 0 0;
@@ -240,5 +474,34 @@ const demoPosts: FriendPost[] = (demoFeed.posts as Array<Record<string, unknown>
         border-top: 1px solid var(--paper-line);
       }
     </style>
+
+    <script>
+      const bind = () => {
+        const grid = document.querySelector<HTMLElement>('[data-circle-list]');
+        const button = document.querySelector<HTMLButtonElement>('[data-circle-more]');
+        if (!grid || !button || button.dataset.bound === '1') return;
+        button.dataset.bound = '1';
+        const pageSize = Number(grid.dataset.circleSize ?? '20');
+        let visible = Math.min(
+          [...grid.querySelectorAll('[data-circle-card]')].filter(
+            (card) => !card.classList.contains('circle-card--hidden'),
+          ).length,
+          pageSize,
+        );
+        button.addEventListener('click', () => {
+          visible += pageSize;
+          const cards = [...grid.querySelectorAll<HTMLElement>('[data-circle-card]')];
+          cards.forEach((card, index) => {
+            card.classList.toggle('circle-card--hidden', index >= visible);
+          });
+          if (visible >= cards.length) button.hidden = true;
+        });
+      };
+
+      document.addEventListener('astro:page-load', bind);
+      if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', bind, { once: true });
+      else bind();
+    </script>
   </body>
 </html>
