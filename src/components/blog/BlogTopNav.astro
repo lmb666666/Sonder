@@ -88,7 +88,15 @@ const paletteOptions = [
 
   {
     navStyle === 'pill' ? (
-      currentPath !== '/' && (
+      currentPath === '/' ? (
+        <a
+          class="nav-avatar nav-avatar-home"
+          href={withBase('/')}
+          aria-label={`${site.title} 首页`}
+        >
+          <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
+        </a>
+      ) : (
         <a
           class="nav-avatar"
           href={withBase('/')}
@@ -1046,6 +1054,11 @@ const paletteOptions = [
     transform: translateY(-50%);
   }
 
+  /* 首页：桌面端头像由侧栏身份卡承担，胶囊里不重复；移动端头像常驻胶囊 */
+  .nav-pill .nav-avatar-home {
+    display: none;
+  }
+
   .nav-pill .nav-avatar img {
     width: 100%;
     height: 100%;
@@ -1095,7 +1108,8 @@ const paletteOptions = [
   }
 
   .nav-pill .nav-actions a,
-  .nav-pill .nav-actions button {
+  .nav-pill .nav-actions button,
+  .nav-pill .nav-actions :global(.site-search-trigger) {
     width: 38px;
     height: 38px;
     border-radius: 999px;
@@ -1157,9 +1171,12 @@ const paletteOptions = [
       transform: none;
     }
 
-    .nav-pill .nav-actions [data-palette-toggle],
-    .nav-pill .nav-actions [data-theme-toggle] {
+    .nav-pill .nav-actions [data-palette-toggle] {
       display: none;
+    }
+
+    .nav-pill .nav-avatar-home {
+      display: inline-grid;
     }
   }
 </style>

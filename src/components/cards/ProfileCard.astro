@@ -1,5 +1,6 @@
 ---
 import Icon from '../Icon.astro';
+import { getSiteConfig } from '../../data/site';
 
 interface Profile {
   name: string;
@@ -11,9 +12,10 @@ interface Profile {
 }
 
 const { profile } = Astro.props as { profile: Profile };
+const { theme } = await getSiteConfig();
 ---
 
-<article class="profile-card">
+<article class="profile-card" data-nav-style={theme.navStyle}>
   <div class="avatar-wrap" transition:name="site-avatar">
     <img
       src={profile.avatar}
@@ -95,6 +97,11 @@ const { profile } = Astro.props as { profile: Profile };
     .avatar-wrap {
       width: 64px;
       height: 64px;
+    }
+
+    /* 胶囊导航在移动端把头像放进导航栏，此处不重复 */
+    .profile-card[data-nav-style='pill'] .avatar-wrap {
+      display: none;
     }
 
     .profile-heading {
