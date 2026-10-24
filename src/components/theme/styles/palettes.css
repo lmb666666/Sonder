@@ -111,22 +111,23 @@
 }
 
 :root[data-palette='blue-soft'] {
-  --accent: #637da3;
-  --accent-dark: #405b80;
-  --paper-accent: #637da3;
-  --paper-accent-soft: #edf2f8;
-  --paper-fog: #dde7f0;
+  /* 墨蓝：低饱和蓝灰，与暖纸底同温（对比度 4.79:1，AA） */
+  --accent: #5b7488;
+  --accent-dark: #3b566e;
+  --paper-accent: #5b7488;
+  --paper-accent-soft: #edf0f0;
+  --paper-fog: #e0e6e8;
   --paper-dust: #e5e5dc;
   --paper-rule: rgba(63, 88, 125, 0.026);
   --paper-texture-ink: rgba(63, 88, 125, 0.012);
 }
 
 :root[data-theme='dark'][data-palette='blue-soft'] {
-  --accent: #a8bddb;
-  --accent-dark: #d2e1f6;
-  --paper-accent: #a8bddb;
-  --paper-accent-soft: #29364a;
-  --paper-fog: #283541;
+  --accent: #a4b6c6;
+  --accent-dark: #ccd8e0;
+  --paper-accent: #a4b6c6;
+  --paper-accent-soft: #2a3742;
+  --paper-fog: #2a343c;
   --paper-dust: #33322a;
   --paper-rule: rgba(204, 222, 246, 0.028);
   --paper-texture-ink: rgba(204, 222, 246, 0.032);
