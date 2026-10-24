@@ -10,12 +10,16 @@ const defaultScriptSrc = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo
 const scriptSrc = config.script_src.trim() || defaultScriptSrc;
 ---
 
-<div id="twikoo" class="twikoo-comment-provider"></div>
+<div id="twikoo-comment-mount" class="twikoo-comment-provider"></div>
 
 <script type="module" define:vars={{ scriptSrc, envId: config.env_id, lang: config.lang }}>
+  // 注意：容器 id 不能用 "twikoo"——带 id 的 DOM 元素会自动成为 window.twikoo
+  // （named access），导致 SDK 加载判断误判。
+  const hasTwikooSdk = () => typeof window.twikoo?.init === 'function';
+
   const loadTwikooScript = (src) =>
     new Promise((resolve, reject) => {
-      if (window.twikoo) {
+      if (hasTwikooSdk()) {
         resolve(window.twikoo);
         return;
       }
@@ -36,19 +40,22 @@ const scriptSrc = config.script_src.trim() || defaultScriptSrc;
   let bootedAt = '';
 
   const mountTwikoo = async () => {
-    const container = document.querySelector('#twikoo');
+    const container = document.querySelector('#twikoo-comment-mount');
     if (!container) return;
 
     try {
       const twikoo = await loadTwikooScript(scriptSrc);
+      if (typeof twikoo?.init !== 'function') {
+        throw new Error('Twikoo SDK 未正确加载');
+      }
       const bootKey = window.location.pathname;
-      // 同一页面重复触发（主题切换 / 视图路由）时保持挂载，避免闪回加载态
+      // 同一页面重复触发（视图路由复用容器）时保持挂载，避免闪回加载态
       if (bootedAt === bootKey && container.childElementCount > 0) return;
       bootedAt = bootKey;
       await twikoo.init({
         envId,
         lang,
-        el: '#twikoo',
+        el: '#twikoo-comment-mount',
       });
     } catch (error) {
       console.error('[twikoo] 加载失败：', error);

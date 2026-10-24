@@ -40,6 +40,7 @@ render = "katex" # "katex" | "mathjax"
 # Meting API 实例地址，供 NeteasePlaylist 组件构建期解析歌单。
 # 支持 :server/:type/:id/:r 占位符，例如：
 # meting_api = "https://meting.example.com/api?server=:server&type=:type&id=:id&r=:r"
+# 实测可用示例：https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=:r
 meting_api = ""
 
 [config.friendCircle]
