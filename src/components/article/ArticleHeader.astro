@@ -49,13 +49,25 @@ const tagLinks = tags.map((tag) =>
   typeof tag === 'string' ? { name: tag, slug: slugifyGroupName(tag) } : tag,
 );
 const hasTags = tagLinks.length > 0;
-const hasCategories = categories.length > 0;
-const hasSeries = series.length > 0;
-const hasGroups = hasCategories || hasSeries;
 const isArchiveHeader = variant === 'archive';
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const ui = getUiText(await getSiteConfig());
 const wordCountLabel = ui.article.wordCount(wordCount);
+
+// 分类与系列在界面上统一为「分类」：同名去重，系列独有的条目仍指向系列详情。
+const mergedGroups = [
+  ...categories.map((category) => ({
+    name: category.name,
+    href: `${basePath}/blog/categories/${category.slug}/`,
+  })),
+  ...series
+    .filter((item) => !categories.some((category) => category.name === item.name))
+    .map((item) => ({
+      name: item.name,
+      href: `${basePath}/blog/series/${item.slug}/`,
+    })),
+];
+const hasGroups = mergedGroups.length > 0;
 ---
 
 <header
@@ -95,33 +107,17 @@ const wordCountLabel = ui.article.wordCount(wordCount);
           </div>
           {hasGroups && (
             <div class="group-meta-line" aria-label={ui.article.groups}>
-              {hasCategories && (
-                <span class="group-meta-item">
-                  <Icon name="folder" size={15} />
-                  <span class="group-label">{ui.groups.categories}</span>
-                  <span class="group-list">
-                    {categories.map((category) => (
-                      <a class="group-link" href={`${basePath}/blog/categories/${category.slug}/`}>
-                        {category.name}
-                      </a>
-                    ))}
-                  </span>
+              <span class="group-meta-item">
+                <Icon name="folder" size={15} />
+                <span class="group-label">{ui.groups.categories}</span>
+                <span class="group-list">
+                  {mergedGroups.map((item) => (
+                    <a class="group-link" href={item.href}>
+                      {item.name}
+                    </a>
+                  ))}
                 </span>
-              )}
-              {hasSeries && (
-                <span class="group-meta-item">
-                  <Icon name="layers" size={15} />
-                  <span class="group-label">{ui.groups.series}</span>
-                  <span class="group-list">
-                    {series.map((item) => (
-                      <a class="group-link" href={`${basePath}/blog/series/${item.slug}/`}>
-                        {item.name}
-                        {item.current && item.total ? ` ${item.current}/${item.total}` : ''}
-                      </a>
-                    ))}
-                  </span>
-                </span>
-              )}
+              </span>
             </div>
           )}
         </div>
@@ -159,33 +155,17 @@ const wordCountLabel = ui.article.wordCount(wordCount);
         </div>
         {hasGroups && (
           <div class="group-meta-line" aria-label={ui.article.groups}>
-            {hasCategories && (
-              <span class="group-meta-item">
-                <Icon name="folder" size={15} />
-                <span class="group-label">{ui.groups.categories}</span>
-                <span class="group-list">
-                  {categories.map((category) => (
-                    <a class="group-link" href={`${basePath}/blog/categories/${category.slug}/`}>
-                      {category.name}
-                    </a>
-                  ))}
-                </span>
+            <span class="group-meta-item">
+              <Icon name="folder" size={15} />
+              <span class="group-label">{ui.groups.categories}</span>
+              <span class="group-list">
+                {mergedGroups.map((item) => (
+                  <a class="group-link" href={item.href}>
+                    {item.name}
+                  </a>
+                ))}
               </span>
-            )}
-            {hasSeries && (
-              <span class="group-meta-item">
-                <Icon name="layers" size={15} />
-                <span class="group-label">{ui.groups.series}</span>
-                <span class="group-list">
-                  {series.map((item) => (
-                    <a class="group-link" href={`${basePath}/blog/series/${item.slug}/`}>
-                      {item.name}
-                      {item.current && item.total ? ` ${item.current}/${item.total}` : ''}
-                    </a>
-                  ))}
-                </span>
-              </span>
-            )}
+            </span>
           </div>
         )}
       </>

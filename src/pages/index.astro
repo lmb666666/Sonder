@@ -8,21 +8,23 @@ import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
 import LatestUpdates from '../components/widgets/LatestUpdates.astro';
 import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
-import { demoMoments, getMomentsTotal } from '../data/moments';
+import { demoMoments } from '../data/moments';
 import { countWords, formatCount } from '../utils/word-count';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const { home, profile, site, pages } = await getSiteConfig();
+const { home, profile, site } = await getSiteConfig();
 
-// 侧栏统计：总文章 / 总字数（与文章页同口径）/ 总动态（Ech0 可达取真实 total）
+// 侧栏统计：文章数 / 分类数 / 标签数 / 字数（字数与文章页同口径）
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 const totalWords = posts.reduce((sum, post) => sum + countWords(post.body ?? ''), 0);
-const momentsTotal = await getMomentsTotal(pages.moments.apiUrl.trim());
+const categoryCount = new Set(posts.flatMap((post) => post.data.categories)).size;
+const tagCount = new Set(posts.flatMap((post) => post.data.tags ?? [])).size;
 
 const stats = [
-  { label: '总文章', value: formatCount(posts.length) },
-  { label: '总字数', value: formatCount(totalWords) },
-  { label: '总动态', value: formatCount(momentsTotal) },
+  { label: '文章数', value: formatCount(posts.length) },
+  { label: '分类数', value: formatCount(categoryCount) },
+  { label: '标签数', value: formatCount(tagCount) },
+  { label: '字数', value: formatCount(totalWords) },
 ];
 
 // 最新动态：演示数据按日期倒序取第一条；配置 Ech0 后动态页为运行时拉取，

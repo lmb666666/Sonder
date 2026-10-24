@@ -105,19 +105,19 @@ function getDayHref(day: HeatmapDay) {
 <style>
   .stats-row {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .stat-item {
     display: grid;
-    gap: 2px;
+    gap: 3px;
     min-width: 0;
   }
 
   .stat-item strong {
     color: var(--paper-ink);
-    font-size: 1.12rem;
+    font-size: 1.04rem;
     font-variant-numeric: tabular-nums;
     line-height: 1;
   }
@@ -125,7 +125,7 @@ function getDayHref(day: HeatmapDay) {
   .stat-item span {
     overflow: hidden;
     color: var(--paper-ink-soft);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;

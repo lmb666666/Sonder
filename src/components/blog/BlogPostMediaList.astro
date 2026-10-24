@@ -42,7 +42,11 @@ const cards = await Promise.all(
       index,
       postHref: withBase(`/blog/${post.id}/`),
       sticky: isStickyEntry(post),
-      categories: post.data.categories,
+      // 分类与系列在界面上统一为「分类」，同名去重
+      groups: [
+        ...post.data.categories,
+        ...post.data.series.filter((name) => !post.data.categories.includes(name)),
+      ],
       cover,
       words: formatCount(countWords(bodyText)),
       minutes: readingMinutes(bodyText),
@@ -54,7 +58,7 @@ const cards = await Promise.all(
 
 <ListTag class="media-stack">
   {
-    cards.map(({ post, index, postHref, sticky, categories, cover, words, minutes, bandStyle }) => {
+    cards.map(({ post, index, postHref, sticky, groups, cover, words, minutes, bandStyle }) => {
       return (
         <li class="media-item">
           <a
@@ -84,10 +88,10 @@ const cards = await Promise.all(
                     <Icon name="calendar" size={13} strokeWidth={2} />
                     <FormattedDate date={post.data.date} />
                   </span>
-                  {categories.length > 0 && (
+                  {groups.length > 0 && (
                     <span class="media-meta-chip">
                       <Icon name="folder" size={13} strokeWidth={2} />
-                      {categories.join(', ')}
+                      {groups.join(', ')}
                     </span>
                   )}
                 </span>

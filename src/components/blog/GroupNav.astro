@@ -1,12 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { getSiteConfig } from '../../data/site';
-import {
-  getAllCategories,
-  getAllSeries,
-  getAllTags,
-  uncategorizedCategory,
-} from '../../utils/content-groups';
+import { getAllCategories, getAllTags, uncategorizedCategory } from '../../utils/content-groups';
 import { getUiText } from '../../utils/ui-text';
 import Icon from '../Icon.astro';
 import '@navfolio/theme-default/styles/blog-group-nav.css';
@@ -20,7 +15,6 @@ const { activeView = 'posts', activeCategory } = Astro.props;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 const categories = getAllCategories(posts);
-const seriesCount = getAllSeries(posts).length;
 const tagCount = getAllTags(posts).length;
 const yearsCount = new Set(posts.map((post) => post.data.date.getFullYear())).size;
 const ui = getUiText(await getSiteConfig());
@@ -78,9 +72,9 @@ function getCategoryName(name: string, slug: string) {
   </div>
 
   <div class="group-links" aria-label="Blog views">
-    <a class:list={[activeView === 'series' && 'is-active']} href={withBase('/blog/series/')}>
-      <Icon name="layers" size={15} />
-      {ui.groups.series}
+    <a href={withBase('/blog/categories/')}>
+      <Icon name="folder" size={15} />
+      {ui.groups.categories}
     </a>
     <span aria-hidden="true">·</span>
     <a class:list={[activeView === 'tags' && 'is-active']} href={withBase('/blog/tags/')}>
@@ -95,7 +89,7 @@ function getCategoryName(name: string, slug: string) {
   </div>
 
   <span class="group-counts" aria-hidden="true">
-    {seriesCount} / {tagCount} / {yearsCount}
+    {categories.length} / {tagCount} / {yearsCount}
   </span>
 </nav>
 

@@ -42,6 +42,22 @@ function withBase(href: string) {
 
   return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
 }
+
+// 分类与系列在界面上统一为「分类」：同名去重，系列独有的条目仍指向系列详情。
+function getGroups(post: BlogPost) {
+  return [
+    ...post.data.categories.map((name) => ({
+      name,
+      href: withBase(`/blog/categories/${slugifyGroupName(name)}/`),
+    })),
+    ...post.data.series
+      .filter((name) => !post.data.categories.includes(name))
+      .map((name) => ({
+        name,
+        href: withBase(`/blog/series/${slugifyGroupName(name)}/`),
+      })),
+  ];
+}
 ---
 
 {
@@ -49,90 +65,77 @@ function withBase(href: string) {
     <BlogPostMediaList posts={posts} postOffset={postOffset} listTag={listTag} />
   ) : (
     <ListTag class="post-stack">
-      {posts.map((post, index) => (
-        <li class="post-item">
-          <article
-            class:list={[
-              'post-link',
-              `cover-style-${coverImageStyle}`,
-              { 'without-thumb': !post.data.heroImage },
-            ]}
-            data-archive-post-href={withBase(`/blog/${post.id}/`)}
-          >
-            <div class="post-copy">
-              <div>
-                <h2 class="title">
-                  <span class="post-index" aria-hidden="true">
-                    <span class="post-index-number">
-                      {String(postOffset + index + 1).padStart(2, '0')}
+      {posts.map((post, index) => {
+        const groups = getGroups(post);
+        return (
+          <li class="post-item">
+            <article
+              class:list={[
+                'post-link',
+                `cover-style-${coverImageStyle}`,
+                { 'without-thumb': !post.data.heroImage },
+              ]}
+              data-archive-post-href={withBase(`/blog/${post.id}/`)}
+            >
+              <div class="post-copy">
+                <div>
+                  <h2 class="title">
+                    <span class="post-index" aria-hidden="true">
+                      <span class="post-index-number">
+                        {String(postOffset + index + 1).padStart(2, '0')}
+                      </span>
+                      <ChevronsRight class="post-index-icon" size={20} strokeWidth={1.9} />
                     </span>
-                    <ChevronsRight class="post-index-icon" size={20} strokeWidth={1.9} />
-                  </span>
-                  <a class="title-link" href={withBase(`/blog/${post.id}/`)}>
-                    {post.data.title}
-                  </a>
-                  {isStickyEntry(post) && (
-                    <span class="post-pin">
-                      <Icon name="pin" size={18} />
-                      {ui.article.pinned}
-                    </span>
-                  )}
-                </h2>
-                <div class="date">
-                  <MetadataItem kind="date" separated={false}>
-                    <FormattedDate date={post.data.date} />
-                  </MetadataItem>
-                  {post.data.categories.length > 0 && (
-                    <MetadataItem kind="categories" class="post-groups">
-                      <span class="meta-label">{ui.groups.categories}</span>
-                      {post.data.categories.map((category) => (
-                        <a
-                          class="post-group"
-                          href={withBase(`/blog/categories/${slugifyGroupName(category)}/`)}
-                        >
-                          {category}
-                        </a>
-                      ))}
+                    <a class="title-link" href={withBase(`/blog/${post.id}/`)}>
+                      {post.data.title}
+                    </a>
+                    {isStickyEntry(post) && (
+                      <span class="post-pin">
+                        <Icon name="pin" size={18} />
+                        {ui.article.pinned}
+                      </span>
+                    )}
+                  </h2>
+                  <div class="date">
+                    <MetadataItem kind="date" separated={false}>
+                      <FormattedDate date={post.data.date} />
                     </MetadataItem>
-                  )}
-                  {post.data.series.length > 0 && (
-                    <MetadataItem kind="series" class="post-groups">
-                      <span class="meta-label">{ui.groups.series}</span>
-                      {post.data.series.map((series) => (
-                        <a
-                          class="post-group"
-                          href={withBase(`/blog/series/${slugifyGroupName(series)}/`)}
-                        >
-                          {series}
-                        </a>
-                      ))}
-                    </MetadataItem>
-                  )}
-                  {post.data.tags && post.data.tags.length > 0 && (
-                    <MetadataItem kind="tags" class="post-tags">
-                      {post.data.tags.map((tag) => (
-                        <a class="post-tag" href={withBase(`/tags/${slugifyGroupName(tag)}/`)}>
-                          #{tag}
-                        </a>
-                      ))}
-                    </MetadataItem>
-                  )}
+                    {groups.length > 0 && (
+                      <MetadataItem kind="categories" class="post-groups">
+                        <span class="meta-label">{ui.groups.categories}</span>
+                        {groups.map((group) => (
+                          <a class="post-group" href={group.href}>
+                            {group.name}
+                          </a>
+                        ))}
+                      </MetadataItem>
+                    )}
+                    {post.data.tags && post.data.tags.length > 0 && (
+                      <MetadataItem kind="tags" class="post-tags">
+                        {post.data.tags.map((tag) => (
+                          <a class="post-tag" href={withBase(`/tags/${slugifyGroupName(tag)}/`)}>
+                            #{tag}
+                          </a>
+                        ))}
+                      </MetadataItem>
+                    )}
+                  </div>
                 </div>
+                <p class="post-excerpt">{post.data.description}</p>
               </div>
-              <p class="post-excerpt">{post.data.description}</p>
-            </div>
-            {post.data.heroImage && (
-              <a
-                class="thumb-wrap"
-                href={withBase(`/blog/${post.id}/`)}
-                aria-label={post.data.title}
-              >
-                <SmartImage width={520} height={360} src={post.data.heroImage} alt="" />
-              </a>
-            )}
-          </article>
-        </li>
-      ))}
+              {post.data.heroImage && (
+                <a
+                  class="thumb-wrap"
+                  href={withBase(`/blog/${post.id}/`)}
+                  aria-label={post.data.title}
+                >
+                  <SmartImage width={520} height={360} src={post.data.heroImage} alt="" />
+                </a>
+              )}
+            </article>
+          </li>
+        );
+      })}
     </ListTag>
   )
 }
