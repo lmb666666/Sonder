@@ -1,0 +1,163 @@
+---
+import FriendLinkApplication from '@navfolio/mdx-components/FriendLinkApplication.astro';
+import FriendLinkCard from '@navfolio/mdx-components/FriendLinkCard.astro';
+import {
+  BaseHead,
+  BlogTopNav,
+  Footer,
+  getHtmlLang,
+  getSiteConfig,
+} from 'virtual:navfolio/page-runtime';
+import { friendLinkGroups } from '../data/friends';
+
+const siteConfig = await getSiteConfig();
+const { site, theme, profile } = siteConfig;
+const htmlLang = getHtmlLang(siteConfig);
+const palette = theme.palette;
+
+const totalLinks = friendLinkGroups.reduce((count, group) => count + group.items.length, 0);
+const rssCount = friendLinkGroups.reduce(
+  (count, group) => count + group.items.filter((item) => item.rss).length,
+  0,
+);
+
+const issueRepository = (() => {
+  try {
+    const url = new URL(site.repository);
+    const [owner, repo] = url.pathname
+      .replace(/\.git$/, '')
+      .split('/')
+      .filter(Boolean);
+    return owner && repo ? `${owner}/${repo}` : '';
+  } catch {
+    return '';
+  }
+})();
+---
+
+<!doctype html>
+<html lang={htmlLang} data-palette={palette}>
+  <head>
+    <BaseHead title={`友链 | ${site.title}`} description="朋友的博客，以及交换友链的方式。" />
+  </head>
+  <body>
+    <BlogTopNav />
+    <main class="links-page" data-pagefind-body>
+      <header class="links-hero">
+        <p class="links-kicker">Friend links</p>
+        <h1 class="links-title">友链</h1>
+        <p class="links-subtitle">朋友的博客。万水千山，彼此都在认真写自己的那本书。</p>
+        <p class="links-note">
+          共 {totalLinks} 位朋友，其中 {rssCount} 位提供订阅源，会出现在朋友圈里。
+        </p>
+      </header>
+
+      {
+        friendLinkGroups.map((group) => (
+          <section class="links-group" aria-labelledby={`links-group-${group.title}`}>
+            <div class="links-group-heading">
+              <h2 id={`links-group-${group.title}`}>{group.title}</h2>
+              {group.description && <p>{group.description}</p>}
+            </div>
+            <FriendLinkCard items={group.items} columns={4} />
+          </section>
+        ))
+      }
+
+      {
+        issueRepository && (
+          <section class="links-apply" aria-label="申请友链">
+            <FriendLinkApplication
+              repository={issueRepository}
+              title="申请友链"
+              description="填写站点信息并提交 Issue，博主确认后会在这里挂上你的链接。"
+              labels={['friend-link']}
+              initialValue={{
+                name: profile.name,
+                url: site.url,
+                avatar: new URL(profile.avatar, site.url).toString(),
+                rss: `${site.url}/rss.xml`,
+                bio: profile.role,
+              }}
+            />
+          </section>
+        )
+      }
+    </main>
+    <Footer />
+
+    <style>
+      main {
+        width: min(100%, var(--layout-shell-width));
+        padding-top: 126px;
+      }
+
+      .links-hero {
+        margin-bottom: clamp(46px, 8vw, 88px);
+      }
+
+      .links-kicker {
+        margin: 0 0 12px;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .links-title {
+        margin: 0;
+        color: var(--paper-ink);
+        font-size: clamp(2.32rem, 6.6vw, 4.35rem);
+        font-weight: 400;
+        line-height: 0.96;
+      }
+
+      .links-subtitle {
+        max-width: 34ch;
+        margin: 18px 0 0;
+        color: var(--paper-ink-soft);
+        font-family: var(--font-ui-label);
+        font-size: clamp(0.98rem, 1.7vw, 1.16rem);
+        line-height: 1.68;
+      }
+
+      .links-note {
+        margin: 14px 0 0;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.8rem;
+      }
+
+      .links-group {
+        margin-bottom: clamp(36px, 6vw, 64px);
+      }
+
+      .links-group-heading {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 18px;
+      }
+
+      .links-group-heading h2 {
+        margin: 0;
+        color: var(--paper-ink);
+        font-size: 1.32rem;
+        font-weight: 600;
+      }
+
+      .links-group-heading p {
+        margin: 0;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.8rem;
+      }
+
+      .links-apply {
+        margin-top: clamp(40px, 7vw, 72px);
+        padding-top: 34px;
+        border-top: 1px solid var(--paper-line);
+      }
+    </style>
+  </body>
+</html>

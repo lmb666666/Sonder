@@ -1,0 +1,704 @@
+---
+import { format } from 'date-fns';
+import {
+  BaseHead,
+  BlogTopNav,
+  Footer,
+  getHtmlLang,
+  getSiteConfig,
+} from 'virtual:navfolio/page-runtime';
+import { demoMoments } from '../data/moments';
+
+const siteConfig = await getSiteConfig();
+const { site, theme, profile } = siteConfig;
+const htmlLang = getHtmlLang(siteConfig);
+const palette = theme.palette;
+const pageMeta = (siteConfig.pages as Record<string, unknown>).moments as {
+  title: string;
+  subtitle: string;
+  note: string;
+  apiUrl: string;
+  pageSize: number;
+  showPoweredBy: boolean;
+};
+
+const ech0Mode = pageMeta.apiUrl.trim().length > 0;
+const pageSize = pageMeta.pageSize;
+const initialItems = ech0Mode ? [] : demoMoments;
+const initialCount = Math.min(initialItems.length, pageSize);
+
+const ownerAvatar = profile.avatar;
+const ownerName = profile.name;
+
+const formatMomentTime = (iso: string) => {
+  const date = new Date(iso);
+  return Number.isNaN(date.valueOf()) ? '' : format(date, 'yyyy-MM-dd HH:mm');
+};
+
+const videoEmbedUrl = (video: { provider: string; id: string }) =>
+  video.provider === 'youtube'
+    ? `https://www.youtube.com/embed/${video.id}`
+    : `https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${video.id}&as_wide=1&high_quality=1&danmaku=0`;
+
+const extensionLabels: Record<string, string> = {
+  github: 'GitHub 项目',
+  website: '网站',
+  music: '音乐',
+  location: '位置',
+};
+---
+
+<!doctype html>
+<html lang={htmlLang} data-palette={palette}>
+  <head>
+    <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
+  </head>
+  <body>
+    <BlogTopNav />
+    <main class="moments-page" data-pagefind-body>
+      <header class="moments-hero">
+        <p class="moments-kicker">Moments</p>
+        <h1 class="moments-title">{pageMeta.title}</h1>
+        <p class="moments-subtitle">{pageMeta.subtitle}</p>
+        <p class="moments-stats" data-moments-stats>
+          {ech0Mode ? '正在从 Ech0 拉取动态…' : `${initialItems.length} 条动态`}
+        </p>
+        {
+          ech0Mode && (
+            <p class="moments-note">
+              本页数据来自
+              <a href="https://github.com/lin-snow/Ech0" target="_blank" rel="noopener noreferrer">
+                Ech0
+              </a>
+              实例。
+            </p>
+          )
+        }
+      </header>
+
+      <ol class="moments-timeline" data-moments-list data-page-size={pageSize}>
+        {
+          initialItems.map((moment, index) => (
+            <li class:list={['moment', { 'moment--hidden': index >= initialCount }]} data-moment>
+              <div class="moment__rail" aria-hidden="true">
+                <span class="moment__dot" />
+              </div>
+              <article class="moment__card">
+                <header class="moment__head">
+                  <span class="moment__owner">
+                    {ownerAvatar && <img src={ownerAvatar} alt="" loading="lazy" />}
+                    <span>{moment.extension ? '' : ownerName}</span>
+                  </span>
+                  <time class="moment__time">{formatMomentTime(moment.date)}</time>
+                </header>
+                {moment.content && <p class="moment__content">{moment.content}</p>}
+                {moment.images && moment.images.length > 0 && (
+                  <div
+                    class:list={[
+                      'moment__images',
+                      `moment__images--${Math.min(moment.images.length, 3)}`,
+                    ]}
+                  >
+                    {moment.images.slice(0, 9).map((src) => (
+                      <a href={src} target="_blank" rel="noopener noreferrer">
+                        <img src={src} alt="" loading="lazy" decoding="async" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {moment.video && (
+                  <div class="moment__video">
+                    <iframe
+                      src={videoEmbedUrl(moment.video)}
+                      title="moment video"
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture"
+                    />
+                  </div>
+                )}
+                {moment.extension && (
+                  <a
+                    class="moment__extension"
+                    href={moment.extension.url ?? undefined}
+                    target={moment.extension.url ? '_blank' : undefined}
+                    rel={moment.extension.url ? 'noopener noreferrer' : undefined}
+                  >
+                    <span class="moment__extension-type">
+                      {extensionLabels[moment.extension.type] ?? moment.extension.type}
+                    </span>
+                    <span class="moment__extension-body">
+                      <strong>{moment.extension.title}</strong>
+                      {moment.extension.description && (
+                        <small>{moment.extension.description}</small>
+                      )}
+                    </span>
+                  </a>
+                )}
+                {moment.tags && moment.tags.length > 0 && (
+                  <footer class="moment__tags">
+                    {moment.tags.map((tag) => (
+                      <span>#{tag}</span>
+                    ))}
+                  </footer>
+                )}
+              </article>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="moments-actions">
+        <button class="moments-more" type="button" data-moments-more hidden> 加载更多 </button>
+      </div>
+
+      {
+        pageMeta.showPoweredBy && ech0Mode && (
+          <p class="moments-powered">
+            Powered by
+            <a href="https://github.com/lin-snow/Ech0" target="_blank" rel="noopener noreferrer">
+              Ech0
+            </a>
+          </p>
+        )
+      }
+    </main>
+    <Footer />
+
+    <style>
+      main {
+        width: min(100%, var(--layout-reading-width));
+        padding-top: 126px;
+      }
+
+      .moments-hero {
+        margin-bottom: clamp(36px, 6vw, 60px);
+      }
+
+      .moments-kicker {
+        margin: 0 0 12px;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .moments-title {
+        margin: 0;
+        color: var(--paper-ink);
+        font-size: clamp(2.32rem, 6.6vw, 4.35rem);
+        font-weight: 400;
+        line-height: 0.96;
+      }
+
+      .moments-subtitle {
+        max-width: 34ch;
+        margin: 18px 0 0;
+        color: var(--paper-ink-soft);
+        font-family: var(--font-ui-label);
+        font-size: clamp(0.98rem, 1.7vw, 1.16rem);
+        line-height: 1.68;
+      }
+
+      .moments-stats {
+        margin: 14px 0 0;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.8rem;
+      }
+
+      .moments-note {
+        margin: 10px 0 0;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.78rem;
+      }
+
+      .moments-note a {
+        color: var(--paper-accent);
+      }
+
+      .moments-timeline {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .moment {
+        display: grid;
+        grid-template-columns: 20px minmax(0, 1fr);
+        gap: 14px;
+      }
+
+      .moment--hidden {
+        display: none;
+      }
+
+      .moment__rail {
+        position: relative;
+      }
+
+      .moment__rail::before {
+        content: '';
+        position: absolute;
+        inset-inline: 50%;
+        top: 6px;
+        bottom: -6px;
+        width: 1px;
+        background: var(--paper-line-strong);
+      }
+
+      .moment:last-of-type .moment__rail::before {
+        bottom: auto;
+        height: 14px;
+      }
+
+      .moment__dot {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        width: 7px;
+        height: 7px;
+        border: 1px solid var(--paper-line-strong);
+        border-radius: 999px;
+        background: var(--paper-surface);
+        transform: translateX(-50%);
+      }
+
+      .moment__card {
+        margin: 0 0 26px;
+        padding: 16px 18px;
+        border: 1px solid var(--paper-line);
+        border-radius: 0.85rem;
+        background: var(--paper-surface);
+        box-shadow: var(--paper-shadow);
+        font-family: var(--font-meta);
+      }
+
+      .moment__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+
+      .moment__owner {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--paper-ink);
+        font-size: 0.86rem;
+        font-weight: 600;
+      }
+
+      .moment__owner img {
+        width: 22px;
+        height: 22px;
+        border: 1px solid var(--paper-line);
+        border-radius: 999px;
+        object-fit: cover;
+      }
+
+      .moment__time {
+        color: var(--paper-ink-faint);
+        font-size: 0.74rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .moment__content {
+        margin: 0;
+        color: var(--paper-ink);
+        font-size: 0.94rem;
+        line-height: 1.75;
+        overflow-wrap: anywhere;
+      }
+
+      .moment__images {
+        display: grid;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .moment__images--1 {
+        grid-template-columns: minmax(0, 320px);
+      }
+
+      .moment__images--2,
+      .moment__images--4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .moment__images--3,
+      .moment__images--5,
+      .moment__images--6,
+      .moment__images--7,
+      .moment__images--8,
+      .moment__images--9 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .moment__images a {
+        display: block;
+        overflow: hidden;
+        border: 1px solid var(--paper-line);
+        border-radius: 0.5rem;
+        background: var(--paper-surface-muted);
+      }
+
+      .moment__images img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        transition: transform 0.2s;
+      }
+
+      .moment__images a:hover img {
+        transform: scale(1.03);
+      }
+
+      .moment__video {
+        margin-top: 10px;
+        overflow: hidden;
+        border: 1px solid var(--paper-line);
+        border-radius: 0.6rem;
+        aspect-ratio: 16 / 9;
+        background: var(--paper-surface-muted);
+      }
+
+      .moment__video iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
+      .moment__extension {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--paper-line-strong);
+        border-radius: 0.6rem;
+        background: var(--paper-surface-muted);
+        color: var(--paper-ink);
+        text-decoration: none;
+        transition: border-color 0.2s;
+      }
+
+      .moment__extension[href]:hover {
+        border-color: var(--paper-accent);
+      }
+
+      .moment__extension-type {
+        flex-shrink: 0;
+        color: var(--paper-ink-faint);
+        font-size: 0.7rem;
+        letter-spacing: 0.04em;
+      }
+
+      .moment__extension-body {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .moment__extension-body strong {
+        font-size: 0.86rem;
+      }
+
+      .moment__extension-body small {
+        overflow: hidden;
+        color: var(--paper-ink-faint);
+        font-size: 0.76rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .moment__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .moment__tags span {
+        color: var(--paper-accent);
+        font-size: 0.74rem;
+      }
+
+      .moments-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 8px;
+      }
+
+      .moments-more {
+        padding: 8px 22px;
+        border: 1px solid var(--paper-line-strong);
+        border-radius: 999px;
+        background: var(--paper-surface);
+        color: var(--paper-ink-soft);
+        font-family: var(--font-meta);
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+      }
+
+      .moments-more:hover {
+        border-color: var(--paper-accent);
+        color: var(--paper-accent);
+      }
+
+      .moments-powered {
+        margin: 26px 0 0;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.74rem;
+        text-align: center;
+      }
+
+      .moments-powered a {
+        color: var(--paper-accent);
+      }
+
+      .moments-error {
+        margin: 0;
+        padding: 12px 16px;
+        border: 1px dashed var(--paper-line-strong);
+        border-radius: 0.6rem;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.8rem;
+      }
+    </style>
+
+    <script type="module" define:vars={{ ech0Mode, apiUrl: pageMeta.apiUrl.trim() }}>
+      const list = () => document.querySelector('[data-moments-list]');
+      const moreButton = () => document.querySelector('[data-moments-more]');
+      const statsEl = () => document.querySelector('[data-moments-stats]');
+
+      const setVisibleCount = (count) => {
+        const items = [...(list()?.querySelectorAll('[data-moment]') ?? [])];
+        items.forEach((item, index) => {
+          item.classList.toggle('moment--hidden', index >= count);
+        });
+        const button = moreButton();
+        if (button) button.hidden = count >= items.length;
+      };
+
+      const bindStaticMode = () => {
+        if (ech0Mode) return;
+        const container = list();
+        const button = moreButton();
+        if (!container || !button || button.dataset.bound === '1') return;
+        button.dataset.bound = '1';
+        const pageSize = Number(container.dataset.pageSize ?? '20');
+        let visible = Math.min(
+          [...container.querySelectorAll('[data-moment]')].filter(
+            (item) => !item.classList.contains('moment--hidden'),
+          ).length,
+          pageSize,
+        );
+        setVisibleCount(visible);
+        button.addEventListener('click', () => {
+          visible += pageSize;
+          setVisibleCount(visible);
+        });
+      };
+
+      // ---- Ech0 运行时模式 ----
+      const extensionLabels = {
+        GITHUBPROJ: 'GitHub 项目',
+        MUSIC: '音乐',
+        WEBSITE: '网站',
+        LOCATION: '位置',
+        VIDEO: '视频',
+        TWEET: '推文',
+      };
+
+      const esc = (value) =>
+        String(value ?? '').replace(
+          /[&<>"']/g,
+          (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char],
+        );
+
+      const formatTime = (unixSeconds) => {
+        const date = new Date(unixSeconds * 1000);
+        const pad = (value) => String(value).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(
+          date.getHours(),
+        )}:${pad(date.getMinutes())}`;
+      };
+
+      const videoEmbedUrl = (raw) => {
+        const id = String(raw ?? '').trim();
+        if (!id) return '';
+        if (/^BV[\da-z]{10}$/i.test(id))
+          return `https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${id}&as_wide=1&high_quality=1&danmaku=0`;
+        if (/^[\w-]{11}$/.test(id)) return `https://www.youtube.com/embed/${id}`;
+        return '';
+      };
+
+      const extensionUrl = (extension) => {
+        const payload = extension?.payload ?? {};
+        const raw = payload.url || payload.link || payload.href || payload.repoUrl || payload.site;
+        if (!raw) return '';
+        const candidate = String(raw).includes('://') ? String(raw) : `https://${raw}`;
+        try {
+          const url = new URL(candidate);
+          return /^https?:$/.test(url.protocol) ? url.toString() : '';
+        } catch {
+          return '';
+        }
+      };
+
+      const extensionTitle = (extension) => {
+        const payload = extension?.payload ?? {};
+        if (extension?.type === 'MUSIC') return String(payload.title || payload.name || '音乐');
+        if (extension?.type === 'WEBSITE') return String(payload.title || payload.url || '网站');
+        if (extension?.type === 'GITHUBPROJ')
+          return String(payload.full_name || payload.repo || 'GitHub 项目');
+        if (extension?.type === 'LOCATION') return String(payload.placeholder || '查看位置');
+        if (extension?.type === 'VIDEO') return String(payload.title || '视频');
+        return String(payload.title || extensionLabels[extension?.type] || extension?.type || '');
+      };
+
+      const renderMoment = (item, apiUrl) => {
+        const images = (item.echo_files || [])
+          .map((file) => String(file?.file?.url || file?.url || ''))
+          .filter((url) => url && /\.(avif|gif|jpe?g|png|webp)([?#].*)?$/i.test(url))
+          .map((url) => (url.startsWith('/') ? `${apiUrl.replace(/\/$/, '')}${url}` : url));
+
+        const extension = item.extension?.type
+          ? {
+              type: extensionLabels[item.extension.type] ?? item.extension.type,
+              title: extensionTitle(item.extension),
+              url: extensionUrl(item.extension),
+            }
+          : null;
+        const video =
+          item.extension?.type === 'VIDEO'
+            ? videoEmbedUrl(
+                item.extension.payload?.videoId ||
+                  item.extension.payload?.url ||
+                  item.extension.payload?.bvid ||
+                  item.extension.payload?.id,
+              )
+            : '';
+
+        const tags = (item.tags || []).map((tag) => `#${esc(tag.name || '')}`).filter(Boolean);
+
+        return `
+          <li class="moment" data-moment>
+            <div class="moment__rail" aria-hidden="true"><span class="moment__dot"></span></div>
+            <article class="moment__card">
+              <header class="moment__head">
+                <span class="moment__owner"><span>${esc(item.username || '动态')}</span></span>
+                <time class="moment__time">${formatTime(item.created_at)}</time>
+              </header>
+              ${item.content ? `<p class="moment__content">${esc(item.content).replace(/\n/g, '<br />')}</p>` : ''}
+              ${
+                images.length
+                  ? `<div class="moment__images moment__images--${Math.min(images.length, 9)}">${images
+                      .slice(0, 9)
+                      .map(
+                        (src) =>
+                          `<a href="${esc(src)}" target="_blank" rel="noopener noreferrer"><img src="${esc(src)}" alt="" loading="lazy" decoding="async" /></a>`,
+                      )
+                      .join('')}</div>`
+                  : ''
+              }
+              ${video ? `<div class="moment__video"><iframe src="${esc(video)}" title="moment video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture"></iframe></div>` : ''}
+              ${
+                extension
+                  ? `<a class="moment__extension" ${extension.url ? `href="${esc(extension.url)}" target="_blank" rel="noopener noreferrer"` : ''}>
+                      <span class="moment__extension-type">${esc(extension.type)}</span>
+                      <span class="moment__extension-body"><strong>${esc(extension.title)}</strong></span>
+                    </a>`
+                  : ''
+              }
+              ${tags.length ? `<footer class="moment__tags">${tags.map((tag) => `<span>${tag}</span>`).join('')}</footer>` : ''}
+            </article>
+          </li>`;
+      };
+
+      const ech0State = { page: 1, total: 0 };
+
+      const fetchEchoPage = async (page) => {
+        const response = await fetch(`${apiUrl.replace(/\/$/, '')}/api/echo/query`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            page,
+            pageSize: Number(list()?.dataset.pageSize ?? 20),
+            sortOrder: 'desc',
+          }),
+        });
+        const payload = await response.json();
+        if (payload?.code !== 1 || !payload?.data) throw new Error('Ech0 query failed');
+        return payload.data;
+      };
+
+      const bindEch0Mode = async () => {
+        if (!ech0Mode) return;
+        const container = list();
+        const stats = statsEl();
+        const button = moreButton();
+        if (!container || container.dataset.booted === '1') return;
+        container.dataset.booted = '1';
+
+        try {
+          const data = await fetchEchoPage(ech0State.page);
+          ech0State.total = data.total ?? data.items?.length ?? 0;
+          container.insertAdjacentHTML(
+            'beforeend',
+            (data.items || []).map((item) => renderMoment(item, apiUrl)).join(''),
+          );
+          if (stats) stats.textContent = `${ech0State.total} 条动态`;
+          setVisibleCount(Number(container.dataset.pageSize ?? 20));
+          if (button) {
+            button.hidden = ech0State.total <= Number(container.dataset.pageSize ?? 20);
+            button.addEventListener('click', async () => {
+              ech0State.page += 1;
+              try {
+                const next = await fetchEchoPage(ech0State.page);
+                container.insertAdjacentHTML(
+                  'beforeend',
+                  (next.items || []).map((item) => renderMoment(item, apiUrl)).join(''),
+                );
+                const all = [...container.querySelectorAll('[data-moment]')];
+                setVisibleCount(all.length);
+                button.hidden = all.length >= ech0State.total;
+              } catch (error) {
+                console.error('[moments] 加载更多失败：', error);
+                ech0State.page -= 1;
+              }
+            });
+          }
+        } catch (error) {
+          console.error('[moments] Ech0 拉取失败：', error);
+          if (stats) stats.textContent = '动态加载失败';
+          container.insertAdjacentHTML(
+            'beforeend',
+            '<li><p class="moments-error">动态加载失败，请稍后刷新重试；也可以检查 Ech0 实例地址是否可用。</p></li>',
+          );
+        }
+      };
+
+      const boot = () => {
+        bindStaticMode();
+        void bindEch0Mode();
+      };
+
+      document.addEventListener('astro:page-load', boot);
+      if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', boot, { once: true });
+      else boot();
+    </script>
+  </body>
+</html>

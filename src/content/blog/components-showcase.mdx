@@ -31,6 +31,7 @@ import Chat from '@navfolio/mdx-components/Chat.astro';
 import Key from '@navfolio/mdx-components/Key.astro';
 import LinkCard from '@navfolio/mdx-components/LinkCard.astro';
 import MusicScore from '@navfolio/mdx-components/MusicScore.astro';
+import NeteasePlaylist from '@navfolio/mdx-components/NeteasePlaylist.astro';
 import Poetry from '@navfolio/mdx-components/Poetry.astro';
 import Tab from '@navfolio/mdx-components/Tab.astro';
 import VideoEmbed from '@navfolio/mdx-components/VideoEmbed.astro';
@@ -140,6 +141,15 @@ ABC 记谱法乐谱；soundfonts 可达时可试听（音色库不可达时仅�
 <MusicScore
   abc={`X:1\nT:小星星\nM:4/4\nL:1/4\nK:C\n"1"C C G G|A A G2|"5"F F E E|D D C2|w: Twink-le twink-le lit-tle star, how I won-der what you are.`}
 />
+
+### NeteasePlaylist 网易云歌单
+
+构建期经 Meting API 解析歌单后交给原生播放器。当前模板未配置 Meting 实例
+（`site.toml` 的 `[config.music].meting_api`），自动降级为链接卡片：
+
+<NeteasePlaylist id="7294439968" title="示例歌单" />
+
+配置 Meting 实例后，同一个组件会渲染成可播放的曲目列表。
 
 ---
 

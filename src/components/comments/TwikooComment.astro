@@ -1,0 +1,99 @@
+---
+import type { CommentsConfig } from '../../utils/comments';
+
+interface Props {
+  config: CommentsConfig['twikoo'];
+}
+
+const { config } = Astro.props;
+const defaultScriptSrc = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js';
+const scriptSrc = config.script_src.trim() || defaultScriptSrc;
+---
+
+<div id="twikoo" class="twikoo-comment-provider"></div>
+
+<script type="module" define:vars={{ scriptSrc, envId: config.env_id, lang: config.lang }}>
+  const loadTwikooScript = (src) =>
+    new Promise((resolve, reject) => {
+      if (window.twikoo) {
+        resolve(window.twikoo);
+        return;
+      }
+      const existing = document.querySelector(`script[data-twikoo-src="${src}"]`);
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.twikoo), { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = src;
+      script.dataset.twikooSrc = src;
+      script.addEventListener('load', () => resolve(window.twikoo), { once: true });
+      script.addEventListener('error', reject, { once: true });
+      document.head.append(script);
+    });
+
+  let bootedAt = '';
+
+  const mountTwikoo = async () => {
+    const container = document.querySelector('#twikoo');
+    if (!container) return;
+
+    try {
+      const twikoo = await loadTwikooScript(scriptSrc);
+      const bootKey = window.location.pathname;
+      // 同一页面重复触发（主题切换 / 视图路由）时保持挂载，避免闪回加载态
+      if (bootedAt === bootKey && container.childElementCount > 0) return;
+      bootedAt = bootKey;
+      await twikoo.init({
+        envId,
+        lang,
+        el: '#twikoo',
+      });
+    } catch (error) {
+      console.error('[twikoo] 加载失败：', error);
+    }
+  };
+
+  mountTwikoo();
+  document.addEventListener('astro:page-load', mountTwikoo);
+</script>
+
+<style>
+  .twikoo-comment-provider {
+    font-family: var(--font-meta);
+    font-size: 0.95rem;
+    color: var(--paper-ink);
+  }
+
+  .twikoo-comment-provider :global(input),
+  .twikoo-comment-provider :global(textarea) {
+    font-family: inherit;
+  }
+
+  .twikoo-comment-provider :global(.tk-time),
+  .twikoo-comment-provider :global(.tk-extras),
+  .twikoo-comment-provider :global(.tk-footer),
+  .twikoo-comment-provider :global(.tk-meta) {
+    color: var(--paper-ink-faint);
+    font-size: 0.82em;
+  }
+
+  .twikoo-comment-provider :global(.tk-input) {
+    border-radius: 0.5rem;
+  }
+
+  .twikoo-comment-provider :global(.tk-content img),
+  .twikoo-comment-provider :global(.tk-avatar-img) {
+    border-radius: 0.5rem;
+  }
+
+  .twikoo-comment-provider :global(a) {
+    color: var(--paper-accent);
+  }
+
+  .twikoo-comment-provider :global(.expand-btn),
+  .twikoo-comment-provider :global(.tk-expand) {
+    border-radius: 0.4rem;
+  }
+</style>

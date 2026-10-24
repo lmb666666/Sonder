@@ -1,0 +1,144 @@
+---
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import FriendCircle from '@navfolio/mdx-components/FriendCircle.astro';
+import type { FriendPost } from '@navfolio/mdx-components/lib/friend-data';
+import demoFeed from '../data/friend-circle-demo.json';
+import { allFriendLinks } from '../data/friends';
+import {
+  BaseHead,
+  BlogTopNav,
+  Footer,
+  getHtmlLang,
+  getSiteConfig,
+} from 'virtual:navfolio/page-runtime';
+
+const siteConfig = await getSiteConfig();
+const { site, theme } = siteConfig;
+const htmlLang = getHtmlLang(siteConfig);
+const palette = theme.palette;
+const circleConfig = siteConfig.friendCircle;
+
+// feed 源解析顺序：site.toml feed_src（URL 或 public/ 文件）→ public/friend-circle.json
+// （FCL 工作流同步产物）→ 仓库内置演示数据
+let feedSrc = circleConfig.feed_src.trim();
+if (!feedSrc) {
+  const syncedPath = resolve(process.cwd(), 'public', 'friend-circle.json');
+  feedSrc = existsSync(syncedPath) ? '/friend-circle.json' : '';
+}
+
+const isDemo = !feedSrc;
+const demoPosts: FriendPost[] = (demoFeed.posts as Array<Record<string, unknown>>).map((post) => ({
+  title: String(post.title ?? ''),
+  url: String(post.url ?? ''),
+  author: String(post.author ?? ''),
+  date: String(post.date ?? ''),
+  authorUrl: String(post.authorUrl ?? ''),
+  avatar: post.avatar ? String(post.avatar) : undefined,
+  tags: Array.isArray(post.tags) ? post.tags.map(String) : [],
+}));
+---
+
+<!doctype html>
+<html lang={htmlLang} data-palette={palette}>
+  <head>
+    <BaseHead title={`朋友圈 | ${site.title}`} description="来自友链的最新文章动态。" />
+  </head>
+  <body>
+    <BlogTopNav />
+    <main class="circle-page" data-pagefind-body>
+      <header class="circle-hero">
+        <p class="circle-kicker">Friend circle</p>
+        <h1 class="circle-title">朋友圈</h1>
+        <p class="circle-subtitle">来自友链的最新文章动态。</p>
+        {
+          isDemo && (
+            <p class="circle-note">
+              当前展示内置演示数据；在 site.toml 配置
+              <code>[config.friendCircle].feed_src</code>
+              或由 FCL 工作流同步 <code>public/friend-circle.json</code> 后自动切换为真实数据。
+            </p>
+          )
+        }
+      </header>
+
+      {
+        isDemo ? (
+          <FriendCircle
+            posts={demoPosts}
+            items={allFriendLinks}
+            limit={circleConfig.pageSize}
+            title="友链动态"
+            refreshLabel="刷新动态"
+          />
+        ) : (
+          <FriendCircle
+            feedSrc={feedSrc}
+            items={allFriendLinks}
+            limit={circleConfig.pageSize}
+            title="友链动态"
+            refreshLabel="刷新动态"
+          />
+        )
+      }
+    </main>
+    <Footer />
+
+    <style>
+      main {
+        width: min(100%, var(--layout-shell-width));
+        padding-top: 126px;
+      }
+
+      .circle-hero {
+        margin-bottom: clamp(40px, 7vw, 72px);
+      }
+
+      .circle-kicker {
+        margin: 0 0 12px;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .circle-title {
+        margin: 0;
+        color: var(--paper-ink);
+        font-size: clamp(2.32rem, 6.6vw, 4.35rem);
+        font-weight: 400;
+        line-height: 0.96;
+      }
+
+      .circle-subtitle {
+        max-width: 34ch;
+        margin: 18px 0 0;
+        color: var(--paper-ink-soft);
+        font-family: var(--font-ui-label);
+        font-size: clamp(0.98rem, 1.7vw, 1.16rem);
+        line-height: 1.68;
+      }
+
+      .circle-note {
+        max-width: 58ch;
+        margin: 14px 0 0;
+        padding: 10px 14px;
+        border: 1px dashed var(--paper-line-strong);
+        border-radius: 0.6rem;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.78rem;
+        line-height: 1.7;
+      }
+
+      .circle-note code {
+        padding: 0.1em 0.35em;
+        border-radius: 0.3em;
+        background: var(--paper-surface-muted);
+        font-family: var(--font-code);
+        font-size: 0.92em;
+      }
+    </style>
+  </body>
+</html>

@@ -36,10 +36,30 @@ collapseStyle = "collapsible-auto"
 [config.math]
 render = "katex" # "katex" | "mathjax"
 
+[config.music]
+# Meting API 实例地址，供 NeteasePlaylist 组件构建期解析歌单。
+# 支持 :server/:type/:id/:r 占位符，例如：
+# meting_api = "https://meting.example.com/api?server=:server&type=:type&id=:id&r=:r"
+meting_api = ""
+
+[config.friendCircle]
+# Friend-Circle-Lite 订阅源（URL 或 public/ 下的文件路径）。
+# 留空时依次尝试 public/friend-circle.json（FCL 工作流同步产物）、内置演示数据。
+# feed_src = "https://fcl.example.com/api"
+feed_src = ""
+pageSize = 20
+
 [config.comments]
 enabled = false
 provider = "none"
 show_on_posts = true
+
+[config.comments.twikoo]
+# Twikoo 环境地址（自部署或云托管实例的 URL）
+env_id = ""
+# 客户端脚本地址；留空使用 jsDelivr 默认源
+script_src = ""
+lang = "zh-CN"
 
 [config.search]
 enabled = true
@@ -84,6 +104,15 @@ kicker = ""
 subtitle = "生活与代码的碎片。"
 note = "不够写成文章，但也是故事的一部分。"
 showTrail = true
+
+[config.pages.moments]
+title = "动态"
+subtitle = "记录生活点滴。"
+note = ""
+# Ech0 后端地址（可选）。配置后动态页改为在浏览器里拉取真实动态；留空使用内置演示数据。
+apiUrl = ""
+pageSize = 20
+showPoweredBy = true
 
 [config.pages.media]
 title = "书影音"
@@ -140,12 +169,20 @@ label = "项目"
 module = "projects"
 
 [[config.topNav.links]]
-label = "随记"
-module = "vibe"
-
-[[config.topNav.links]]
 label = "书影音"
 module = "media"
+
+[[config.topNav.links]]
+label = "动态"
+href = "/moments"
+
+[[config.topNav.links]]
+label = "朋友圈"
+href = "/circle"
+
+[[config.topNav.links]]
+label = "友链"
+href = "/links"
 
 [[config.topNav.links]]
 label = "关于"

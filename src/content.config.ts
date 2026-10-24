@@ -80,7 +80,7 @@ const projectsModuleEnabled = isPageModuleEnabled(navfolioConfig, 'projects');
 const vibeModuleEnabled = isPageModuleEnabled(navfolioConfig, 'vibe');
 const mediaModuleEnabled = isPageModuleEnabled(navfolioConfig, 'media');
 
-const commentProviderSchema = z.enum(['giscus', 'utterances', 'waline', 'none']);
+const commentProviderSchema = z.enum(['giscus', 'utterances', 'waline', 'twikoo', 'none']);
 const mathRendererSchema = z.enum(['katex', 'mathjax']);
 const paletteSchema = z.enum([
   'green-soft',
@@ -160,6 +160,13 @@ const defaultWalineConfig = {
   comment: true,
 };
 
+const defaultTwikooConfig = {
+  env_id: '',
+  // Twikoo 客户端脚本地址；留空使用 jsDelivr 默认源
+  script_src: '',
+  lang: 'zh-CN',
+};
+
 const defaultCommentsConfig = {
   enabled: false,
   provider: 'none',
@@ -167,6 +174,7 @@ const defaultCommentsConfig = {
   giscus: defaultGiscusConfig,
   utterances: defaultUtterancesConfig,
   waline: defaultWalineConfig,
+  twikoo: defaultTwikooConfig,
 } satisfies {
   enabled: boolean;
   provider: z.infer<typeof commentProviderSchema>;
@@ -174,6 +182,7 @@ const defaultCommentsConfig = {
   giscus: typeof defaultGiscusConfig;
   utterances: typeof defaultUtterancesConfig;
   waline: typeof defaultWalineConfig;
+  twikoo: typeof defaultTwikooConfig;
 };
 
 const linkSchema = z.object({
@@ -304,6 +313,17 @@ const mediaPageSchema = z.object({
   note: z.string().optional().default(defaultPagesConfig.media.note),
 });
 
+const momentsPageSchema = z.object({
+  title: z.string().optional().default('动态'),
+  subtitle: z.string().optional().default('记录生活点滴。'),
+  note: z.string().optional().default(''),
+  // Ech0 后端地址（可选）。配置后页面在浏览器里从 Ech0 拉取动态；
+  // 留空则展示仓库内置演示数据。
+  apiUrl: z.string().optional().default(''),
+  pageSize: z.number().int().positive().optional().default(20),
+  showPoweredBy: z.boolean().optional().default(true),
+});
+
 const siteConfig = defineCollection({
   loader: file('./src/config/site.toml'),
   schema: z.object({
@@ -352,6 +372,22 @@ const siteConfig = defineCollection({
       })
       .optional()
       .default(defaultMathConfig),
+    music: z
+      .object({
+        // Meting API 实例地址模板，支持 :server/:type/:id/:r 占位符
+        meting_api: z.string().optional().default(''),
+      })
+      .optional()
+      .default({ meting_api: '' }),
+    friendCircle: z
+      .object({
+        // Friend-Circle-Lite 订阅源（URL 或 public/ 下的文件路径）；
+        // 留空时回退到仓库内置演示数据
+        feed_src: z.string().optional().default(''),
+        pageSize: z.number().int().positive().optional().default(20),
+      })
+      .optional()
+      .default({ feed_src: '', pageSize: 20 }),
     comments: z
       .object({
         enabled: z.boolean().optional().default(false),
@@ -394,6 +430,14 @@ const siteConfig = defineCollection({
           })
           .optional()
           .default(defaultWalineConfig),
+        twikoo: z
+          .object({
+            env_id: z.string().optional().default(''),
+            script_src: z.string().optional().default(''),
+            lang: z.string().optional().default('zh-CN'),
+          })
+          .optional()
+          .default(defaultTwikooConfig),
       })
       .optional()
       .default(defaultCommentsConfig),
@@ -429,6 +473,14 @@ const siteConfig = defineCollection({
         projects: projectsPageSchema.optional().default(defaultPagesConfig.projects),
         vibe: vibePageSchema.optional().default(defaultPagesConfig.vibe),
         media: mediaPageSchema.optional().default(defaultPagesConfig.media),
+        moments: momentsPageSchema.optional().default({
+          title: '动态',
+          subtitle: '记录生活点滴。',
+          note: '',
+          apiUrl: '',
+          pageSize: 20,
+          showPoweredBy: true,
+        }),
       })
       .optional()
       .default(defaultPagesConfig),

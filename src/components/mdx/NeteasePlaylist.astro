@@ -1,0 +1,125 @@
+---
+/**
+ * 网易云歌单包装组件：构建期通过 Meting API 解析歌单为曲目清单，
+ * 交给原生 MusicPlayer 渲染；解析失败时降级为打开歌单的链接卡片。
+ *
+ * Meting 实例地址在 site.toml 的 [config.music].meting_api 配置
+ * （支持 :server/:type/:id/:r 占位符），也可通过组件 prop 覆盖。
+ */
+import { getSiteConfig } from '../../data/site';
+import type { MusicThemeName } from './lib/music-theme';
+import LinkCard from './LinkCard.astro';
+import MusicPlayer from './MusicPlayer.astro';
+
+interface Props {
+  /** 网易云歌单 ID */
+  id: string | number;
+  /** Meting API 实例地址；缺省取 site.toml [config.music].meting_api */
+  metingApi?: string;
+  title?: string;
+  artist?: string;
+  size?: 'narrow' | 'compact' | 'normal' | 'wide' | 'full';
+  theme?: MusicThemeName;
+}
+
+type MetingTrack = {
+  name?: string;
+  title?: string;
+  artist?: unknown;
+  artistes?: unknown;
+  url?: string;
+  pic?: string;
+  cover?: string;
+};
+
+const { id, metingApi, title, artist, size, theme } = Astro.props;
+
+const site = await getSiteConfig();
+const apiTemplate = (metingApi ?? site.music.meting_api).trim();
+const fallbackUrl = `https://music.163.com/#/playlist?id=${id}`;
+const fallbackTitle = title?.trim() || '网易云歌单';
+
+let tracks: Array<{
+  title: string;
+  artist?: string;
+  artwork?: string;
+  src: string;
+}> = [];
+let loadError = '';
+
+if (apiTemplate) {
+  const endpoint = apiTemplate
+    .replace(/:server/g, 'netease')
+    .replace(/:type/g, 'playlist')
+    .replace(/:id/g, String(id))
+    .replace(/:r/g, String(Math.random()));
+
+  try {
+    const response = await fetch(endpoint, {
+      signal: AbortSignal.timeout(10_000),
+      headers: { accept: 'application/json' },
+    });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    const data: unknown = JSON.parse(await response.text());
+    const list = Array.isArray(data)
+      ? data
+      : Array.isArray((data as { playlist?: unknown[] })?.playlist)
+        ? (data as { playlist: MetingTrack[] }).playlist
+        : [];
+    const artistText = (value: unknown): string =>
+      Array.isArray(value)
+        ? value
+            .map((entry) => (typeof entry === 'string' ? entry : ''))
+            .filter(Boolean)
+            .join(' / ')
+        : typeof value === 'string'
+          ? value
+          : '';
+    tracks = list
+      .map((entry) => {
+        const track = entry as MetingTrack;
+        const name = (track.title ?? track.name ?? '').toString().trim();
+        const src = (track.url ?? '').toString().trim();
+        if (!name || !src) return null;
+        return {
+          title: name,
+          artist: artistText(track.artist ?? track.artistes) || undefined,
+          artwork: (track.pic ?? track.cover ?? '').toString().trim() || undefined,
+          src,
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    if (!tracks.length) throw new Error('empty playlist');
+  } catch (error) {
+    loadError = error instanceof Error ? error.message : String(error);
+    console.warn(`[NeteasePlaylist] Meting 解析失败，降级为链接卡片：${loadError}`);
+  }
+} else {
+  console.warn(
+    '[NeteasePlaylist] 未配置 Meting API（site.toml [config.music].meting_api），降级为链接卡片。',
+  );
+}
+---
+
+{
+  tracks.length > 0 ? (
+    <MusicPlayer
+      playlist={tracks}
+      provider="netease"
+      title={title || '网易云歌单'}
+      artist={artist}
+      size={size}
+      theme={theme}
+      url={fallbackUrl}
+    />
+  ) : (
+    <LinkCard
+      link={fallbackUrl}
+      title={fallbackTitle}
+      description={
+        loadError ? `歌单解析失败（${loadError}），点击直接打开` : '点击在网易云音乐打开歌单'
+      }
+      icon="https://p1.music.126.net/q7J5VsX8XmvwNq4a-OgKfA==/109951168192611458.jpg"
+    />
+  )
+}

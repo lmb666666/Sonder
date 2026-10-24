@@ -4,6 +4,7 @@ import { canRenderProvider, getCommentProvider, resolveCommentsConfig } from '..
 import GiscusComment from './GiscusComment.astro';
 import UtterancesComment from './UtterancesComment.astro';
 import WalineComment from './WalineComment.astro';
+import TwikooComment from './TwikooComment.astro';
 
 interface Props {
   frontmatter: {
@@ -30,6 +31,7 @@ const shouldRender = provider ? canRenderProvider(comments, provider) : false;
       {provider === 'giscus' && <GiscusComment config={comments.giscus} />}
       {provider === 'utterances' && <UtterancesComment config={comments.utterances} />}
       {provider === 'waline' && <WalineComment config={comments.waline} />}
+      {provider === 'twikoo' && <TwikooComment config={comments.twikoo} />}
     </section>
   )
 }

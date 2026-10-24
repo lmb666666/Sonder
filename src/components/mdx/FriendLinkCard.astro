@@ -1,5 +1,5 @@
 ---
-import { Link } from 'lucide-astro';
+import { Link, Rss } from 'lucide-astro';
 import {
   orderFriendLinks,
   resolveFriendLinkItems,
@@ -96,6 +96,11 @@ const background = (index: number) => {
                 <span>{(name[0] || '?').toUpperCase()}</span>
               )}
             </span>
+            {trim(item.rss) && !preview ? (
+              <span class="friend-link-card__rss" title={`RSS: ${trim(item.rss)}`}>
+                <Rss size={12} strokeWidth={1.8} aria-hidden="true" />
+              </span>
+            ) : null}
             <span class="friend-link-card__meta">
               <span class="friend-link-card__heading">
                 <strong data-friend-link-card-name={preview ? '' : undefined}>{displayName}</strong>
@@ -118,6 +123,22 @@ const background = (index: number) => {
 </div>
 
 <style>
+  .friend-link-card__rss {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 999px;
+    background: var(--paper-surface);
+    color: var(--paper-ink-faint);
+    pointer-events: none;
+  }
+
   .friend-link-region {
     container-type: inline-size;
     margin: 18px 0;

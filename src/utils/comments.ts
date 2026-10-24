@@ -4,7 +4,7 @@ export type CommentProvider = SiteConfig['comments']['provider'];
 export type CommentsConfig = SiteConfig['comments'];
 
 const giscusRequiredFields = ['repo', 'repo_id', 'category', 'category_id'] as const;
-const commentProviders = ['giscus', 'utterances', 'waline', 'none'] as const;
+const commentProviders = ['giscus', 'utterances', 'waline', 'twikoo', 'none'] as const;
 const commentSectionCollections = new Set(['blog', 'about']);
 
 export function supportsCommentSection(collection?: string) {
@@ -54,12 +54,14 @@ export function resolveCommentsConfig(config: CommentsConfig): CommentsConfig {
   giscus = withEnvString(giscus, 'repo_id', 'NAVFOLIO_GISCUS_REPO_ID');
   giscus = withEnvString(giscus, 'category', 'NAVFOLIO_GISCUS_CATEGORY');
   giscus = withEnvString(giscus, 'category_id', 'NAVFOLIO_GISCUS_CATEGORY_ID');
+  const twikoo = withEnvString(config.twikoo, 'env_id', 'NAVFOLIO_TWIKOO_ENV_ID');
 
   return {
     ...config,
     enabled,
     provider,
     giscus,
+    twikoo,
   };
 }
 
@@ -94,6 +96,10 @@ export function getMissingProviderFields(config: CommentsConfig, provider: Comme
 
   if (provider === 'waline') {
     return config.waline.server_url.trim() ? [] : ['server_url'];
+  }
+
+  if (provider === 'twikoo') {
+    return config.twikoo.env_id.trim() ? [] : ['env_id'];
   }
 
   return [];
