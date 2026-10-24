@@ -203,6 +203,16 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
     document.addEventListener('DOMContentLoaded', syncThemeControls, { once: true });
     document.addEventListener('astro:page-load', syncThemeControls);
 
+    // 换页前把运行时主题/色盘带进新文档：SSR 的 <html> 只有色盘没有 data-theme，
+    // Astro 交换根属性时会短暂丢掉深色主题，表现为换页闪一下白底。
+    document.addEventListener('astro:before-swap', (event) => {
+      const incoming = event.newDocument?.documentElement;
+      if (!incoming) return;
+      if (root.dataset.theme) incoming.dataset.theme = root.dataset.theme;
+      if (root.dataset.palette) incoming.dataset.palette = root.dataset.palette;
+      incoming.style.colorScheme = root.style.colorScheme || root.dataset.theme || '';
+    });
+
     window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
       if (!storedTheme()) applyTheme(event.matches ? 'dark' : 'light', false);
     });

@@ -259,6 +259,12 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* 换页过渡期间底色始终铺满纸色，避免快照交界处漏出白底 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  background-color: var(--paper-bg);
+}
+
 body {
   min-height: 100vh;
   background: var(--paper-page-bg);
