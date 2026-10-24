@@ -68,7 +68,12 @@ const ui = getUiText(siteConfig);
         <p class="archive-note">{ui.groups.seriesNote(posts.length)}</p>
       </header>
 
-      <BlogPostList posts={posts} coverImageStyle={pageMeta.coverImageStyle} listTag="ol" />
+      <BlogPostList
+        posts={posts}
+        coverImageStyle={pageMeta.coverImageStyle}
+        listLayout={pageMeta.listLayout}
+        listTag="ol"
+      />
     </main>
     <Footer />
   </body>

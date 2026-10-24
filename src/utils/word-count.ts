@@ -10,3 +10,10 @@ export function countWords(text: string): number {
 export function formatCount(n: number): string {
   return n >= 10000 ? `${(n / 10000).toFixed(1).replace(/\.0$/, '')} 万` : String(n);
 }
+
+/** 阅读时长估算（与文章页同口径：英文 220 词/分钟，CJK 500 字/分钟）。 */
+export function readingMinutes(text: string): number {
+  const englishWords = text.match(ENGLISH_WORD)?.length ?? 0;
+  const cjkChars = text.match(CJK_CHAR)?.length ?? 0;
+  return Math.max(1, Math.ceil(englishWords / 220 + cjkChars / 500));
+}

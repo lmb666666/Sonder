@@ -222,6 +222,7 @@ const defaultPagesConfig = {
     dateFormat: 'MMM d, yyyy',
     metadataSeparator: '·',
     coverImageStyle: 'card',
+    listLayout: 'rows',
     categories: {
       title: 'Categories',
       kicker: 'Browse notes',
@@ -271,6 +272,7 @@ const blogPageSchema = z.object({
   coverImageStyle: blogCoverImageStyleSchema
     .optional()
     .default(defaultPagesConfig.blog.coverImageStyle),
+  listLayout: z.enum(['rows', 'media']).optional().default(defaultPagesConfig.blog.listLayout),
   categories: z
     .object({
       title: z.string().optional().default(defaultPagesConfig.blog.categories.title),

@@ -1,0 +1,210 @@
+/* krisyan-style media cards: two-column grid, the cover fills the whole card
+   and the title/meta sit on a bottom scrim (white text, both themes).
+   Rendered by BlogPostMediaList. */
+.media-stack {
+  display: grid;
+  gap: 32px;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 1024px) {
+  .media-stack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.media-card {
+  position: relative;
+  display: flex;
+  aspect-ratio: 4 / 3;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: 1px solid var(--paper-line);
+  border-radius: 24px;
+  background: var(--paper-surface-muted);
+  box-shadow: var(--paper-shadow);
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.media-card:hover {
+  border-color: var(--paper-line-strong);
+  box-shadow: var(--paper-shadow-lift);
+  transform: translateY(-2px);
+}
+
+.media-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.94);
+  transition: transform 320ms ease;
+}
+
+:root[data-theme='dark'] .media-cover {
+  filter: none;
+}
+
+.media-card:hover .media-cover {
+  transform: scale(1.04);
+}
+
+/* Bottom scrim keeps the overlaid text readable on any cover. */
+.media-card::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8, 10, 14, 0.8) 0%,
+    rgba(8, 10, 14, 0.44) 34%,
+    transparent 64%
+  );
+  content: '';
+  pointer-events: none;
+}
+
+.media-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 6px;
+  padding: 20px;
+}
+
+.media-title {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--paper-surface);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+  opacity: 0.88;
+  text-overflow: ellipsis;
+  transition: opacity 180ms ease;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.media-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--paper-surface);
+  font-family: var(--font-meta);
+  font-size: 0.78rem;
+  font-weight: 500;
+  opacity: 0.62;
+  transition: opacity 180ms ease;
+}
+
+.media-card:hover .media-title,
+.media-card:hover .media-meta {
+  opacity: 1;
+}
+
+.media-meta-side {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: center;
+}
+
+.media-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.media-meta-chip > svg {
+  flex: 0 0 auto;
+  opacity: 0.85;
+}
+
+.media-pin {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(8, 10, 14, 0.45);
+  color: #fffefb;
+  font-family: var(--font-meta);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.3;
+  backdrop-filter: blur(6px);
+}
+
+/* Coverless posts: quiet paper panel instead of the scrim. */
+.media-card.is-fallback::after {
+  content: none;
+}
+
+.media-ghost {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-meta);
+  font-size: clamp(2.6rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--paper-accent) 26%, transparent);
+  user-select: none;
+}
+
+.is-fallback .media-title {
+  color: var(--paper-ink);
+  opacity: 1;
+}
+
+.is-fallback .media-meta {
+  color: var(--paper-ink-soft);
+  opacity: 1;
+}
+
+.is-fallback .media-pin {
+  border: 1px solid var(--paper-line);
+  background: var(--paper-surface);
+  color: var(--paper-accent);
+  backdrop-filter: none;
+}
+
+.media-card:focus-visible {
+  border-color: var(--paper-accent);
+  outline: 2px solid color-mix(in srgb, var(--paper-accent) 34%, transparent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .media-stack {
+    gap: 24px;
+  }
+
+  .media-card {
+    border-radius: 18px;
+  }
+
+  .media-body {
+    padding: 16px;
+  }
+
+  .media-title {
+    font-size: 1.1rem;
+  }
+}

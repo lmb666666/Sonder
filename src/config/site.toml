@@ -92,8 +92,10 @@ postsPerPage = 6
 dateFormat = "yyyy-MM-dd"
 # 元信息分隔符。可以使用 "|"、"/" 等符号，也可以使用特殊值 "icon"。
 metadataSeparator = "icon"
-# 文章列表封面样式："card" 保留带边框的缩略图，"mask" 会将图片融合到右侧。
+# 文章列表封面样式（仅 rows 布局生效）："card" 保留带边框的缩略图，"mask" 会将图片融合到右侧。
 coverImageStyle = "mask"
+# 文章列表布局："rows" 行式列表（标题 + 序号 + 摘要 + 小缩略图），"media" 媒体布局（标题 + 元信息 + 大图，仿 krisyan.dev）。
+listLayout = "media"
 
 [config.pages.blog.categories]
 title = "分类"

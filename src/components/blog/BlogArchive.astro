@@ -9,6 +9,7 @@ import '@navfolio/theme-default/styles/blog-archive.css';
 
 type BlogPost = CollectionEntry<'blog'>;
 type CoverImageStyle = 'card' | 'mask';
+type PostListLayout = 'rows' | 'media';
 
 interface PaginationState {
   currentPage: number;
@@ -32,6 +33,7 @@ interface Props {
   headerSubtitle?: string;
   headerNote?: string;
   coverImageStyle?: CoverImageStyle;
+  listLayout?: PostListLayout;
 }
 
 const {
@@ -42,6 +44,7 @@ const {
   headerSubtitle,
   headerNote,
   coverImageStyle = 'card',
+  listLayout = 'rows',
 } = Astro.props;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const hasPagination = page.lastPage > 1;
@@ -68,7 +71,12 @@ function getPageHref(pageNumber: number) {
 />
 <slot name="after-header" />
 <section>
-  <BlogPostList posts={page.data} postOffset={postOffset} coverImageStyle={coverImageStyle} />
+  <BlogPostList
+    posts={page.data}
+    postOffset={postOffset}
+    coverImageStyle={coverImageStyle}
+    listLayout={listLayout}
+  />
 </section>
 {
   hasPagination && (

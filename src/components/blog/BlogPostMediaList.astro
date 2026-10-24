@@ -1,0 +1,97 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import FormattedDate from '../FormattedDate.astro';
+import Icon from '../Icon.astro';
+import SmartImage from '../SmartImage.astro';
+import { getSiteConfig } from '../../data/site';
+import { isStickyEntry } from '../../utils/content-dates';
+import { getUiText } from '../../utils/ui-text';
+import { countWords, formatCount, readingMinutes } from '../../utils/word-count';
+import '@navfolio/theme-default/styles/blog-post-media-list.css';
+
+type BlogPost = CollectionEntry<'blog'>;
+
+interface Props {
+  posts: BlogPost[];
+  postOffset?: number;
+  listTag?: 'ul' | 'ol';
+}
+
+const { posts, postOffset = 0, listTag = 'ul' } = Astro.props;
+const ListTag = listTag;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const ui = getUiText(await getSiteConfig());
+
+function withBase(href: string) {
+  if (href === '/') {
+    return `${basePath}/` || '/';
+  }
+
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
+---
+
+<ListTag class="media-stack">
+  {
+    posts.map((post, index) => {
+      const postHref = withBase(`/blog/${post.id}/`);
+      const sticky = isStickyEntry(post);
+      const categories = post.data.categories;
+      const cover = post.data.heroImage;
+      const bodyText = typeof post.body === 'string' ? post.body : post.data.description;
+      const words = formatCount(countWords(bodyText));
+      const minutes = readingMinutes(bodyText);
+
+      return (
+        <li class="media-item">
+          <a
+            class:list={['media-card', { 'is-fallback': !cover }]}
+            href={postHref}
+            data-archive-post-href={postHref}
+          >
+            {cover ? (
+              <SmartImage class="media-cover" width={960} height={720} src={cover} alt="" />
+            ) : (
+              <span class="media-ghost" aria-hidden="true">
+                {String(postOffset + index + 1).padStart(2, '0')}
+              </span>
+            )}
+            {sticky && (
+              <span class="media-pin">
+                <Icon name="pin" size={12} strokeWidth={2.4} />
+                {ui.article.pinned}
+              </span>
+            )}
+            <span class="media-body">
+              <h2 class="media-title">{post.data.title}</h2>
+              <span class="media-meta">
+                <span class="media-meta-side">
+                  <span class="media-meta-chip">
+                    <Icon name="calendar" size={13} strokeWidth={2} />
+                    <FormattedDate date={post.data.date} />
+                  </span>
+                  {categories.length > 0 && (
+                    <span class="media-meta-chip">
+                      <Icon name="folder" size={13} strokeWidth={2} />
+                      {categories.join(', ')}
+                    </span>
+                  )}
+                </span>
+                <span class="media-meta-side">
+                  <span class="media-meta-chip">
+                    <Icon name="pen" size={13} strokeWidth={2} />
+                    {words}字
+                  </span>
+                  <span class="media-meta-chip">
+                    <Icon name="clock" size={13} strokeWidth={2} />
+                    {ui.article.readingTime(minutes)}
+                  </span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </li>
+      );
+    })
+  }
+</ListTag>
