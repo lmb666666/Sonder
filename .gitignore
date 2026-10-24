@@ -26,7 +26,14 @@ pnpm-debug.log*
 
 AGENTS.md
 
+# local planning docs — never commit or publish
+REWRITE-PLAN.md
+AGENT-PROMPT.md
+
 # generated font files
 scripts/fonts/ui-chars.txt
 public/fonts/*-subset.woff2
 public/friend-circle.json
+
+# baseline comparison screenshots (internal, not published)
+screenshots/
