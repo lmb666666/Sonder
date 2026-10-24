@@ -1,0 +1,108 @@
+---
+import { format } from 'date-fns';
+import { name as ciName, isCI } from 'ci-info';
+import { getSiteConfig } from '../../data/site';
+import { timeElapse } from '../../utils/time';
+
+const siteConfig = await getSiteConfig();
+const { site, siteInfo } = siteConfig;
+
+interface Row {
+  label: string;
+  value: string;
+  tip?: string;
+}
+
+// 构建平台：ci-info 识别（GitHub Actions / Vercel / Cloudflare Pages…），
+// EdgeOne 走腾讯云 SCF 环境变量（Sonder v1 同款逻辑）。非 CI 环境隐藏该行。
+function detectBuildPlatform(): string {
+  if (process.env.TENCENTCLOUD_RUNENV === 'SCF') return 'EdgeOne';
+  return isCI && ciName ? ciName.split(' ')[0] : '';
+}
+
+const buildTime = new Date();
+
+const rows: Row[] = [];
+if (siteInfo.uptime && site.timeEstablished) {
+  rows.push({
+    label: '运行时长',
+    value: timeElapse(site.timeEstablished),
+    tip: `站点于 ${site.timeEstablished} 上线`,
+  });
+}
+if (siteInfo.lastUpdated) {
+  rows.push({
+    label: '上次更新',
+    value: format(buildTime, 'yyyy-MM-dd HH:mm'),
+    tip: '构建于页面生成时刻',
+  });
+}
+if (siteInfo.imageBed.enabled && siteInfo.imageBed.name) {
+  rows.push({ label: '图片存储', value: siteInfo.imageBed.name });
+}
+if (siteInfo.buildPlatform) {
+  const platform = detectBuildPlatform();
+  if (platform) rows.push({ label: '构建平台', value: platform });
+}
+---
+
+{
+  rows.length > 0 && (
+    <article class="glass-card site-info-card">
+      <h2>{siteInfo.title}</h2>
+      <dl>
+        {rows.map((row) => (
+          <div class="site-info-row">
+            <dt>{row.label}</dt>
+            <dd title={row.tip}>{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </article>
+  )
+}
+
+<style>
+  .site-info-card {
+    display: grid;
+    gap: 12px;
+    padding: 16px 18px;
+    font-family: var(--font-meta);
+  }
+
+  .site-info-card h2 {
+    margin: 0;
+    color: var(--paper-ink-faint);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .site-info-card dl {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .site-info-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .site-info-row dt {
+    color: var(--paper-ink-faint);
+    font-size: 0.76rem;
+  }
+
+  .site-info-row dd {
+    margin: 0;
+    color: var(--paper-ink-soft);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+</style>

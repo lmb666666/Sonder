@@ -7,9 +7,9 @@
 
     <aside class="flow-column side-column">
       <slot name="profile" />
-      <slot name="latest" />
-      <slot name="navigation" />
       <slot name="connect" />
+      <slot name="latest" />
+      <slot name="siteInfo" />
     </aside>
   </section>
 </main>
@@ -71,12 +71,12 @@
     aspect-ratio: 1;
   }
 
-  .flow-grid :global(.nav-card) {
-    padding: 14px 0 0;
+  .flow-grid :global(.connect-card) {
+    padding: 0 0 10px;
   }
 
-  .flow-grid :global(.connect-card) {
-    padding: 14px 0 0;
+  .flow-grid :global(.site-info-card) {
+    margin-top: 12px;
   }
 
   .flow-grid :global(.intro-card) {
@@ -122,10 +122,6 @@
       order: 1;
     }
 
-    .flow-grid :global(.nav-card) {
-      order: 3;
-    }
-
     .flow-grid :global(.connect-card) {
       order: 2;
       margin-block: -18px -10px;
@@ -139,6 +135,11 @@
 
     .flow-grid :global(.doing-card) {
       order: 6;
+    }
+
+    .flow-grid :global(.site-info-card) {
+      order: 7;
+      margin-top: 0;
     }
   }
 </style>

@@ -334,6 +334,8 @@ const siteConfig = defineCollection({
       url: siteUrlSchema,
       repository: z.url(),
       footerNote: z.string(),
+      // 站点建立日期（站点信息卡的运行时长；留空隐藏该行）
+      timeEstablished: z.string().optional(),
     }),
     theme: z
       .object({
@@ -440,6 +442,29 @@ const siteConfig = defineCollection({
       })
       .optional()
       .default(defaultCommentsConfig),
+    siteInfo: z
+      .object({
+        title: z.string().optional().default('站点信息'),
+        uptime: z.boolean().optional().default(true),
+        lastUpdated: z.boolean().optional().default(true),
+        buildPlatform: z.boolean().optional().default(true),
+        imageBed: z
+          .object({
+            enabled: z.boolean().optional().default(false),
+            name: z.string().optional().default(''),
+            icon: z.string().optional().default(''),
+          })
+          .optional()
+          .default({ enabled: false, name: '', icon: '' }),
+      })
+      .optional()
+      .default({
+        title: '站点信息',
+        uptime: true,
+        lastUpdated: true,
+        buildPlatform: true,
+        imageBed: { enabled: false, name: '', icon: '' },
+      }),
     profile: z.object({
       name: z.string(),
       handle: z.string(),

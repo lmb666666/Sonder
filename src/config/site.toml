@@ -6,6 +6,19 @@ pageDescription = "每个人都有自己的故事。"
 url = "https://sonder.liang.one"
 repository = "https://github.com/lmb666666/Sonder"
 footerNote = "署名-非商业性使用-相同方式共享 4.0 国际（CC BY-NC-SA 4.0）"
+# 站点建立日期（站点信息卡的运行时长；留空隐藏该行）
+timeEstablished = "2026-10-04"
+
+[config.siteInfo]
+title = "站点信息"
+uptime = true
+lastUpdated = true
+buildPlatform = true
+
+[config.siteInfo.imageBed]
+enabled = false
+name = ""
+icon = ""
 
 [config.theme]
 # 可用色盘：

@@ -1,11 +1,11 @@
 ---
 import IntroCard from '../components/cards/IntroCard.astro';
 import ConnectCard from '../components/cards/ConnectCard.astro';
-import NavigationCard from '../components/cards/NavigationCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
 import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
 import DoingCard from '../components/widgets/DoingCard.astro';
+import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
@@ -34,8 +34,8 @@ const { home, profile, site } = await getSiteConfig();
       />
     </Fragment>
 
-    <Fragment slot="navigation">
-      <NavigationCard items={home.navigation} />
+    <Fragment slot="siteInfo">
+      <SiteInfoCard />
     </Fragment>
 
     <Fragment slot="connect">

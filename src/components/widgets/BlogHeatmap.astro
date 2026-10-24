@@ -57,21 +57,6 @@ function getDayHref(day: HeatmapDay) {
 ---
 
 <article class="glass-card heatmap-card">
-  <div class="stats-row">
-    <div class="stat-item">
-      <strong>{heatmap.totalPosts}</strong>
-      <span>{ui.heatmap.totalPosts}</span>
-    </div>
-    <div class="stat-item">
-      <strong>{heatmap.activeDays}</strong>
-      <span>{ui.heatmap.activeDays}</span>
-    </div>
-    <div class="stat-item">
-      <strong>{heatmap.currentStreak}</strong>
-      <span>{ui.heatmap.dayStreak}</span>
-    </div>
-  </div>
-
   {
     showLatest && heatmap.latestPosts.length > 0 && (
       <aside class="latest-tip" aria-label={ui.heatmap.latestPublishedPosts}>
@@ -148,33 +133,6 @@ function getDayHref(day: HeatmapDay) {
     border-color: transparent;
     box-shadow: none;
     transform: none;
-  }
-
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .stat-item {
-    display: grid;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .stat-item strong {
-    color: var(--paper-ink);
-    font-size: 1.12rem;
-    line-height: 1;
-  }
-
-  .stat-item span {
-    overflow: hidden;
-    color: var(--paper-ink-soft);
-    font-size: 0.72rem;
-    line-height: 1.2;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .latest-tip {
