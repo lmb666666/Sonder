@@ -84,7 +84,6 @@ const { links } = Astro.props as { links: ConnectLink[] };
   .connect-list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
     gap: 8px;
   }
 
@@ -93,12 +92,12 @@ const { links } = Astro.props as { links: ConnectLink[] };
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     padding: 0;
-    border: 0;
+    border: 1px solid var(--paper-line);
     border-radius: 8px;
-    background: transparent;
+    background: var(--paper-control);
     color: var(--paper-ink);
     font: inherit;
     text-decoration: none;
@@ -107,13 +106,15 @@ const { links } = Astro.props as { links: ConnectLink[] };
     transition:
       transform 180ms ease,
       background 180ms ease,
+      border-color 180ms ease,
       color 180ms ease;
   }
 
   :global(.connect-icon:hover),
   :global(.connect-icon:focus-visible),
   :global(.connect-icon.is-copied) {
-    background: transparent;
+    background: var(--paper-control-hover);
+    border-color: var(--paper-accent);
     color: var(--paper-accent);
     transform: translateY(-1px);
   }

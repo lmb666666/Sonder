@@ -48,7 +48,7 @@ if (siteInfo.buildPlatform) {
 
 {
   rows.length > 0 && (
-    <article class="glass-card site-info-card">
+    <article class="site-info-card">
       <h2>{siteInfo.title}</h2>
       <dl>
         {rows.map((row) => (
@@ -63,10 +63,17 @@ if (siteInfo.buildPlatform) {
 }
 
 <style>
+  /* 与侧栏其余块同款的安静无框形态（热力图亦无框） */
   .site-info-card {
+    width: 100%;
     display: grid;
-    gap: 12px;
-    padding: 16px 18px;
+    gap: 10px;
+    padding: 14px 0 0;
+    border: 0;
+    border-top: 1px solid var(--paper-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
     font-family: var(--font-meta);
   }
 
