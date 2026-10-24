@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
 import { format } from 'date-fns';
 import FormattedDate from '../FormattedDate.astro';
 import Icon from '../Icon.astro';
@@ -38,6 +39,19 @@ const cards = await Promise.all(
     const cover = post.data.heroImage;
     const bodyText = typeof post.body === 'string' ? post.body : post.data.description;
     const band = cover ? await getCoverBand(cover, post.filePath) : null;
+    // 文字条背景：封面缩略图（会被磨砂模糊，小尺寸即可），与图片区共用同一张图
+    let bandImage: string | null = null;
+    if (cover) {
+      if (typeof cover === 'string') {
+        bandImage = cover;
+      } else {
+        try {
+          bandImage = (await getImage({ src: cover, width: 160, format: 'webp' })).src;
+        } catch {
+          bandImage = cover.src;
+        }
+      }
+    }
     return {
       post,
       index,
@@ -49,10 +63,12 @@ const cards = await Promise.all(
         ...post.data.series.filter((name) => !post.data.categories.includes(name)),
       ],
       cover,
+      bandImage,
       shortDate: format(post.data.date, 'MM-dd'),
       words: formatCount(countWords(bodyText)),
       minutes: readingMinutes(bodyText),
       bandStyle: band ? `--media-band:${band.band};--media-fg:${band.fg}` : undefined,
+      bandVars: bandImage ? `--media-image:url(${bandImage})` : undefined,
     };
   }),
 );
@@ -61,20 +77,35 @@ const cards = await Promise.all(
 <ListTag class="media-stack">
   {
     cards.map(
-      ({ post, index, postHref, sticky, groups, cover, shortDate, words, minutes, bandStyle }) => {
+      ({
+        post,
+        index,
+        postHref,
+        sticky,
+        groups,
+        cover,
+        bandImage,
+        shortDate,
+        words,
+        minutes,
+        bandStyle,
+        bandVars,
+      }) => {
         return (
           <li class="media-item">
             <a
               class:list={['media-card', { 'is-fallback': !cover }]}
               href={postHref}
               data-archive-post-href={postHref}
-              style={bandStyle}
+              style={[bandStyle, bandVars].filter(Boolean).join(';') || undefined}
             >
               {cover ? (
-                <SmartImage class="media-cover" width={960} height={720} src={cover} alt="" />
+                <span class="media-cover-frame">
+                  <SmartImage class="media-cover" width={960} height={540} src={cover} alt="" />
+                </span>
               ) : (
-                <span class="media-ghost" aria-hidden="true">
-                  {String(postOffset + index + 1).padStart(2, '0')}
+                <span class="media-cover-frame media-cover-fallback" aria-hidden="true">
+                  <span class="media-ghost">{String(postOffset + index + 1).padStart(2, '0')}</span>
                 </span>
               )}
               {sticky && (

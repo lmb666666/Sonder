@@ -1,5 +1,5 @@
-/* krisyan-style media cards: two-column grid, the cover fills the whole card
-   and the title/meta sit on a bottom scrim (white text, both themes).
+/* krisyan-style media cards: a full 16:9 cover on top and a frosted text band
+   underneath that repeats the cover as its blurred background.
    Rendered by BlogPostMediaList. */
 .media-stack {
   display: grid;
@@ -17,9 +17,7 @@
 .media-card {
   position: relative;
   display: flex;
-  aspect-ratio: 4 / 3;
   flex-direction: column;
-  justify-content: flex-end;
   overflow: hidden;
   border-radius: 24px;
   background: var(--paper-surface-muted);
@@ -38,9 +36,17 @@
   transform: translateY(-2px);
 }
 
+/* 图片区：完整 16:9，不被文字条遮挡（与 krisyan 一致） */
+.media-cover-frame {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
 .media-cover {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -56,18 +62,25 @@
   transform: scale(1.04);
 }
 
-/* Frosted text band (krisyan recipe): the band tints with the cover's own
-   dominant color (--media-band, extracted at build) and frosts it with a
-   backdrop blur; text color auto-switches dark/light via --media-fg. */
+/* 文字条（krisyan 配方）：以同一张封面作模糊背景，叠加主色与渐变；
+   文字颜色按主色亮度自动黑/白（--media-fg）。 */
 .media-body {
   position: relative;
   z-index: 1;
   display: grid;
+  flex: 1 1 auto;
   /* 允许信息行收缩，避免 nowrap 内容把卡片撑宽 */
   grid-template-columns: minmax(0, 1fr);
+  align-content: center;
   gap: 6px;
-  padding: 16px 20px 18px;
+  padding: 20px 20px 22px;
   overflow: hidden;
+  background-color: var(--media-band, var(--paper-surface-muted));
+  background-image: var(--media-image, none);
+  background-position: 50% 100%;
+  background-size: cover;
+  background-blend-mode: overlay;
+  isolation: isolate;
 }
 
 .media-body::before {
@@ -76,7 +89,7 @@
   z-index: -2;
   background: var(--media-band, rgb(12, 14, 18));
   content: '';
-  opacity: 0.42;
+  opacity: 0.5;
 }
 
 .media-body::after {
@@ -85,12 +98,12 @@
   z-index: -1;
   background: linear-gradient(
     to bottom,
-    transparent,
-    color-mix(in srgb, var(--media-band, rgb(12, 14, 18)) 58%, transparent)
+    rgba(8, 10, 14, 0.06),
+    color-mix(in srgb, var(--media-band, rgb(12, 14, 18)) 42%, transparent)
   );
   content: '';
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
 }
 
 .media-title {
@@ -177,9 +190,13 @@
   content: none;
 }
 
+.media-cover-fallback {
+  display: grid;
+  place-items: center;
+  background: var(--paper-surface-muted);
+}
+
 .media-ghost {
-  position: absolute;
-  inset: 0;
   display: grid;
   place-items: center;
   font-family: var(--font-meta);
