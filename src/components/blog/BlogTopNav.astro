@@ -70,6 +70,7 @@ const paletteOptions = [
 
 <header
   class:list={['blog-top-nav', `nav-${navStyle}`]}
+  data-nav-style={navStyle}
   data-pagefind-ignore
   data-toc-open-label={ui.toc.open}
   data-toc-close-label={ui.toc.close}
@@ -294,6 +295,18 @@ const paletteOptions = [
 
         const setNavHidden = (hidden: boolean) => {
           header.dataset.navHidden = hidden ? 'true' : 'false';
+
+          // 胶囊模式只收起导航与操作区，头像始终可用
+          if (header.dataset.navStyle === 'pill') {
+            for (const el of header.querySelectorAll(
+              '.nav-links, .nav-actions, .mobile-menu-toggle',
+            )) {
+              el.toggleAttribute('inert', hidden);
+              el.toggleAttribute('aria-hidden', hidden);
+            }
+            return;
+          }
+
           header.toggleAttribute('inert', hidden);
           header.toggleAttribute('aria-hidden', hidden);
         };
@@ -1100,7 +1113,8 @@ const paletteOptions = [
   }
 
   .nav-pill[data-nav-hidden='true'] .nav-links,
-  .nav-pill[data-nav-hidden='true'] .nav-actions {
+  .nav-pill[data-nav-hidden='true'] .nav-actions,
+  .nav-pill[data-nav-hidden='true'] .mobile-menu-toggle {
     opacity: 0;
     pointer-events: none;
     transform: translateY(calc(-100% - 22px));
