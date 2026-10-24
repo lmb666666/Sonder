@@ -5,6 +5,7 @@ import ConnectCard from '../components/cards/ConnectCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
 import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
+import LatestUpdates from '../components/widgets/LatestUpdates.astro';
 import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
 import { demoMoments, getMomentsTotal } from '../data/moments';
@@ -50,16 +51,25 @@ const latestMoment = newestMoment
       <IntroCard intro={home.intro} quote={home.quote} />
     </Fragment>
 
-    <Fragment slot="latest">
+    {
+      home.latest.showHeatmapLatest && (
+        <Fragment slot="latest">
+          <LatestUpdates
+            count={home.latest.count}
+            excludeDraft={home.latest.excludeDraft}
+            latestMoment={latestMoment}
+          />
+        </Fragment>
+      )
+    }
+
+    <Fragment slot="heatmap">
       <BlogHeatmap
         weeks={home.latest.heatmapWeeks}
-        showLatest={home.latest.showHeatmapLatest}
-        latestCount={home.latest.count}
         excludeDraft={home.latest.excludeDraft}
         startDate={home.latest.startDate || null}
         dateArchiveBaseHref={home.latest.dateArchiveBaseHref || undefined}
         stats={stats}
-        latestMoment={latestMoment}
       />
     </Fragment>
 

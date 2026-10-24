@@ -1,0 +1,131 @@
+---
+import { getCollection } from 'astro:content';
+import { getSiteConfig } from '../../data/site';
+import { getLatestPosts } from '../../utils/blog-heatmap';
+import { getUiText } from '../../utils/ui-text';
+
+interface Props {
+  count?: number;
+  excludeDraft?: boolean;
+  /** 最新动态行；与最新文章同处「最新」卡片 */
+  latestMoment?: { summary: string; date: Date; href: string } | null;
+}
+
+const { count = 1, excludeDraft = true, latestMoment } = Astro.props;
+const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
+const latestPosts = getLatestPosts(posts, count);
+const ui = getUiText(await getSiteConfig());
+const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+{
+  (latestPosts.length > 0 || latestMoment) && (
+    <article class="latest-card" aria-label={ui.heatmap.latestPublishedPosts}>
+      <strong>{ui.heatmap.latest}</strong>
+      <div class="latest-list">
+        {latestPosts.map((post) => (
+          <a class="latest-link" href={post.href} title={post.title}>
+            <span class="latest-kind">{ui.heatmap.latestArticle}</span>
+            <em>{post.title}</em>
+            <time datetime={post.date.toISOString()}>{formatShortDate.format(post.date)}</time>
+          </a>
+        ))}
+        {latestMoment && (
+          <a class="latest-link" href={latestMoment.href} title={latestMoment.summary}>
+            <span class="latest-kind latest-kind-moment">{ui.heatmap.latestMoment}</span>
+            <em>{latestMoment.summary}</em>
+            <time datetime={latestMoment.date.toISOString()}>
+              {formatShortDate.format(latestMoment.date)}
+            </time>
+          </a>
+        )}
+      </div>
+    </article>
+  )
+}
+
+<style>
+  .latest-card {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface-muted);
+  }
+
+  .latest-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .latest-link {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) max-content;
+    align-items: center;
+    min-width: 0;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* 类型标：区分最新文章与最新动态，权重压到 metadata 层 */
+  .latest-kind {
+    padding: 1px 6px;
+    border: 1px solid var(--paper-line);
+    border-radius: 4px;
+    background: var(--paper-control);
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.66rem;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  .latest-kind-moment {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--paper-accent) 12%, transparent);
+    /* accent-dark：亮色下小字需满足 WCAG AA 对比 */
+    color: color-mix(in srgb, var(--accent-dark, #3b566e) 82%, var(--paper-ink));
+  }
+
+  strong {
+    color: color-mix(in srgb, var(--accent-dark, #3b566e) 82%, var(--paper-ink));
+    font-size: 0.72rem;
+    line-height: 1.15;
+  }
+
+  em {
+    overflow: hidden;
+    color: var(--paper-ink);
+    font-size: 0.88rem;
+    font-style: normal;
+    font-weight: 650;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 180ms ease;
+  }
+
+  time {
+    color: var(--paper-ink-soft);
+    font-size: 0.72rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .latest-link:hover em,
+  .latest-link:focus-visible em {
+    color: var(--paper-accent);
+  }
+
+  .latest-link:focus-visible {
+    border-radius: 6px;
+    outline: 2px solid color-mix(in srgb, var(--paper-accent) 28%, transparent);
+    outline-offset: 3px;
+  }
+</style>

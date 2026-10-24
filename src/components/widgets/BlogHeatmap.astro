@@ -6,29 +6,16 @@ import { getUiText } from '../../utils/ui-text';
 
 interface Props {
   weeks?: number;
-  showLatest?: boolean;
-  latestCount?: number;
   excludeDraft?: boolean;
   dateArchiveBaseHref?: string;
   startDate?: Date | string | null;
   /** 覆盖顶部统计行（label/value）；缺省用内置的总文章/活跃天数/连续天数 */
   stats?: { label: string; value: string }[];
-  /** 最新动态行；与最新文章同处「最新」卡片 */
-  latestMoment?: { summary: string; date: Date; href: string } | null;
 }
 
-const {
-  weeks = 24,
-  showLatest = true,
-  latestCount = 1,
-  excludeDraft = true,
-  dateArchiveBaseHref,
-  startDate,
-  stats,
-  latestMoment,
-} = Astro.props;
+const { weeks = 24, excludeDraft = true, dateArchiveBaseHref, startDate, stats } = Astro.props;
 const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
-const heatmap = createRecentBlogHeatmap(posts, weeks, latestCount, startDate);
+const heatmap = createRecentBlogHeatmap(posts, weeks, undefined, startDate);
 const ui = getUiText(await getSiteConfig());
 const statItems = stats ?? [
   { label: ui.heatmap.totalPosts, value: heatmap.totalPosts },
@@ -38,10 +25,6 @@ const statItems = stats ?? [
 const heatmapLabel = startDate
   ? ui.heatmap.writingSince(heatmap.startDate)
   : ui.heatmap.recentWeeks(heatmap.weeks);
-const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
-  month: 'short',
-  day: 'numeric',
-});
 
 function getPostLabel(count: number) {
   return ui.heatmap.postCount(count);
@@ -76,32 +59,6 @@ function getDayHref(day: HeatmapDay) {
       ))
     }
   </div>
-
-  {
-    showLatest && (heatmap.latestPosts.length > 0 || latestMoment) && (
-      <aside class="latest-tip" aria-label={ui.heatmap.latestPublishedPosts}>
-        <strong>{ui.heatmap.latest}</strong>
-        <div class="latest-list">
-          {heatmap.latestPosts.map((post) => (
-            <a class="latest-link" href={post.href} title={post.title}>
-              <span class="latest-kind">{ui.heatmap.latestArticle}</span>
-              <em>{post.title}</em>
-              <time datetime={post.date.toISOString()}>{formatShortDate.format(post.date)}</time>
-            </a>
-          ))}
-          {latestMoment && (
-            <a class="latest-link" href={latestMoment.href} title={latestMoment.summary}>
-              <span class="latest-kind latest-kind-moment">{ui.heatmap.latestMoment}</span>
-              <em>{latestMoment.summary}</em>
-              <time datetime={latestMoment.date.toISOString()}>
-                {formatShortDate.format(latestMoment.date)}
-              </time>
-            </a>
-          )}
-        </div>
-      </aside>
-    )
-  }
 
   <div class="rhythm-grid" aria-label={heatmapLabel}>
     <div class="weekday-column" aria-hidden="true">
@@ -187,88 +144,6 @@ function getDayHref(day: HeatmapDay) {
     border-color: transparent;
     box-shadow: none;
     transform: none;
-  }
-
-  .latest-tip {
-    display: grid;
-    gap: 6px;
-    padding: 10px 11px;
-    border: 1px solid var(--paper-line);
-    border-radius: 7px;
-    background: var(--paper-surface-muted);
-  }
-
-  .latest-list {
-    display: grid;
-    gap: 7px;
-  }
-
-  .latest-link {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) max-content;
-    align-items: center;
-    min-width: 0;
-    gap: 8px;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  /* 类型标：区分最新文章与最新动态，权重压到 metadata 层 */
-  .latest-kind {
-    padding: 1px 5px;
-    border: 1px solid var(--paper-line);
-    border-radius: 4px;
-    background: var(--paper-control);
-    color: var(--paper-ink-soft);
-    font-family: var(--font-meta);
-    font-size: 0.62rem;
-    font-weight: 600;
-    line-height: 1.5;
-    white-space: nowrap;
-  }
-
-  .latest-kind-moment {
-    border-color: transparent;
-    background: color-mix(in srgb, var(--paper-accent) 12%, transparent);
-    /* accent-dark：亮色下 0.62rem 小字需满足 WCAG AA 对比 */
-    color: color-mix(in srgb, var(--accent-dark, #3b566e) 82%, var(--paper-ink));
-  }
-
-  .latest-tip strong {
-    /* accent-dark：亮色下 0.7rem 小字需满足 WCAG AA 对比 */
-    color: color-mix(in srgb, var(--accent-dark, #3b566e) 82%, var(--paper-ink));
-    font-size: 0.7rem;
-    line-height: 1.15;
-  }
-
-  .latest-tip em {
-    overflow: hidden;
-    color: var(--paper-ink);
-    font-size: 0.8rem;
-    font-style: normal;
-    font-weight: 650;
-    line-height: 1.2;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    transition: color 180ms ease;
-  }
-
-  .latest-tip time {
-    color: var(--paper-ink-soft);
-    font-size: 0.68rem;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .latest-link:hover em,
-  .latest-link:focus-visible em {
-    color: var(--paper-accent);
-  }
-
-  .latest-link:focus-visible {
-    border-radius: 7px;
-    outline: 2px solid color-mix(in srgb, var(--paper-accent) 28%, transparent);
-    outline-offset: 3px;
   }
 
   .rhythm-grid {

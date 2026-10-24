@@ -2,12 +2,13 @@
   <section class="flow-grid" aria-label="Sonder 个人出版物">
     <section class="flow-column main-column">
       <slot name="intro" />
-      <slot name="connect" />
+      <slot name="latest" />
     </section>
 
     <aside class="flow-column side-column">
       <slot name="profile" />
-      <slot name="latest" />
+      <slot name="connect" />
+      <slot name="heatmap" />
       <slot name="siteInfo" />
     </aside>
   </section>
@@ -36,7 +37,11 @@
 
   /* 主列下移：与侧栏底部对齐，避免左侧内容过早结束留出空档 */
   .main-column {
-    padding-top: 84px;
+    padding-top: 44px;
+  }
+
+  .flow-grid .main-column :global(.latest-card) {
+    margin-top: 28px;
   }
 
   /* 侧栏为身份与寻路，跟随滚动（主栏承载长内容） */
@@ -76,7 +81,7 @@
   }
 
   .flow-grid :global(.connect-card) {
-    padding: 14px 0 10px;
+    padding: 0 0 10px;
   }
 
   .flow-grid :global(.site-info-card) {
@@ -139,6 +144,11 @@
       order: 4;
       margin-top: -8px;
       padding: 14px 2px;
+    }
+
+    .flow-grid :global(.latest-card) {
+      order: 6;
+      margin-top: 18px;
     }
 
     .flow-grid :global(.site-info-card) {
