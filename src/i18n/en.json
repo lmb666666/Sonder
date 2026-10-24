@@ -1,5 +1,8 @@
 {
   "locale": "en",
+  "nav": {
+    "menu": "Menu"
+  },
   "heatmap": {
     "totalPosts": "Total posts",
     "activeDays": "Active days",

@@ -19,6 +19,9 @@ type Message = string | { one?: string; other: string };
 
 type RawUiText = {
   locale: string;
+  nav: {
+    menu: string;
+  };
   heatmap: {
     totalPosts: string;
     activeDays: string;
@@ -160,6 +163,7 @@ export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'paginat
     nextInSeries: (name: string) => string;
     moreFromSite: (siteTitle: string) => string;
   };
+  nav: RawUiText['nav'];
   pagination: Omit<RawUiText['pagination'], 'page'> & {
     page: (current: number, total: number) => string;
   };
@@ -183,6 +187,7 @@ function formatNumber(value: number, locale: string) {
 function createUiText(raw: RawUiText): UiText {
   return {
     locale: raw.locale,
+    nav: raw.nav,
     heatmap: {
       ...raw.heatmap,
       openLatestPost: (title) => formatMessage(raw.heatmap.openLatestPost, { title }),

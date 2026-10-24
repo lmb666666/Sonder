@@ -1,5 +1,8 @@
 {
   "locale": "zh-CN",
+  "nav": {
+    "menu": "菜单"
+  },
   "heatmap": {
     "totalPosts": "总文章",
     "activeDays": "活跃天数",

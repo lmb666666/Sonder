@@ -1,5 +1,5 @@
 ---
-import { ListTree, Menu, Moon, Palette, Sun } from 'lucide-astro';
+import { ChevronDown, ListTree, Moon, Palette, Sun } from 'lucide-astro';
 import SiteSearch from './SiteSearch.astro';
 import TocTree from './TocTree.astro';
 import { getRouteLabels, getSiteConfig, getTopNavLinks } from '../../data/site';
@@ -83,7 +83,8 @@ const paletteOptions = [
     aria-controls="mobile-nav-menu"
     data-mobile-menu-toggle
   >
-    <Menu size={18} stroke-width={2} />
+    <span class="mobile-menu-label">{ui.nav.menu}</span>
+    <ChevronDown class="mobile-menu-chevron" size={15} stroke-width={2} aria-hidden="true" />
   </button>
 
   {
@@ -1233,14 +1234,13 @@ const paletteOptions = [
       width: fit-content;
       min-height: 0;
       margin: 0;
-      padding: 5px;
-      gap: 2px;
-      border: 1px solid var(--paper-line);
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--paper-surface) 76%, transparent);
-      box-shadow: var(--paper-shadow);
-      -webkit-backdrop-filter: blur(14px) saturate(1.05);
-      backdrop-filter: blur(14px) saturate(1.05);
+      padding: 0;
+      gap: 8px;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
     }
 
     .nav-pill .nav-avatar {
@@ -1273,18 +1273,41 @@ const paletteOptions = [
     .nav-pill .mobile-menu-toggle,
     .nav-pill .nav-actions button,
     .nav-pill .nav-actions :global(.site-search-trigger) {
-      width: 36px;
+      width: auto;
       height: 36px;
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
+      border: 1px solid var(--paper-line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--paper-surface) 76%, transparent);
+      box-shadow: var(--paper-shadow);
+      -webkit-backdrop-filter: blur(14px) saturate(1.05);
+      backdrop-filter: blur(14px) saturate(1.05);
+    }
+
+    .nav-pill .nav-actions button,
+    .nav-pill .nav-actions :global(.site-search-trigger) {
+      width: 36px;
+      padding: 0;
     }
 
     .nav-pill .mobile-menu-toggle {
-      display: inline-grid;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       margin-left: 0;
+      padding: 0 12px;
+      color: var(--paper-ink);
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .mobile-menu-chevron {
+      flex: 0 0 auto;
+      opacity: 0.7;
+      transition: transform 160ms ease;
+    }
+
+    .blog-top-nav[data-mobile-menu-open='true'] .mobile-menu-chevron {
+      transform: rotate(180deg);
     }
 
     .nav-pill .nav-actions [data-palette-toggle] {
