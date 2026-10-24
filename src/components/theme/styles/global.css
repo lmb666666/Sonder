@@ -259,10 +259,41 @@ html {
   scrollbar-gutter: stable;
 }
 
-/* 换页过渡期间底色始终铺满纸色，避免快照交界处漏出白底 */
+/* 换页过渡：旧页保持不透明垫底，只让新页淡入。
+   默认的交叉淡化会让两帧同时半透明，叠在浏览器白色过渡底板上偶发露白，
+   这层改法保证任何一帧下方都是真实页面或纸色。 */
+::view-transition {
+  background-color: var(--paper-bg);
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   background-color: var(--paper-bg);
+}
+
+::view-transition-old(root) {
+  animation: none;
+  opacity: 1;
+}
+
+@keyframes paper-page-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+::view-transition-new(root) {
+  animation: paper-page-in 200ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }
 
 body {
