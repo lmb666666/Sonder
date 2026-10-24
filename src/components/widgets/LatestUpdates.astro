@@ -10,11 +10,9 @@ import { getUiText } from '../../utils/ui-text';
 interface Props {
   count?: number;
   excludeDraft?: boolean;
-  /** 最新动态行；与最新文章同处「最新」区块 */
-  latestMoment?: { summary: string; date: Date; href: string } | null;
 }
 
-const { count = 1, excludeDraft = true, latestMoment } = Astro.props;
+const { count = 1, excludeDraft = true } = Astro.props;
 const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
 const latestPosts = getLatestPosts(posts, count);
 // 移动端把最近两篇升级为封面卡（与博客列表同一张卡）
@@ -27,7 +25,7 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
 ---
 
 {
-  (latestPosts.length > 0 || latestMoment) && (
+  latestPosts.length > 0 && (
     <section class="latest-block" aria-label={ui.heatmap.latestPublishedPosts}>
       {/* 移动端：小组标题 + 两张封面卡 + 动态行 */}
       <div class="latest-narrow">
@@ -36,15 +34,6 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
           {ui.heatmap.latest}
         </h2>
         {mobilePosts.length > 0 && <BlogPostMediaList posts={mobilePosts} />}
-        {latestMoment && (
-          <a class="latest-moment" href={latestMoment.href} title={latestMoment.summary}>
-            <span class="latest-kind latest-kind-moment">{ui.heatmap.latestMoment}</span>
-            <em>{latestMoment.summary}</em>
-            <time datetime={latestMoment.date.toISOString()}>
-              {formatShortDate.format(latestMoment.date)}
-            </time>
-          </a>
-        )}
       </div>
 
       {/* 桌面端：紧凑索引卡 */}
@@ -58,15 +47,6 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
               <time datetime={post.date.toISOString()}>{formatShortDate.format(post.date)}</time>
             </a>
           ))}
-          {latestMoment && (
-            <a class="latest-link" href={latestMoment.href} title={latestMoment.summary}>
-              <span class="latest-kind latest-kind-moment">{ui.heatmap.latestMoment}</span>
-              <em>{latestMoment.summary}</em>
-              <time datetime={latestMoment.date.toISOString()}>
-                {formatShortDate.format(latestMoment.date)}
-              </time>
-            </a>
-          )}
         </div>
       </article>
     </section>
@@ -119,13 +99,6 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
     font-weight: 600;
     line-height: 1.5;
     white-space: nowrap;
-  }
-
-  .latest-kind-moment {
-    border-color: transparent;
-    background: color-mix(in srgb, var(--paper-accent) 12%, transparent);
-    /* accent-dark：亮色下小字需满足 WCAG AA 对比 */
-    color: color-mix(in srgb, var(--accent-dark, #3b566e) 82%, var(--paper-ink));
   }
 
   strong {
@@ -206,16 +179,6 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
 
     .latest-narrow :global(.media-title) {
       font-size: 1.04rem;
-    }
-
-    .latest-moment {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr) max-content;
-      align-items: center;
-      gap: 10px;
-      padding-top: 12px;
-      border-top: 1px solid var(--paper-line);
-      text-decoration: none;
     }
   }
 </style>

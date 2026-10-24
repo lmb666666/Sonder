@@ -8,7 +8,6 @@ import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
 import LatestUpdates from '../components/widgets/LatestUpdates.astro';
 import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
-import { demoMoments } from '../data/moments';
 import { formatCount } from '../utils/word-count';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
@@ -24,20 +23,6 @@ const stats = [
   { label: '分类数', value: formatCount(categoryCount) },
   { label: '标签数', value: formatCount(tagCount) },
 ];
-
-// 最新动态：演示数据按日期倒序取第一条；配置 Ech0 后动态页为运行时拉取，
-// 首页仍以构建期可得的这份为准。
-const newestMoment = [...demoMoments].sort((a, b) => Date.parse(b.date) - Date.parse(a.date))[0];
-const momentSummary = newestMoment
-  ? newestMoment.content.replace(/\s+/g, ' ').trim().slice(0, 30)
-  : '';
-const latestMoment = newestMoment
-  ? {
-      summary: momentSummary + (newestMoment.content.trim().length > 30 ? '…' : ''),
-      date: new Date(newestMoment.date),
-      href: '/moments',
-    }
-  : null;
 ---
 
 <BaseLayout title={site.pageTitle} description={site.pageDescription}>
@@ -54,11 +39,7 @@ const latestMoment = newestMoment
     {
       home.latest.showHeatmapLatest && (
         <Fragment slot="latest">
-          <LatestUpdates
-            count={home.latest.count}
-            excludeDraft={home.latest.excludeDraft}
-            latestMoment={latestMoment}
-          />
+          <LatestUpdates count={home.latest.count} excludeDraft={home.latest.excludeDraft} />
         </Fragment>
       )
     }

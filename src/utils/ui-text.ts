@@ -25,7 +25,6 @@ type RawUiText = {
     dayStreak: string;
     latest: string;
     latestArticle: string;
-    latestMoment: string;
     latestPublishedPosts: string;
     openLatestPost: Message;
     less: string;
