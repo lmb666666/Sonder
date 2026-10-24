@@ -555,10 +555,10 @@ const paletteOptions = [
     const slot = document.querySelector<HTMLElement>('[data-avatar-slot]');
     const dockTop = 15;
     const dockSize = 36;
-    const dockRange = 80;
     let slotTop = 0;
     let slotLeft = 24;
     let baseSize = 64;
+    let lastScrollY = window.scrollY;
     let frame = 0;
 
     const measure = () => {
@@ -576,10 +576,16 @@ const paletteOptions = [
       frame = 0;
 
       const scrollY = window.scrollY;
-      const start = Math.max(0, slotTop - dockTop - dockRange);
-      const progress = Math.min(1, Math.max(0, (scrollY - start) / dockRange));
+      const travel = Math.max(1, slotTop - dockTop);
+      // 与 krisyan 一致：缩放区间等于「从内容位走到导航位」的距离
+      const progress = Math.min(1, Math.max(0, scrollY / travel));
       const size = baseSize + (dockSize - baseSize) * progress;
-      const y = Math.max(dockTop, slotTop - scrollY);
+      const naturalY = slotTop - scrollY;
+      const scrollingUp = scrollY < lastScrollY;
+      lastScrollY = scrollY;
+
+      // 下滑：头像随内容一起滚走（不钉在顶部）；上滑：停靠进导航
+      const y = scrollingUp ? Math.max(dockTop, naturalY) : naturalY;
 
       floatAvatar.style.width = `${size}px`;
       floatAvatar.style.height = `${size}px`;
@@ -1227,15 +1233,17 @@ const paletteOptions = [
 
   @media (max-width: 720px) {
     /* 移动端：导航收成右上角一枚紧凑胶囊（菜单/主题/搜索），头像留在 hero */
+    /* 头部占满内容列宽度：头像贴左缘，控制组靠右，与首页浮动头像同一落点 */
     .blog-top-nav.nav-pill {
       top: 10px;
       right: 10px;
-      left: auto;
-      width: fit-content;
+      left: 10px;
+      width: auto;
       min-height: 0;
       margin: 0;
       padding: 0;
       gap: 8px;
+      justify-content: flex-end;
       border: 0;
       background: transparent;
       box-shadow: none;
@@ -1243,12 +1251,14 @@ const paletteOptions = [
       backdrop-filter: none;
     }
 
+    /* 内页头像：固定在内容列左缘（与首页停靠后的位置一致） */
     .nav-pill .nav-avatar {
-      position: static;
-      order: 1;
+      position: absolute;
+      top: 50%;
+      left: 0;
       width: 36px;
       height: 36px;
-      transform: none;
+      transform: translateY(-50%);
     }
 
     .nav-avatar-float {

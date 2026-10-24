@@ -93,6 +93,11 @@ const { theme } = await getSiteConfig();
       visibility: hidden;
     }
 
+    /* 给英雄区多留一点顶部空间，让头像停靠的行程与 krisyan 接近（约 110px） */
+    .profile-card[data-nav-style='pill'] {
+      margin-top: 24px;
+    }
+
     /* 移动端只留头像：名号与签名交给下方主标题，h1 保留给读屏 */
     .profile-card {
       gap: 0;
