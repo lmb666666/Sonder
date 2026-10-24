@@ -275,7 +275,7 @@ function isPageMeta(value: unknown): value is { title: string; subtitle: string;
             <p class="media-kicker">{ui.media.shelf}</p>
             <h1 class="media-title">{pageMeta.title}</h1>
             <p class="media-subtitle">{pageMeta.subtitle}</p>
-            <p class="media-note">{pageMeta.note}</p>
+            {pageMeta.note && <p class="media-note">{pageMeta.note}</p>}
           </header>
           <nav class="media-mobile-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
             {

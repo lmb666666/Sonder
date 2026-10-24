@@ -128,7 +128,7 @@ showPoweredBy = true
 [config.pages.media]
 title = "书影音"
 subtitle = "读过、看过、听过的作品。"
-note = "书、电影、剧集、专辑与播客。"
+note = ""
 
 [config.comments.giscus]
 repo = ""
