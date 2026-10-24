@@ -1,7 +1,9 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const posts = await getCollection('blog', ({ data }) => !data.draft);
 
 function withBase(href: string) {
   if (href === '/') {
@@ -10,21 +12,39 @@ function withBase(href: string) {
 
   return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
 }
+
+const postHrefs = posts.map((post) => withBase(`/blog/${post.id}/`));
 ---
 
-<BaseLayout title="404 Not Found" description="这页暂时没有找到，可能已经迁移或还没有写下。">
+<BaseLayout title="页面未找到" description="请求的页面不存在。">
   <div class="publication-bg" aria-hidden="true"></div>
   <main class="not-found-shell" aria-labelledby="not-found-title">
     <section class="not-found-panel">
-      <p class="not-found-kicker">404 Not Found</p>
-      <h1 id="not-found-title">这页还没有落在纸上</h1>
-      <p class="not-found-copy">
-        也许链接换了位置，也许这只是一次走岔的小路。先回到熟悉的入口，继续慢慢翻。
-      </p>
-      <nav class="not-found-actions" aria-label="404 page links">
+      <p class="not-found-kicker">404</p>
+      <h1 id="not-found-title">页面未找到</h1>
+      <nav class="not-found-actions" aria-label="404 页面导航">
         <a class="primary-link" href={withBase('/')}>回到首页</a>
-        <a href={withBase('/blog')}>去文章</a>
+        <a href={withBase('/blog')} data-random-post>随机文章</a>
       </nav>
+      <script is:inline define:vars={{ postHrefs }}>
+        (() => {
+          const link = document.querySelector('[data-random-post]');
+          if (!(link instanceof HTMLAnchorElement) || postHrefs.length === 0) return;
+          link.addEventListener('click', (event) => {
+            if (
+              event.button !== 0 ||
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.altKey
+            ) {
+              return;
+            }
+            event.preventDefault();
+            window.location.href = postHrefs[Math.floor(Math.random() * postHrefs.length)];
+          });
+        })();
+      </script>
     </section>
   </main>
 </BaseLayout>
@@ -63,19 +83,11 @@ function withBase(href: string) {
     line-height: 1.08;
   }
 
-  .not-found-copy {
-    max-width: 42rem;
-    margin: 24px 0 0;
-    color: var(--paper-ink-soft);
-    font-size: 1.04rem;
-    line-height: 1.86;
-  }
-
   .not-found-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 30px;
+    margin-top: 28px;
   }
 
   .not-found-actions a {
@@ -143,11 +155,6 @@ function withBase(href: string) {
     h1 {
       max-width: 8em;
       font-size: 2.34rem;
-    }
-
-    .not-found-copy {
-      margin-top: 18px;
-      font-size: 0.98rem;
     }
 
     .not-found-actions {

@@ -102,7 +102,7 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
 <!doctype html>
 <html lang={htmlLang} data-palette={palette}>
   <head>
-    <BaseHead title={`朋友 | ${site.title}`} description="朋友的博客与他们的最新动态。" />
+    <BaseHead title={`朋友 | ${site.title}`} description="朋友的博客与站点。" />
   </head>
   <body>
     <BlogTopNav />
@@ -110,7 +110,7 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
       <header class="links-hero">
         <p class="links-kicker">Friends</p>
         <h1 class="links-title">朋友</h1>
-        <p class="links-subtitle">朋友的博客。万水千山，彼此都在认真写自己的那本书。</p>
+        <p class="links-subtitle">朋友的博客与站点。</p>
         <p class="links-note">
           共 {totalLinks} 位朋友，其中 {rssCount} 位提供订阅源，动态会出现在下方朋友圈。
         </p>

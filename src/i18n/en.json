@@ -40,7 +40,7 @@
     "emptyArchives": "No articles are ready to archive yet.",
     "tagCloud": "Tag cloud",
     "tagCloudKicker": "Tag constellation",
-    "tagCloudNote": "A keyword map grown from article content. Size, weight, and color follow article count.",
+    "tagCloudNote": "Sized and colored by the number of related posts.",
     "yearArchives": "Year archives",
     "yearArchivesKicker": "Year archive",
     "yearArchivesNote": "Browse all articles by publishing year, keeping only title, date, and the first tags.",

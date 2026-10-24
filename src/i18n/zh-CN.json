@@ -37,7 +37,7 @@
     "emptyArchives": "还没有可归档的文章。",
     "tagCloud": "标签云",
     "tagCloudKicker": "标签星图",
-    "tagCloudNote": "从文章内容里长出来的关键词地图。字号、粗细和颜色会随关联文章数量变化。",
+    "tagCloudNote": "按关联文章数量调整字号与颜色。",
     "yearArchives": "年份归档",
     "yearArchivesKicker": "年份归档",
     "yearArchivesNote": "按发布时间回看所有文章，只保留标题、日期和前三个标签。",

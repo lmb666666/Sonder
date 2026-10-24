@@ -37,7 +37,7 @@
     "emptyArchives": "還沒有可歸檔的文章。",
     "tagCloud": "標籤雲",
     "tagCloudKicker": "標籤星圖",
-    "tagCloudNote": "從文章內容長出來的關鍵詞地圖。字號、粗細和顏色會隨關聯文章數量變化。",
+    "tagCloudNote": "按關聯文章數量調整字號與顏色。",
     "yearArchives": "年份歸檔",
     "yearArchivesKicker": "年份歸檔",
     "yearArchivesNote": "按發布時間回看所有文章，只保留標題、日期和前三個標籤。",
