@@ -2,12 +2,12 @@
   <section class="flow-grid" aria-label="Sonder 个人出版物">
     <section class="flow-column main-column">
       <slot name="intro" />
+      <slot name="latest" />
       <slot name="doing" />
     </section>
 
     <aside class="flow-column side-column">
       <slot name="profile" />
-      <slot name="latest" />
       <slot name="navigation" />
       <slot name="connect" />
     </aside>
@@ -35,31 +35,28 @@
     min-width: 0;
   }
 
+  /* 侧栏为身份与寻路，跟随滚动（主栏承载长内容） */
+  .side-column {
+    position: sticky;
+    top: 92px;
+  }
+
   .flow-grid :global(.glass-card) {
     width: 100%;
   }
 
   .flow-grid :global(.profile-card) {
     min-height: auto;
-    padding: 6px 0 2px;
-  }
-
-  .flow-grid :global(.avatar-wrap) {
-    width: 108px;
-    height: 108px;
-    margin-bottom: 16px;
-  }
-
-  .flow-grid :global(.profile-heading h1) {
-    font-size: 1.52rem;
+    padding: 2px 0 6px;
   }
 
   .flow-grid :global(.heatmap-card) {
-    padding: 18px 0;
+    padding: 22px 24px;
+    margin: 8px 0 0;
   }
 
   .flow-grid :global(.nav-card) {
-    padding: 2px 0 0;
+    padding: 14px 0 0;
   }
 
   .flow-grid :global(.connect-card) {
@@ -78,6 +75,7 @@
     }
 
     .side-column {
+      position: static;
       grid-template-columns: 1fr;
     }
   }
@@ -120,6 +118,7 @@
     .flow-grid :global(.heatmap-card) {
       order: 4;
       margin-top: -8px;
+      padding: 14px 2px;
     }
 
     .flow-grid :global(.doing-card) {

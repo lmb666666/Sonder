@@ -18,8 +18,8 @@ const { profile } = Astro.props as { profile: Profile };
     <img
       src={profile.avatar}
       alt={`${profile.name} GitHub avatar`}
-      width="176"
-      height="176"
+      width="128"
+      height="128"
       loading="eager"
     />
   </div>
@@ -32,22 +32,21 @@ const { profile } = Astro.props as { profile: Profile };
 </article>
 
 <style>
+  /* 紧凑身份行：头像 + 名号横排，为侧栏寻路卡让出视觉重量 */
   .profile-card {
-    display: grid;
-    justify-items: end;
-    min-height: 420px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     width: 100%;
-    padding: 20px 0;
-    text-align: right;
+    padding: 4px 0;
+    text-align: left;
     overflow: hidden;
   }
 
   .avatar-wrap {
-    position: relative;
-    width: 176px;
-    height: 176px;
-    margin: 0 0 18px auto;
-    padding: 0;
+    flex: 0 0 auto;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background: transparent;
     box-shadow: none;
@@ -60,53 +59,40 @@ const { profile } = Astro.props as { profile: Profile };
     border-radius: inherit;
   }
 
+  .profile-heading {
+    min-width: 0;
+  }
+
   .profile-heading h1 {
     margin: 0;
     color: var(--paper-ink);
-    font-size: 1.42rem;
+    font-size: 1.08rem;
     letter-spacing: 0;
   }
 
   .profile-heading p {
-    margin: 4px 0 14px;
+    margin: 2px 0 4px;
     color: var(--paper-ink-soft);
-    font-size: 0.94rem;
+    font-size: 0.82rem;
   }
 
   .profile-heading span {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    justify-content: flex-end;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
+    gap: 6px;
     color: var(--paper-ink);
-    font-size: 0.82rem;
+    font-size: 0.78rem;
   }
 
   .profile-heading svg {
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     flex: 0 0 auto;
     color: var(--paper-accent);
   }
 
   @media (max-width: 820px) {
     .profile-card {
-      justify-items: center;
-      min-height: auto;
-      padding: 4px 0 0;
-      text-align: center;
-    }
-
-    .avatar-wrap {
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    .profile-heading span {
       justify-content: center;
     }
   }
