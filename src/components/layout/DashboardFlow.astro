@@ -144,20 +144,15 @@
       margin-block: -10px 0;
     }
 
-    .flow-grid :global(.heatmap-card) {
-      order: 4;
-      margin-top: 18px;
-      padding: 16px 2px 10px;
+    /* 移动端收起数据面板：只保留身份、社交与正文 */
+    .flow-grid :global(.heatmap-card),
+    .flow-grid :global(.site-info-card) {
+      display: none;
     }
 
     .flow-grid :global(.latest-card) {
       order: 6;
       margin-top: 18px;
-    }
-
-    .flow-grid :global(.site-info-card) {
-      order: 7;
-      margin-top: 0;
     }
   }
 </style>
