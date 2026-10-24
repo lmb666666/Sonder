@@ -1,18 +1,19 @@
 [config.site]
-title = "navfolio"
-description = "A personal navigation portfolio starter built with Astro."
-pageTitle = "navfolio | Digital Publication Space"
-pageDescription = "A calm AI-native personal publication space for notes, links, and writing."
-url = "https://astro.navfolio.site"
-repository = "https://github.com/dodolalorc/astro-navfolio"
-footerNote = "Released as an open-source starter."
+title = "Sonder"
+description = "Sonder 的个人博客。万千人生，各自成书。"
+pageTitle = "Sonder | 万千人生，各自成书"
+pageDescription = "每个人都有自己的故事。"
+url = "https://sonder.liang.one"
+repository = "https://github.com/lmb666666/Sonder"
+footerNote = "署名-非商业性使用-相同方式共享 4.0 国际（CC BY-NC-SA 4.0）"
 
 [config.theme]
 # 可用色盘：
 # green-soft, green-vivid, rose-soft, pink-soft, purple-soft, blue-soft, orange-soft, brown-soft
-palette = "green-soft"
+# Sonder logo 主色 #2A58B5，对应 blue-soft。
+palette = "blue-soft"
 # 原生 UI 语言。可用值：en、zh-CN、zh-TW。未知值会回退到 en。
-lang = "en"
+lang = "zh-CN"
 
 [config.fonts]
 # 英文与代码感 UI 字体
@@ -43,14 +44,14 @@ show_on_posts = true
 [config.search]
 enabled = true
 shortcut = "mod+k"
-placeholder = "Search notes..."
+placeholder = "搜索文章…"
 maxResults = 6
 
 [config.pages.blog]
-title = "Writing notes"
-kicker = "Notebook archive"
-subtitle = "Notes from the margins."
-note = "Field notes, drafts, and technical margins arranged for slow browsing."
+title = "博客"
+kicker = "文章归档"
+subtitle = "每个人都有自己的故事。"
+note = "长文与短记的归档，慢慢写，慢慢读。"
 postsPerPage = 6
 # date-fns 使用的日期格式模板。
 dateFormat = "yyyy-MM-dd"
@@ -60,28 +61,28 @@ metadataSeparator = "icon"
 coverImageStyle = "mask"
 
 [config.pages.blog.categories]
-title = "Categories"
-kicker = "Browse notes"
+title = "分类"
+kicker = "按题索引"
 subtitle = ""
-note = "A quiet index of recurring topics, gathered from article frontmatter."
+note = "从文章元信息汇总的常用话题。"
 
 [config.pages.blog.series]
-title = "Series"
-kicker = "Reading paths"
+title = "系列"
+kicker = "阅读路径"
 subtitle = ""
-note = "Connected notes that can be followed in the order they were written."
+note = "按写作顺序连缀的系列文章。"
 
 [config.pages.projects]
-title = "Projects"
-kicker = "Project shelf"
-subtitle = "Small tools and site systems."
-note = "A compact shelf for implementation choices, releases, and publishing experiments."
+title = "项目"
+kicker = "项目架"
+subtitle = "小工具与站点系统。"
+note = "实现选择、发布与实验的陈列架。"
 
 [config.pages.vibe]
-title = "vibe"
+title = "随记"
 kicker = ""
-subtitle = "Life and coding fragments."
-note = "Not formal enough for blog posts, but still part of the story."
+subtitle = "生活与代码的碎片。"
+note = "不够写成文章，但也是故事的一部分。"
 showTrail = true
 
 [config.pages.media]
@@ -118,57 +119,53 @@ pageview = true
 comment = true
 
 [config.profile]
-name = "navfolio"
-handle = "@navfolio"
-role = "A Cat Developer"
-email = "hello@navfolio.site"
-website = "https://astro.navfolio.site/"
-github = "https://github.com/dodolalorc/astro-navfolio"
-avatar = "/images/logo-thin.webp"
+name = "Sonder"
+handle = "@sonder"
+role = "每个人都有自己的故事"
+email = "hello@sonder.liang.one"
+website = "https://sonder.liang.one"
+github = "https://github.com/lmb666666/Sonder"
+avatar = "/images/logo.svg"
 
 [[config.topNav.links]]
-label = "Home"
+label = "首页"
 href = "/"
 
 [[config.topNav.links]]
-label = "Blog"
+label = "博客"
 href = "/blog"
 
 [[config.topNav.links]]
-label = "Projects"
+label = "项目"
 module = "projects"
 
 [[config.topNav.links]]
-label = "Vibe"
+label = "随记"
 module = "vibe"
 
 [[config.topNav.links]]
-label = "Media"
+label = "书影音"
 module = "media"
 
 [[config.topNav.links]]
-label = "About"
+label = "关于"
 href = "/about"
 
 [config.home]
 
 [config.home.quote]
 text = [
-  "Navigate your world,",
-  "Showcase your story,",
-  "and keep everything in one place.",
+  "万千人生，",
+  "各自成书。",
 ]
 
 [config.home.intro]
-title = "here is navfolio"
-name = "navfolio"
+title = "here is Sonder"
+name = "Sonder"
 body = [
-  "The name combines \"Navigation\" and \"Portfolio\".",
-  "Navfolio prioritizes lightweight organization, seamless reading, and developer-friendly aesthetics.",
-  "It’s less a resume than a personal OS for your ideas, projects, notes, and online presence.",
-  "这个名字融合了“导航”与“作品集”。",
-  "Navfolio 专注于轻量级组织、流畅的阅读体验，以及对开发者友好的美学设计。",
-  "它不像一份简历，更像是一个属于你自己的个人操作系统——承载想法、项目、笔记与网络足迹。",
+  "万千人生，各自成书。",
+  "每个人都是自己故事的主角，这里存放我的那一本。",
+  "长文进博客，碎片进随记，书影音各归其位。",
 ]
 
 [config.home.latest]
@@ -180,46 +177,40 @@ startDate = ""
 dateArchiveBaseHref = ""
 
 [[config.home.navigation]]
-icon = "compass"
-title = "Portfolio"
-subtitle = "Selected work and case studies"
-href = "https://astro.navfolio.site/"
-
-[[config.home.navigation]]
 icon = "pen"
-title = "Blog"
-subtitle = "Essays, notes, and field reports"
+title = "博客"
+subtitle = "长文、笔记与随想"
 href = "/blog"
 
 [[config.home.navigation]]
+icon = "disc-3"
+title = "书影音"
+subtitle = "读过的、看过的、听过的"
+href = "/media"
+
+[[config.home.navigation]]
 icon = "briefcase"
-title = "Resume"
-subtitle = "Career profile and experience"
-href = "https://github.com/dodolalorc/navfolio"
+title = "项目"
+subtitle = "小工具与实验"
+href = "/projects"
 
 [[config.home.navigation]]
 icon = "github"
-title = "Open Source"
-subtitle = "Code, experiments, and tools"
-href = "https://github.com/dodolalorc/astro-navfolio"
+title = "开源"
+subtitle = "Sonder 的源代码"
+href = "https://github.com/lmb666666/Sonder"
 
 [[config.home.links]]
 label = "GitHub"
 icon = "github"
-tooltip = "https://github.com/dodolalorc/astro-navfolio"
+tooltip = "https://github.com/lmb666666/Sonder"
 copy = false
 
 [[config.home.links]]
-label = "LinkedIn"
-icon = "linkedin"
-tooltip = "https://www.linkedin.com/"
-copy = false
-
-[[config.home.links]]
-label = "X"
-icon = "x"
-tooltip = "" # 留空会隐藏这个链接项。
-copy = false
+label = "Email"
+icon = "mail"
+tooltip = "hello@sonder.liang.one"
+copy = true
 
 [[config.home.links]]
 label = "RSS"
@@ -227,64 +218,14 @@ icon = "rss"
 tooltip = "/rss.xml"
 copy = false
 
-[[config.home.links]]
-label = "Email"
-icon = "mail"
-tooltip = "hello@navfolio.site"
-copy = true
-
-[[config.home.links]]
-label = "QQ"
-icon = "qq"
-tooltip = "123456789"
-copy = true
-
-[[config.home.links]]
-label = "WeChat"
-icon = "wechat"
-tooltip = "navfolio"
-copy = true
-
-[[config.home.links]]
-label = "Weibo"
-icon = "weibo"
-tooltip = "https://weibo.com/"
-copy = false
-
-[[config.home.links]]
-label = "Xiaohongshu"
-icon = "xiaohongshu"
-tooltip = "https://www.xiaohongshu.com/"
-copy = false
-
-[[config.home.links]]
-label = "Zhihu"
-icon = "zhihu"
-tooltip = "https://www.zhihu.com/"
-copy = false
-
-[[config.home.links]]
-label = "Bilibili"
-icon = "bilibili"
-tooltip = "https://www.bilibili.com/"
-copy = false
-
 [[config.home.doing]]
-text = "Shipping a personal dashboard template"
+text = "把博客从 Nuxt 重写为 Astro"
 mark = "01"
 
 [[config.home.doing]]
-text = "Writing reusable notes for future projects"
+text = "迁移文章、评论与友链"
 mark = "02"
 
 [[config.home.doing]]
-text = "Improving static-site publishing workflow"
+text = "打磨模板与文档"
 mark = "03"
-
-[[config.home.doing]]
-text = "Collecting useful developer resources"
-mark = "04"
-
-[[config.home.doing]]
-text = "Exploring small open-source ideas"
-mark = "05"
