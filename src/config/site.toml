@@ -23,7 +23,7 @@ code = "Monaco"
 # 中文阅读字体
 zh = "ChillRoundM"
 # 中文完整字体文件
-file = "/fonts/ChillRoundM.ttf"
+file = "/fonts/ChillRoundM.woff2"
 
 [config.code]
 lightTheme = "catppuccin-latte"
