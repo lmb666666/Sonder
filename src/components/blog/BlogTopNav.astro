@@ -13,9 +13,10 @@ interface Props {
 
 const { showTocIcon = false, tocItems = [] } = Astro.props;
 const siteConfig = await getSiteConfig();
-const { site, search } = siteConfig;
+const { site, search, theme, profile } = siteConfig;
 const ui = getUiText(siteConfig);
 const links = await getTopNavLinks();
+const navStyle = theme.navStyle;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentPathname =
   basePath && Astro.url.pathname.startsWith(basePath)
@@ -68,7 +69,7 @@ const paletteOptions = [
 ---
 
 <header
-  class="blog-top-nav"
+  class:list={['blog-top-nav', `nav-${navStyle}`]}
   data-pagefind-ignore
   data-toc-open-label={ui.toc.open}
   data-toc-close-label={ui.toc.close}
@@ -84,13 +85,28 @@ const paletteOptions = [
     <Menu size={18} stroke-width={2} />
   </button>
 
-  <a class="brand" href={withBase('/')} aria-label={`Go to ${site.title} home`}>
-    <span class="brand-mark" aria-hidden="true"></span>
-    <span class="brand-title">
-      <span>{site.title}</span>
-      {brandRouteLabel && <span class="brand-route"> · {brandRouteLabel}</span>}
-    </span>
-  </a>
+  {
+    navStyle === 'pill' ? (
+      currentPath !== '/' && (
+        <a
+          class="nav-avatar"
+          href={withBase('/')}
+          aria-label={`${site.title} 首页`}
+          transition:name="site-avatar"
+        >
+          <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
+        </a>
+      )
+    ) : (
+      <a class="brand" href={withBase('/')} aria-label={`Go to ${site.title} home`}>
+        <span class="brand-mark" aria-hidden="true" />
+        <span class="brand-title">
+          <span>{site.title}</span>
+          {brandRouteLabel && <span class="brand-route"> · {brandRouteLabel}</span>}
+        </span>
+      </a>
+    )
+  }
 
   <nav class="nav-links" aria-label="Article navigation">
     {
@@ -983,6 +999,153 @@ const paletteOptions = [
     .nav-link[data-nav-link-pending]::after,
     .brand[data-nav-link-pending] .brand-mark {
       animation: none;
+    }
+  }
+
+  /* ===== pill 模式：居中胶囊导航（config.theme.navStyle = "pill"） ===== */
+  .blog-top-nav.nav-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(calc(100% - 32px), var(--layout-shell-width, 1100px));
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* 头像：贴内容列左缘，与胶囊同基线；与首页大头像共享元素 */
+  .nav-pill .nav-avatar {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 50%;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
+    transform: translateY(-50%);
+  }
+
+  .nav-pill .nav-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  /* 胶囊本体就是导航链接容器 */
+  .nav-pill .nav-links {
+    gap: 2px;
+    padding: 5px;
+    border: 1px solid var(--paper-line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper-surface) 76%, transparent);
+    box-shadow: var(--paper-shadow);
+    -webkit-backdrop-filter: blur(14px) saturate(1.05);
+    backdrop-filter: blur(14px) saturate(1.05);
+    transition:
+      opacity 180ms ease,
+      transform 220ms ease;
+  }
+
+  .nav-pill .nav-link {
+    min-width: 0;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+
+  /* 胶囊底色已表达当前项，去掉小圆点 */
+  .nav-pill .nav-link.active::after,
+  .nav-pill .nav-link[data-nav-link-pending]::after {
+    content: none;
+  }
+
+  /* 右侧控制：贴内容列右缘 */
+  .nav-pill .nav-actions {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    gap: 8px;
+    transform: translateY(-50%);
+    transition:
+      opacity 180ms ease,
+      transform 220ms ease;
+  }
+
+  .nav-pill .nav-actions a,
+  .nav-pill .nav-actions button {
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper-surface) 76%, transparent);
+    box-shadow: var(--paper-shadow);
+    -webkit-backdrop-filter: blur(14px) saturate(1.05);
+    backdrop-filter: blur(14px) saturate(1.05);
+  }
+
+  /* 滚动隐藏时只收起胶囊与操作区，头像留在原位 */
+  .nav-pill[data-nav-hidden='true'] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .nav-pill[data-nav-hidden='true'] .nav-links,
+  .nav-pill[data-nav-hidden='true'] .nav-actions {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(-100% - 22px));
+  }
+
+  @media (max-width: 720px) {
+    .blog-top-nav.nav-pill {
+      top: 10px;
+      width: min(calc(100% - 20px), 520px);
+      min-height: 44px;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    /* 移动端只留头像 + 菜单 + 搜索，按流式排列 */
+    .nav-pill .nav-avatar {
+      position: static;
+      order: 1;
+      width: 36px;
+      height: 36px;
+      transform: none;
+    }
+
+    .nav-pill .mobile-menu-toggle {
+      position: static;
+      order: 2;
+      display: inline-grid;
+      width: 38px;
+      height: 38px;
+      margin-left: auto;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--paper-surface) 76%, transparent);
+      box-shadow: var(--paper-shadow);
+      transform: none;
+    }
+
+    .nav-pill .nav-actions {
+      position: static;
+      order: 3;
+      transform: none;
+    }
+
+    .nav-pill .nav-actions [data-palette-toggle],
+    .nav-pill .nav-actions [data-theme-toggle] {
+      display: none;
     }
   }
 </style>

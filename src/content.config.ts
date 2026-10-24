@@ -343,11 +343,14 @@ const siteConfig = defineCollection({
       .object({
         palette: paletteSchema.optional().default('green-soft'),
         lang: z.string().optional().default('en'),
+        // 导航栏样式："bar" 通栏工具条，"pill" 居中胶囊（带头像交接）
+        navStyle: z.enum(['bar', 'pill']).optional().default('bar'),
       })
       .optional()
       .default({
         palette: 'green-soft',
         lang: 'en',
+        navStyle: 'bar',
       }),
     fonts: z
       .object({

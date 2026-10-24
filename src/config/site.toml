@@ -29,6 +29,9 @@ icon = ""
 palette = "blue-soft"
 # 原生 UI 语言。可用值：en、zh-CN、zh-TW。未知值会回退到 en。
 lang = "zh-CN"
+# 导航栏样式："bar" 通栏工具条（默认，品牌 + 文字导航 + 操作区）；
+# "pill" 居中胶囊导航（品牌移除，头像与导航同基线，跨页时头像与首页大头像交换）。
+navStyle = "pill"
 
 [config.fonts]
 # 英文与代码感 UI 字体

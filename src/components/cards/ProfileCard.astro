@@ -14,7 +14,7 @@ const { profile } = Astro.props as { profile: Profile };
 ---
 
 <article class="profile-card">
-  <div class="avatar-wrap">
+  <div class="avatar-wrap" transition:name="site-avatar">
     <img
       src={profile.avatar}
       alt={`${profile.name} GitHub avatar`}
