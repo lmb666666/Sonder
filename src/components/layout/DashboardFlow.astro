@@ -37,7 +37,7 @@
 
   /* 主列下移：与侧栏底部对齐，避免左侧内容过早结束留出空档 */
   .main-column {
-    padding-top: 44px;
+    padding-top: 52px;
   }
 
   .flow-grid .main-column :global(.latest-card) {
@@ -56,11 +56,15 @@
 
   .flow-grid :global(.profile-card) {
     min-height: auto;
-    padding: 2px 0 6px;
+    padding: 2px 0 4px;
   }
 
+  /* 统计与热力图自成一組：顶部细线与站点信息同节奏，connect 与身份行之间留呼吸 */
   .flow-grid :global(.heatmap-card) {
-    padding: 18px 0;
+    margin-top: 18px;
+    padding: 18px 0 14px;
+    border-top: 1px solid var(--paper-line);
+    gap: 18px;
   }
 
   /* 热力图留在侧栏：格子弹性铺满栏宽（约 10px），比固定 8px 更清晰。
@@ -81,11 +85,11 @@
   }
 
   .flow-grid :global(.connect-card) {
-    padding: 0 0 10px;
+    padding: 14px 0 0;
   }
 
   .flow-grid :global(.site-info-card) {
-    margin-top: 12px;
+    margin-top: 0;
   }
 
   .flow-grid :global(.intro-card) {
@@ -137,13 +141,13 @@
 
     .flow-grid :global(.connect-card) {
       order: 2;
-      margin-block: -18px -10px;
+      margin-block: -10px 0;
     }
 
     .flow-grid :global(.heatmap-card) {
       order: 4;
-      margin-top: -8px;
-      padding: 14px 2px;
+      margin-top: 18px;
+      padding: 16px 2px 10px;
     }
 
     .flow-grid :global(.latest-card) {
