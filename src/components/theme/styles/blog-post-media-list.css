@@ -205,6 +205,33 @@
   outline-offset: 3px;
 }
 
+@media (max-width: 820px) {
+  /* 移动端卡片信息固定两行：标题一行，其余信息一行。
+     字数与阅读时长信息重复，窄屏下让出位置给日期与分类。 */
+  .media-meta {
+    flex-wrap: nowrap;
+    gap: 4px 8px;
+    font-size: 0.74rem;
+  }
+
+  .media-meta-side {
+    flex-wrap: nowrap;
+    min-width: 0;
+    gap: 4px 8px;
+  }
+
+  .media-meta-chip {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .media-meta-words {
+    display: none;
+  }
+}
+
 @media (max-width: 719px) {
   .media-stack {
     gap: 24px;
