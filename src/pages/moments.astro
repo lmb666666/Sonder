@@ -99,8 +99,13 @@ const extensionLabels: Record<string, string> = {
                       `moment__images--${Math.min(moment.images.length, 3)}`,
                     ]}
                   >
-                    {moment.images.slice(0, 9).map((src) => (
-                      <a href={src} target="_blank" rel="noopener noreferrer">
+                    {moment.images.slice(0, 9).map((src, imageIndex) => (
+                      <a
+                        href={src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`查看第 ${imageIndex + 1} 张图片`}
+                      >
                         <img src={src} alt="" loading="lazy" decoding="async" />
                       </a>
                     ))}
@@ -116,24 +121,38 @@ const extensionLabels: Record<string, string> = {
                     />
                   </div>
                 )}
-                {moment.extension && (
-                  <a
-                    class="moment__extension"
-                    href={moment.extension.url ?? undefined}
-                    target={moment.extension.url ? '_blank' : undefined}
-                    rel={moment.extension.url ? 'noopener noreferrer' : undefined}
-                  >
-                    <span class="moment__extension-type">
-                      {extensionLabels[moment.extension.type] ?? moment.extension.type}
-                    </span>
-                    <span class="moment__extension-body">
-                      <strong>{moment.extension.title}</strong>
-                      {moment.extension.description && (
-                        <small>{moment.extension.description}</small>
-                      )}
-                    </span>
-                  </a>
-                )}
+                {moment.extension &&
+                  (moment.extension.url ? (
+                    <a
+                      class="moment__extension"
+                      href={moment.extension.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span class="moment__extension-type">
+                        {extensionLabels[moment.extension.type] ?? moment.extension.type}
+                      </span>
+                      <span class="moment__extension-body">
+                        <strong>{moment.extension.title}</strong>
+                        {moment.extension.description && (
+                          <small>{moment.extension.description}</small>
+                        )}
+                      </span>
+                    </a>
+                  ) : (
+                    // 无链接的扩展信息用 div，避免产生不可爬取的空 <a>
+                    <div class="moment__extension">
+                      <span class="moment__extension-type">
+                        {extensionLabels[moment.extension.type] ?? moment.extension.type}
+                      </span>
+                      <span class="moment__extension-body">
+                        <strong>{moment.extension.title}</strong>
+                        {moment.extension.description && (
+                          <small>{moment.extension.description}</small>
+                        )}
+                      </span>
+                    </div>
+                  ))}
                 {moment.tags && moment.tags.length > 0 && (
                   <footer class="moment__tags">
                     {moment.tags.map((tag) => (
@@ -176,7 +195,7 @@ const extensionLabels: Record<string, string> = {
 
       .moments-kicker {
         margin: 0 0 12px;
-        color: var(--paper-ink-faint);
+        color: var(--paper-ink-soft);
         font-family: var(--font-meta);
         font-size: 0.68rem;
         letter-spacing: 0.1em;
@@ -202,7 +221,7 @@ const extensionLabels: Record<string, string> = {
 
       .moments-stats {
         margin: 14px 0 0;
-        color: var(--paper-ink-faint);
+        color: var(--paper-ink-soft);
         font-family: var(--font-meta);
         font-size: 0.8rem;
       }

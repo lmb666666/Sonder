@@ -42,7 +42,7 @@ export const demoMoments: MomentItem[] = [
     id: 'demo-7',
     content: '傍晚的江边，风把云吹成了鱼鳞的样子。',
     date: '2026-10-15T18:47:00+08:00',
-    images: ['/images/sample-bg.png', '/images/site-in-devices.png', '/images/blog-preview.png'],
+    images: ['/images/sample-bg.webp', '/images/site-in-devices.webp', '/images/blog-preview.webp'],
     tags: ['生活'],
   },
   {
@@ -68,7 +68,7 @@ export const demoMoments: MomentItem[] = [
     id: 'demo-4',
     content: '新键盘到了。轴体是静音红的，深夜写东西再也不吵到人。',
     date: '2026-09-19T23:40:00+08:00',
-    images: ['/images/only-intro.png', '/images/cover.png'],
+    images: ['/images/only-intro.webp', '/images/cover.webp'],
     tags: ['数码'],
   },
   {

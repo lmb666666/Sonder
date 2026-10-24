@@ -81,7 +81,8 @@
   --paper-line-strong: rgba(217, 229, 213, 0.14);
   --paper-ink: #eaebe5;
   --paper-ink-soft: #b5beb1;
-  --paper-ink-faint: #899487;
+  /* 由 #899487 提亮：小号 meta 文本在暗色下达到 WCAG AA（4.5:1） */
+  --paper-ink-faint: #98a294;
   --paper-control: rgba(42, 51, 43, 0.72);
   --paper-control-hover: rgba(52, 64, 53, 0.88);
   --paper-nav: rgba(32, 38, 32, 0.92);

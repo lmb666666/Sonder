@@ -1,7 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
 import ThemeBaseHead from '@navfolio/theme-default/components/BaseHead.astro';
-import FallbackImage from '../assets/figure/fail-loading-image.png';
 import { getSiteConfig } from '../data/site';
 import '../styles/global.css';
 
@@ -13,13 +12,15 @@ interface Props {
 
 const { title, description, image } = Astro.props;
 const { site, fonts } = await getSiteConfig();
+// 默认社交分享图（og:image / twitter:image）：public/og-default.png 品牌卡。
+// 文章未显式指定 image 时使用；fail-loading-image 仅作为 <img> 加载失败的兜底。
 ---
 
 <ThemeBaseHead
   title={title}
   description={description}
   image={image}
-  fallbackImage={FallbackImage}
+  fallbackImage="/og-default.png"
   site={site}
   fonts={fonts}
 />
