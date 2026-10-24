@@ -21,20 +21,20 @@
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  border: 1px solid var(--paper-line);
   border-radius: 24px;
   background: var(--paper-surface-muted);
-  box-shadow: var(--paper-shadow);
+  /* krisyan 式彩色描边：2px ring，颜色为逐卡提取的封面主色。 */
+  box-shadow: 0 0 0 2px var(--media-band, var(--paper-line-strong));
   text-decoration: none;
   transition:
     transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
+    box-shadow 180ms ease;
 }
 
 .media-card:hover {
-  border-color: var(--paper-line-strong);
-  box-shadow: var(--paper-shadow-lift);
+  box-shadow:
+    0 0 0 2px var(--media-band, var(--paper-line-strong)),
+    var(--paper-shadow-lift);
   transform: translateY(-2px);
 }
 
@@ -201,7 +201,6 @@
 }
 
 .media-card:focus-visible {
-  border-color: var(--paper-accent);
   outline: 2px solid color-mix(in srgb, var(--paper-accent) 34%, transparent);
   outline-offset: 3px;
 }
