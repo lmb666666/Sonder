@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import Footer from '../components/Footer.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -47,12 +48,14 @@ const postHrefs = posts.map((post) => withBase(`/blog/${post.id}/`));
       </script>
     </section>
   </main>
+  <Footer />
 </BaseLayout>
 
 <style>
   .not-found-shell {
     display: grid;
-    min-height: calc(100vh - 56px);
+    /* 为页脚留出高度，页脚能落在首屏内 */
+    min-height: calc(100vh - 300px);
     place-items: center;
     padding-top: 116px;
     padding-bottom: 72px;
@@ -143,7 +146,7 @@ const postHrefs = posts.map((post) => withBase(`/blog/${post.id}/`));
 
   @media (max-width: 720px) {
     .not-found-shell {
-      min-height: 100vh;
+      min-height: calc(100vh - 380px);
       padding-top: 92px;
       padding-bottom: 42px;
     }

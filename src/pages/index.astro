@@ -10,6 +10,7 @@ import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
 import { formatCount } from '../utils/word-count';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Footer from '../components/Footer.astro';
 
 const { home, profile, site } = await getSiteConfig();
 
@@ -62,4 +63,5 @@ const stats = [
       <ConnectCard links={home.links} />
     </Fragment>
   </DashboardFlow>
+  <Footer />
 </BaseLayout>
