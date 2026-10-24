@@ -121,6 +121,8 @@
     .flow-grid {
       display: flex;
       flex-direction: column;
+      /* 桌面端为栅格保留了 align-items: start，flex 列下需拉回整宽 */
+      align-items: stretch;
       gap: 26px;
     }
 

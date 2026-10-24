@@ -6,9 +6,11 @@ const year = new Date().getFullYear();
 ---
 
 <footer>
-  <p class="copyright">&copy; {year} {site.title}. {site.footerNote}</p>
+  <p class="copyright">&copy; {year} {site.title}.</p>
   <p class="powered">
     Powered by <a href="https://astro.build/" target="_blank" rel="noreferrer">Astro</a>
+    <span class="sep" aria-hidden="true">·</span>
+    <a href={site.repository} target="_blank" rel="noreferrer">主题仓库</a>
   </p>
 </footer>
 
@@ -25,8 +27,16 @@ const year = new Date().getFullYear();
   }
 
   .powered {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.45em;
     margin-top: 0.6em;
     font-size: 0.8rem;
+  }
+
+  .sep {
+    opacity: 0.7;
   }
 
   .powered a {
