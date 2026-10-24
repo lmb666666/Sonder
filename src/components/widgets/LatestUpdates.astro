@@ -128,4 +128,36 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
     outline: 2px solid color-mix(in srgb, var(--paper-accent) 28%, transparent);
     outline-offset: 3px;
   }
+
+  /* 移动端去掉卡片边框：改成与正文同语言的索引列表 */
+  @media (max-width: 820px) {
+    .latest-card {
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .latest-card strong {
+      color: var(--paper-ink-faint);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .latest-list {
+      gap: 0;
+    }
+
+    .latest-link {
+      padding: 11px 0;
+      border-top: 1px solid var(--paper-line);
+    }
+
+    em {
+      font-size: 0.9rem;
+    }
+  }
 </style>

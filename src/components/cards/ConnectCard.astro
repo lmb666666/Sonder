@@ -217,8 +217,13 @@ const { links } = Astro.props as { links: ConnectLink[] };
     }
 
     .connect-list {
-      gap: 7px;
       justify-content: center;
+      gap: 10px;
+    }
+
+    :global(.connect-icon) {
+      width: 36px;
+      height: 36px;
     }
   }
 </style>

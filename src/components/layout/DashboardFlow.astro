@@ -115,13 +115,13 @@
 
   @media (max-width: 820px) {
     .flow-shell {
-      padding: 96px 18px 42px;
+      padding: 96px 20px 48px;
     }
 
     .flow-grid {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 26px;
     }
 
     .main-column,
@@ -129,30 +129,33 @@
       display: contents;
     }
 
-    .flow-grid :global(.intro-card) {
-      order: 5;
-      min-height: auto;
-      padding: 0;
-    }
-
+    /* 移动端：刊头（身份 + 社交）收口于发丝线，正文统一左对齐 */
     .flow-grid :global(.profile-card) {
       order: 1;
     }
 
     .flow-grid :global(.connect-card) {
       order: 2;
-      margin-block: -10px 0;
+      margin-top: -6px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--paper-line);
     }
 
-    /* 移动端收起数据面板：只保留身份、社交与正文 */
-    .flow-grid :global(.heatmap-card),
-    .flow-grid :global(.site-info-card) {
-      display: none;
+    .flow-grid :global(.intro-card) {
+      order: 3;
+      min-height: auto;
+      padding: 0;
     }
 
     .flow-grid :global(.latest-card) {
-      order: 6;
-      margin-top: 18px;
+      order: 4;
+      margin-top: 0;
+    }
+
+    /* 收起数据面板：只保留身份、社交与正文 */
+    .flow-grid :global(.heatmap-card),
+    .flow-grid :global(.site-info-card) {
+      display: none;
     }
   }
 </style>

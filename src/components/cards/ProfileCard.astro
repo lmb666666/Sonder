@@ -86,8 +86,28 @@ const { profile } = Astro.props as { profile: Profile };
   }
 
   @media (max-width: 820px) {
+    /* 移动端刊头：头像、名号、签名居中对齐 */
     .profile-card {
+      flex-direction: column;
       justify-content: center;
+      gap: 10px;
+      padding: 0;
+      text-align: center;
+    }
+
+    .avatar-wrap {
+      width: 68px;
+      height: 68px;
+    }
+
+    .profile-heading h1 {
+      font-size: 1.16rem;
+    }
+
+    .profile-heading span {
+      justify-content: center;
+      margin-top: 6px;
+      font-size: 0.8rem;
     }
   }
 </style>
