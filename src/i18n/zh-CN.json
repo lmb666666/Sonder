@@ -8,6 +8,8 @@
     "activeDays": "活跃天数",
     "dayStreak": "连续天数",
     "latest": "最新",
+    "latestArticle": "文章",
+    "latestMoment": "动态",
     "latestPublishedPosts": "最新发布文章",
     "openLatestPost": "打开最新文章：{title}",
     "less": "少",

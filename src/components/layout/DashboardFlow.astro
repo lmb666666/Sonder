@@ -35,6 +35,11 @@
     min-width: 0;
   }
 
+  /* 主列下移：与侧栏底部对齐，避免左侧内容过早结束留出空档 */
+  .main-column {
+    padding-top: 84px;
+  }
+
   /* 侧栏为身份与寻路，跟随滚动（主栏承载长内容） */
   .side-column {
     position: sticky;
@@ -88,6 +93,10 @@
     .flow-grid {
       grid-template-columns: 1fr;
       gap: 26px;
+    }
+
+    .main-column {
+      padding-top: 0;
     }
 
     .side-column {
