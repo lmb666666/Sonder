@@ -82,7 +82,7 @@ function getPageHref(pageNumber: number) {
   hasPagination && (
     <nav class="archive-pagination" aria-label={ui.pagination.blog}>
       <a
-        class:list={['pagination-link', { disabled: !page.url.prev }]}
+        class:list={['pagination-link', 'pagination-prev', { disabled: !page.url.prev }]}
         href={page.url.prev ? withBase(page.url.prev) : undefined}
         aria-disabled={!page.url.prev}
       >
@@ -116,7 +116,7 @@ function getPageHref(pageNumber: number) {
         })}
       </div>
       <a
-        class:list={['pagination-link', { disabled: !page.url.next }]}
+        class:list={['pagination-link', 'pagination-next', { disabled: !page.url.next }]}
         href={page.url.next ? withBase(page.url.next) : undefined}
         aria-disabled={!page.url.next}
       >

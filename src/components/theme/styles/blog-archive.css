@@ -74,14 +74,31 @@
 }
 
 @media (max-width: 720px) {
+  /* 移动端：页码单独一行居中，上一页/下一页各占半行，不把页码夹在中间 */
   .archive-pagination {
-    grid-template-columns: 1fr;
+    grid-template-areas:
+      'pages pages'
+      'prev next';
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-top: 28px;
   }
 
-  .pagination-link,
   .pagination-pages {
+    grid-area: pages;
+    width: 100%;
+  }
+
+  .pagination-prev {
+    grid-area: prev;
+  }
+
+  .pagination-next {
+    grid-area: next;
+  }
+
+  .pagination-prev,
+  .pagination-next {
     width: 100%;
   }
 }
