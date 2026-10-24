@@ -2,12 +2,12 @@
   <section class="flow-grid" aria-label="Sonder 个人出版物">
     <section class="flow-column main-column">
       <slot name="intro" />
-      <slot name="latest" />
       <slot name="doing" />
     </section>
 
     <aside class="flow-column side-column">
       <slot name="profile" />
+      <slot name="latest" />
       <slot name="navigation" />
       <slot name="connect" />
     </aside>
@@ -51,8 +51,24 @@
   }
 
   .flow-grid :global(.heatmap-card) {
-    padding: 22px 24px;
-    margin: 8px 0 0;
+    padding: 18px 0;
+  }
+
+  /* 热力图留在侧栏：格子弹性铺满栏宽（约 10px），比固定 8px 更清晰。
+     三级类名压过组件 scoped 选择器（含 cid 属性）的同权重规则 */
+  .flow-grid .side-column :global(.heatmap-cells) {
+    width: 100%;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(7, auto);
+  }
+
+  .flow-grid .side-column :global(.heatmap-cells .heatmap-cell),
+  .flow-grid .side-column :global(.heatmap-cells .cell-link) {
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1;
   }
 
   .flow-grid :global(.nav-card) {

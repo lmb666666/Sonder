@@ -201,7 +201,7 @@ body = [
 
 [config.home.latest]
 count = 1
-heatmapWeeks = 52
+heatmapWeeks = 20
 showHeatmapLatest = true
 excludeDraft = true
 startDate = ""
