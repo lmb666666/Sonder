@@ -120,6 +120,20 @@
   --paper-dust: #e5e5dc;
   --paper-rule: rgba(63, 88, 125, 0.026);
   --paper-texture-ink: rgba(63, 88, 125, 0.012);
+  /* 冷调纸底：blue-soft 专属，随主题换纸（默认为暖纸） */
+  --paper-bg: #f8fafb;
+  --paper-bg-deep: #eff3f5;
+  --paper-surface: #fcfdfe;
+  --paper-surface-muted: #f3f6f8;
+  --paper-surface-rgb: 252, 253, 254;
+  --paper-control: rgba(243, 246, 248, 0.76);
+  --paper-control-hover: rgba(235, 241, 244, 0.92);
+  --paper-nav: rgba(252, 253, 254, 0.92);
+  --paper-card-wash-top: rgba(252, 253, 254, 0.78);
+  --paper-card-wash-bottom: rgba(243, 246, 248, 0.52);
+  --paper-page-bg: #f8fafb;
+  --paper-detail-bg: #f8fafb;
+  --paper-theme-color: #f8fafb;
 }
 
 :root[data-theme='dark'][data-palette='blue-soft'] {
@@ -131,6 +145,24 @@
   --paper-dust: #33322a;
   --paper-rule: rgba(204, 222, 246, 0.028);
   --paper-texture-ink: rgba(204, 222, 246, 0.032);
+  /* 石板蓝夜色纸底 */
+  --paper-bg: #181d21;
+  --paper-bg-deep: #101417;
+  --paper-surface: #20262c;
+  --paper-surface-muted: #262f36;
+  --paper-surface-rgb: 32, 38, 44;
+  --paper-control: rgba(40, 48, 56, 0.72);
+  --paper-control-hover: rgba(50, 60, 70, 0.88);
+  --paper-nav: rgba(32, 38, 44, 0.92);
+  --paper-card-wash-top: rgba(39, 47, 54, 0.72);
+  --paper-card-wash-bottom: rgba(28, 33, 38, 0.52);
+  --paper-page-bg: linear-gradient(180deg, rgba(24, 29, 33, 0.98) 0%, rgba(16, 20, 23, 0.98) 100%);
+  --paper-detail-bg: linear-gradient(
+    180deg,
+    rgba(24, 29, 33, 0.98) 0%,
+    rgba(16, 20, 23, 0.98) 100%
+  );
+  --paper-theme-color: #181d21;
 }
 
 :root[data-palette='orange-soft'] {

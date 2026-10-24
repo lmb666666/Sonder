@@ -135,7 +135,14 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
 
       root.dataset.theme = nextTheme;
       root.style.colorScheme = nextTheme;
-      themeMeta()?.setAttribute('content', nextTheme === 'dark' ? '#171b18' : '#fdfdf9');
+      // 主题色跟随色盘的 --paper-theme-color（未定义时回退默认纸色）
+      const paletteThemeColor = getComputedStyle(root)
+        .getPropertyValue('--paper-theme-color')
+        .trim();
+      themeMeta()?.setAttribute(
+        'content',
+        paletteThemeColor || (nextTheme === 'dark' ? '#171b18' : '#fdfdf9'),
+      );
       for (const button of document.querySelectorAll('[data-theme-toggle]')) {
         button.setAttribute('aria-label', toggleLabel);
         button.setAttribute('title', toggleLabel);
