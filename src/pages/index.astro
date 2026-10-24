@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import IntroCard from '../components/cards/IntroCard.astro';
 import ConnectCard from '../components/cards/ConnectCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
@@ -7,9 +8,22 @@ import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
 import DoingCard from '../components/widgets/DoingCard.astro';
 import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
+import { demoMoments, getMomentsTotal } from '../data/moments';
+import { countWords, formatCount } from '../utils/word-count';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const { home, profile, site } = await getSiteConfig();
+const { home, profile, site, pages } = await getSiteConfig();
+
+// 侧栏统计：总文章 / 总字数（与文章页同口径）/ 总动态（Ech0 可达取真实 total）
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const totalWords = posts.reduce((sum, post) => sum + countWords(post.body ?? ''), 0);
+const momentsTotal = await getMomentsTotal(pages.moments.apiUrl.trim());
+
+const stats = [
+  { label: '总文章', value: formatCount(posts.length) },
+  { label: '总字数', value: formatCount(totalWords) },
+  { label: '总动态', value: formatCount(momentsTotal) },
+];
 ---
 
 <BaseLayout title={site.pageTitle} description={site.pageDescription}>
@@ -31,6 +45,7 @@ const { home, profile, site } = await getSiteConfig();
         excludeDraft={home.latest.excludeDraft}
         startDate={home.latest.startDate || null}
         dateArchiveBaseHref={home.latest.dateArchiveBaseHref || undefined}
+        stats={stats}
       />
     </Fragment>
 

@@ -12,6 +12,8 @@ interface Props {
   excludeDraft?: boolean;
   dateArchiveBaseHref?: string;
   startDate?: Date | string | null;
+  /** 覆盖顶部统计行（label/value）；缺省用内置的总文章/活跃天数/连续天数 */
+  stats?: { label: string; value: string }[];
 }
 
 const {
@@ -21,10 +23,16 @@ const {
   excludeDraft = true,
   dateArchiveBaseHref,
   startDate,
+  stats,
 } = Astro.props;
 const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
 const heatmap = createRecentBlogHeatmap(posts, weeks, latestCount, startDate);
 const ui = getUiText(await getSiteConfig());
+const statItems = stats ?? [
+  { label: ui.heatmap.totalPosts, value: heatmap.totalPosts },
+  { label: ui.heatmap.activeDays, value: heatmap.activeDays },
+  { label: ui.heatmap.dayStreak, value: heatmap.currentStreak },
+];
 const heatmapLabel = startDate
   ? ui.heatmap.writingSince(heatmap.startDate)
   : ui.heatmap.recentWeeks(heatmap.weeks);
@@ -58,18 +66,14 @@ function getDayHref(day: HeatmapDay) {
 
 <article class="glass-card heatmap-card">
   <div class="stats-row">
-    <div class="stat-item">
-      <strong>{heatmap.totalPosts}</strong>
-      <span>{ui.heatmap.totalPosts}</span>
-    </div>
-    <div class="stat-item">
-      <strong>{heatmap.activeDays}</strong>
-      <span>{ui.heatmap.activeDays}</span>
-    </div>
-    <div class="stat-item">
-      <strong>{heatmap.currentStreak}</strong>
-      <span>{ui.heatmap.dayStreak}</span>
-    </div>
+    {
+      statItems.map((item) => (
+        <div class="stat-item">
+          <strong>{item.value}</strong>
+          <span>{item.label}</span>
+        </div>
+      ))
+    }
   </div>
 
   {

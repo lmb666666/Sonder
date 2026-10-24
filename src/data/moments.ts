@@ -94,3 +94,24 @@ export const demoMoments: MomentItem[] = [
     tags: ['博客'],
   },
 ];
+
+/** 构建期获取动态总数：Ech0 可达取真实 total，否则回退内置演示数据条数。 */
+export async function getMomentsTotal(apiUrl: string): Promise<number> {
+  if (apiUrl) {
+    try {
+      const response = await fetch(`${apiUrl.replace(/\/$/, '')}/api/echo/query`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ page: 1, pageSize: 1, sortOrder: 'desc' }),
+        signal: AbortSignal.timeout(5000),
+      });
+      const payload = await response.json();
+      if (payload?.code === 1 && typeof payload?.data?.total === 'number') {
+        return payload.data.total;
+      }
+    } catch (error) {
+      console.warn('[moments] 构建期获取动态总数失败，回退演示数据条数：', error);
+    }
+  }
+  return demoMoments.length;
+}
