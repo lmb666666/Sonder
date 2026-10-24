@@ -629,7 +629,8 @@ export const collections = {
   about,
   blog,
   siteConfig,
-  ...(projectsModuleEnabled ? { projects } : {}),
+  // projects 集合与页面模块解耦：项目卡片现由关于页展示
+  projects,
   ...(vibeModuleEnabled ? { vibe } : {}),
   ...(mediaModuleEnabled ? { media } : {}),
 };

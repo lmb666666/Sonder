@@ -1,6 +1,22 @@
 ---
+import {
+  Box,
+  Code2,
+  Database,
+  ExternalLink,
+  FileCode2,
+  Github,
+  Globe2,
+  Layers3,
+  Palette,
+  Rocket,
+  Sparkles,
+  Terminal,
+  WandSparkles,
+} from 'lucide-astro';
 import { getCollection, render } from 'astro:content';
 import BlogArticle from '../layouts/BlogArticle.astro';
+import { sortByDateDesc } from '../utils/content-dates';
 
 const [about] = await getCollection('about');
 
@@ -9,6 +25,27 @@ if (!about) {
 }
 
 const { Content, headings } = await render(about);
+
+// 项目卡片（原 /projects 页并入本页）：链接指向项目外部地址
+const projectEntries = (await getCollection('projects', ({ data }) => !data.draft)).filter(
+  (entry) => entry.id !== 'index',
+);
+const projects = sortByDateDesc(projectEntries);
+
+const projectIcons = {
+  github: Github,
+  box: Box,
+  'code-2': Code2,
+  database: Database,
+  'file-code-2': FileCode2,
+  'globe-2': Globe2,
+  'layers-3': Layers3,
+  palette: Palette,
+  rocket: Rocket,
+  sparkles: Sparkles,
+  terminal: Terminal,
+  'wand-sparkles': WandSparkles,
+};
 ---
 
 <BlogArticle
@@ -18,4 +55,161 @@ const { Content, headings } = await render(about);
   contentFont="ui"
 >
   <Content />
+
+  {
+    projects.length > 0 && (
+      <section class="about-projects" aria-label="项目">
+        <h2>项目</h2>
+        <div class="project-grid">
+          {projects.map((project) => {
+            const ProjectIcon = projectIcons[project.data.icon] ?? Github;
+            const primaryLink = project.data.links[0];
+            const cardTitle = primaryLink ? (
+              <a href={primaryLink.href} target="_blank" rel="noopener noreferrer">
+                {project.data.title}
+              </a>
+            ) : (
+              <span>{project.data.title}</span>
+            );
+
+            return (
+              <article
+                class="project-card"
+                style={
+                  project.data.iconColor
+                    ? `--project-icon-color: ${project.data.iconColor}`
+                    : undefined
+                }
+              >
+                <div class="project-card-heading">
+                  <ProjectIcon
+                    class="project-icon"
+                    size={22}
+                    strokeWidth={1.55}
+                    aria-hidden="true"
+                  />
+                  <h3>{cardTitle}</h3>
+                </div>
+                <p>{project.data.description}</p>
+                {project.data.links.length > 0 && (
+                  <footer class="project-links" aria-label="项目链接">
+                    {project.data.links.map((link) => (
+                      <a href={link.href} target="_blank" rel="noopener noreferrer">
+                        {link.kind === 'github' ? (
+                          <Github size={13} strokeWidth={1.8} aria-hidden="true" />
+                        ) : (
+                          <ExternalLink size={13} strokeWidth={1.8} aria-hidden="true" />
+                        )}
+                        {link.label}
+                      </a>
+                    ))}
+                  </footer>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    )
+  }
 </BlogArticle>
+
+<style>
+  .about-projects {
+    margin-top: 44px;
+    padding-top: 28px;
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .about-projects h2 {
+    margin: 0 0 6px;
+    color: var(--paper-ink);
+    font-family: var(--font-ui-label);
+    font-size: 1.32rem;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 22px);
+    margin-top: 22px;
+  }
+
+  .project-card {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: 16px;
+    border-radius: 8px;
+    color: var(--paper-ink);
+    font-family: var(--font-ui-label);
+    transition:
+      transform 180ms ease,
+      background 180ms ease;
+  }
+
+  .project-card:hover {
+    background: var(--paper-control-hover);
+    transform: translateY(-1px);
+  }
+
+  .project-card-heading {
+    display: flex;
+    gap: 11px;
+    align-items: center;
+  }
+
+  .project-icon {
+    flex: none;
+    color: var(--project-icon-color, var(--paper-accent));
+  }
+
+  .project-card h3 {
+    margin: 0;
+    font-size: 1.12rem;
+    line-height: 1.3;
+  }
+
+  .project-card h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .project-card h3 a:hover {
+    color: var(--paper-accent);
+  }
+
+  .project-card p {
+    margin: 0;
+    max-width: 58ch;
+    color: var(--paper-ink-soft);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    color: var(--paper-ink-faint);
+    font-size: 0.74rem;
+  }
+
+  .project-links a {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .project-links a:hover {
+    color: var(--paper-accent);
+  }
+
+  @media (max-width: 720px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

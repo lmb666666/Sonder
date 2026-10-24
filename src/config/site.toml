@@ -19,7 +19,7 @@ lang = "zh-CN"
 # 英文与代码感 UI 字体
 en = "Maple Mono"
 code = "Monaco"
-# 模板内可直接选择：ChillRoundM、LXGW WenKai
+# 模板内可直接选择：ChillRoundM（如需 LXGW WenKai 请自行下载字体文件放入 public/fonts）
 # 中文阅读字体
 zh = "ChillRoundM"
 # 中文完整字体文件
@@ -165,9 +165,6 @@ href = "/"
 label = "博客"
 href = "/blog"
 
-[[config.topNav.links]]
-label = "项目"
-module = "projects"
 
 [[config.topNav.links]]
 label = "书影音"
@@ -177,12 +174,9 @@ module = "media"
 label = "动态"
 href = "/moments"
 
-[[config.topNav.links]]
-label = "朋友圈"
-href = "/circle"
 
 [[config.topNav.links]]
-label = "友链"
+label = "朋友"
 href = "/links"
 
 [[config.topNav.links]]
@@ -227,10 +221,10 @@ subtitle = "读过的、看过的、听过的"
 href = "/media"
 
 [[config.home.navigation]]
-icon = "briefcase"
-title = "项目"
-subtitle = "小工具与实验"
-href = "/projects"
+icon = "compass"
+title = "关于"
+subtitle = "本站与项目陈列"
+href = "/about"
 
 [[config.home.navigation]]
 icon = "github"
