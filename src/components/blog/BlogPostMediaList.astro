@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { format } from 'date-fns';
 import FormattedDate from '../FormattedDate.astro';
 import Icon from '../Icon.astro';
 import SmartImage from '../SmartImage.astro';
@@ -48,6 +49,7 @@ const cards = await Promise.all(
         ...post.data.series.filter((name) => !post.data.categories.includes(name)),
       ],
       cover,
+      shortDate: format(post.data.date, 'MM-dd'),
       words: formatCount(countWords(bodyText)),
       minutes: readingMinutes(bodyText),
       bandStyle: band ? `--media-band:${band.band};--media-fg:${band.fg}` : undefined,
@@ -58,58 +60,63 @@ const cards = await Promise.all(
 
 <ListTag class="media-stack">
   {
-    cards.map(({ post, index, postHref, sticky, groups, cover, words, minutes, bandStyle }) => {
-      return (
-        <li class="media-item">
-          <a
-            class:list={['media-card', { 'is-fallback': !cover }]}
-            href={postHref}
-            data-archive-post-href={postHref}
-            style={bandStyle}
-          >
-            {cover ? (
-              <SmartImage class="media-cover" width={960} height={720} src={cover} alt="" />
-            ) : (
-              <span class="media-ghost" aria-hidden="true">
-                {String(postOffset + index + 1).padStart(2, '0')}
-              </span>
-            )}
-            {sticky && (
-              <span class="media-pin">
-                <Icon name="pin" size={12} strokeWidth={2.4} />
-                {ui.article.pinned}
-              </span>
-            )}
-            <span class="media-body">
-              <h2 class="media-title">{post.data.title}</h2>
-              <span class="media-meta">
-                <span class="media-meta-side">
-                  <span class="media-meta-chip">
-                    <Icon name="calendar" size={13} strokeWidth={2} />
-                    <FormattedDate date={post.data.date} />
-                  </span>
-                  {groups.length > 0 && (
-                    <span class="media-meta-chip">
-                      <Icon name="folder" size={13} strokeWidth={2} />
-                      {groups.join(', ')}
+    cards.map(
+      ({ post, index, postHref, sticky, groups, cover, shortDate, words, minutes, bandStyle }) => {
+        return (
+          <li class="media-item">
+            <a
+              class:list={['media-card', { 'is-fallback': !cover }]}
+              href={postHref}
+              data-archive-post-href={postHref}
+              style={bandStyle}
+            >
+              {cover ? (
+                <SmartImage class="media-cover" width={960} height={720} src={cover} alt="" />
+              ) : (
+                <span class="media-ghost" aria-hidden="true">
+                  {String(postOffset + index + 1).padStart(2, '0')}
+                </span>
+              )}
+              {sticky && (
+                <span class="media-pin">
+                  <Icon name="pin" size={12} strokeWidth={2.4} />
+                  {ui.article.pinned}
+                </span>
+              )}
+              <span class="media-body">
+                <h2 class="media-title">{post.data.title}</h2>
+                <span class="media-meta">
+                  <span class="media-meta-side">
+                    <span class="media-meta-chip media-date">
+                      <Icon name="calendar" size={13} strokeWidth={2} />
+                      <span class="media-date-full">
+                        <FormattedDate date={post.data.date} />
+                      </span>
+                      <span class="media-date-short">{shortDate}</span>
                     </span>
-                  )}
-                </span>
-                <span class="media-meta-side">
-                  <span class="media-meta-chip media-meta-words">
-                    <Icon name="pen" size={13} strokeWidth={2} />
-                    {words}字
+                    {groups.length > 0 && (
+                      <span class="media-meta-chip media-meta-groups">
+                        <Icon name="folder" size={13} strokeWidth={2} />
+                        {groups.join(', ')}
+                      </span>
+                    )}
                   </span>
-                  <span class="media-meta-chip">
-                    <Icon name="clock" size={13} strokeWidth={2} />
-                    {ui.article.readingTime(minutes)}
+                  <span class="media-meta-side">
+                    <span class="media-meta-chip media-meta-words">
+                      <Icon name="pen" size={13} strokeWidth={2} />
+                      {words}字
+                    </span>
+                    <span class="media-meta-chip">
+                      <Icon name="clock" size={13} strokeWidth={2} />
+                      {ui.article.readingTime(minutes)}
+                    </span>
                   </span>
                 </span>
               </span>
-            </span>
-          </a>
-        </li>
-      );
-    })
+            </a>
+          </li>
+        );
+      },
+    )
   }
 </ListTag>

@@ -54,7 +54,7 @@
     "groups": "文章分组",
     "readingTools": "阅读工具",
     "wordCount": "{count} 字",
-    "readingTime": "{minutes} 分钟阅读",
+    "readingTime": "{minutes}分钟阅读",
     "moreInSeries": "{name} 系列更多文章",
     "previousInSeries": "{name} 上一篇",
     "nextInSeries": "{name} 下一篇",
