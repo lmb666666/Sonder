@@ -88,15 +88,7 @@ const paletteOptions = [
 
   {
     navStyle === 'pill' ? (
-      currentPath === '/' ? (
-        <a
-          class="nav-avatar nav-avatar-home"
-          href={withBase('/')}
-          aria-label={`${site.title} 首页`}
-        >
-          <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
-        </a>
-      ) : (
+      currentPath !== '/' && (
         <a
           class="nav-avatar"
           href={withBase('/')}
@@ -240,6 +232,18 @@ const paletteOptions = [
     )
   }
 </header>
+{
+  navStyle === 'pill' && currentPath === '/' && (
+    <a
+      class="nav-avatar-float"
+      data-avatar-float
+      href={withBase('/')}
+      aria-label={`${site.title} 首页`}
+    >
+      <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
+    </a>
+  )
+}
 
 <script>
   let navigationSequence = 0;
@@ -296,7 +300,8 @@ const paletteOptions = [
         header.dataset.scrollHideReady = 'true';
 
         const topRevealOffset = 24;
-        const hideAfterOffset = 96;
+        // 首页有浮动头像时，先让头像停靠进导航，再允许导航隐藏
+        const hideAfterOffset = document.querySelector('[data-avatar-float]') ? 200 : 96;
         const scrollIntentDelta = 8;
         let lastScrollY = window.scrollY;
         let scrollFrame = 0;
@@ -305,6 +310,18 @@ const paletteOptions = [
           header.dataset.navHidden = hidden ? 'true' : 'false';
           header.toggleAttribute('inert', hidden);
           header.toggleAttribute('aria-hidden', hidden);
+
+          // 首页浮动头像随导航一起隐藏/出现
+          const floatAvatar = document.querySelector<HTMLElement>('[data-avatar-float]');
+          if (floatAvatar) {
+            if (hidden) {
+              floatAvatar.dataset.navHidden = 'true';
+            } else {
+              delete floatAvatar.dataset.navHidden;
+            }
+            floatAvatar.toggleAttribute('inert', hidden);
+            floatAvatar.toggleAttribute('aria-hidden', hidden);
+          }
         };
 
         const shouldKeepVisible = () =>
@@ -527,7 +544,66 @@ const paletteOptions = [
     }
   };
 
+  // 首页浮动头像：随滚动在内容区（64px）与导航（36px）之间连续移动
+  const initFloatingAvatar = () => {
+    const floatAvatar = document.querySelector<HTMLElement>('[data-avatar-float]');
+    if (!floatAvatar) {
+      return;
+    }
+
+    const slot = document.querySelector<HTMLElement>('[data-avatar-slot]');
+    const dockTop = 15;
+    const dockSize = 36;
+    const dockRange = 80;
+    let slotTop = 0;
+    let slotLeft = 24;
+    let baseSize = 64;
+    let frame = 0;
+
+    const measure = () => {
+      if (!slot) {
+        return;
+      }
+
+      const rect = slot.getBoundingClientRect();
+      slotTop = rect.top + window.scrollY;
+      slotLeft = rect.left;
+      baseSize = rect.width || 64;
+    };
+
+    const update = () => {
+      frame = 0;
+
+      const scrollY = window.scrollY;
+      const start = Math.max(0, slotTop - dockTop - dockRange);
+      const progress = Math.min(1, Math.max(0, (scrollY - start) / dockRange));
+      const size = baseSize + (dockSize - baseSize) * progress;
+      const y = Math.max(dockTop, slotTop - scrollY);
+
+      floatAvatar.style.width = `${size}px`;
+      floatAvatar.style.height = `${size}px`;
+      floatAvatar.style.transform = `translate3d(${slotLeft}px, ${y}px, 0)`;
+      floatAvatar.style.setProperty('--avatar-dock', String(progress));
+      floatAvatar.style.visibility = 'visible';
+    };
+
+    const schedule = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(update);
+      }
+    };
+
+    measure();
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', () => {
+      measure();
+      update();
+    });
+  };
+
   initMobileTopNav();
+  initFloatingAvatar();
   document.addEventListener('astro:before-preparation', (event) => {
     const navigationId = startPendingNavigation(event.sourceElement);
 
@@ -551,7 +627,10 @@ const paletteOptions = [
     };
   });
   document.addEventListener('astro:after-swap', () => clearPendingNavigation());
-  document.addEventListener('astro:page-load', initMobileTopNav);
+  document.addEventListener('astro:page-load', () => {
+    initMobileTopNav();
+    initFloatingAvatar();
+  });
 </script>
 
 <style>
@@ -1045,9 +1124,44 @@ const paletteOptions = [
     transform: translateY(-50%);
   }
 
-  /* 首页：桌面端头像由侧栏身份卡承担，胶囊里不重复；移动端头像常驻胶囊 */
-  .nav-pill .nav-avatar-home {
+  /* 首页浮动头像：移动端随滚动在内容区与导航之间连续移动（坐标由脚本写入） */
+  .nav-avatar-float {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
     display: none;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    visibility: hidden;
+    will-change: transform, width, height;
+    transition: opacity 160ms ease;
+  }
+
+  /* 导航收起时，停靠中的头像一并淡出 */
+  .nav-avatar-float[data-nav-hidden='true'] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .nav-avatar-float::after {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 50%;
+    box-shadow: var(--paper-shadow);
+    content: '';
+    opacity: var(--avatar-dock, 0);
+    transition: opacity 120ms linear;
+  }
+
+  .nav-avatar-float img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
   .nav-pill .nav-avatar img {
@@ -1129,8 +1243,7 @@ const paletteOptions = [
       backdrop-filter: blur(14px) saturate(1.05);
     }
 
-    .nav-pill .nav-avatar,
-    .nav-pill .nav-avatar-home {
+    .nav-pill .nav-avatar {
       position: static;
       order: 1;
       width: 36px;
@@ -1138,13 +1251,8 @@ const paletteOptions = [
       transform: none;
     }
 
-    /* 首页：头像本在 hero 里，滚离顶部后才停靠进导航 */
-    .nav-pill .nav-avatar-home {
-      display: none;
-    }
-
-    .nav-pill[data-nav-scrolled='true'] .nav-avatar-home {
-      display: inline-grid;
+    .nav-avatar-float {
+      display: grid;
     }
 
     .nav-pill .mobile-menu-toggle,

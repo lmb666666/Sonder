@@ -16,7 +16,7 @@ const { theme } = await getSiteConfig();
 ---
 
 <article class="profile-card" data-nav-style={theme.navStyle}>
-  <div class="avatar-wrap" transition:name="site-avatar">
+  <div class="avatar-wrap" data-avatar-slot transition:name="site-avatar">
     <img
       src={profile.avatar}
       alt={`${profile.name} GitHub avatar`}
@@ -88,6 +88,11 @@ const { theme } = await getSiteConfig();
   }
 
   @media (max-width: 820px) {
+    /* 胶囊模式下头像交给随滚动移动的浮动头像，这里只保留占位 */
+    .profile-card[data-nav-style='pill'] .avatar-wrap img {
+      visibility: hidden;
+    }
+
     /* 移动端只留头像：名号与签名交给下方主标题，h1 保留给读屏 */
     .profile-card {
       gap: 0;
