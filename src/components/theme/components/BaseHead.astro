@@ -110,9 +110,24 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style is:inline set:html={fontVariablesCss}></style>
 <ClientRouter />
-<script is:inline>
+<script
+  is:inline
+  define:vars={{
+    paletteIds: [
+      'green-soft',
+      'green-vivid',
+      'rose-soft',
+      'pink-soft',
+      'purple-soft',
+      'blue-soft',
+      'orange-soft',
+      'brown-soft',
+    ],
+  }}
+>
   (() => {
     const storageKey = 'navfolio-theme';
+    const paletteKey = 'navfolio-palette';
     const root = document.documentElement;
     const themeMeta = () => document.querySelector('meta[name="theme-color"]');
     const systemTheme = () =>
@@ -124,6 +139,13 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
         return null;
       }
     };
+    // 首帧前恢复持久化的色盘选择，避免换纸闪烁
+    try {
+      const storedPalette = localStorage.getItem(paletteKey);
+      if (storedPalette && paletteIds.includes(storedPalette)) {
+        root.dataset.palette = storedPalette;
+      }
+    } catch {}
     const setStoredTheme = (theme) => {
       try {
         localStorage.setItem(storageKey, theme);

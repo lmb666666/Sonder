@@ -1,5 +1,5 @@
 ---
-import { Github, ListTree, Menu, Moon, Sun } from 'lucide-astro';
+import { ListTree, Menu, Moon, Palette, Sun } from 'lucide-astro';
 import SiteSearch from './SiteSearch.astro';
 import TocTree from './TocTree.astro';
 import { getRouteLabels, getSiteConfig, getTopNavLinks } from '../../data/site';
@@ -53,6 +53,19 @@ const activeRoute = Object.entries(routeLabels).find(
 );
 const brandRouteLabel = activeRoute?.[1];
 const shouldShowTocAction = showTocIcon && tocItems.length > 0;
+
+// 控制面板可切换的色盘（与 palettes.css 的 data-palette 一一对应）
+const paletteOptions = [
+  { id: 'green-soft', label: '苔绿', accent: '#6b7d70', accentDark: '#a8baa9' },
+  { id: 'green-vivid', label: '叶绿', accent: '#4e8a61', accentDark: '#93c9a1' },
+  { id: 'rose-soft', label: '玫瑰', accent: '#9b6b70', accentDark: '#d2a6ab' },
+  { id: 'pink-soft', label: '樱粉', accent: '#a66d8a', accentDark: '#d6a8c2' },
+  { id: 'purple-soft', label: '薰衣草', accent: '#7b6fa8', accentDark: '#b9addd' },
+  { id: 'blue-soft', label: '墨蓝', accent: '#5b7488', accentDark: '#a4b6c6' },
+  { id: 'orange-soft', label: '暖橙', accent: '#9a7650', accentDark: '#d0b18a' },
+  { id: 'brown-soft', label: '棕褐', accent: '#836f5d', accentDark: '#c3b09d' },
+];
+const paletteIds = paletteOptions.map((option) => option.id);
 ---
 
 <header
@@ -126,15 +139,16 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
   </nav>
 
   <div class="nav-actions" aria-label="Page actions">
-    <a
-      href={site.repository}
-      target="_blank"
-      rel="noreferrer"
-      aria-label="Open GitHub repository"
-      title="GitHub"
+    <button
+      type="button"
+      data-palette-toggle
+      aria-label="打开主题色面板"
+      aria-expanded="false"
+      aria-controls="nav-palette-panel"
+      title="主题色"
     >
-      <Github size={17} stroke-width={2} />
-    </a>
+      <Palette size={17} stroke-width={2} />
+    </button>
     <button type="button" data-theme-toggle aria-label="Switch theme">
       <Moon class="theme-icon-moon" size={17} stroke-width={2} />
       <Sun class="theme-icon-sun" size={17} stroke-width={2} />
@@ -155,6 +169,35 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
         </button>
       )
     }
+  </div>
+
+  <div
+    class="palette-panel"
+    id="nav-palette-panel"
+    role="group"
+    aria-label="主题色"
+    data-palette-panel
+  >
+    <p class="palette-panel-title">主题色</p>
+    <div class="palette-options">
+      {
+        paletteOptions.map((option) => (
+          <button
+            type="button"
+            class="palette-option"
+            data-palette-option={option.id}
+            aria-pressed="false"
+          >
+            <span
+              class="palette-dot"
+              aria-hidden="true"
+              style={`--swatch-light: ${option.accent}; --swatch-dark: ${option.accentDark};`}
+            />
+            <span class="palette-label">{option.label}</span>
+          </button>
+        ))
+      }
+    </div>
   </div>
 
   {
@@ -351,6 +394,106 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
           if (event.key === 'Escape') {
             setMenuOpen(false);
             setTocOpen(false);
+          }
+        });
+      }
+
+      if (!header.dataset.paletteReady) {
+        header.dataset.paletteReady = 'true';
+
+        const paletteToggle = header.querySelector<HTMLButtonElement>('[data-palette-toggle]');
+        const palettePanel = header.querySelector<HTMLElement>('[data-palette-panel]');
+        const storageKey = 'navfolio-palette';
+        const knownPalettes = new Set(
+          [...header.querySelectorAll('[data-palette-option]')].map(
+            (option) => option.getAttribute('data-palette-option') ?? '',
+          ),
+        );
+
+        const applyMetaThemeColor = () => {
+          const color = getComputedStyle(document.documentElement)
+            .getPropertyValue('--paper-theme-color')
+            .trim();
+          if (!color) return;
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
+        };
+
+        const setPaletteOpen = (open: boolean) => {
+          if (!paletteToggle || !palettePanel) return;
+          header.dataset.paletteOpen = open ? 'true' : 'false';
+          paletteToggle.setAttribute('aria-expanded', String(open));
+          paletteToggle.setAttribute('aria-label', open ? '关闭主题色面板' : '打开主题色面板');
+        };
+
+        const syncActiveOption = () => {
+          const current = document.documentElement.dataset.palette ?? '';
+          for (const option of header.querySelectorAll<HTMLButtonElement>(
+            '[data-palette-option]',
+          )) {
+            const active = option.getAttribute('data-palette-option') === current;
+            option.setAttribute('aria-pressed', String(active));
+            option.classList.toggle('active', active);
+          }
+        };
+
+        const readStoredPalette = () => {
+          try {
+            return localStorage.getItem(storageKey);
+          } catch {
+            return null;
+          }
+        };
+
+        // 恢复持久化选择（早期脚本已应用，这里兜底同步选中态）
+        const stored = readStoredPalette();
+        if (stored && knownPalettes.has(stored)) {
+          document.documentElement.dataset.palette = stored;
+        }
+        syncActiveOption();
+
+        paletteToggle?.addEventListener('click', () => {
+          const nextOpen = header.dataset.paletteOpen !== 'true';
+          setPaletteOpen(nextOpen);
+          header.dataset.navHidden = 'false';
+          if (nextOpen) {
+            // 与移动端菜单/目录互斥
+            header.dataset.mobileMenuOpen = 'false';
+            header.dataset.mobileTocOpen = 'false';
+            header
+              .querySelector('[data-mobile-menu-toggle]')
+              ?.setAttribute('aria-expanded', 'false');
+            header
+              .querySelector('[data-mobile-toc-trigger]')
+              ?.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        palettePanel?.addEventListener('click', (event) => {
+          const option = (event.target as Element).closest<HTMLButtonElement>(
+            '[data-palette-option]',
+          );
+          if (!option) return;
+          const palette = option.getAttribute('data-palette-option');
+          if (!palette) return;
+          document.documentElement.dataset.palette = palette;
+          try {
+            localStorage.setItem(storageKey, palette);
+          } catch {
+            // 存储不可用时仍允许本次切换生效
+          }
+          applyMetaThemeColor();
+          syncActiveOption();
+        });
+
+        document.addEventListener('click', (event) => {
+          if (header.dataset.paletteOpen === 'true' && !header.contains(event.target as Node)) {
+            setPaletteOpen(false);
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && header.dataset.paletteOpen === 'true') {
+            setPaletteOpen(false);
           }
         });
       }
@@ -555,6 +698,92 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
   .mobile-menu-toggle:hover {
     background: var(--paper-control-hover);
     color: var(--paper-accent);
+  }
+
+  .palette-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    display: grid;
+    gap: 8px;
+    width: min(248px, calc(100vw - 24px));
+    padding: 12px;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 10px;
+    background: var(--paper-nav);
+    box-shadow: var(--paper-shadow-lift);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+
+  .blog-top-nav[data-palette-open='true'] .palette-panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .palette-panel-title {
+    margin: 0;
+    padding: 0 2px 2px;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-ui-label);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .palette-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .palette-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: none;
+    color: var(--paper-ink-soft);
+    cursor: pointer;
+    font-family: var(--font-ui-label);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition:
+      background 160ms ease,
+      color 160ms ease;
+  }
+
+  .palette-option:hover {
+    background: var(--paper-control-hover);
+    color: var(--paper-ink);
+  }
+
+  .palette-option.active {
+    border-color: var(--paper-line-strong);
+    background: var(--paper-accent-soft);
+    color: var(--paper-accent);
+  }
+
+  .palette-dot {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--paper-surface);
+    border-radius: 999px;
+    box-shadow:
+      0 0 0 1px var(--paper-line-strong),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(135deg, var(--swatch-light) 50%, var(--swatch-dark) 50%);
   }
 
   @media (max-width: 720px) {
