@@ -87,7 +87,7 @@ const extensionLabels: Record<string, string> = {
                 <header class="moment__head">
                   <span class="moment__owner">
                     {ownerAvatar && <img src={ownerAvatar} alt="" loading="lazy" />}
-                    <span>{moment.extension ? '' : ownerName}</span>
+                    <span>{ownerName}</span>
                   </span>
                   <time class="moment__time">{formatMomentTime(moment.date)}</time>
                 </header>
@@ -183,8 +183,9 @@ const extensionLabels: Record<string, string> = {
     </main>
     <Footer />
 
-    <style>
-      main {
+    <style is:global>
+      /* is:global：Ech0 模式下卡片由脚本插入，scoped 样式不匹配，整块全局化并以页面类收拢作用域 */
+      .moments-page {
         width: min(100%, var(--layout-reading-width));
         padding-top: 126px;
       }

@@ -43,7 +43,7 @@ package.json（原为各包自持）。`@fontsource/maple-mono`、`lucide-astro`
 - `src/utils/{remark-mermaid,rehype-responsive-tables}.ts`：上游遗留的重复副本
   （与 plugin-markdown 源码逐字节一致，全仓无引用），保留未动，待后续清理。
 - `.husky/pre-commit`：原 `bun run build` 在无 `src/content` 时必失败（模板自带矛盾），
-  改为 `NAVFOLIO_CONTENT_SOURCE=docs bun run build`。
+  先改为 docs 源构建，M3 内容收编后恢复默认 `bun run build`。
 - `src/plugins/config.test.ts`：两处路径断言从 node_modules 布局更新为收编后布局。
 
 ## 基线对照

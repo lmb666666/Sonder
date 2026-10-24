@@ -52,13 +52,25 @@ const tip = (() => {
   if (!props.link) return '';
   return isExternalLink(props.link) ? getDomain(props.link) : props.link;
 })();
-const href = props.link || undefined;
 ---
 
-<a class="badge" class:list={{ round }} href={href} title={tip || undefined}>
-  {image && <img class="badge-icon" src={image} alt="" loading="lazy" decoding="async" />}
-  <span class="badge-text"><slot>{props.text}</slot></span>
-</a>
+{
+  props.link ? (
+    <a class="badge" class:list={{ round }} href={props.link} title={tip || undefined}>
+      {image && <img class="badge-icon" src={image} alt="" loading="lazy" decoding="async" />}
+      <span class="badge-text">
+        <slot>{props.text}</slot>
+      </span>
+    </a>
+  ) : (
+    <span class="badge" class:list={{ round }}>
+      {image && <img class="badge-icon" src={image} alt="" loading="lazy" decoding="async" />}
+      <span class="badge-text">
+        <slot>{props.text}</slot>
+      </span>
+    </span>
+  )
+}
 
 <style>
   .badge {
@@ -78,7 +90,7 @@ const href = props.link || undefined;
       border-color 0.2s;
   }
 
-  a.badge:hover {
+  :where(a, span).badge:hover {
     color: var(--paper-ink);
     border-color: var(--paper-accent);
   }

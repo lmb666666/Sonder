@@ -1,14 +1,7 @@
 import { getCollection } from 'astro:content';
 import { getSiteConfig } from '../data/site';
 import { sortByDateDesc } from '../utils/content-dates';
-
-const escapeXml = (value) =>
-  value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+import { escapeXml } from '../utils/xml';
 
 export async function GET(context) {
   const { site } = await getSiteConfig();

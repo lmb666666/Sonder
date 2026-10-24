@@ -48,13 +48,21 @@ function playerSrc(): string {
 // zoom 因子来自 Sonder v1 的实测值，乘以容器实际宽度得到补偿 zoom。
 const isZoomed = type === 'douyin' || type === 'douyin-wide';
 const zoomFactor = type === 'douyin' ? 0.0031 : 0.00134;
+
+const containerStyle = [
+  `aspect-ratio: ${resolvedRatio}`,
+  width ? `max-width: ${width}` : '',
+  `max-height: ${height}`,
+]
+  .filter(Boolean)
+  .join('; ');
 ---
 
 <div
   class="video-embed"
   class:list={{ 'video-embed-zoom': isZoomed }}
   data-zoom-factor={isZoomed ? zoomFactor : undefined}
-  style={`aspect-ratio: ${resolvedRatio ?? undefined}; max-width: ${width ?? undefined}; max-height: ${height};`}
+  style={containerStyle}
 >
   {
     type === 'raw' ? (

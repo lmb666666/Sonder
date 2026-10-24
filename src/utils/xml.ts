@@ -1,0 +1,8 @@
+/** XML/Atom/OPML 文本转义（feed 端点共用）。 */
+export const escapeXml = (value: string) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');

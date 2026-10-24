@@ -25,6 +25,17 @@
 </div>
 
 <style>
+  /* 原始内容默认隐藏（结构化由脚本完成）；无 JS 环境下回退为可见的原始文本 */
+  .chat-source {
+    display: none;
+  }
+
+  @media (scripting: none) {
+    .chat-source {
+      display: block;
+    }
+  }
+
   .chat {
     margin: 1.5em 2vw;
     font-family: var(--font-meta);
