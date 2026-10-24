@@ -56,8 +56,9 @@
   transform: scale(1.04);
 }
 
-/* Frosted text band (krisyan recipe): a dark tint, then a gradient layer with
-   backdrop blur that frosts the cover behind the text. */
+/* Frosted text band (krisyan recipe): the band tints with the cover's own
+   dominant color (--media-band, extracted at build) and frosts it with a
+   backdrop blur; text color auto-switches dark/light via --media-fg. */
 .media-body {
   position: relative;
   z-index: 1;
@@ -71,15 +72,20 @@
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: rgba(8, 10, 14, 0.38);
+  background: var(--media-band, rgb(12, 14, 18));
   content: '';
+  opacity: 0.42;
 }
 
 .media-body::after {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(to bottom, rgba(8, 10, 14, 0.05), rgba(8, 10, 14, 0.55));
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--media-band, rgb(12, 14, 18)) 58%, transparent)
+  );
   content: '';
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
@@ -89,7 +95,7 @@
   display: -webkit-box;
   overflow: hidden;
   margin: 0;
-  color: var(--paper-surface);
+  color: var(--media-fg, var(--paper-surface));
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -107,7 +113,7 @@
   gap: 6px 12px;
   align-items: center;
   justify-content: space-between;
-  color: var(--paper-surface);
+  color: var(--media-fg, var(--paper-surface));
   font-family: var(--font-meta);
   font-size: 0.84rem;
   font-weight: 500;
