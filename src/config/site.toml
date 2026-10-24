@@ -97,12 +97,6 @@ coverImageStyle = "mask"
 # 文章列表布局："rows" 行式列表（标题 + 序号 + 摘要 + 小缩略图），"media" 媒体布局（标题 + 元信息 + 大图，仿 krisyan.dev）。
 listLayout = "media"
 
-[config.pages.blog.categories]
-title = "分类"
-kicker = "按题索引"
-subtitle = ""
-note = "文章使用的分类。"
-
 [config.pages.blog.series]
 title = "系列"
 kicker = "阅读路径"
@@ -124,7 +118,7 @@ showTrail = true
 
 [config.pages.moments]
 title = "动态"
-subtitle = "短动态与随手记。"
+subtitle = "记录生活点滴。"
 note = ""
 # Ech0 后端地址（可选）。配置后动态页改为在浏览器里拉取真实动态；留空使用内置演示数据。
 apiUrl = ""
