@@ -23,7 +23,7 @@ export async function GET(context) {
 - 博主：${profile.name}（${profile.role}）
 - 订阅：${new URL('atom.xml', origin)}（Atom）、${new URL('rss.xml', origin)}（RSS 2.0）
 - 友链订阅（OPML）：${new URL('opml.xml', origin)}
-- 页面：博客 ${new URL('blog/', origin)}、动态 ${new URL('moments', origin)}、朋友 ${new URL('links', origin)}、书影音 ${new URL('media', origin)}、关于（含项目） ${new URL('about', origin)}
+- 页面：文章 ${new URL('blog/', origin)}、动态 ${new URL('moments', origin)}、朋友 ${new URL('links', origin)}、书影音 ${new URL('media', origin)}、关于（含项目） ${new URL('about', origin)}
 
 ## 文章
 

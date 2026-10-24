@@ -83,8 +83,8 @@ placeholder = "搜索文章…"
 maxResults = 6
 
 [config.pages.blog]
-title = "博客"
-kicker = "文章归档"
+title = "文章"
+kicker = "归档"
 subtitle = "每个人都有自己的故事。"
 note = "长文与短记的归档，慢慢写，慢慢读。"
 postsPerPage = 6
@@ -178,7 +178,7 @@ label = "首页"
 href = "/"
 
 [[config.topNav.links]]
-label = "博客"
+label = "文章"
 href = "/blog"
 
 
@@ -225,7 +225,7 @@ dateArchiveBaseHref = ""
 
 [[config.home.navigation]]
 icon = "pen"
-title = "博客"
+title = "文章"
 subtitle = "长文、笔记与随想"
 href = "/blog"
 

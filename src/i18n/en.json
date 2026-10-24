@@ -33,7 +33,7 @@
     "collapse": "Collapse",
     "browseByTopic": "Browse by topic",
     "followConnectedNotes": "Follow connected notes",
-    "blogBrowsingGroups": "Blog browsing groups",
+    "blogBrowsingGroups": "Post browsing groups",
     "emptyCategories": "No categories have been added yet.",
     "emptySeries": "No series have been added yet.",
     "emptyTags": "No tags have been added yet.",
@@ -89,7 +89,7 @@
     "collapseButton": "Collapse"
   },
   "pagination": {
-    "blog": "Blog pagination",
+    "blog": "Post pagination",
     "previous": "Previous",
     "next": "Next",
     "page": "Page {current} of {total}"
@@ -103,8 +103,8 @@
     "empty": "No notes found.",
     "unavailable": "Search index is not available yet. Run a production build first.",
     "resultKinds": {
-      "blogNote": "Blog note",
-      "blogIndex": "Blog index",
+      "blogNote": "Post",
+      "blogIndex": "Post index",
       "vibe": "Vibe",
       "project": "Project",
       "page": "Page"

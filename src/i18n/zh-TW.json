@@ -30,7 +30,7 @@
     "collapse": "收合",
     "browseByTopic": "按主題瀏覽",
     "followConnectedNotes": "閱讀連續筆記",
-    "blogBrowsingGroups": "部落格瀏覽分組",
+    "blogBrowsingGroups": "文章瀏覽分組",
     "emptyCategories": "還沒有新增分類。",
     "emptySeries": "還沒有新增系列。",
     "emptyTags": "還沒有可展示的標籤。",
@@ -71,7 +71,7 @@
     "collapseButton": "收合"
   },
   "pagination": {
-    "blog": "部落格分頁",
+    "blog": "文章分頁",
     "previous": "上一頁",
     "next": "下一頁",
     "page": "第 {current} 頁，共 {total} 頁"
@@ -85,8 +85,8 @@
     "empty": "沒有找到筆記。",
     "unavailable": "搜尋索引尚不可用。請先執行生產建置。",
     "resultKinds": {
-      "blogNote": "部落格文章",
-      "blogIndex": "部落格索引",
+      "blogNote": "文章",
+      "blogIndex": "文章索引",
       "vibe": "Vibe",
       "project": "專案",
       "page": "頁面"
