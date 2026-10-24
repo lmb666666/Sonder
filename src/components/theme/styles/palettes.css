@@ -9,19 +9,19 @@
   --paper-rule: rgba(73, 88, 75, 0.026);
   --paper-texture-ink: rgba(73, 88, 75, 0.012);
   /* 专属纸底：与 accent 同温（梁定：每套色盘配独立背景） */
-  --paper-bg: #f2f5f3;
-  --paper-bg-deep: #eaeef0;
-  --paper-surface: #fafbfa;
-  --paper-surface-muted: #eef2f0;
-  --paper-surface-rgb: 250, 251, 250;
-  --paper-control: rgba(49, 183, 86, 0.76);
-  --paper-control-hover: rgba(49, 183, 86, 0.92);
-  --paper-nav: rgba(249, 252, 249, 0.92);
-  --paper-card-wash-top: rgba(249, 252, 249, 0.78);
-  --paper-card-wash-bottom: rgba(235, 245, 240, 0.52);
-  --paper-page-bg: #f2f5f3;
-  --paper-detail-bg: #f2f5f3;
-  --paper-theme-color: #f2f5f3;
+  --paper-bg: #f3f4ee;
+  --paper-bg-deep: #eceee5;
+  --paper-surface: #fbfcf8;
+  --paper-surface-muted: #eff1e9;
+  --paper-surface-rgb: 251, 252, 248;
+  --paper-control: rgba(239, 241, 233, 0.76);
+  --paper-control-hover: rgba(236, 238, 229, 0.92);
+  --paper-nav: rgba(251, 252, 248, 0.92);
+  --paper-card-wash-top: rgba(251, 252, 248, 0.78);
+  --paper-card-wash-bottom: rgba(239, 241, 233, 0.52);
+  --paper-page-bg: #f3f4ee;
+  --paper-detail-bg: #f3f4ee;
+  --paper-theme-color: #f3f4ee;
 }
 
 :root[data-theme='dark'],
@@ -35,23 +35,23 @@
   --paper-rule: rgba(217, 229, 213, 0.028);
   --paper-texture-ink: rgba(217, 229, 213, 0.032);
   /* 专属夜色纸底 */
-  --paper-bg: #151b17;
-  --paper-bg-deep: #0e1310;
-  --paper-surface: #1d2320;
-  --paper-surface-muted: #232b27;
-  --paper-surface-rgb: 29, 35, 32;
-  --paper-control: rgba(29, 35, 32, 0.72);
-  --paper-control-hover: rgba(29, 35, 32, 0.88);
-  --paper-nav: rgba(29, 35, 32, 0.92);
-  --paper-card-wash-top: rgba(35, 43, 39, 0.72);
-  --paper-card-wash-bottom: rgba(14, 19, 16, 0.52);
-  --paper-page-bg: linear-gradient(180deg, rgba(21, 27, 23, 0.98) 0%, rgba(14, 19, 16, 0.98) 100%);
+  --paper-bg: #171a12;
+  --paper-bg-deep: #10120b;
+  --paper-surface: #21251a;
+  --paper-surface-muted: #282c21;
+  --paper-surface-rgb: 33, 37, 26;
+  --paper-control: rgba(33, 37, 26, 0.72);
+  --paper-control-hover: rgba(40, 44, 33, 0.88);
+  --paper-nav: rgba(33, 37, 26, 0.92);
+  --paper-card-wash-top: rgba(40, 44, 33, 0.72);
+  --paper-card-wash-bottom: rgba(16, 18, 11, 0.52);
+  --paper-page-bg: linear-gradient(180deg, rgba(23, 26, 18, 0.98) 0%, rgba(16, 18, 11, 0.98) 100%);
   --paper-detail-bg: linear-gradient(
     180deg,
-    rgba(21, 27, 23, 0.98) 0%,
-    rgba(14, 19, 16, 0.98) 100%
+    rgba(23, 26, 18, 0.98) 0%,
+    rgba(16, 18, 11, 0.98) 100%
   );
-  --paper-theme-color: #151b17;
+  --paper-theme-color: #171a12;
 }
 
 :root[data-palette='green-vivid'] {
@@ -64,19 +64,19 @@
   --paper-rule: rgba(51, 105, 66, 0.026);
   --paper-texture-ink: rgba(51, 105, 66, 0.012);
   /* 专属纸底：与 accent 同温（梁定：每套色盘配独立背景） */
-  --paper-bg: #f0f5f1;
-  --paper-bg-deep: #e8f0ea;
-  --paper-surface: #fafcfa;
-  --paper-surface-muted: #edf3ee;
-  --paper-surface-rgb: 250, 252, 250;
-  --paper-control: rgba(24, 192, 77, 0.76);
-  --paper-control-hover: rgba(24, 192, 77, 0.92);
-  --paper-nav: rgba(249, 253, 249, 0.92);
-  --paper-card-wash-top: rgba(249, 253, 249, 0.78);
-  --paper-card-wash-bottom: rgba(234, 246, 236, 0.52);
-  --paper-page-bg: #f0f5f1;
-  --paper-detail-bg: #f0f5f1;
-  --paper-theme-color: #f0f5f1;
+  --paper-bg: #ecf4ec;
+  --paper-bg-deep: #e2efe4;
+  --paper-surface: #f9fcf9;
+  --paper-surface-muted: #e8f2e9;
+  --paper-surface-rgb: 249, 252, 249;
+  --paper-control: rgba(232, 242, 233, 0.76);
+  --paper-control-hover: rgba(226, 239, 228, 0.92);
+  --paper-nav: rgba(249, 252, 249, 0.92);
+  --paper-card-wash-top: rgba(249, 252, 249, 0.78);
+  --paper-card-wash-bottom: rgba(232, 242, 233, 0.52);
+  --paper-page-bg: #ecf4ec;
+  --paper-detail-bg: #ecf4ec;
+  --paper-theme-color: #ecf4ec;
 }
 
 :root[data-theme='dark'][data-palette='green-vivid'] {
@@ -89,23 +89,23 @@
   --paper-rule: rgba(194, 231, 202, 0.028);
   --paper-texture-ink: rgba(194, 231, 202, 0.032);
   /* 专属夜色纸底 */
-  --paper-bg: #141c16;
-  --paper-bg-deep: #0d120e;
-  --paper-surface: #1b241d;
-  --paper-surface-muted: #212c23;
-  --paper-surface-rgb: 27, 36, 29;
-  --paper-control: rgba(27, 36, 29, 0.72);
-  --paper-control-hover: rgba(27, 36, 29, 0.88);
-  --paper-nav: rgba(27, 36, 29, 0.92);
-  --paper-card-wash-top: rgba(33, 44, 35, 0.72);
-  --paper-card-wash-bottom: rgba(13, 18, 14, 0.52);
-  --paper-page-bg: linear-gradient(180deg, rgba(20, 28, 22, 0.98) 0%, rgba(13, 18, 14, 0.98) 100%);
+  --paper-bg: #111f13;
+  --paper-bg-deep: #0a140b;
+  --paper-surface: #192b1a;
+  --paper-surface-muted: #203322;
+  --paper-surface-rgb: 25, 43, 26;
+  --paper-control: rgba(25, 43, 26, 0.72);
+  --paper-control-hover: rgba(32, 51, 34, 0.88);
+  --paper-nav: rgba(25, 43, 26, 0.92);
+  --paper-card-wash-top: rgba(32, 51, 34, 0.72);
+  --paper-card-wash-bottom: rgba(10, 20, 11, 0.52);
+  --paper-page-bg: linear-gradient(180deg, rgba(17, 31, 19, 0.98) 0%, rgba(10, 20, 11, 0.98) 100%);
   --paper-detail-bg: linear-gradient(
     180deg,
-    rgba(20, 28, 22, 0.98) 0%,
-    rgba(13, 18, 14, 0.98) 100%
+    rgba(17, 31, 19, 0.98) 0%,
+    rgba(10, 20, 11, 0.98) 100%
   );
-  --paper-theme-color: #141c16;
+  --paper-theme-color: #111f13;
 }
 
 :root[data-palette='rose-soft'] {
@@ -123,11 +123,11 @@
   --paper-surface: #fcfbfb;
   --paper-surface-muted: #f1eded;
   --paper-surface-rgb: 252, 251, 251;
-  --paper-control: rgba(217, 45, 63, 0.76);
-  --paper-control-hover: rgba(217, 45, 63, 0.92);
-  --paper-nav: rgba(253, 250, 250, 0.92);
-  --paper-card-wash-top: rgba(253, 250, 250, 0.78);
-  --paper-card-wash-bottom: rgba(244, 234, 234, 0.52);
+  --paper-control: rgba(241, 237, 237, 0.76);
+  --paper-control-hover: rgba(239, 235, 236, 0.92);
+  --paper-nav: rgba(252, 251, 251, 0.92);
+  --paper-card-wash-top: rgba(252, 251, 251, 0.78);
+  --paper-card-wash-bottom: rgba(241, 237, 237, 0.52);
   --paper-page-bg: #f5f2f2;
   --paper-detail-bg: #f5f2f2;
   --paper-theme-color: #f5f2f2;
@@ -149,7 +149,7 @@
   --paper-surface-muted: #2b2425;
   --paper-surface-rgb: 36, 29, 30;
   --paper-control: rgba(36, 29, 30, 0.72);
-  --paper-control-hover: rgba(36, 29, 30, 0.88);
+  --paper-control-hover: rgba(43, 36, 37, 0.88);
   --paper-nav: rgba(36, 29, 30, 0.92);
   --paper-card-wash-top: rgba(43, 36, 37, 0.72);
   --paper-card-wash-bottom: rgba(19, 13, 14, 0.52);
@@ -177,11 +177,11 @@
   --paper-surface: #fcfbfc;
   --paper-surface-muted: #f1edf0;
   --paper-surface-rgb: 252, 251, 252;
-  --paper-control: rgba(225, 50, 139, 0.76);
-  --paper-control-hover: rgba(225, 50, 139, 0.92);
-  --paper-nav: rgba(253, 250, 253, 0.92);
-  --paper-card-wash-top: rgba(253, 250, 253, 0.78);
-  --paper-card-wash-bottom: rgba(244, 234, 242, 0.52);
+  --paper-control: rgba(241, 237, 240, 0.76);
+  --paper-control-hover: rgba(239, 234, 238, 0.92);
+  --paper-nav: rgba(252, 251, 252, 0.92);
+  --paper-card-wash-top: rgba(252, 251, 252, 0.78);
+  --paper-card-wash-bottom: rgba(241, 237, 240, 0.52);
   --paper-page-bg: #f5f2f4;
   --paper-detail-bg: #f5f2f4;
   --paper-theme-color: #f5f2f4;
@@ -203,7 +203,7 @@
   --paper-surface-muted: #2b2427;
   --paper-surface-rgb: 36, 29, 32;
   --paper-control: rgba(36, 29, 32, 0.72);
-  --paper-control-hover: rgba(36, 29, 32, 0.88);
+  --paper-control-hover: rgba(43, 36, 39, 0.88);
   --paper-nav: rgba(36, 29, 32, 0.92);
   --paper-card-wash-top: rgba(43, 36, 39, 0.72);
   --paper-card-wash-bottom: rgba(19, 13, 15, 0.52);
@@ -231,11 +231,11 @@
   --paper-surface: #fbfbfd;
   --paper-surface-muted: #eef0f4;
   --paper-surface-rgb: 251, 251, 253;
-  --paper-control: rgba(90, 53, 226, 0.76);
-  --paper-control-hover: rgba(90, 53, 226, 0.92);
-  --paper-nav: rgba(250, 250, 254, 0.92);
-  --paper-card-wash-top: rgba(250, 250, 254, 0.78);
-  --paper-card-wash-bottom: rgba(235, 239, 247, 0.52);
+  --paper-control: rgba(238, 240, 244, 0.76);
+  --paper-control-hover: rgba(234, 235, 241, 0.92);
+  --paper-nav: rgba(251, 251, 253, 0.92);
+  --paper-card-wash-top: rgba(251, 251, 253, 0.78);
+  --paper-card-wash-bottom: rgba(238, 240, 244, 0.52);
   --paper-page-bg: #f2f2f6;
   --paper-detail-bg: #f2f2f6;
   --paper-theme-color: #f2f2f6;
@@ -257,7 +257,7 @@
   --paper-surface-muted: #252430;
   --paper-surface-rgb: 30, 29, 38;
   --paper-control: rgba(30, 29, 38, 0.72);
-  --paper-control-hover: rgba(30, 29, 38, 0.88);
+  --paper-control-hover: rgba(37, 36, 48, 0.88);
   --paper-nav: rgba(30, 29, 38, 0.92);
   --paper-card-wash-top: rgba(37, 36, 48, 0.72);
   --paper-card-wash-bottom: rgba(14, 13, 19, 0.52);
@@ -334,6 +334,19 @@
   --paper-dust: #e5e7dc;
   --paper-rule: rgba(122, 84, 42, 0.024);
   --paper-texture-ink: rgba(122, 84, 42, 0.012);
+  --paper-bg: #f7f3ed;
+  --paper-bg-deep: #f1ebe2;
+  --paper-surface: #fcfaf7;
+  --paper-surface-muted: #f2ede4;
+  --paper-surface-rgb: 252, 250, 247;
+  --paper-control: rgba(242, 237, 228, 0.76);
+  --paper-control-hover: rgba(241, 235, 226, 0.92);
+  --paper-nav: rgba(252, 250, 247, 0.92);
+  --paper-card-wash-top: rgba(252, 250, 247, 0.78);
+  --paper-card-wash-bottom: rgba(242, 237, 228, 0.52);
+  --paper-page-bg: #f7f3ed;
+  --paper-detail-bg: #f7f3ed;
+  --paper-theme-color: #f7f3ed;
 }
 
 :root[data-theme='dark'][data-palette='orange-soft'] {
@@ -345,6 +358,23 @@
   --paper-dust: #2d3830;
   --paper-rule: rgba(239, 212, 177, 0.026);
   --paper-texture-ink: rgba(239, 212, 177, 0.032);
+  --paper-bg: #1c1610;
+  --paper-bg-deep: #130e0a;
+  --paper-surface: #272019;
+  --paper-surface-muted: #2e2720;
+  --paper-surface-rgb: 39, 32, 25;
+  --paper-control: rgba(39, 32, 25, 0.72);
+  --paper-control-hover: rgba(46, 39, 32, 0.88);
+  --paper-nav: rgba(39, 32, 25, 0.92);
+  --paper-card-wash-top: rgba(46, 39, 32, 0.72);
+  --paper-card-wash-bottom: rgba(19, 14, 10, 0.52);
+  --paper-page-bg: linear-gradient(180deg, rgba(28, 22, 16, 0.98) 0%, rgba(19, 14, 10, 0.98) 100%);
+  --paper-detail-bg: linear-gradient(
+    180deg,
+    rgba(28, 22, 16, 0.98) 0%,
+    rgba(19, 14, 10, 0.98) 100%
+  );
+  --paper-theme-color: #1c1610;
 }
 
 :root[data-palette='brown-soft'] {
@@ -362,11 +392,11 @@
   --paper-surface: #fcfbfa;
   --paper-surface-muted: #f0edea;
   --paper-surface-rgb: 252, 251, 250;
-  --paper-control: rgba(187, 108, 37, 0.76);
-  --paper-control-hover: rgba(187, 108, 37, 0.92);
-  --paper-nav: rgba(253, 251, 249, 0.92);
-  --paper-card-wash-top: rgba(253, 251, 249, 0.78);
-  --paper-card-wash-bottom: rgba(244, 237, 230, 0.52);
+  --paper-control: rgba(240, 237, 234, 0.76);
+  --paper-control-hover: rgba(238, 235, 232, 0.92);
+  --paper-nav: rgba(252, 251, 250, 0.92);
+  --paper-card-wash-top: rgba(252, 251, 250, 0.78);
+  --paper-card-wash-bottom: rgba(240, 237, 234, 0.52);
   --paper-page-bg: #f4f2f0;
   --paper-detail-bg: #f4f2f0;
   --paper-theme-color: #f4f2f0;
@@ -388,7 +418,7 @@
   --paper-surface-muted: #2b2620;
   --paper-surface-rgb: 36, 32, 25;
   --paper-control: rgba(36, 32, 25, 0.72);
-  --paper-control-hover: rgba(36, 32, 25, 0.88);
+  --paper-control-hover: rgba(43, 38, 32, 0.88);
   --paper-nav: rgba(36, 32, 25, 0.92);
   --paper-card-wash-top: rgba(43, 38, 32, 0.72);
   --paper-card-wash-bottom: rgba(19, 15, 13, 0.52);
