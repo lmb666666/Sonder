@@ -52,6 +52,26 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
 const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
   articleSchema(context).extend({
     sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
+    // Sonder v1 兼容字段：稳定文章 ID（数字会归一为字符串，字符集 [\w-]）。
+    postid: z.preprocess(
+      (value) =>
+        typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
+          ? String(value)
+          : value,
+      z
+        .string()
+        .regex(/^[\w-]+$/, 'postid 只能包含字母、数字、下划线与连字符。')
+        .optional(),
+    ),
+    // Sonder v1 兼容字段：文末「参考链接」清单。
+    references: z
+      .array(
+        z.object({
+          title: z.string().optional(),
+          link: z.string().optional(),
+        }),
+      )
+      .optional(),
   });
 
 const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';

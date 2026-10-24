@@ -1,0 +1,158 @@
+---
+/**
+ * 分选项卡。与 Sonder v1 同款命名插槽映射：每个标签页对应 `tab1`、`tab2`… 插槽。
+ *
+ * 用法：
+ * ```mdx
+ * <Tab tabs={['前端', '后端']}>
+ *   <Fragment slot="tab1">
+ *     <p>前端内容</p>
+ *   </Fragment>
+ *   <Fragment slot="tab2">
+ *     <p>后端内容</p>
+ *   </Fragment>
+ * </Tab>
+ * ```
+ * （MDX 中 Fragment 无需 import。）视觉对齐 navfolio token。
+ */
+interface Props {
+  tabs: string[];
+  /** 初始激活的标签页，下标从 1 开始 */
+  active?: string | number;
+  center?: boolean;
+}
+
+const { tabs, active, center } = Astro.props;
+const initial = Number(active) || 1;
+
+if (import.meta.env.DEV) {
+  tabs.forEach((_, index) => {
+    if (!Astro.slots.has(`tab${index + 1}`)) {
+      console.warn(`[Tab] 缺少 tab${index + 1} 插槽内容。`);
+    }
+  });
+}
+---
+
+<div class:list={['tab-group', { center }]} data-initial={initial}>
+  <div class="tabs" role="tablist">
+    {
+      tabs.map((label, index) => (
+        <button
+          type="button"
+          role="tab"
+          class:list={{ active: initial === index + 1 }}
+          aria-selected={initial === index + 1 ? 'true' : 'false'}
+          data-index={index + 1}
+        >
+          {label}
+        </button>
+      ))
+    }
+  </div>
+  {
+    tabs.map((_, index) => (
+      <div
+        class="tab-content"
+        role="tabpanel"
+        data-index={index + 1}
+        hidden={initial !== index + 1}
+      >
+        <slot name={`tab${index + 1}`} />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .tab-group.center {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .tabs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5em;
+    width: fit-content;
+    margin: 0 auto;
+    font-family: var(--font-meta);
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+
+  .tabs button {
+    position: relative;
+    margin-bottom: 0.5em;
+    padding: 0.3em 0.7em;
+    border: 1px solid transparent;
+    border-radius: 0.4em;
+    background: none;
+    color: var(--paper-ink-soft);
+    cursor: pointer;
+    transition:
+      color 0.2s,
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+
+  .tabs button:hover {
+    background-color: var(--paper-surface-muted);
+    color: var(--paper-ink);
+  }
+
+  .tabs button.active {
+    border-color: var(--paper-line-strong);
+    background-color: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
+    color: var(--paper-ink);
+  }
+
+  .tabs button.active::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0.6em;
+    bottom: -0.28em;
+    height: 2px;
+    border-radius: 1em;
+    background-color: var(--paper-accent);
+  }
+
+  .tab-content {
+    margin: 1em 0;
+  }
+</style>
+
+<script>
+  const activate = (group: HTMLElement, index: number) => {
+    group.querySelectorAll<HTMLButtonElement>('.tabs button').forEach((button) => {
+      const active = Number(button.dataset.index) === index;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    group.querySelectorAll<HTMLElement>('.tab-content').forEach((panel) => {
+      panel.hidden = Number(panel.dataset.index) !== index;
+    });
+  };
+
+  const bind = () => {
+    document.querySelectorAll<HTMLElement>('.tab-group').forEach((group) => {
+      if (group.dataset.bound === '1') return;
+      group.dataset.bound = '1';
+      group.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement | null;
+        const button = target?.closest<HTMLButtonElement>('.tabs button');
+        if (!button || !group.contains(button)) return;
+        activate(group, Number(button.dataset.index));
+      });
+    });
+  };
+
+  document.addEventListener('astro:page-load', bind);
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', bind, { once: true });
+  else bind();
+</script>

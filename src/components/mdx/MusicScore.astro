@@ -1,0 +1,208 @@
+---
+/**
+ * ABC 乐谱：客户端 abcjs 渲染 + 可选合成播放（soundfonts 可达时启用）。
+ * MermaidRenderer 同款模式：单例脚本 + astro:page-load 重扫。
+ * 移植自 Sonder v1 MusicScore.vue，视觉对齐 navfolio token。
+ */
+interface Props {
+  abc: string;
+  /** 音源库地址，不可达时禁用播放（仅保留乐谱渲染） */
+  soundfontsUrl?: string;
+}
+
+const { abc, soundfontsUrl = 'https://paulrosen.github.io/midi-js-soundfonts/' } = Astro.props;
+---
+
+<div class="music-score" data-music-score data-soundfonts={soundfontsUrl}>
+  <pre class="music-score-source" hidden>{abc}</pre>
+  <div class="music-score-score"></div>
+  <div class="music-score-synth"></div>
+</div>
+
+<style>
+  .music-score {
+    margin: 1.5em 0;
+    line-height: 1.4;
+    color: var(--paper-ink);
+  }
+
+  .music-score :global(.abcjs-inline-audio) {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: 0.5em;
+    padding: 0.2em 0.5em;
+    border: 1px solid var(--paper-line);
+    border-radius: 4px;
+    background: var(--paper-surface-muted);
+    font-family: var(--font-meta);
+    font-size: 0.8em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .music-score :global(.abcjs-inline-audio.abcjs-disabled) {
+    opacity: 0.5;
+  }
+
+  .music-score :global(.abcjs-inline-audio > .abcjs-btn) {
+    width: 1em;
+    padding: 0.2em;
+    box-sizing: content-box;
+    background: none;
+    border: 0;
+    color: var(--paper-ink-soft);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .music-score :global(.abcjs-inline-audio > .abcjs-btn svg) {
+    display: block;
+  }
+
+  .music-score :global(.abcjs-inline-audio > .abcjs-btn:hover),
+  .music-score :global(.abcjs-inline-audio > .abcjs-btn.abcjs-pushed) {
+    color: var(--paper-accent);
+  }
+
+  .music-score :global(.abcjs-inline-audio > .abcjs-btn g) {
+    fill: currentcolor;
+    stroke: currentcolor;
+  }
+
+  .music-score :global(.abcjs-inline-audio .abcjs-midi-start .abcjs-pause-svg),
+  .music-score :global(.abcjs-inline-audio .abcjs-midi-start .abcjs-loading-svg) {
+    display: none;
+  }
+
+  .music-score :global(.abcjs-inline-audio .abcjs-midi-start.abcjs-pushed .abcjs-play-svg),
+  .music-score :global(.abcjs-inline-audio .abcjs-midi-start.abcjs-loading .abcjs-play-svg) {
+    display: none;
+  }
+
+  .music-score :global(.abcjs-inline-audio .abcjs-midi-start.abcjs-pushed .abcjs-pause-svg) {
+    display: block;
+  }
+
+  .music-score :global(.abcjs-midi-progress-background),
+  .music-score :global(.abcjs-midi-progress-indicator) {
+    border: 8px solid transparent;
+    border-radius: 12px;
+    box-sizing: content-box;
+    background-clip: padding-box;
+  }
+
+  .music-score :global(.abcjs-midi-progress-background) {
+    flex-grow: 1;
+    position: relative;
+    height: 4px;
+    background-color: var(--paper-fog, var(--paper-surface-muted));
+  }
+
+  .music-score :global(.abcjs-midi-progress-indicator) {
+    position: absolute;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    margin-left: -10px;
+    background-color: var(--paper-ink-soft);
+  }
+
+  .music-score :global(.abcjs-midi-clock) {
+    display: inline-block;
+  }
+
+  .music-score :global(.abcjs-tempo-wrapper) {
+    display: flex;
+    align-items: center;
+  }
+
+  .music-score :global(input.abcjs-midi-tempo) {
+    position: relative;
+    width: 3em;
+    text-align: end;
+  }
+
+  .music-score :global(.abcjs-loading) {
+    outline: none;
+    animation: music-score-spin 1s linear infinite;
+  }
+
+  .music-score :global(.abcjs-css-warning) {
+    display: none;
+  }
+</style>
+
+<style>
+  @keyframes music-score-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<script>
+  const controllers = new WeakMap<Element, { pause: () => void }>();
+
+  async function checkSoundFonts(url: string): Promise<boolean> {
+    try {
+      const res = await fetch(url, { method: 'HEAD' });
+      return res.ok;
+    } catch (error) {
+      console.error('[MusicScore] 无法连接 SoundFonts，仅渲染乐谱不启用播放\n', error);
+      return false;
+    }
+  }
+
+  const render = async () => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-music-score]'));
+    if (!nodes.length) return;
+
+    const abcjs = await import('abcjs');
+    for (const node of nodes) {
+      if (node.dataset.rendered === '1') continue;
+      const source = node.querySelector<HTMLElement>('.music-score-source')?.textContent ?? '';
+      const scoreHost = node.querySelector<HTMLElement>('.music-score-score');
+      if (!source || !scoreHost) continue;
+
+      try {
+        const tune = abcjs.renderAbc(scoreHost, source, { responsive: 'resize' })[0];
+        node.dataset.rendered = '1';
+
+        const synthHost = node.querySelector<HTMLElement>('.music-score-synth');
+        if (!synthHost || !abcjs.synth.supportsAudio()) continue;
+
+        const soundfontsUrl = node.dataset.soundfonts ?? '';
+        if (soundfontsUrl && !(await checkSoundFonts(soundfontsUrl))) continue;
+
+        const controller = new abcjs.synth.SynthController();
+        controller.load(synthHost, null, {
+          displayLoop: true,
+          displayRestart: true,
+          displayPlay: true,
+          displayProgress: true,
+          displayWarp: true,
+        });
+        controller.setTune(tune, false);
+        controllers.set(node, controller);
+      } catch (error) {
+        console.error('[MusicScore] 乐谱渲染失败\n', error);
+      }
+    }
+  };
+
+  const schedule = () => void window.requestAnimationFrame(() => void render());
+  document.addEventListener('astro:page-load', schedule);
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', schedule, { once: true });
+  else schedule();
+
+  // 页面切换前暂停所有播放，避免音频残留
+  document.addEventListener('astro:before-swap', () => {
+    document.querySelectorAll('[data-music-score]').forEach((node) => {
+      controllers.get(node)?.pause();
+    });
+  });
+</script>

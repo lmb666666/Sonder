@@ -1,0 +1,146 @@
+---
+title: 'Sonder 组件速览'
+description: 'Sonder 沿用的十个内容组件——徽标、按键、剧透、诗歌、链接卡片、卡片列表、选项卡、聊天记录、视频嵌入与 ABC 乐谱——一篇看全。'
+date: '2026-10-24T00:00:00+08:00'
+draft: false
+showHeroImage: false
+postid: components-showcase
+tags:
+  - 'components'
+  - 'guide'
+categories:
+  - 功能模块
+series:
+  - 功能模块
+comments: true
+sidebar:
+  enable: true
+  toc: true
+  relatedPosts: true
+references:
+  - title: 'abcjs —— 标准 ABC 记谱法的 JavaScript 渲染与合成库'
+    link: 'https://paulrosen.github.io/abcjs/'
+  - title: 'Sonder v1 组件源码'
+    link: 'https://github.com/lmb666666/Sonder'
+---
+
+import Badge from '@navfolio/mdx-components/Badge.astro';
+import Blur from '@navfolio/mdx-components/Blur.astro';
+import CardList from '@navfolio/mdx-components/CardList.astro';
+import Chat from '@navfolio/mdx-components/Chat.astro';
+import Key from '@navfolio/mdx-components/Key.astro';
+import LinkCard from '@navfolio/mdx-components/LinkCard.astro';
+import MusicScore from '@navfolio/mdx-components/MusicScore.astro';
+import Poetry from '@navfolio/mdx-components/Poetry.astro';
+import Tab from '@navfolio/mdx-components/Tab.astro';
+import VideoEmbed from '@navfolio/mdx-components/VideoEmbed.astro';
+
+Sonder 从 v1 沿用十个内容组件。这篇速览逐一演示它们在 MDX 中的用法；
+frontmatter 里也用到了模板扩展的 `postid` 与 `references` 字段（见文末参考链接）。
+
+## 行内组件
+
+### Badge 徽标
+
+带图标与链接的行内徽标；不传 `img` 时会自动取 GitHub 头像或站点 favicon。
+
+<Badge text="Astro" link="https://astro.build" />
+<Badge text="GitHub" link="https://github.com/lmb666666/Sonder" />
+<Badge text="纯文字徽标" />
+<Badge img="https://github.com/lmb666666.png?size=64" text="带图圆形" link="https://github.com/lmb666666" />
+
+### Key 按键
+
+快捷键按键展示，macOS 自动切换为符号；在页面上真实按下对应组合键时，按键会亮起。
+
+复制 <Key ctrl /> + <Key code="C" />；搜索 <Key cmd /> + <Key code="K" />；全选 <Key ctrl /> + <Key shift /> + <Key code="A" />
+
+### Blur 剧透模糊
+
+默认模糊，悬停、聚焦或按住时显形——剧透警告：<Blur text="他是凶手" />。
+
+## 结构组件
+
+### Poetry 诗歌排版
+
+<Poetry title="俳句一则" author="示例" footer="—— 匿名">
+  {`旧博客沉去\n新模板在纸上醒来\n秋夜灯正明`}
+</Poetry>
+
+### Tab 选项卡
+
+每个标签页的内容放进对应的 `tab1`、`tab2`… 命名插槽（MDX 中 Fragment 无需 import）：
+
+<Tab tabs={['前端', '后端']}>
+  <Fragment slot="tab1">
+    <p>前端内容：Astro 静态生成，岛架构按需注水。</p>
+  </Fragment>
+  <Fragment slot="tab2">
+    <p>后端内容：纯静态输出，评论与动态走外部服务。</p>
+  </Fragment>
+</Tab>
+
+<Tab tabs={['一', '二', '三']} active={2} center>
+  <Fragment slot="tab1">
+    <p>第一页内容。</p>
+  </Fragment>
+  <Fragment slot="tab2">
+    <p>默认激活第二页（active=2）。</p>
+  </Fragment>
+  <Fragment slot="tab3">
+    <p>第三页内容。</p>
+  </Fragment>
+</Tab>
+
+### Chat 聊天记录
+
+<Chat>
+  {'{.我}'}
+  <p>博客重写用什么模板？</p>
+  {'{朋友}'}
+  <p>navfolio 收编 + Sonder 组件，我看到方案了。</p>
+  {'{:对方撤回了一条消息并投来羡慕的目光}'}
+  {'{.我}'}
+  <p>那就这么定了。</p>
+</Chat>
+
+### CardList 卡片列表
+
+<CardList>
+
+- Astro 静态生成
+- Pagefind 中文搜索
+- Twikoo 评论
+- abcjs 乐谱
+
+</CardList>
+
+## 引用与嵌入
+
+### LinkCard 链接卡片
+
+<LinkCard
+  link="https://github.com/lmb666666/Sonder"
+  title="Sonder"
+  description="万千人生，各自成书"
+  icon="https://github.com/lmb666666.png?size=64"
+/>
+
+### VideoEmbed 视频嵌入
+
+支持 raw / bilibili / bilibili-nano / youtube / douyin / douyin-wide / tiktok。
+以下为 bilibili 示例：
+
+<VideoEmbed type="bilibili" id="BV1GJ411x7h7" />
+
+### MusicScore ABC 乐谱
+
+ABC 记谱法乐谱；soundfonts 可达时可试听（音色库不可达时仅显示乐谱）：
+
+<MusicScore
+  abc={`X:1\nT:小星星\nM:4/4\nL:1/4\nK:C\n"1"C C G G|A A G2|"5"F F E E|D D C2|w: Twink-le twink-le lit-tle star, how I won-der what you are.`}
+/>
+
+---
+
+十个组件到此看全。每个组件的属性说明见源码注释：`src/components/mdx/`。

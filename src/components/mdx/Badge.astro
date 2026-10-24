@@ -1,0 +1,109 @@
+---
+/**
+ * 行内徽标。可带图标（显式 img、GitHub 头像或站点 favicon 自动推断）。
+ * 移植自 Sonder v1 Badge.vue，视觉对齐 navfolio token。
+ */
+interface Props {
+  img?: string;
+  text?: string;
+  link?: string;
+  round?: boolean;
+  square?: boolean;
+}
+
+const props = Astro.props;
+
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
+function isExternalLink(url: string): boolean {
+  return /^https?:\/\//i.test(url);
+}
+
+function getGithubUsername(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname !== 'github.com') return '';
+    return parsed.pathname.replace(/^\/|\/$/g, '').split('/')[0] ?? '';
+  } catch {
+    return '';
+  }
+}
+
+function resolveImage(): string {
+  if (props.img) return props.img;
+  const ghUsername = props.link ? getGithubUsername(props.link) : '';
+  if (ghUsername) return `https://github.com/${ghUsername}.png?size=64`;
+  if (props.link && isExternalLink(props.link)) {
+    return `https://icons.duckduckgo.com/ip3/${getDomain(props.link)}.ico`;
+  }
+  return '';
+}
+
+const image = resolveImage();
+// 有图默认圆形，无图默认方形（与 Sonder v1 一致）
+const round = image ? !props.square : props.round;
+const tip = (() => {
+  if (!props.link) return '';
+  return isExternalLink(props.link) ? getDomain(props.link) : props.link;
+})();
+const href = props.link || undefined;
+---
+
+<a class="badge" class:list={{ round }} href={href} title={tip || undefined}>
+  {image && <img class="badge-icon" src={image} alt="" loading="lazy" decoding="async" />}
+  <span class="badge-text"><slot>{props.text}</slot></span>
+</a>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: baseline;
+    margin: 0.1em;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 4px;
+    box-sizing: content-box;
+    background-color: var(--paper-surface-muted);
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.875em;
+    text-decoration: none;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  a.badge:hover {
+    color: var(--paper-ink);
+    border-color: var(--paper-accent);
+  }
+
+  .badge.round,
+  .badge.round .badge-icon {
+    border-radius: 0.8em;
+  }
+
+  .badge-icon {
+    align-self: normal;
+    height: 1.6em;
+    border-radius: 3.5px;
+  }
+
+  .badge-icon + .badge-text {
+    margin-inline-start: -0.1em;
+  }
+
+  .badge-text {
+    padding: 0.2em 0.4em;
+    line-height: 1.2;
+  }
+
+  .badge-text:empty {
+    display: none;
+  }
+</style>

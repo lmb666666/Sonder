@@ -1,0 +1,93 @@
+---
+/**
+ * 链接卡片：标题 + 描述 + 图标的紧凑引用卡。
+ * 移植自 Sonder v1 LinkCard.vue，视觉对齐 navfolio token。
+ */
+interface Props {
+  link: string;
+  title: string;
+  description?: string;
+  icon?: string;
+}
+
+const { link, title, description, icon } = Astro.props;
+
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
+const tip = [title, description, link].filter(Boolean).join(' - ');
+---
+
+<a class="link-card" href={link} target="_blank" rel="noopener noreferrer" title={tip}>
+  <span class="link-card-info">
+    <span class="link-card-title">{title}</span>
+    <span class="link-card-description">{description ?? getDomain(link)}</span>
+  </span>
+  {icon && <img class="link-card-icon" src={icon} alt="" loading="lazy" decoding="async" />}
+</a>
+
+<style>
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 20rem;
+    max-width: 90%;
+    margin: 2rem auto;
+    padding: 0.6em 0.9em;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 0.75rem;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
+    font-family: var(--font-meta);
+    font-size: 0.9em;
+    line-height: 1.4;
+    color: var(--paper-ink);
+    text-decoration: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .link-card:hover {
+    border-color: var(--paper-accent);
+    box-shadow: var(--paper-shadow-lift);
+  }
+
+  .link-card-info {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .link-card-title {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    font-weight: 600;
+  }
+
+  .link-card-description {
+    display: block;
+    overflow: hidden;
+    margin-top: 0.2em;
+    color: var(--paper-ink-faint);
+    font-size: 0.9em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .link-card-icon {
+    flex-shrink: 0;
+    height: 3rem;
+    max-width: 5rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+  }
+</style>

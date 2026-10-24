@@ -1,0 +1,58 @@
+---
+title: '@navfolio/mdx-components：MDX 内容组件库'
+description: '了解 Navfolio 的官方 MDX 组件包、组件边界和按需导入方式。'
+date: '2026-07-13T00:00:00+08:00'
+draft: false
+tags:
+  - MDX
+  - Astro
+  - Components
+categories:
+  - 插件与扩展
+series:
+  - 插件与扩展
+sidebar:
+  enable: true
+  toc: true
+  relatedPosts: true
+---
+
+`@navfolio/mdx-components` 是 Navfolio 的官方内容组件库。它不介入 Markdown 编译管线：`@navfolio/plugin-markdown` 负责 Markdown、MDX、代码块、表格和图表等渲染能力；本包只提供作者在 MDX 中显式导入的内容区块。
+
+```astro
+import FriendLinkCard from '@navfolio/mdx-components/FriendLinkCard.astro'; import LongImage from
+'@navfolio/mdx-components/LongImage.astro';
+```
+
+## 包含的组件
+
+| 组件                    | 用途                                                       |
+| ----------------------- | ---------------------------------------------------------- |
+| `FriendLinkCard`        | 响应式友链卡片，支持数据源回退、置顶、排序和随机背景。     |
+| `FriendLinkApplication` | 收集友链资料、复制字段数据，并生成预填的 GitHub Issue。    |
+| `FriendCircle`          | 展示已同步的朋友文章池，并在客户端随机抽取文章。           |
+| `Carousel`              | 带上一页、下一页控制的内容轮播。                           |
+| `MusicPlayer`           | 原生音频与官方第三方嵌入，支持局部主题和两种展示形式。     |
+| `MediaShelf`            | 书、影、音封面墙；也可切换为适合正文点评的无边框内嵌条目。 |
+| `LongImage`             | 固定可视高度、支持内部滚动的长图。                         |
+| `ZoomableImage`         | 可点击放大的图片预览。                                     |
+| `MermaidRenderer`       | 在页面加载及 Astro View Transition 后初始化 Mermaid 图表。 |
+
+包依赖宿主项目提供 Astro、`lucide-astro` 与 Mermaid。组件样式使用 Navfolio 的主题 CSS 变量，因此能自动适配浅色和深色模式，但不会依赖你的 `src/` 文件。
+
+## 安装与引用
+
+```bash
+bun add @navfolio/mdx-components@github:navfolio/mdx-components
+```
+
+每个组件都是独立入口。只导入文章真正使用的组件，例如：
+
+```astro
+import Carousel from '@navfolio/mdx-components/Carousel.astro'; import ZoomableImage from
+'@navfolio/mdx-components/ZoomableImage.astro';
+```
+
+友链展示接口详见 [FriendLinkCard](/blog/friend-link-card/)，申请表单与 GitHub Issue 对接详见 [FriendLinkApplication](/blog/friend-link-application/)。若需要将友链 RSS 同步为静态文章数据，请使用 [Friend Circle Sync](/blog/friend-circle-sync/)。
+
+音乐播放器的本地音频、局部主题和第三方平台用法详见 [在 MDX 中嵌入音乐播放器](/blog/music-player/)。

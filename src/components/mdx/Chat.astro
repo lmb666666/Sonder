@@ -1,0 +1,145 @@
+---
+/**
+ * 聊天记录。署名写作字符串子项（JSX 表达式），消息体为普通元素子项：
+ * - `{'{名字}'}`：对方消息署名
+ * - `{'{.名字}'}`：我方消息署名（气泡靠右、主题色）
+ * - `{'{:文字}'}`：系统消息（居中、小字）
+ *
+ * 用法：
+ * ```mdx
+ * <Chat>
+ *   {'{.我}'}
+ *   <p>在吗？</p>
+ *   {'{朋友}'}
+ *   <p>在</p>
+ * </Chat>
+ * ```
+ * MDX 无法在构建期拿到子项数组，结构化由下方脚本完成（文本署名 → dt，元素 → dd）。
+ * 移植自 Sonder v1 Chat.vue，视觉对齐 navfolio token。
+ */
+---
+
+<dl class="chat" data-chat></dl>
+<div class="chat-source" data-chat-source>
+  <slot />
+</div>
+
+<style>
+  .chat {
+    margin: 1.5em 2vw;
+    font-family: var(--font-meta);
+    font-size: 0.9em;
+  }
+
+  .chat :global(.chat-caption) {
+    margin-bottom: 0.25em;
+    color: var(--paper-ink-faint);
+    font-size: 0.9em;
+  }
+
+  .chat :global(.chat-caption.chat-system) {
+    margin-bottom: 1em;
+    text-align: center;
+  }
+
+  .chat :global(.chat-caption.chat-myself) {
+    text-align: end;
+  }
+
+  .chat :global(.chat-body) {
+    overflow: hidden;
+    width: fit-content;
+    max-width: 90%;
+    margin-bottom: 1em;
+    padding: 0.4em 1em;
+    border: 1px solid var(--paper-line);
+    border-radius: 1em;
+    border-start-start-radius: 0.2em;
+    background: var(--paper-surface-muted);
+  }
+
+  .chat :global(.chat-caption.chat-myself + .chat-body) {
+    margin-inline-start: auto;
+    border-color: var(--paper-accent-soft);
+    border-radius: 1em;
+    border-start-end-radius: 0.2em;
+    background: var(--paper-accent-soft);
+  }
+
+  .chat :global(.chat-body p) {
+    margin: 0;
+  }
+</style>
+
+<script>
+  function controlClass(control?: string): string {
+    if (control === '.') return 'chat-myself';
+    if (control === ':') return 'chat-system';
+    return '';
+  }
+
+  function flatten(parent: Node): Node[] {
+    return Array.from(parent.childNodes).flatMap((node) => {
+      if (node instanceof HTMLElement && node.tagName === 'ASTRO-FRAGMENT') {
+        return flatten(node);
+      }
+      return [node];
+    });
+  }
+
+  function structure(host: HTMLElement, source: HTMLElement) {
+    if (host.dataset.structured === '1') return;
+    host.replaceChildren();
+    for (const node of flatten(source)) {
+      if (node instanceof Text) {
+        const text = node.textContent ?? '';
+        // MDX 会把相邻的字符串表达式合并进同一文本节点，需逐组扫描 {署名}
+        const groupRegex = /\{(\.|:)?([^{}]*)\}/g;
+        let cursor = 0;
+        let match: RegExpExecArray | null;
+        while ((match = groupRegex.exec(text))) {
+          const plain = text.slice(cursor, match.index).trim();
+          if (plain) {
+            const dd = document.createElement('dd');
+            dd.className = 'chat-body';
+            dd.textContent = plain;
+            host.append(dd);
+          }
+          const dt = document.createElement('dt');
+          dt.className = `chat-caption ${controlClass(match[1])}`.trim();
+          dt.textContent = match[2];
+          host.append(dt);
+          cursor = match.index + match[0].length;
+        }
+        const rest = text.slice(cursor).trim();
+        if (rest) {
+          const dd = document.createElement('dd');
+          dd.className = 'chat-body';
+          dd.textContent = rest;
+          host.append(dd);
+        }
+      } else if (node instanceof HTMLElement) {
+        if (node.tagName === 'SCRIPT') continue;
+        const dd = document.createElement('dd');
+        dd.className = 'chat-body';
+        dd.append(node.cloneNode(true));
+        host.append(dd);
+      }
+    }
+    host.dataset.structured = '1';
+    // 隐藏原始内容（保留在 DOM 中以防脚本失败时可读）
+    source.hidden = true;
+  }
+
+  const bind = () => {
+    document.querySelectorAll<HTMLElement>('[data-chat]').forEach((host) => {
+      const source = host.nextElementSibling;
+      if (source instanceof HTMLElement) structure(host, source);
+    });
+  };
+
+  document.addEventListener('astro:page-load', bind);
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', bind, { once: true });
+  else bind();
+</script>

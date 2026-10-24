@@ -1,0 +1,180 @@
+---
+title: '在 MDX 中嵌入音乐播放器'
+description: '使用 @navfolio/mdx-components 的 MusicPlayer，在文章中播放本地、授权远程音频或官方第三方音乐播放器。'
+date: '2026-07-17T00:00:00+08:00'
+draft: false
+tags:
+  - MDX
+  - Music
+  - Components
+categories:
+  - 插件与扩展
+series:
+  - 插件与扩展
+sidebar:
+  enable: true
+  toc: true
+  relatedPosts: true
+---
+
+import MusicPlayer from '@navfolio/mdx-components/MusicPlayer.astro';
+
+`MusicPlayer` 是一个按需导入的 MDX 内容组件。它有两种播放路径：自有或已获授权的直链音频使用 Navfolio 原生播放器；Spotify、SoundCloud、Bandcamp、Apple Music 和网易云音乐则保留各平台的官方 iframe。
+
+```astro
+import MusicPlayer from '@navfolio/mdx-components/MusicPlayer.astro';
+```
+
+## 原生播放器
+
+将 MP3 放入站点 `public/audio/` 后，使用以 `/` 开头的路径。组件默认不会自动播放，并只预加载媒体元数据。
+
+<MusicPlayer
+  title="Navfolio 音频示例"
+  artist="本地 public/audio 资源"
+  src="/audio/navfolio-audio-demo.mp3"
+  artwork="/images/logo-cat.png"
+  theme="vinyl"
+  caption="此示例是随站点提供的短 MP3，用于验证本地播放器。"
+/>
+
+## 宽度、长文本与歌单
+
+播放器始终在文章阅读列中居中。`size` 可选 `narrow`、`compact`、`normal`（默认）、`wide` 与 `full`；前三种适合单曲引用，`wide` 适合有较多控制信息的内容，`full` 才会占满正文宽度。歌曲名、艺人和说明在溢出时会缓慢滚动，悬停后暂停。
+
+`playlist` 仅用于可直接播放的本地或授权远程音频。歌单默认收起，展开后选择任一歌曲会立即切换并播放；第三方 iframe 不能被接入此歌单，因为其播放状态和版权验证由平台控制。
+
+```astro
+<MusicPlayer
+  title="第一首"
+  src="/audio/first.mp3"
+  size="compact"
+  playlist={[
+    { title: '第一首', artist: 'Navfolio', src: '/audio/first.mp3' },
+    { title: '第二首', artist: 'Navfolio', src: '/audio/second.mp3' },
+  ]}
+/>
+```
+
+<MusicPlayer
+  title="歌单示例 · 第一首"
+  artist="Navfolio"
+  src="/audio/navfolio-audio-demo.mp3"
+  artwork="/images/logo-cat.png"
+  size="compact"
+  playlist={[
+    {
+      title: '歌单示例 · 第一首',
+      artist: 'Navfolio',
+      src: '/audio/navfolio-audio-demo.mp3',
+      artwork: '/images/logo-cat.png',
+    },
+    {
+      title: '歌单示例 · 第二首',
+      artist: 'Navfolio',
+      src: '/audio/navfolio-audio-demo.mp3',
+      artwork: '/images/logo-cat.png',
+    },
+  ]}
+/>
+
+也可以用 `sources` 提供备用格式：
+
+```astro
+<MusicPlayer
+  title="作品片段"
+  src="/audio/clip.mp3"
+  sources={[{ src: '/audio/clip.ogg', type: 'audio/ogg' }]}
+/>
+```
+
+远程 `src` 也可使用，但发布者应确认它是可公开播放、支持跨域和字节范围请求的授权资源。
+
+## 两种展示方式
+
+默认 `variant="card"` 有边框、底色和阴影，适合推荐整首作品或专辑。`variant="inline"` 去掉外框与阴影，更贴合文章纸面，适合在段落旁引用一小段音频。
+
+<MusicPlayer
+  title="无痕嵌入"
+  artist="跟随站点主题切换"
+  src="/audio/navfolio-audio-demo.mp3"
+  artwork="/images/logo-cat.png"
+  variant="inline"
+  theme="system"
+  caption="无痕模式保留信息和控件，但不建立独立卡片边界。"
+/>
+
+## 局部主题
+
+`theme="system"` 是默认值，会映射到 Navfolio 当前的明暗模式与 palette；在未设置主站主题标记的宿主中，它会回退跟随系统明暗模式。`site` 保留为兼容别名。其他内置局部主题为 `paper`、`midnight`、`vinyl` 和 `neon`；它们不会影响文章其他部分。
+
+如需自定义，传入完整的 `light` / `dark` token 对。每套至少提供 `surface`、`surfaceMuted`、`text`、`textMuted`、`accent`、`accentContrast` 与 `line`，以保证明暗模式下的对比度。
+
+```astro
+<MusicPlayer
+  title="自定义局部主题"
+  src="/audio/clip.mp3"
+  theme={{
+    light: {
+      surface: '#fff8ef',
+      surfaceMuted: '#f7e7d0',
+      text: '#302018',
+      textMuted: '#755c50',
+      accent: '#a24b31',
+      accentContrast: '#ffffff',
+      line: '#e7cdbd',
+    },
+    dark: {
+      surface: '#251915',
+      surfaceMuted: '#34231d',
+      text: '#fff0e8',
+      textMuted: '#d8bdb0',
+      accent: '#ef9b7d',
+      accentContrast: '#251915',
+      line: '#583b30',
+    },
+  }}
+/>
+```
+
+## 官方第三方播放器
+
+第三方平台的内部界面无法由 Navfolio CSS 改写。组件会统一标题、艺人、外框与局部主题；实际播放、登录和版权限制仍由平台处理。不要将平台的音频流地址接入原生播放器。
+
+Spotify 和 SoundCloud 可以传普通内容链接：
+
+<MusicPlayer
+  title="Spotify 示例"
+  artist="官方 iframe"
+  provider="spotify"
+  url="https://open.spotify.com/track/11dFghVXANMlKmJXsNCbNl"
+  theme="midnight"
+/>
+
+```astro
+<MusicPlayer title="歌曲或歌单" provider="soundcloud" url="https://soundcloud.com/artist/track" />
+```
+
+Bandcamp、Apple Music 和网易云音乐请粘贴各平台分享功能生成的官方 iframe `src` 至 `embedUrl`。组件会限制为对应平台的 HTTPS 域名。
+
+```astro
+<MusicPlayer
+  title="网易云音乐歌曲"
+  provider="netease"
+  embedUrl="https://music.163.com/outchain/player?type=2&id=SONG_ID&auto=0&height=66"
+  url="https://music.163.com/#/song?id=SONG_ID"
+  variant="inline"
+/>
+```
+
+所有第三方来源的支持形式如下：
+
+| Provider    | 传入方式                                         | 可播放内容                                 |
+| ----------- | ------------------------------------------------ | ------------------------------------------ |
+| Spotify     | `provider="spotify"` + 普通 `url`                | 单曲、专辑、歌单、播客等 Spotify 内容      |
+| SoundCloud  | `provider="soundcloud"` + 普通 `url`             | 单曲、set 或歌单页                         |
+| Bandcamp    | `provider="bandcamp"` + 分享生成的 `embedUrl`    | Bandcamp 单曲或专辑播放器                  |
+| Apple Music | `provider="apple-music"` + 分享生成的 `embedUrl` | Apple Music 单曲、专辑或歌单预览           |
+| 网易云音乐  | `provider="netease"` + 外链播放器 `embedUrl`     | 网易云音乐单曲或歌单，受版权/地区/会员限制 |
+
+外部 iframe 会在接近视口时才加载，但访客浏览文章时仍会与相应平台建立连接。对于无法嵌入或有区域、会员限制的内容，应同时在正文提供来源链接。

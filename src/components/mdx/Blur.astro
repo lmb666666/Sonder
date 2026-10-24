@@ -1,0 +1,28 @@
+---
+/**
+ * 剧透模糊：默认模糊，悬停 / 聚焦 / 触摸长按后显形。
+ * 移植自 Sonder v1 Blur.vue，视觉对齐 navfolio token。
+ */
+interface Props {
+  text?: string;
+}
+
+const { text } = Astro.props;
+---
+
+<span class="blur" tabindex="0"><slot>{text}</slot></span>
+
+<style>
+  .blur {
+    filter: blur(4px);
+    transition: filter 0.2s;
+    cursor: pointer;
+    border-radius: 0.2em;
+  }
+
+  .blur:hover,
+  .blur:focus-visible,
+  .blur:active {
+    filter: blur(0);
+  }
+</style>

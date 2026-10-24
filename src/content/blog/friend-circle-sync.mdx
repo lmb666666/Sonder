@@ -1,0 +1,116 @@
+---
+title: 'Friend Circle Sync：用 GitHub Actions 同步友链 RSS'
+description: '在 Astro 构建前抓取友链 RSS 或 Atom，生成无需提交 Git 的静态朋友圈数据。'
+date: '2026-07-14T00:00:00+08:00'
+draft: false
+tags:
+  - RSS
+  - GitHub Actions
+  - FriendLink
+  - Astro
+categories:
+  - 插件与扩展
+series:
+  - 插件与扩展
+sidebar:
+  enable: true
+  toc: true
+  relatedPosts: true
+---
+
+import FriendCircle from '@navfolio/mdx-components/FriendCircle.astro';
+
+`@navfolio/friend-circle-sync` 是独立的数据同步工具：它读取友链 JSON，使用每项的 `rss` 地址，或尝试 `/rss.xml`、`/feed.xml`、`/atom.xml`、`/index.xml` 等常用地址，最终写出标准文章数组。它不依赖 Astro，也可用于其他静态博客。
+
+## GitHub Actions 构建前同步
+
+在部署工作流、`bun run docs:build` 之前加入：
+
+```yaml
+- name: Sync friend circle
+  uses: navfolio/friend-circle-sync@main
+  with:
+    input: ${{ vars.NAVFOLIO_FRIEND_LINKS_SRC }}
+    output: public/friend-circle.json
+    max-posts-per-feed: '12'
+```
+
+文件只在 CI 工作目录中生成，随后被 Astro 原样复制到 `dist/friend-circle.json`。不要提交它到 Git；在本地想查看真实数据时，可手动运行：
+
+```bash
+git clone git@github.com:navfolio/friend-circle-sync.git
+cd friend-circle-sync
+bun install
+bun run sync -- \
+  --input https://example.com/friendlinks.json \
+  --output ../your-site/public/friend-circle.json
+```
+
+## 在 MDX 中展示
+
+```astro
+import FriendCircle from '@navfolio/mdx-components/FriendCircle.astro';
+
+<FriendCircle feedSrc="/friend-circle.json" limit={10} />
+```
+
+<FriendCircle
+  limit={5}
+  items={[
+    {
+      name: 'GitHub',
+      url: 'https://example.com/posts/repository-automation-patterns',
+      avatar: 'https://github.githubassets.com/favicons/favicon.svg',
+    },
+    { name: 'OpenAI', url: 'https://openai.com/', avatar: 'https://openai.com/favicon.ico' },
+  ]}
+  posts={[
+    {
+      title: 'Repository automation patterns',
+      url: 'https://github.com/',
+      date: '2026-07-14',
+      tags: ['Actions', 'CI'],
+      author: 'GitHub',
+      authorUrl: 'https://github.com/',
+      avatar: 'https://github.githubassets.com/favicons/favicon.svg',
+    },
+    {
+      title: 'Building a reliable static feed',
+      url: 'https://example.com/posts/reliable-static-feed',
+      date: '2026-07-13',
+      tags: ['RSS', 'Astro'],
+      author: 'OpenAI',
+      authorUrl: 'https://openai.com/',
+      avatar: 'https://openai.com/favicon.ico',
+    },
+    {
+      title: 'Release notes and migration guide',
+      url: 'https://example.com/posts/release-notes-migration-guide',
+      date: '2026-07-12',
+      tags: ['Runtime'],
+      author: 'Bun',
+      authorUrl: 'https://bun.com/',
+      avatar: 'https://bun.com/favicon.ico',
+    },
+    {
+      title: 'Content-driven website workflows',
+      url: 'https://example.com/posts/content-driven-workflows',
+      date: '2026-07-11',
+      tags: ['Astro', 'MDX'],
+      author: 'Astro',
+      authorUrl: 'https://astro.build/',
+      avatar: 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
+    },
+    {
+      title: 'Portable authoring components',
+      url: 'https://example.com/posts/portable-authoring-components',
+      date: '2026-07-10',
+      tags: ['Components'],
+      author: 'Navfolio',
+      authorUrl: 'https://github.com/navfolio/',
+      avatar: 'https://avatars.githubusercontent.com/u/114007020?v=4',
+    },
+  ]}
+/>
+
+刷新按钮只会从构建好的文章池重新抽取，不会在访问页面时抓 RSS。卡片来源和字段说明请见 [FriendLinkCard](/blog/friend-link-card/)。
