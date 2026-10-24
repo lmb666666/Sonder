@@ -1,0 +1,62 @@
+---
+interface Props {
+  href: string;
+  categoryLabel: string;
+  name: string;
+  articleCount: string;
+}
+
+const { href, categoryLabel, name, articleCount } = Astro.props;
+---
+
+<a class="category-card" href={href}>
+  <span class="category-label">{categoryLabel}</span>
+  <strong>{name}</strong>
+  <span>{articleCount}</span>
+</a>
+
+<style>
+  .category-card {
+    display: grid;
+    gap: 8px;
+    min-height: 128px;
+    padding: 18px;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface);
+    color: var(--paper-ink);
+    text-decoration: none;
+    box-shadow: var(--paper-shadow);
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease;
+  }
+
+  .category-card:hover {
+    border-color: var(--paper-line-strong);
+    background: var(--paper-control-hover);
+    transform: translateY(-1px);
+  }
+
+  .category-label,
+  span:last-child {
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .category-label {
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: var(--paper-ink);
+    font-family: var(--font-page-heading);
+    font-size: 1.45rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+</style>

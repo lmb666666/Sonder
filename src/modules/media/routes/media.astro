@@ -1,0 +1,366 @@
+---
+import { getCollection } from 'astro:content';
+import {
+  BaseHead,
+  BlogTopNav,
+  Footer,
+  getHtmlLang,
+  getSiteConfig,
+  getI18n,
+} from 'virtual:navfolio/page-runtime';
+import MediaShelf from '@navfolio/mdx-components/MediaShelf.astro';
+
+type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
+type CoverAspect = 'portrait' | 'landscape' | 'square' | 'wide';
+type MediaStatus = 'completed' | 'in-progress' | 'planned' | 'abandoned';
+type MediaEntry = {
+  id: string;
+  data: {
+    title: string;
+    creator: string;
+    type: MediaType;
+    status: MediaStatus;
+    completedAt?: Date;
+    draft?: boolean;
+    cover?: ImageMetadata | string;
+    coverAspect?: CoverAspect;
+    rating?: number;
+    review?: boolean;
+    tags?: string[];
+    externalUrl?: string;
+  };
+  body?: string;
+};
+
+const siteConfig = await getSiteConfig();
+const { site, theme, pages } = siteConfig;
+const i18n = getI18n(siteConfig);
+const ui = {
+  media: {
+    shelf: i18n.t('media.shelf'),
+    browse: i18n.t('media.browse'),
+    sectionsLabel: i18n.t('media.sectionsLabel'),
+    empty: i18n.t('media.empty'),
+    readReview: i18n.t('media.readReview'),
+    sections: {
+      books: i18n.t('media.sections.books'),
+      booksNote: i18n.t('media.sections.booksNote'),
+      films: i18n.t('media.sections.films'),
+      filmsNote: i18n.t('media.sections.filmsNote'),
+      music: i18n.t('media.sections.music'),
+      musicNote: i18n.t('media.sections.musicNote'),
+    },
+  },
+};
+const htmlLang = getHtmlLang(siteConfig);
+const palette = theme.palette;
+const configuredMedia = (pages as Record<string, unknown>).media;
+const pageMeta = isPageMeta(configuredMedia)
+  ? configuredMedia
+  : {
+      title: '书影音',
+      subtitle: '读过、看过、听过的作品，以及一点当时的感受。',
+      note: 'A personal shelf for books, films, and music.',
+    };
+
+const allMedia = ((await getCollection('media')) as MediaEntry[])
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => dateValue(b.data.completedAt) - dateValue(a.data.completedAt));
+const mediaRoute = Astro.url.pathname.replace(/\/$/, '');
+
+const sections = [
+  {
+    id: 'books',
+    label: ui.media.sections.books,
+    description: ui.media.sections.booksNote,
+    types: ['book'] as MediaType[],
+  },
+  {
+    id: 'films',
+    label: ui.media.sections.films,
+    description: ui.media.sections.filmsNote,
+    types: ['film', 'series'] as MediaType[],
+  },
+  {
+    id: 'music',
+    label: ui.media.sections.music,
+    description: ui.media.sections.musicNote,
+    types: ['album', 'podcast'] as MediaType[],
+  },
+].map((section) => ({
+  ...section,
+  items: allMedia.filter((entry) => section.types.includes(entry.data.type)),
+}));
+
+function dateValue(value: Date | undefined) {
+  return value?.valueOf() ?? 0;
+}
+
+function isPageMeta(value: unknown): value is { title: string; subtitle: string; note: string } {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.title === 'string' &&
+    typeof candidate.subtitle === 'string' &&
+    typeof candidate.note === 'string'
+  );
+}
+---
+
+<!doctype html>
+<html lang={htmlLang} data-palette={palette}>
+  <head>
+    <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      main {
+        width: min(100%, var(--layout-shell-width));
+        padding-top: 126px;
+      }
+      .media-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 156px;
+        gap: clamp(28px, 5vw, 68px);
+      }
+      .media-hero {
+        margin-bottom: clamp(46px, 8vw, 88px);
+      }
+      .media-kicker,
+      .media-count,
+      .media-meta,
+      .media-nav p,
+      .media-nav a {
+        font-family: var(--font-meta);
+      }
+      .media-kicker {
+        margin: 0 0 12px;
+        color: var(--paper-ink-faint);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .media-title {
+        max-width: 560px;
+        margin: 0;
+        color: var(--paper-ink);
+        font-size: clamp(2.32rem, 6.6vw, 4.35rem);
+        font-weight: 400;
+        line-height: 0.96;
+      }
+      .media-subtitle {
+        max-width: 34ch;
+        margin: 18px 0 0;
+        color: var(--paper-ink-soft);
+        font-family: var(--font-ui-label);
+        font-size: clamp(0.98rem, 1.7vw, 1.16rem);
+        line-height: 1.68;
+      }
+      .media-note {
+        max-width: 48ch;
+        margin: 14px 0 0;
+        color: var(--paper-ink-faint);
+        font-size: 0.7rem;
+        line-height: 1.75;
+      }
+      .media-section {
+        scroll-margin-top: 92px;
+        padding: 26px 0 clamp(48px, 8vw, 88px);
+        border-top: 1px solid var(--paper-line);
+      }
+      .media-section:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .media-section-heading {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: baseline;
+        margin-bottom: 20px;
+      }
+      .media-section-heading h2 {
+        margin: 0;
+        color: var(--paper-ink);
+        font-size: clamp(1.45rem, 3vw, 2rem);
+        font-weight: 400;
+      }
+      .media-count {
+        color: var(--paper-ink-faint);
+        font-size: 0.7rem;
+      }
+      .media-empty {
+        margin: 0;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.76rem;
+      }
+      .media-nav {
+        align-self: start;
+        position: sticky;
+        top: 102px;
+        border-left: 1px solid var(--paper-line);
+        padding-left: 16px;
+      }
+      .media-nav p {
+        margin: 0 0 8px;
+        color: var(--paper-ink-faint);
+        font-size: 0.66rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .media-nav a {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 7px 0;
+        color: var(--paper-ink-faint);
+        font-size: 0.72rem;
+        text-decoration: none;
+        transition: color 160ms ease;
+      }
+      .media-nav a:hover,
+      .media-nav a[aria-current='true'] {
+        color: var(--paper-ink);
+      }
+      .media-nav a[aria-current='true'] {
+        font-weight: 600;
+      }
+      .media-mobile-nav {
+        display: none;
+        margin: 0 0 28px;
+        border-bottom: 1px solid var(--paper-line);
+      }
+      .media-mobile-nav a {
+        display: inline-flex;
+        gap: 7px;
+        padding: 8px 16px 10px 0;
+        color: var(--paper-ink-faint);
+        font-family: var(--font-meta);
+        font-size: 0.72rem;
+        text-decoration: none;
+      }
+      .media-mobile-nav a[aria-current='true'] {
+        color: var(--paper-ink);
+        font-weight: 600;
+      }
+      @media (max-width: 760px) {
+        main {
+          padding-top: 98px;
+        }
+        .media-layout {
+          display: block;
+        }
+        .media-nav {
+          display: none;
+        }
+        .media-mobile-nav {
+          display: block;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <BlogTopNav />
+    <main>
+      <div class="media-layout">
+        <div>
+          <header class="media-hero">
+            <p class="media-kicker">{ui.media.shelf}</p>
+            <h1 class="media-title">{pageMeta.title}</h1>
+            <p class="media-subtitle">{pageMeta.subtitle}</p>
+            <p class="media-note">{pageMeta.note}</p>
+          </header>
+          <nav class="media-mobile-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
+            {
+              sections.map((section, index) => (
+                <a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
+                  {section.label} <span>{section.items.length}</span>
+                </a>
+              ))
+            }
+          </nav>
+          {
+            sections.map((section) => (
+              <section class="media-section" id={section.id} data-media-section>
+                <div class="media-section-heading">
+                  <>
+                    <h2>{section.label}</h2>
+                    <span class="media-count">
+                      {section.items.length} · {section.description}
+                    </span>
+                  </>
+                </div>
+                {section.items.length ? (
+                  <MediaShelf
+                    columns={4}
+                    items={section.items.map((entry) => ({
+                      title: entry.data.title,
+                      creator: entry.data.creator,
+                      type: entry.data.type,
+                      cover: entry.data.cover,
+                      coverAspect: entry.data.coverAspect,
+                      rating: entry.data.rating,
+                      href: entry.data.externalUrl,
+                      reviewHref: entry.data.review ? `${mediaRoute}/${entry.id}/` : undefined,
+                      reviewLabel: entry.data.review ? ui.media.readReview : undefined,
+                    }))}
+                  />
+                ) : (
+                  <p class="media-empty">{ui.media.empty}</p>
+                )}
+              </section>
+            ))
+          }
+        </div>
+        <nav class="media-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
+          <p>{ui.media.browse}</p>
+          {
+            sections.map((section, index) => (
+              <a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
+                <>
+                  <span>{section.label}</span>
+                  <span>{section.items.length}</span>
+                </>
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </main>
+    <Footer />
+    <script>
+      const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-media-section]'));
+      const navs = Array.from(document.querySelectorAll<HTMLElement>('[data-media-nav]'));
+      const setActive = (id: string) =>
+        navs.forEach((nav) =>
+          nav
+            .querySelectorAll<HTMLAnchorElement>('a')
+            .forEach((link) =>
+              link.setAttribute(
+                'aria-current',
+                link.getAttribute('href') === `#${id}` ? 'true' : 'false',
+              ),
+            ),
+        );
+      if (sections.length) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const visible = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+            if (visible) setActive((visible.target as HTMLElement).id);
+          },
+          { rootMargin: '-22% 0px -64%', threshold: [0, 0.1, 0.5] },
+        );
+        sections.forEach((section) => observer.observe(section));
+      }
+    </script>
+  </body>
+</html>

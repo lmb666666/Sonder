@@ -1,0 +1,403 @@
+---
+import { RefreshCw, Rss } from 'lucide-astro';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import {
+  crawlFriendPosts,
+  parseFriendCircleFeed,
+  resolveFriendLinkItems,
+  type FriendDataSource,
+  type FriendLinkFieldMap,
+  type FriendLinkItem,
+  type FriendPost,
+} from './lib/friend-data';
+
+interface Props {
+  items?: FriendLinkItem[];
+  src?: string;
+  source?: FriendDataSource;
+  posts?: FriendPost[];
+  feedSrc?: string;
+  limit?: number;
+  title?: string;
+  refreshLabel?: string;
+  fieldMap?: FriendLinkFieldMap;
+}
+
+const {
+  posts,
+  feedSrc,
+  limit = 10,
+  title,
+  refreshLabel = 'Refresh posts',
+  ...dataSource
+} = Astro.props;
+const configuredFriends = await resolveFriendLinkItems(dataSource);
+const displayTitle = title?.trim() || 'Friend circle';
+const readFeedSource = async (source: string) => {
+  if (/^https?:\/\//i.test(source)) {
+    const response = await fetch(source);
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    return response.text();
+  }
+
+  return readFile(resolve(process.cwd(), 'public', source.replace(/^\//, '')), 'utf8');
+};
+const loadFeed = async () => {
+  if (feedSrc?.trim()) {
+    try {
+      return parseFriendCircleFeed(JSON.parse(await readFeedSource(feedSrc.trim())));
+    } catch (error) {
+      console.error(`Unable to load friend circle data from ${feedSrc}:`, error);
+      return { friends: [], posts: [] };
+    }
+  }
+  return undefined;
+};
+const syncedFeed = posts ? undefined : await loadFeed();
+const friends = syncedFeed?.friends.length ? syncedFeed.friends : configuredFriends;
+const allPosts: FriendPost[] = (
+  posts ??
+  syncedFeed?.posts ??
+  (await crawlFriendPosts(friends))
+).slice(0, 120);
+const dateValue = (date?: string) => {
+  const parsed = date ? new Date(date) : null;
+  return parsed && !Number.isNaN(parsed.valueOf()) ? parsed.toISOString().slice(0, 10) : '';
+};
+const initialPosts = allPosts
+  .slice(0, limit)
+  .map((post) => ({ ...post, date: dateValue(post.date) }));
+const activeFriends = new Set(allPosts.map((post) => post.authorUrl || post.author)).size;
+---
+
+<section class="friend-circle" data-friend-circle data-limit={limit}>
+  <header class="friend-circle__header">
+    <div>
+      <p class="friend-circle__eyebrow">
+        <Rss size={14} strokeWidth={1.8} aria-hidden="true" />
+        {displayTitle}
+      </p>
+      <p class="friend-circle__stats">
+        {friends.length} friends <span aria-hidden="true">/</span>
+        {activeFriends} active <span aria-hidden="true">/</span>
+        {allPosts.length} posts
+      </p>
+    </div>
+    <button
+      class="friend-circle__refresh"
+      type="button"
+      aria-label={refreshLabel}
+      title={refreshLabel}
+      data-friend-circle-refresh
+    >
+      <RefreshCw size={17} strokeWidth={1.8} aria-hidden="true" />
+    </button>
+  </header>
+  <div class="friend-circle__posts" data-friend-circle-posts>
+    {
+      initialPosts.map((post) => (
+        <article class="friend-circle__post">
+          <a
+            class="friend-circle__author-link"
+            href={post.authorUrl || post.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Visit ${post.author}`}
+          >
+            <span class="friend-circle__author-avatar">
+              {post.avatar ? (
+                <img src={post.avatar} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <span>{(post.author[0] || '?').toUpperCase()}</span>
+              )}
+            </span>
+            <span class="friend-circle__author">{post.author}</span>
+          </a>
+          <a
+            class="friend-circle__post-title"
+            href={post.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {post.title}
+          </a>
+          <span class="friend-circle__post-meta">
+            {post.tags?.length ? (
+              <span class="friend-circle__tags">
+                {post.tags.slice(0, 3).map((tag) => (
+                  <span>{tag}</span>
+                ))}
+              </span>
+            ) : null}
+            {post.date ? <time datetime={post.date}>{post.date}</time> : null}
+          </span>
+        </article>
+      ))
+    }
+  </div>
+  <script
+    is:inline
+    type="application/json"
+    data-friend-circle-data
+    set:html={JSON.stringify({
+      posts: allPosts.map((post) => ({ ...post, date: dateValue(post.date) })),
+      initialPosts,
+    })}
+  />
+</section>
+
+<script>
+  type Post = {
+    title: string;
+    url: string;
+    date?: string;
+    tags?: string[];
+    author: string;
+    authorUrl?: string;
+    avatar?: string | null;
+  };
+  const escape = (value: string) =>
+    value.replace(
+      /[&<>"']/g,
+      (character) =>
+        ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;',
+        })[character] ?? character,
+    );
+  const shuffle = <T,>(items: T[]) => {
+    const result = [...items];
+    for (let index = result.length - 1; index > 0; index -= 1) {
+      const target = Math.floor(Math.random() * (index + 1));
+      [result[index], result[target]] = [result[target], result[index]];
+    }
+    return result;
+  };
+  const render = (root: HTMLElement, posts: Post[]) => {
+    const target = root.querySelector<HTMLElement>('[data-friend-circle-posts]');
+    if (!target) return;
+    target.innerHTML = posts
+      .map((post) => {
+        const avatar = post.avatar
+          ? `<img src="${escape(post.avatar)}" alt="" loading="lazy" decoding="async">`
+          : `<span>${escape((post.author[0] || '?').toUpperCase())}</span>`;
+        const tags = (post.tags ?? [])
+          .slice(0, 3)
+          .map((tag) => `<span>${escape(tag)}</span>`)
+          .join('');
+        return `<article class="friend-circle__post"><a class="friend-circle__author-link" href="${escape(post.authorUrl || post.url)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escape(post.author)}"><span class="friend-circle__author-avatar">${avatar}</span><span class="friend-circle__author">${escape(post.author)}</span></a><a class="friend-circle__post-title" href="${escape(post.url)}" target="_blank" rel="noopener noreferrer">${escape(post.title)}</a><span class="friend-circle__post-meta">${tags ? `<span class="friend-circle__tags">${tags}</span>` : ''}${post.date ? `<time>${escape(post.date)}</time>` : ''}</span></article>`;
+      })
+      .join('');
+  };
+  const init = () =>
+    document.querySelectorAll<HTMLElement>('[data-friend-circle]').forEach((root) => {
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = 'true';
+      const data = root.querySelector<HTMLScriptElement>('[data-friend-circle-data]');
+      if (!data?.textContent) return;
+      const { posts, initialPosts } = JSON.parse(data.textContent) as {
+        posts: Post[];
+        initialPosts: Post[];
+      };
+      const limit = Number(root.dataset.limit) || 10;
+      render(root, initialPosts);
+      root
+        .querySelector<HTMLButtonElement>('[data-friend-circle-refresh]')
+        ?.addEventListener('click', (event) => {
+          const button = event.currentTarget as HTMLButtonElement;
+          button.classList.add('is-refreshing');
+          render(root, shuffle(posts).slice(0, limit));
+          window.setTimeout(() => button.classList.remove('is-refreshing'), 260);
+        });
+    });
+  document.addEventListener('astro:page-load', init);
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
+</script>
+
+<style is:global>
+  .friend-circle {
+    margin: 34px 0;
+    border-top: 1px solid var(--paper-line);
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .friend-circle__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px 0;
+  }
+  .friend-circle__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    color: var(--paper-ink);
+    font-family: var(--font-meta);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  .friend-circle__eyebrow svg {
+    color: var(--paper-accent);
+  }
+  .friend-circle__stats {
+    margin: 4px 0 0;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.72rem;
+  }
+  .friend-circle__stats span {
+    margin: 0 5px;
+    color: var(--paper-line-strong);
+  }
+  .friend-circle__refresh {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--paper-ink-soft);
+    cursor: pointer;
+    transition:
+      color 160ms ease,
+      background 160ms ease,
+      border-color 160ms ease;
+  }
+  .friend-circle__refresh:hover {
+    border-color: var(--paper-line-strong);
+    background: var(--paper-control-hover);
+    color: var(--paper-ink);
+  }
+  .friend-circle__refresh.is-refreshing svg {
+    animation: friend-circle-spin 260ms ease;
+  }
+  .friend-circle__posts {
+    border-top: 1px solid var(--paper-line);
+  }
+  .friend-circle__post {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    min-height: 48px;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .friend-circle__post:last-child {
+    border-bottom: 0;
+  }
+  .friend-circle__author-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: inherit;
+    text-decoration: none;
+  }
+  .friend-circle__author-link:hover .friend-circle__author,
+  .friend-circle__post-title:hover {
+    color: var(--paper-ink);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--paper-accent) 56%, transparent);
+    text-underline-offset: 4px;
+  }
+  .friend-circle__author-avatar {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--paper-line);
+    border-radius: 999px;
+    background: var(--paper-surface-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  .friend-circle__author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .friend-circle__author {
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+  .friend-circle__post-title {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    color: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .friend-circle__post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+  .friend-circle__tags {
+    display: flex;
+    gap: 4px;
+    max-width: 14rem;
+    overflow: hidden;
+  }
+  .friend-circle__tags span {
+    overflow: hidden;
+    color: color-mix(in srgb, var(--paper-accent) 72%, var(--paper-ink-soft));
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .friend-circle__tags span::before {
+    content: '#';
+  }
+  @keyframes friend-circle-spin {
+    to {
+      transform: rotate(180deg);
+    }
+  }
+  @media (max-width: 700px) {
+    .friend-circle__post {
+      grid-template-columns: max-content minmax(0, 1fr) auto;
+      gap: 7px;
+      padding: 7px 0;
+    }
+    .friend-circle__author-link {
+      gap: 6px;
+    }
+    .friend-circle__tags {
+      display: none;
+    }
+  }
+  @media (max-width: 440px) {
+    .friend-circle__post-meta time {
+      font-size: 0.65rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .friend-circle__refresh {
+      transition: none;
+    }
+    .friend-circle__refresh.is-refreshing svg {
+      animation: none;
+    }
+  }
+</style>

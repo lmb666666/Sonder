@@ -1,0 +1,259 @@
+---
+import { Link } from 'lucide-astro';
+import {
+  orderFriendLinks,
+  resolveFriendLinkItems,
+  type FriendDataSource,
+  type FriendLinkItem,
+} from './lib/friend-data';
+
+interface Props {
+  items?: FriendLinkItem[];
+  src?: string;
+  source?: FriendDataSource;
+  columns?: 1 | 2 | 3 | 4;
+  randomBackground?: boolean;
+  shuffle?: boolean;
+  preview?: boolean;
+}
+
+const {
+  columns = 4,
+  randomBackground = false,
+  shuffle = false,
+  preview = false,
+  ...dataSource
+} = Astro.props;
+const items = orderFriendLinks(await resolveFriendLinkItems(dataSource), shuffle);
+const trim = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
+const background = (index: number) => {
+  if (!randomBackground) return undefined;
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = 42 + Math.floor(Math.random() * 30);
+  const lightness = 42 + Math.floor(Math.random() * 22);
+  return `--friend-link-random: hsl(${hue} ${saturation}% ${lightness}% / 0.22); --friend-link-random-strong: hsl(${hue} ${saturation}% ${lightness}% / 0.34); --friend-link-index: ${index};`;
+};
+---
+
+<div class="friend-link-region">
+  <div class="friend-link-list" style={`--friend-link-columns: ${columns};`}>
+    {
+      items.map((item, index) => {
+        const name = trim(item.name);
+        const avatar = trim(item.avatar);
+        const bio = trim(item.bio);
+        const explicitBackground = randomBackground ? '' : trim(item.backgroundImage);
+        const backgroundImage = explicitBackground || avatar;
+        const displayName = name || (preview ? '你的站点' : '');
+        const displayBio = bio || (preview ? '站点简介会显示在这里' : '');
+        return (
+          <a
+            class:list={[
+              'friend-link-card',
+              backgroundImage && 'friend-link-card--with-image',
+              randomBackground && 'friend-link-card--random',
+              preview && 'friend-link-card--preview',
+            ]}
+            href={preview ? undefined : trim(item.url)}
+            target={preview ? undefined : '_blank'}
+            rel={preview ? undefined : 'noopener noreferrer'}
+            title={displayName}
+            role={preview ? 'group' : undefined}
+            aria-label={preview ? `友链卡片实时预览：${displayName}` : undefined}
+            data-friend-link-card-preview={preview ? '' : undefined}
+            style={background(index)}
+          >
+            {backgroundImage || preview ? (
+              <img
+                class="friend-link-card__background"
+                src={backgroundImage || undefined}
+                alt=""
+                loading={preview ? 'eager' : 'lazy'}
+                decoding="async"
+                aria-hidden="true"
+                hidden={!backgroundImage}
+                data-friend-link-card-background={preview ? '' : undefined}
+              />
+            ) : null}
+            <span class="friend-link-card__avatar" aria-hidden="true">
+              {preview ? (
+                <>
+                  <img
+                    src={avatar || undefined}
+                    alt=""
+                    loading="eager"
+                    decoding="async"
+                    hidden={!avatar}
+                    data-friend-link-card-avatar
+                  />
+                  <span hidden={Boolean(avatar)} data-friend-link-card-fallback>
+                    {(displayName[0] || '?').toUpperCase()}
+                  </span>
+                </>
+              ) : avatar ? (
+                <img src={avatar} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <span>{(name[0] || '?').toUpperCase()}</span>
+              )}
+            </span>
+            <span class="friend-link-card__meta">
+              <span class="friend-link-card__heading">
+                <strong data-friend-link-card-name={preview ? '' : undefined}>{displayName}</strong>
+                <Link size={13} strokeWidth={1.8} aria-hidden="true" />
+              </span>
+              {displayBio ? (
+                <span
+                  class="friend-link-card__bio"
+                  data-friend-link-card-bio={preview ? '' : undefined}
+                >
+                  {displayBio}
+                </span>
+              ) : null}
+            </span>
+          </a>
+        );
+      })
+    }
+  </div>
+</div>
+
+<style>
+  .friend-link-region {
+    container-type: inline-size;
+    margin: 18px 0;
+  }
+  .friend-link-list {
+    display: grid;
+    grid-template-columns: repeat(var(--friend-link-columns), minmax(0, 1fr));
+    gap: 12px;
+  }
+  .friend-link-card {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr);
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    min-height: 90px;
+    padding: 13px;
+    overflow: hidden;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface);
+    color: var(--paper-ink);
+    text-decoration: none;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper-surface) 82%, transparent);
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background 160ms ease;
+  }
+  .friend-link-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--paper-accent) 54%, var(--paper-line));
+  }
+  .friend-link-card--preview {
+    cursor: default;
+  }
+  .friend-link-card--preview:hover {
+    transform: none;
+    border-color: var(--paper-line);
+  }
+  .friend-link-card--random {
+    background: color-mix(in srgb, var(--friend-link-random), var(--paper-surface) 76%);
+  }
+  .friend-link-card--random:hover {
+    background: color-mix(in srgb, var(--friend-link-random-strong), var(--paper-surface) 68%);
+  }
+  .friend-link-card__background {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -8%;
+    z-index: -1;
+    width: 72%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.16;
+    -webkit-mask-image: linear-gradient(to left, transparent, #000);
+    mask-image: linear-gradient(to left, transparent, #000);
+    pointer-events: none;
+  }
+  .friend-link-card__avatar {
+    display: grid;
+    width: 50px;
+    height: 50px;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper-surface) 72%, var(--paper-ink));
+    font-weight: 700;
+  }
+  .friend-link-card__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .friend-link-card__meta {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+  .friend-link-card__heading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+  .friend-link-card__heading strong {
+    overflow: hidden;
+    font-size: 0.96rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .friend-link-card__heading svg {
+    flex: 0 0 auto;
+    color: var(--paper-ink-faint);
+  }
+  .friend-link-card__bio {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--paper-ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  @container (max-width: 920px) {
+    .friend-link-list {
+      grid-template-columns: repeat(min(3, var(--friend-link-columns)), minmax(0, 1fr));
+    }
+  }
+  @container (max-width: 620px) {
+    .friend-link-list {
+      grid-template-columns: repeat(min(2, var(--friend-link-columns)), minmax(0, 1fr));
+    }
+  }
+  @container (max-width: 390px) {
+    .friend-link-list {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* A narrow viewport needs readable cards even when a desktop column count is explicit. */
+  @media (max-width: 720px) {
+    .friend-link-list {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .friend-link-card {
+      transition: none;
+    }
+    .friend-link-card:hover {
+      transform: none;
+    }
+  }
+</style>

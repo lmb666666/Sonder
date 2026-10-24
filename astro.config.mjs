@@ -75,11 +75,84 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     resolve: {
-      alias: {
-        'virtual:navfolio/page-runtime': fileURLToPath(
-          new URL('./src/modules/page-runtime.ts', import.meta.url),
-        ),
-      },
+      alias: [
+        // Vendored @navfolio/* packages (see VENDORED.md) — specifiers stay
+        // unchanged, they resolve to in-repo source instead of node_modules.
+        {
+          find: /^@navfolio\/theme-default\/components\/(.*)$/,
+          replacement: fileURLToPath(
+            new URL('./src/components/theme/components/$1', import.meta.url),
+          ),
+        },
+        {
+          find: /^@navfolio\/theme-default\/styles\/(.*)$/,
+          replacement: fileURLToPath(new URL('./src/components/theme/styles/$1', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/theme-default$/,
+          replacement: fileURLToPath(new URL('./src/components/theme/index.ts', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/mdx-components\/(.*)$/,
+          replacement: fileURLToPath(new URL('./src/components/mdx/$1', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/plugin-markdown\/styles\.css$/,
+          replacement: fileURLToPath(new URL('./src/plugins/markdown/styles.css', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/plugin-markdown$/,
+          replacement: fileURLToPath(new URL('./src/plugins/markdown/index.ts', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/plugin-callout\/styles\.css$/,
+          replacement: fileURLToPath(
+            new URL('./src/plugins/markdown/callout/styles.css', import.meta.url),
+          ),
+        },
+        {
+          find: /^@navfolio\/plugin-callout$/,
+          replacement: fileURLToPath(
+            new URL('./src/plugins/markdown/callout/index.ts', import.meta.url),
+          ),
+        },
+        {
+          find: /^@navfolio\/plugin-markdown-layouts\/styles\.css$/,
+          replacement: fileURLToPath(
+            new URL('./src/plugins/markdown/layouts/styles.css', import.meta.url),
+          ),
+        },
+        {
+          find: /^@navfolio\/plugin-markdown-layouts$/,
+          replacement: fileURLToPath(
+            new URL('./src/plugins/markdown/layouts/index.ts', import.meta.url),
+          ),
+        },
+        {
+          find: /^@navfolio\/pages$/,
+          replacement: fileURLToPath(new URL('./src/modules/index.ts', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/page-projects$/,
+          replacement: fileURLToPath(new URL('./src/modules/projects/index.ts', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/page-vibe$/,
+          replacement: fileURLToPath(new URL('./src/modules/vibe/index.ts', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/page-media$/,
+          replacement: fileURLToPath(new URL('./src/modules/media/index.ts', import.meta.url)),
+        },
+        {
+          find: /^@navfolio\/core$/,
+          replacement: fileURLToPath(new URL('./src/framework/index.ts', import.meta.url)),
+        },
+        {
+          find: 'virtual:navfolio/page-runtime',
+          replacement: fileURLToPath(new URL('./src/modules/page-runtime.ts', import.meta.url)),
+        },
+      ],
     },
   },
 });

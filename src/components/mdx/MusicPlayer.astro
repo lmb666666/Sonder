@@ -1,0 +1,707 @@
+---
+import { ExternalLink, ListMusic, Pause, Play, Volume2, VolumeX } from 'lucide-astro';
+import { musicThemeStyle, type MusicThemeDefinition, type MusicThemeName } from './lib/music-theme';
+
+type Provider = 'spotify' | 'soundcloud' | 'bandcamp' | 'apple-music' | 'netease';
+type MusicTrack = {
+  title: string;
+  artist?: string;
+  artwork?: string;
+  src: string;
+  caption?: string;
+  sources?: Array<{ src: string; type?: string }>;
+};
+type Props = {
+  title: string;
+  artist?: string;
+  artwork?: string;
+  src?: string;
+  sources?: Array<{ src: string; type?: string }>;
+  caption?: string;
+  playlist?: MusicTrack[];
+  size?: 'narrow' | 'compact' | 'normal' | 'wide' | 'full';
+  variant?: 'card' | 'inline';
+  theme?: MusicThemeName | Partial<MusicThemeDefinition>;
+  provider?: Provider;
+  embedUrl?: string;
+  url?: string;
+  class?: string;
+};
+
+const {
+  title,
+  artist,
+  artwork,
+  src,
+  sources = [],
+  caption,
+  playlist = [],
+  size = 'normal',
+  variant = 'card',
+  theme = 'system',
+  provider,
+  embedUrl,
+  url,
+  class: className,
+} = Astro.props;
+const initialTrack = playlist[0];
+const resolvedTitle = src ? title : (initialTrack?.title ?? title);
+const resolvedArtist = src ? artist : (initialTrack?.artist ?? artist);
+const resolvedArtwork = src ? artwork : (initialTrack?.artwork ?? artwork);
+const resolvedCaption = src ? caption : (initialTrack?.caption ?? caption);
+const directSources = src
+  ? [{ src }, ...sources]
+  : initialTrack
+    ? [{ src: initialTrack.src }, ...(initialTrack.sources ?? [])]
+    : sources;
+const isNative = directSources.length > 0;
+const providerNames: Record<Provider, string> = {
+  spotify: 'Spotify',
+  soundcloud: 'SoundCloud',
+  bandcamp: 'Bandcamp',
+  'apple-music': 'Apple Music',
+  netease: '网易云音乐',
+};
+
+function isAllowedEmbed(value: string, name: Provider) {
+  try {
+    const parsed = new URL(value);
+    const hosts: Record<Provider, string[]> = {
+      spotify: ['open.spotify.com'],
+      soundcloud: ['w.soundcloud.com'],
+      bandcamp: ['bandcamp.com'],
+      'apple-music': ['embed.music.apple.com'],
+      netease: ['music.163.com'],
+    };
+    return parsed.protocol === 'https:' && hosts[name].includes(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedProviderUrl(value: string, name: Provider) {
+  try {
+    const parsed = new URL(value);
+    const hosts: Partial<Record<Provider, string[]>> = {
+      spotify: ['open.spotify.com'],
+      soundcloud: ['soundcloud.com'],
+      'apple-music': ['music.apple.com'],
+      netease: ['music.163.com'],
+    };
+    return parsed.protocol === 'https:' && (hosts[name]?.includes(parsed.hostname) ?? true);
+  } catch {
+    return false;
+  }
+}
+
+function resolveEmbed() {
+  if (!provider || (!url && !embedUrl)) return undefined;
+  const source = embedUrl ?? url!;
+  if (provider === 'spotify' && !embedUrl) {
+    try {
+      const parsed = new URL(source);
+      if (parsed.hostname === 'open.spotify.com' && !parsed.pathname.startsWith('/embed/'))
+        parsed.pathname = `/embed${parsed.pathname}`;
+      return isAllowedEmbed(parsed.toString(), provider) ? parsed.toString() : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+  if (provider === 'soundcloud' && !embedUrl)
+    return isAllowedProviderUrl(source, provider)
+      ? `https://w.soundcloud.com/player/?url=${encodeURIComponent(source)}&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false`
+      : undefined;
+  return isAllowedEmbed(source, provider) ? source : undefined;
+}
+
+const embed = !isNative ? resolveEmbed() : undefined;
+const providerName = provider ? providerNames[provider] : undefined;
+const themeStyle = musicThemeStyle(theme);
+const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
+---
+
+<figure
+  class:list={[
+    'navfolio-music-player',
+    `navfolio-music-player--${variant}`,
+    `navfolio-music-player--${size}`,
+    className,
+  ]}
+  style={themeStyle}
+  data-navfolio-music-player
+>
+  <div class="navfolio-music-player__body">
+    {
+      resolvedArtwork ? (
+        <img
+          class="navfolio-music-player__artwork"
+          src={resolvedArtwork}
+          alt={`《${resolvedTitle}》封面`}
+          loading="lazy"
+          decoding="async"
+          data-artwork
+        />
+      ) : (
+        <div
+          class="navfolio-music-player__artwork navfolio-music-player__artwork--placeholder"
+          aria-hidden="true"
+        >
+          <span>♫</span>
+        </div>
+      )
+    }
+    <div class="navfolio-music-player__content">
+      <div class="navfolio-music-player__meta">
+        <strong data-title data-marquee><span>{resolvedTitle}</span></strong>{
+          resolvedArtist ? (
+            <span data-artist data-marquee>
+              <span>{resolvedArtist}</span>
+            </span>
+          ) : null
+        }
+      </div>
+      {
+        isNative ? (
+          <div class="navfolio-music-player__controls">
+            <button
+              type="button"
+              class="navfolio-music-player__play"
+              aria-label={`播放 ${resolvedTitle}`}
+              data-play
+            >
+              <>
+                <Play size={16} data-play-icon />
+                <Pause size={16} data-pause-icon />
+              </>
+            </button>
+            <input
+              class="navfolio-music-player__progress"
+              type="range"
+              min="0"
+              max="0"
+              value="0"
+              aria-label={`${resolvedTitle} 播放进度`}
+              data-progress
+            />
+            <span class="navfolio-music-player__time" aria-live="off" data-time>
+              0:00
+            </span>
+            <button type="button" class="navfolio-music-player__mute" aria-label="静音" data-mute>
+              <>
+                <Volume2 size={16} data-volume-icon />
+                <VolumeX size={16} data-muted-icon />
+              </>
+            </button>
+            <audio preload="metadata" data-audio>
+              {directSources.map((source) => (
+                <source src={source.src} type={source.type} />
+              ))}
+              你的浏览器不支持音频播放。
+            </audio>
+          </div>
+        ) : embed ? (
+          <div class="navfolio-music-player__provider">
+            <span>{providerName} 官方播放器</span>
+            {url ? (
+              <a href={url} target="_blank" rel="noreferrer">
+                前往平台 <ExternalLink size={14} />
+              </a>
+            ) : null}
+          </div>
+        ) : (
+          <p class="navfolio-music-player__unavailable">未能生成可用的官方播放器地址。</p>
+        )
+      }
+    </div>
+  </div>
+  {
+    embed ? (
+      <iframe
+        class="navfolio-music-player__embed"
+        src={embed}
+        title={`${title} — ${providerName} 播放器`}
+        loading="lazy"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        referrerpolicy="strict-origin-when-cross-origin"
+      />
+    ) : null
+  }
+  {
+    playlist.length > 0 && isNative ? (
+      <details class="navfolio-music-player__playlist">
+        <>
+          <summary>
+            <ListMusic size={14} /> 歌单 · {playlist.length}
+          </summary>
+          <div>
+            {playlist.map((track, index) => (
+              <button type="button" data-track-index={index}>
+                <span>{track.title}</span>
+                {track.artist ? <small>{track.artist}</small> : null}
+              </button>
+            ))}
+          </div>
+        </>
+      </details>
+    ) : null
+  }
+  {
+    playlist.length > 0 ? (
+      <script is:inline type="application/json" data-playlist set:html={playlistPayload} />
+    ) : null
+  }
+  {
+    resolvedCaption ? (
+      <figcaption data-caption data-marquee>
+        <span>{resolvedCaption}</span>
+      </figcaption>
+    ) : null
+  }
+</figure>
+
+<script>
+  const formatTime = (seconds: number) => {
+    if (!Number.isFinite(seconds)) return '0:00';
+    return `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
+      .toString()
+      .padStart(2, '0')}`;
+  };
+  const init = () =>
+    document.querySelectorAll<HTMLElement>('[data-navfolio-music-player]').forEach((root) => {
+      if (root.dataset.ready) return;
+      root.dataset.ready = 'true';
+      const audio = root.querySelector<HTMLAudioElement>('[data-audio]');
+      if (!audio) return;
+      const playlist = JSON.parse(
+        root.querySelector<HTMLScriptElement>('[data-playlist]')?.textContent || '[]',
+      ) as Array<{
+        title: string;
+        artist?: string;
+        artwork?: string;
+        src: string;
+        caption?: string;
+      }>;
+      const play = root.querySelector<HTMLButtonElement>('[data-play]');
+      const progress = root.querySelector<HTMLInputElement>('[data-progress]');
+      const time = root.querySelector<HTMLElement>('[data-time]');
+      const mute = root.querySelector<HTMLButtonElement>('[data-mute]');
+      const sync = () => {
+        if (progress) {
+          progress.max = String(audio.duration || 0);
+          progress.value = String(audio.currentTime);
+          progress.style.setProperty(
+            '--music-progress',
+            `${audio.duration ? (audio.currentTime / audio.duration) * 100 : 0}%`,
+          );
+        }
+        if (time)
+          time.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+      };
+      const syncButton = () => {
+        const paused = audio.paused;
+        root.toggleAttribute('data-playing', !paused);
+        play?.setAttribute(
+          'aria-label',
+          paused ? `播放 ${root.querySelector('strong')?.textContent ?? '音频'}` : '暂停',
+        );
+      };
+      const refreshMarquees = () =>
+        root.querySelectorAll<HTMLElement>('[data-marquee]').forEach((node) => {
+          const distance = Math.max(0, node.scrollWidth - node.clientWidth);
+          node.style.setProperty('--marquee-distance', `${distance}px`);
+          node.toggleAttribute('data-overflow', distance > 2);
+        });
+      const selectTrack = (index: number, playAfterSelect = true) => {
+        const track = playlist[index];
+        if (!track) return;
+        audio.src = track.src;
+        audio.load();
+        const title = root.querySelector<HTMLElement>('[data-title] > span');
+        const artist = root.querySelector<HTMLElement>('[data-artist] > span');
+        const artwork = root.querySelector<HTMLImageElement>('[data-artwork]');
+        const caption = root.querySelector<HTMLElement>('[data-caption] > span');
+        if (title) title.textContent = track.title;
+        if (artist) artist.textContent = track.artist ?? '';
+        if (artwork && track.artwork) {
+          artwork.src = track.artwork;
+          artwork.alt = `《${track.title}》封面`;
+        }
+        if (caption) caption.textContent = track.caption ?? '';
+        root
+          .querySelectorAll<HTMLElement>('[data-track-index]')
+          .forEach((item) =>
+            item.toggleAttribute('data-current-track', Number(item.dataset.trackIndex) === index),
+          );
+        window.requestAnimationFrame(refreshMarquees);
+        if (playAfterSelect) audio.play().catch(() => undefined);
+      };
+      play?.addEventListener('click', () => {
+        if (audio.paused) audio.play().catch(() => undefined);
+        else audio.pause();
+      });
+      progress?.addEventListener('input', () => {
+        audio.currentTime = Number(progress.value);
+      });
+      mute?.addEventListener('click', () => {
+        audio.muted = !audio.muted;
+        root.toggleAttribute('data-muted', audio.muted);
+        mute.setAttribute('aria-label', audio.muted ? '取消静音' : '静音');
+      });
+      root
+        .querySelectorAll<HTMLButtonElement>('[data-track-index]')
+        .forEach((button) =>
+          button.addEventListener('click', () => selectTrack(Number(button.dataset.trackIndex))),
+        );
+      audio.addEventListener('loadedmetadata', sync);
+      audio.addEventListener('timeupdate', sync);
+      audio.addEventListener('play', syncButton);
+      audio.addEventListener('pause', syncButton);
+      audio.addEventListener('ended', syncButton);
+      window.addEventListener('resize', refreshMarquees);
+      sync();
+      syncButton();
+      refreshMarquees();
+    });
+  document.addEventListener('astro:page-load', init);
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
+</script>
+
+<style>
+  :global(.navfolio-music-player) {
+    --music-surface: var(--music-surface-light);
+    --music-surface-muted: var(--music-surface-muted-light);
+    --music-text: var(--music-text-light);
+    --music-text-muted: var(--music-text-muted-light);
+    --music-accent: var(--music-accent-light);
+    --music-accent-contrast: var(--music-accent-contrast-light);
+    --music-line: var(--music-line-light);
+    margin: 22px 0 24px;
+    color: var(--music-text);
+    font-family: var(--font-meta, ui-monospace, monospace);
+  }
+  :global(:root[data-theme='dark'] .navfolio-music-player) {
+    --music-surface: var(--music-surface-dark);
+    --music-surface-muted: var(--music-surface-muted-dark);
+    --music-text: var(--music-text-dark);
+    --music-text-muted: var(--music-text-muted-dark);
+    --music-accent: var(--music-accent-dark);
+    --music-accent-contrast: var(--music-accent-contrast-dark);
+    --music-line: var(--music-line-dark);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme]) .navfolio-music-player) {
+      --music-surface: var(--music-surface-dark);
+      --music-surface-muted: var(--music-surface-muted-dark);
+      --music-text: var(--music-text-dark);
+      --music-text-muted: var(--music-text-muted-dark);
+      --music-accent: var(--music-accent-dark);
+      --music-accent-contrast: var(--music-accent-contrast-dark);
+      --music-line: var(--music-line-dark);
+    }
+  }
+  :global(.navfolio-music-player--card) {
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--music-line) 86%, transparent);
+    border-radius: 10px;
+    background: var(--music-surface);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--music-text) 5%, transparent);
+  }
+  :global(.navfolio-music-player--inline) {
+    padding: 8px 0;
+    background: transparent;
+  }
+  :global(.navfolio-music-player__body) {
+    display: flex;
+    gap: 11px;
+    align-items: center;
+    min-width: 0;
+    padding: 10px 12px;
+  }
+  :global(.navfolio-music-player--inline .navfolio-music-player__body) {
+    padding: 0;
+  }
+  :global(.navfolio-music-player__artwork) {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 7px;
+    object-fit: cover;
+    background: var(--music-surface-muted);
+  }
+  :global(.navfolio-music-player__artwork--placeholder) {
+    display: grid;
+    place-items: center;
+    color: var(--music-accent);
+    font-size: 1.25rem;
+  }
+  :global(.navfolio-music-player__content) {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+    flex: 1;
+  }
+  :global(.navfolio-music-player__meta) {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+  }
+  :global(.navfolio-music-player__meta strong),
+  :global(.navfolio-music-player__meta span) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :global(.navfolio-music-player__meta strong) {
+    font-size: 0.82rem;
+    line-height: 1.25;
+  }
+  :global(.navfolio-music-player__meta span),
+  :global(.navfolio-music-player__provider),
+  :global(.navfolio-music-player__unavailable) {
+    color: var(--music-text-muted);
+    font-size: 0.7rem;
+    line-height: 1.35;
+  }
+  :global(.navfolio-music-player__controls) {
+    display: grid;
+    grid-template-columns: auto minmax(64px, 1fr) auto auto;
+    align-items: center;
+    gap: 7px;
+  }
+  :global(.navfolio-music-player button) {
+    display: grid;
+    width: 27px;
+    height: 27px;
+    place-items: center;
+    border: 1px solid var(--music-line);
+    border-radius: 999px;
+    background: var(--music-surface-muted);
+    color: var(--music-accent);
+    cursor: pointer;
+  }
+  :global(.navfolio-music-player__play) {
+    border-color: var(--music-accent) !important;
+    background: var(--music-accent) !important;
+    color: var(--music-accent-contrast) !important;
+  }
+  :global(.navfolio-music-player [data-pause-icon]),
+  :global(.navfolio-music-player[data-playing] [data-play-icon]),
+  :global(.navfolio-music-player [data-muted-icon]) {
+    display: none;
+  }
+  :global(.navfolio-music-player[data-playing] [data-pause-icon]),
+  :global(.navfolio-music-player[data-muted] [data-muted-icon]) {
+    display: block;
+  }
+  :global(.navfolio-music-player[data-muted] [data-volume-icon]) {
+    display: none;
+  }
+  :global(.navfolio-music-player__progress) {
+    width: 100%;
+    accent-color: var(--music-accent);
+  }
+  :global(.navfolio-music-player__time) {
+    color: var(--music-text-muted);
+    font-size: 0.66rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  :global(.navfolio-music-player__provider) {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  :global(.navfolio-music-player__provider a) {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+    color: var(--music-accent);
+    text-decoration: none;
+  }
+  :global(.navfolio-music-player__embed) {
+    display: block;
+    width: 100%;
+    height: 152px;
+    border: 0;
+    border-top: 1px solid var(--music-line);
+    background: var(--music-surface-muted);
+  }
+  :global(.navfolio-music-player--inline .navfolio-music-player__embed) {
+    margin-top: 8px;
+    border-top: 0;
+    border-radius: 7px;
+  }
+  :global(.navfolio-music-player figcaption) {
+    padding: 0 12px 10px;
+    color: var(--music-text-muted);
+    font-size: 0.7rem;
+    line-height: 1.45;
+  }
+  :global(.navfolio-music-player--inline figcaption) {
+    padding: 8px 0 0;
+  }
+  @media (max-width: 540px) {
+    :global(.navfolio-music-player__artwork) {
+      flex-basis: 44px;
+      width: 44px;
+      height: 44px;
+    }
+    :global(.navfolio-music-player__controls) {
+      grid-template-columns: auto minmax(40px, 1fr) auto;
+    }
+    :global(.navfolio-music-player__mute) {
+      display: none !important;
+    }
+  }
+  :global(.navfolio-music-player) {
+    width: 100%;
+    max-width: 620px;
+    margin-inline: auto;
+  }
+  :global(.navfolio-music-player--narrow) {
+    max-width: 400px;
+  }
+  :global(.navfolio-music-player--compact) {
+    max-width: 500px;
+  }
+  :global(.navfolio-music-player--wide) {
+    max-width: 720px;
+  }
+  :global(.navfolio-music-player--full) {
+    max-width: none;
+  }
+  :global(.navfolio-music-player__controls) {
+    grid-template-columns: 28px minmax(0, 1fr) auto 28px;
+  }
+  :global(.navfolio-music-player button) {
+    line-height: 0;
+  }
+  :global(.navfolio-music-player button svg) {
+    display: block;
+    margin: auto;
+  }
+  :global(.navfolio-music-player__progress) {
+    appearance: none;
+    height: 4px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--music-accent) 0 var(--music-progress, 0%),
+      color-mix(in srgb, var(--music-line) 88%, transparent) var(--music-progress, 0%) 100%
+    );
+    cursor: pointer;
+  }
+  :global(.navfolio-music-player__progress::-webkit-slider-runnable-track) {
+    height: 4px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+  }
+  :global(.navfolio-music-player__progress::-webkit-slider-thumb) {
+    width: 10px;
+    height: 10px;
+    margin-top: -3px;
+    appearance: none;
+    border: 0;
+    border-radius: 50%;
+    background: var(--music-accent);
+    box-shadow: 0 0 0 2px var(--music-surface);
+  }
+  :global(.navfolio-music-player__progress::-moz-range-track) {
+    height: 4px;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--music-line) 88%, transparent);
+  }
+  :global(.navfolio-music-player__progress::-moz-range-progress) {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--music-accent);
+  }
+  :global(.navfolio-music-player__progress::-moz-range-thumb) {
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--music-surface);
+    border-radius: 50%;
+    background: var(--music-accent);
+  }
+  :global(.navfolio-music-player [data-marquee]) {
+    overflow: hidden;
+  }
+  :global(.navfolio-music-player [data-marquee] > span) {
+    display: inline-block;
+    min-width: 100%;
+    white-space: nowrap;
+  }
+  :global(.navfolio-music-player [data-marquee][data-overflow] > span) {
+    padding-right: 2rem;
+    animation: navfolio-music-marquee 9s linear infinite alternate;
+  }
+  :global(.navfolio-music-player [data-marquee]:hover > span) {
+    animation-play-state: paused;
+  }
+  :global(.navfolio-music-player figcaption) {
+    opacity: 0.68;
+    font-size: 0.63rem;
+  }
+  :global(.navfolio-music-player__playlist) {
+    border-top: 1px solid color-mix(in srgb, var(--music-line) 75%, transparent);
+  }
+  :global(.navfolio-music-player__playlist summary) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    color: var(--music-text-muted);
+    cursor: pointer;
+    font-size: 0.68rem;
+    list-style: none;
+  }
+  :global(.navfolio-music-player__playlist summary::-webkit-details-marker) {
+    display: none;
+  }
+  :global(.navfolio-music-player__playlist > div) {
+    max-height: 168px;
+    overflow: auto;
+    padding: 0 6px 7px;
+  }
+  :global(.navfolio-music-player__playlist button) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: 100%;
+    height: auto;
+    padding: 6px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--music-text);
+    text-align: left;
+    line-height: 1.25;
+  }
+  :global(.navfolio-music-player__playlist button:hover),
+  :global(.navfolio-music-player__playlist button[data-current-track]) {
+    background: var(--music-surface-muted);
+  }
+  :global(.navfolio-music-player__playlist button span),
+  :global(.navfolio-music-player__playlist button small) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :global(.navfolio-music-player__playlist button small) {
+    color: var(--music-text-muted);
+    font-size: 0.62rem;
+  }
+  @keyframes navfolio-music-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-1 * var(--marquee-distance, 0px)));
+    }
+  }
+</style>

@@ -1,0 +1,1306 @@
+---
+import { ArrowLeft, ArrowRight, Check, Copy, ExternalLink, FileJson2 } from 'lucide-astro';
+import FriendLinkCard from './FriendLinkCard.astro';
+import type { FriendLinkItem } from './lib/friend-data';
+
+type ApplicationField = 'name' | 'url' | 'bio' | 'avatar' | 'backgroundImage' | 'rss';
+type ApplicationValue = FriendLinkItem;
+type IssueFieldMap = Partial<Record<ApplicationField, string | false>>;
+type ApplicationAppearance = 'seamless' | 'bordered';
+
+interface Props {
+  repository: string;
+  appearance?: ApplicationAppearance;
+  labels?: string[];
+  issueTemplate?: string;
+  issueTitle?: string;
+  issueBody?: string;
+  issueFieldMap?: IssueFieldMap;
+  assignees?: string[];
+  milestone?: string;
+  projects?: string[];
+  initialValue?: ApplicationValue;
+  placeholders?: Partial<Record<ApplicationField, string>>;
+  title?: string;
+  description?: string;
+  applyLabel?: string;
+  applyHint?: string;
+  copyHint?: string;
+  copySuccessText?: string;
+  showLivePreview?: boolean;
+  nameMaxLength?: number;
+  bioMaxLength?: number;
+  urlMaxLength?: number;
+}
+
+const defaultPlaceholders: Record<ApplicationField, string> = {
+  name: '必填，站点名称。',
+  url: '必填，站点主页地址。',
+  bio: '可选，站点描述或个人 bio，最多 160 字。',
+  avatar: '可选，圆形头像地址。',
+  backgroundImage: '可选，卡片背景图地址。',
+  rss: '可选，供友链朋友圈同步器读取的 RSS 或 Atom 地址。',
+};
+
+const defaultIssueFieldMap: Record<ApplicationField, string> = {
+  name: 'name',
+  url: 'url',
+  bio: 'bio',
+  avatar: 'avatar',
+  backgroundImage: 'backgroundImage',
+  rss: 'rss',
+};
+
+const {
+  repository,
+  appearance = 'seamless',
+  labels = [],
+  issueTemplate,
+  issueTitle = '[友链申请] {name}',
+  issueBody = '## 友链申请\n\n```json\n{json}\n```',
+  issueFieldMap = {},
+  assignees = [],
+  milestone,
+  projects = [],
+  initialValue = {},
+  placeholders: customPlaceholders = {},
+  title = '申请友链',
+  description = '填写站点信息，随后查看、复制友链数据，或前往 GitHub 提交申请。',
+  applyLabel = '一键申请',
+  applyHint = '去开启一个申请 Issue',
+  copyHint = '可复制后填入评论申请友链！',
+  copySuccessText = '成功复制！',
+  showLivePreview = false,
+  nameMaxLength = 80,
+  bioMaxLength = 160,
+  urlMaxLength = 2048,
+} = Astro.props;
+
+const resolveRepository = (value: string) => {
+  const raw = value?.trim();
+  if (!raw) throw new Error('FriendLinkApplication requires a GitHub repository.');
+
+  let path = raw;
+  if (/^https?:\/\//i.test(raw)) {
+    const parsed = new URL(raw);
+    if (!['github.com', 'www.github.com'].includes(parsed.hostname.toLowerCase())) {
+      throw new Error('FriendLinkApplication repository must use github.com.');
+    }
+    path = parsed.pathname;
+  } else if (/^git@github\.com:/i.test(raw)) {
+    path = raw.replace(/^git@github\.com:/i, '');
+  }
+
+  const segments = path
+    .replace(/^\/+|\/+$/g, '')
+    .replace(/\.git$/i, '')
+    .split('/')
+    .filter(Boolean);
+  const repositoryPath = segments.slice(0, 2).join('/');
+  if (segments.length !== 2 || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repositoryPath)) {
+    throw new Error(
+      'FriendLinkApplication repository must be "owner/repository" or a GitHub repository URL.',
+    );
+  }
+  return repositoryPath;
+};
+
+const positiveInteger = (value: number, fallback: number) =>
+  Number.isInteger(value) && value > 0 ? value : fallback;
+const cleanList = (values: string[]) =>
+  values.map((value) => value.trim()).filter((value) => value.length > 0);
+const cleanValue = (value: unknown) => (typeof value === 'string' ? value : '');
+const repositoryPath = resolveRepository(repository);
+const placeholders = { ...defaultPlaceholders, ...customPlaceholders };
+const fieldMap = { ...defaultIssueFieldMap, ...issueFieldMap };
+Object.values(fieldMap).forEach((fieldId) => {
+  if (fieldId !== false && !/^[A-Za-z0-9_-]+$/.test(fieldId)) {
+    throw new Error(
+      `FriendLinkApplication issue field id "${fieldId}" may only contain letters, numbers, hyphens, and underscores.`,
+    );
+  }
+});
+const initialData = {
+  name: cleanValue(initialValue.name),
+  url: cleanValue(initialValue.url),
+  bio: cleanValue(initialValue.bio),
+  avatar: cleanValue(initialValue.avatar),
+  backgroundImage: cleanValue(initialValue.backgroundImage),
+  rss: cleanValue(initialValue.rss),
+  sticky: false,
+};
+const config = {
+  issueBase: `https://github.com/${repositoryPath}/issues/new`,
+  labels: cleanList(labels),
+  issueTemplate: issueTemplate?.trim() || '',
+  issueTitle,
+  issueBody,
+  issueFieldMap: fieldMap,
+  assignees: cleanList(assignees),
+  milestone: milestone?.trim() || '',
+  projects: cleanList(projects),
+  copyHint,
+  copySuccessText,
+};
+const serializedConfig = JSON.stringify(config).replace(/</g, '\\u003c');
+const safeNameMaxLength = positiveInteger(nameMaxLength, 80);
+const safeBioMaxLength = positiveInteger(bioMaxLength, 160);
+const safeUrlMaxLength = positiveInteger(urlMaxLength, 2048);
+const safeShowLivePreview = showLivePreview === true;
+const safeAppearance: ApplicationAppearance = appearance === 'bordered' ? 'bordered' : 'seamless';
+const formatApplicationPreview = (json: string) =>
+  json
+    .split('\n')
+    .slice(1, -1)
+    .map((line) => (line.startsWith('  ') ? line.slice(2) : line))
+    .join('\n');
+const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null, 2));
+---
+
+<section
+  class="friend-link-application"
+  data-appearance={safeAppearance}
+  data-friend-link-application
+>
+  <div class="friend-link-application__viewport">
+    <div class="friend-link-application__track" data-application-track>
+      <section
+        class="friend-link-application__slide friend-link-application__form-page"
+        data-application-form-page
+      >
+        <header
+          class:list={[
+            'friend-link-application__header',
+            safeShowLivePreview && 'friend-link-application__header--with-live-preview',
+          ]}
+        >
+          <div class="friend-link-application__intro">
+            <h2>{title}</h2>
+            <p>{description}</p>
+          </div>
+          {
+            safeShowLivePreview && (
+              <div class="friend-link-application__card-preview" data-application-card-preview>
+                <FriendLinkCard items={[initialData]} columns={1} preview />
+              </div>
+            )
+          }
+          <button
+            class="friend-link-application__switch friend-link-application__switch--next"
+            type="button"
+            data-show-application-preview
+          >
+            <span>查看友链数据</span>
+            <ArrowRight size={17} strokeWidth={1.8} aria-hidden="true" />
+          </button>
+        </header>
+
+        <form class="friend-link-application__form" data-application-form>
+          <div class="friend-link-application__fields">
+            <label class="friend-link-application__field">
+              <span>站点名称 <em>必填</em></span>
+              <input
+                name="name"
+                type="text"
+                value={initialData.name}
+                placeholder={placeholders.name}
+                maxlength={safeNameMaxLength}
+                autocomplete="name"
+                required
+              />
+            </label>
+
+            <label class="friend-link-application__field">
+              <span>站点地址 <em>必填</em></span>
+              <input
+                name="url"
+                type="url"
+                value={initialData.url}
+                placeholder={placeholders.url}
+                autocomplete="url"
+                inputmode="url"
+                maxlength={safeUrlMaxLength}
+                required
+                data-url-field
+              />
+            </label>
+
+            <label class="friend-link-application__field">
+              <span>头像地址</span>
+              <input
+                name="avatar"
+                type="url"
+                value={initialData.avatar}
+                placeholder={placeholders.avatar}
+                autocomplete="off"
+                inputmode="url"
+                maxlength={safeUrlMaxLength}
+                data-url-field
+              />
+            </label>
+
+            <label class="friend-link-application__field">
+              <span>背景图地址</span>
+              <input
+                name="backgroundImage"
+                type="url"
+                value={initialData.backgroundImage}
+                placeholder={placeholders.backgroundImage}
+                autocomplete="off"
+                inputmode="url"
+                maxlength={safeUrlMaxLength}
+                data-url-field
+              />
+            </label>
+
+            <label class="friend-link-application__field friend-link-application__field--wide">
+              <span>站点描述</span>
+              <textarea
+                name="bio"
+                rows="2"
+                placeholder={placeholders.bio}
+                maxlength={safeBioMaxLength}>{initialData.bio}</textarea
+              >
+            </label>
+
+            <label class="friend-link-application__field">
+              <span>RSS 地址</span>
+              <input
+                name="rss"
+                type="url"
+                value={initialData.rss}
+                placeholder={placeholders.rss}
+                autocomplete="off"
+                inputmode="url"
+                maxlength={safeUrlMaxLength}
+                data-url-field
+              />
+            </label>
+
+            <div class="friend-link-application__actions">
+              <a
+                class="friend-link-application__apply"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-disabled="true"
+                data-tooltip={applyHint}
+                data-apply-application
+              >
+                <span>{applyLabel}</span>
+                <ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" />
+              </a>
+              <p data-application-status aria-live="polite">
+                完成必填项后，将生成 GitHub Issue 申请链接。
+              </p>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <aside
+        class="friend-link-application__slide friend-link-application__preview"
+        aria-hidden="true"
+        aria-label="友链数据预览"
+        data-application-preview-page
+        inert
+      >
+        <header class="friend-link-application__preview-header">
+          <button
+            class="friend-link-application__switch friend-link-application__switch--back"
+            type="button"
+            data-show-application-form
+          >
+            <ArrowLeft size={17} strokeWidth={1.8} aria-hidden="true" />
+            <span>返回填写</span>
+          </button>
+          <h3>友链数据</h3>
+          <button
+            class="friend-link-application__copy"
+            type="button"
+            aria-label={copyHint}
+            aria-disabled="true"
+            data-tooltip={copyHint}
+            data-copy-application
+          >
+            <Copy
+              class="friend-link-application__copy-icon"
+              size={17}
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+            <Check
+              class="friend-link-application__check-icon"
+              size={17}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+          </button>
+        </header>
+        <div class="friend-link-application__code">
+          <FileJson2 size={19} strokeWidth={1.6} aria-hidden="true" />
+          <pre><code data-application-preview>{initialPreview}</code></pre>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script
+    is:inline
+    type="application/json"
+    data-friend-link-application-config
+    set:html={serializedConfig}
+  />
+</section>
+
+<script>
+  type ApplicationField = 'name' | 'url' | 'bio' | 'avatar' | 'backgroundImage' | 'rss';
+  type ApplicationData = Record<ApplicationField, string> & { sticky: false };
+  type ApplicationConfig = {
+    issueBase: string;
+    labels: string[];
+    issueTemplate: string;
+    issueTitle: string;
+    issueBody: string;
+    issueFieldMap: Record<ApplicationField, string | false>;
+    assignees: string[];
+    milestone: string;
+    projects: string[];
+    copyHint: string;
+    copySuccessText: string;
+  };
+
+  const applicationFields: ApplicationField[] = [
+    'name',
+    'url',
+    'bio',
+    'avatar',
+    'backgroundImage',
+    'rss',
+  ];
+
+  const readApplicationData = (form: HTMLFormElement): ApplicationData => {
+    const formData = new FormData(form);
+    const data = Object.fromEntries(
+      applicationFields.map((field) => [field, String(formData.get(field) ?? '').trim()]),
+    ) as Record<ApplicationField, string>;
+    return { ...data, sticky: false };
+  };
+
+  const interpolateApplication = (template: string, data: ApplicationData) =>
+    template.replace(
+      /\{(name|url|bio|avatar|backgroundImage|rss|json)\}/g,
+      (_, token: ApplicationField | 'json') =>
+        token === 'json' ? JSON.stringify(data, null, 2) : data[token],
+    );
+
+  const createIssueUrl = (config: ApplicationConfig, data: ApplicationData) => {
+    const url = new URL(config.issueBase);
+    const params = url.searchParams;
+    params.set('title', interpolateApplication(config.issueTitle, data));
+    if (config.labels.length) params.set('labels', config.labels.join(','));
+    if (config.assignees.length) params.set('assignees', config.assignees.join(','));
+    if (config.milestone) params.set('milestone', config.milestone);
+    if (config.projects.length) params.set('projects', config.projects.join(','));
+
+    if (config.issueTemplate) {
+      params.set('template', config.issueTemplate);
+      applicationFields.forEach((field) => {
+        const fieldId = config.issueFieldMap[field];
+        if (fieldId && data[field]) params.set(fieldId, data[field]);
+      });
+    } else {
+      params.set('body', interpolateApplication(config.issueBody, data));
+    }
+    return url.toString();
+  };
+
+  const validateApplicationUrl = (input: HTMLInputElement) => {
+    input.setCustomValidity('');
+    if (!input.value.trim()) return;
+    try {
+      const url = new URL(input.value);
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        input.setCustomValidity('仅支持 http:// 或 https:// 地址。');
+      }
+    } catch {
+      input.setCustomValidity('请输入完整、有效的网址。');
+    }
+  };
+
+  const copyApplicationText = async (value: string) => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
+    const temporary = document.createElement('textarea');
+    temporary.value = value;
+    temporary.setAttribute('readonly', '');
+    temporary.style.position = 'fixed';
+    temporary.style.opacity = '0';
+    document.body.append(temporary);
+    temporary.select();
+    const copied = document.execCommand('copy');
+    temporary.remove();
+    if (!copied) throw new Error('Clipboard copy failed.');
+  };
+
+  const formatApplicationPreview = (json: string) =>
+    json
+      .split('\n')
+      .slice(1, -1)
+      .map((line) => (line.startsWith('  ') ? line.slice(2) : line))
+      .join('\n');
+
+  const initFriendLinkApplications = () =>
+    document.querySelectorAll<HTMLElement>('[data-friend-link-application]').forEach((root) => {
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = 'true';
+
+      const form = root.querySelector<HTMLFormElement>('[data-application-form]');
+      const formPage = root.querySelector<HTMLElement>('[data-application-form-page]');
+      const previewPage = root.querySelector<HTMLElement>('[data-application-preview-page]');
+      const preview = root.querySelector<HTMLElement>('[data-application-preview]');
+      const copyButton = root.querySelector<HTMLButtonElement>('[data-copy-application]');
+      const applyLink = root.querySelector<HTMLAnchorElement>('[data-apply-application]');
+      const showPreviewButton = root.querySelector<HTMLButtonElement>(
+        '[data-show-application-preview]',
+      );
+      const showFormButton = root.querySelector<HTMLButtonElement>('[data-show-application-form]');
+      const status = root.querySelector<HTMLElement>('[data-application-status]');
+      const cardPreview = root.querySelector<HTMLElement>('[data-application-card-preview]');
+      const configElement = root.querySelector<HTMLScriptElement>(
+        '[data-friend-link-application-config]',
+      );
+      if (
+        !form ||
+        !formPage ||
+        !previewPage ||
+        !preview ||
+        !copyButton ||
+        !applyLink ||
+        !showPreviewButton ||
+        !showFormButton ||
+        !status ||
+        !configElement?.textContent
+      )
+        return;
+
+      const config = JSON.parse(configElement.textContent) as ApplicationConfig;
+      let copyResetTimer = 0;
+      let imageUpdateTimer = 0;
+      let currentPreview = '';
+
+      const updatePreviewImage = (
+        image: HTMLImageElement | null,
+        candidates: string[],
+        onVisible: (visible: boolean) => void,
+      ) => {
+        if (!image) return;
+
+        const requestId = String(Number(image.dataset.previewRequest ?? '0') + 1);
+        image.dataset.previewRequest = requestId;
+        const sources = [...new Set(candidates.map((value) => value.trim()).filter(Boolean))];
+
+        const trySource = (index: number) => {
+          if (image.dataset.previewRequest !== requestId) return;
+          const source = sources[index];
+          if (!source) {
+            image.removeAttribute('src');
+            image.hidden = true;
+            onVisible(false);
+            return;
+          }
+
+          image.hidden = true;
+          image.loading = 'eager';
+          image.onload = () => {
+            if (image.dataset.previewRequest !== requestId) return;
+            image.hidden = false;
+            onVisible(true);
+          };
+          image.onerror = () => trySource(index + 1);
+          image.src = source;
+        };
+
+        trySource(0);
+      };
+
+      const updateCardPreview = (data: ApplicationData) => {
+        if (!cardPreview) return;
+
+        const card = cardPreview.querySelector<HTMLElement>('[data-friend-link-card-preview]');
+        const name = cardPreview.querySelector<HTMLElement>('[data-friend-link-card-name]');
+        const bio = cardPreview.querySelector<HTMLElement>('[data-friend-link-card-bio]');
+        const avatar = cardPreview.querySelector<HTMLImageElement>(
+          '[data-friend-link-card-avatar]',
+        );
+        const fallback = cardPreview.querySelector<HTMLElement>('[data-friend-link-card-fallback]');
+        const background = cardPreview.querySelector<HTMLImageElement>(
+          '[data-friend-link-card-background]',
+        );
+        if (!card || !name || !bio || !fallback) return;
+
+        const displayName = data.name || '你的站点';
+        name.textContent = displayName;
+        bio.textContent = data.bio || '站点简介会显示在这里';
+        fallback.textContent = (displayName[0] || '?').toUpperCase();
+        card.title = displayName;
+        card.setAttribute('aria-label', `友链卡片实时预览：${displayName}`);
+
+        window.clearTimeout(imageUpdateTimer);
+        imageUpdateTimer = window.setTimeout(() => {
+          updatePreviewImage(avatar, [data.avatar], (visible) => {
+            fallback.hidden = visible;
+          });
+          updatePreviewImage(background, [data.backgroundImage, data.avatar], (visible) => {
+            card.classList.toggle('friend-link-card--with-image', visible);
+          });
+        }, 180);
+      };
+
+      const setView = (view: 'form' | 'preview', moveFocus = true) => {
+        const isPreview = view === 'preview';
+        root.dataset.view = view;
+        formPage.toggleAttribute('inert', isPreview);
+        formPage.setAttribute('aria-hidden', String(isPreview));
+        previewPage.toggleAttribute('inert', !isPreview);
+        previewPage.setAttribute('aria-hidden', String(!isPreview));
+        if (moveFocus) {
+          (isPreview ? showFormButton : showPreviewButton).focus({ preventScroll: true });
+        }
+      };
+
+      const update = () => {
+        form.querySelectorAll<HTMLInputElement>('[data-url-field]').forEach(validateApplicationUrl);
+        const data = readApplicationData(form);
+        const json = JSON.stringify(data, null, 2);
+        const previewText = formatApplicationPreview(json);
+        const isValid = form.checkValidity();
+        currentPreview = previewText;
+        preview.textContent = previewText;
+        updateCardPreview(data);
+        copyButton.setAttribute('aria-disabled', String(!isValid));
+        applyLink.setAttribute('aria-disabled', String(!isValid));
+        if (isValid) {
+          applyLink.href = createIssueUrl(config, data);
+          status.textContent = '资料已就绪，可复制数据或前往 GitHub 确认提交。';
+        } else {
+          applyLink.removeAttribute('href');
+          status.textContent = '完成必填项后，将生成 GitHub Issue 申请链接。';
+        }
+      };
+
+      form.addEventListener('input', update);
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        update();
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        applyLink.click();
+      });
+      showPreviewButton.addEventListener('click', () => {
+        update();
+        setView('preview');
+      });
+
+      showFormButton.addEventListener('click', () => {
+        setView('form');
+      });
+
+      copyButton.addEventListener('click', async () => {
+        update();
+        if (!form.checkValidity()) {
+          setView('form');
+          window.requestAnimationFrame(() => form.reportValidity());
+          return;
+        }
+        try {
+          await copyApplicationText(currentPreview);
+          window.clearTimeout(copyResetTimer);
+          copyButton.dataset.copied = 'true';
+          copyButton.dataset.tooltip = config.copySuccessText;
+          copyButton.setAttribute('aria-label', config.copySuccessText);
+          status.textContent = config.copySuccessText;
+          copyResetTimer = window.setTimeout(() => {
+            delete copyButton.dataset.copied;
+            copyButton.dataset.tooltip = config.copyHint;
+            copyButton.setAttribute('aria-label', config.copyHint);
+          }, 1800);
+        } catch {
+          status.textContent = '复制失败，请手动选中当前数据。';
+        }
+      });
+
+      root.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && root.dataset.view === 'preview') {
+          setView('form');
+        }
+      });
+
+      applyLink.addEventListener('click', (event) => {
+        update();
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          form.reportValidity();
+        }
+      });
+
+      update();
+      setView('form', false);
+    });
+
+  document.addEventListener('astro:page-load', initFriendLinkApplications);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFriendLinkApplications, {
+      once: true,
+    });
+  } else {
+    initFriendLinkApplications();
+  }
+</script>
+
+<style>
+  .friend-link-application {
+    container-type: inline-size;
+    margin: 28px 0 34px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--paper-ink);
+    font-size: 1rem;
+    box-shadow: none;
+  }
+
+  .friend-link-application[data-appearance='bordered'] {
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 12px;
+    background: var(--paper-surface);
+  }
+
+  .friend-link-application__viewport {
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .friend-link-application__track {
+    display: grid;
+    width: 200%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    transform: translateX(0);
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .friend-link-application[data-view='preview'] .friend-link-application__track {
+    transform: translateX(-50%);
+  }
+
+  .friend-link-application__slide {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .friend-link-application__form-page,
+  .friend-link-application__preview {
+    padding: clamp(22px, 3.7vw, 38px);
+  }
+
+  .friend-link-application__form-page {
+    background: transparent;
+  }
+
+  .friend-link-application__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 0 28px;
+  }
+
+  .friend-link-application__header--with-live-preview {
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) minmax(220px, 280px) auto;
+    align-items: center;
+  }
+
+  .friend-link-application__intro {
+    min-width: 0;
+  }
+
+  .friend-link-application__card-preview {
+    width: 100%;
+    min-width: 0;
+    max-width: 280px;
+    justify-self: center;
+  }
+
+  .friend-link-application__card-preview :global(.friend-link-region) {
+    margin: 0;
+  }
+
+  .friend-link-application__card-preview :global(.friend-link-list) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .friend-link-application__header h2,
+  .friend-link-application__header p {
+    margin: 0;
+  }
+
+  .friend-link-application__header h2 {
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: 1.34rem;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
+  }
+
+  .friend-link-application__header p {
+    margin-top: 5px;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.94rem;
+    line-height: 1.65;
+  }
+
+  .friend-link-application__switch {
+    position: relative;
+    display: inline-flex;
+    min-height: 38px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 7px;
+    background: var(--paper-control);
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.84rem;
+    font-weight: 650;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .friend-link-application__switch:hover,
+  .friend-link-application__switch:focus-visible {
+    border-color: color-mix(in srgb, var(--paper-accent) 50%, var(--paper-line-strong));
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
+  }
+
+  .friend-link-application__switch:hover svg {
+    transform: translateX(2px);
+  }
+
+  .friend-link-application__switch--back:hover svg {
+    transform: translateX(-2px);
+  }
+
+  .friend-link-application__switch svg {
+    transition: transform 160ms ease;
+  }
+
+  .friend-link-application__form,
+  .friend-link-application__preview {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .friend-link-application__form {
+    width: 100%;
+  }
+
+  .friend-link-application__preview {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    contain: size;
+    background: color-mix(in srgb, var(--paper-surface-muted) 66%, transparent);
+  }
+
+  .friend-link-application__preview-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .friend-link-application__preview-header h3 {
+    margin: 0;
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: 1.08rem;
+    font-weight: 650;
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .friend-link-application__preview-header .friend-link-application__copy {
+    justify-self: end;
+  }
+
+  .friend-link-application__preview-header .friend-link-application__switch {
+    justify-self: start;
+  }
+
+  .friend-link-application__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 20px;
+  }
+
+  .friend-link-application__field {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr);
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .friend-link-application__field--wide {
+    grid-column: 1 / -1;
+    align-items: start;
+  }
+
+  .friend-link-application__field--wide > span {
+    padding-top: 9px;
+  }
+
+  .friend-link-application__field > span {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-article);
+    font-size: 0.84rem;
+    font-weight: 650;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .friend-link-application__field em {
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .friend-link-application__field input,
+  .friend-link-application__field textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--paper-line-strong);
+    border-radius: 0;
+    outline: none;
+    background: transparent;
+    color: var(--paper-ink);
+    font-family: var(--font-article);
+    font-size: 1rem;
+    line-height: 1.6;
+    box-shadow: none;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease;
+  }
+
+  .friend-link-application__field input {
+    height: 42px;
+    padding: 5px 2px 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .friend-link-application__field textarea {
+    min-height: 72px;
+    padding: 8px 2px 10px;
+    resize: vertical;
+  }
+
+  .friend-link-application__field input::placeholder,
+  .friend-link-application__field textarea::placeholder {
+    color: var(--paper-ink-faint);
+    opacity: 0.72;
+  }
+
+  .friend-link-application__field input:hover,
+  .friend-link-application__field textarea:hover {
+    border-color: color-mix(in srgb, var(--paper-accent) 30%, var(--paper-line-strong));
+  }
+
+  .friend-link-application__field input:focus,
+  .friend-link-application__field textarea:focus {
+    border-color: var(--paper-accent);
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--paper-accent) 5%, transparent),
+      transparent 70%
+    );
+  }
+
+  .friend-link-application__field input:user-invalid,
+  .friend-link-application__field textarea:user-invalid {
+    border-color: color-mix(in srgb, #b94c3f 66%, var(--paper-line-strong));
+  }
+
+  .friend-link-application__copy {
+    position: relative;
+    display: grid;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    place-items: center;
+    margin: -4px -3px -4px 0;
+    padding: 0;
+    border: 1px solid var(--paper-line);
+    border-radius: 6px;
+    background: var(--paper-control);
+    color: var(--paper-ink-soft);
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .friend-link-application__copy:hover,
+  .friend-link-application__copy:focus-visible {
+    border-color: var(--paper-line-strong);
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
+  }
+
+  .friend-link-application__copy:active {
+    transform: translateY(1px);
+  }
+
+  .friend-link-application__check-icon {
+    display: none;
+  }
+
+  .friend-link-application__copy[data-copied] {
+    border-color: color-mix(in srgb, #4f8a62 54%, var(--paper-line));
+    color: #4f8a62;
+  }
+
+  .friend-link-application__copy[data-copied] .friend-link-application__copy-icon {
+    display: none;
+  }
+
+  .friend-link-application__copy[data-copied] .friend-link-application__check-icon {
+    display: block;
+  }
+
+  .friend-link-application__code {
+    position: relative;
+    flex: 1;
+    min-height: 300px;
+    padding: 48px clamp(18px, 3vw, 30px) 24px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--paper-line);
+    border-radius: 9px;
+    background: var(--paper-surface);
+    scrollbar-gutter: stable;
+  }
+
+  .friend-link-application__code > svg {
+    position: absolute;
+    top: 17px;
+    left: clamp(18px, 3vw, 30px);
+    color: var(--paper-accent);
+    opacity: 0.72;
+  }
+
+  .friend-link-application__code pre {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .friend-link-application__code code {
+    background: transparent;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-code);
+    font-size: 1.04rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .friend-link-application__actions {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .friend-link-application__apply {
+    position: relative;
+    display: inline-flex;
+    width: 100%;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-left: 0;
+    padding: 11px 15px;
+    border: 1px solid color-mix(in srgb, var(--paper-accent) 38%, var(--paper-line));
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--paper-accent) 8%, var(--paper-control));
+    color: var(--paper-accent);
+    font-family: var(--font-meta);
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background 160ms ease;
+  }
+
+  .friend-link-application__apply:hover,
+  .friend-link-application__apply:focus-visible {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--paper-accent) 62%, var(--paper-line));
+    background: color-mix(in srgb, var(--paper-accent) 13%, var(--paper-control-hover));
+    color: var(--paper-accent);
+  }
+
+  .friend-link-application__apply[aria-disabled='true'],
+  .friend-link-application__copy[aria-disabled='true'] {
+    opacity: 0.52;
+  }
+
+  .friend-link-application__actions p {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.7rem;
+    line-height: 1.45;
+  }
+
+  [data-tooltip]::before,
+  [data-tooltip]::after {
+    position: absolute;
+    z-index: 20;
+    left: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, 5px);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease;
+  }
+
+  [data-tooltip]::before {
+    content: '';
+    bottom: calc(100% + 3px);
+    border: 5px solid transparent;
+    border-top-color: var(--paper-ink);
+  }
+
+  [data-tooltip]::after {
+    content: attr(data-tooltip);
+    bottom: calc(100% + 13px);
+    width: max-content;
+    max-width: min(240px, 72vw);
+    padding: 6px 8px;
+    border-radius: 5px;
+    background: var(--paper-ink);
+    color: var(--paper-surface);
+    font-family: var(--font-meta);
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.4;
+    text-align: center;
+    white-space: normal;
+    box-shadow: var(--paper-shadow-lift);
+  }
+
+  [data-tooltip]:hover::before,
+  [data-tooltip]:hover::after,
+  [data-tooltip]:focus-visible::before,
+  [data-tooltip]:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .friend-link-application__copy[data-tooltip]::before,
+  .friend-link-application__copy[data-tooltip]::after {
+    right: -4px;
+    left: auto;
+    transform: translateY(-5px);
+  }
+
+  .friend-link-application__copy[data-tooltip]::before {
+    top: calc(100% + 3px);
+    right: 7px;
+    bottom: auto;
+    border-top-color: transparent;
+    border-bottom-color: var(--paper-ink);
+  }
+
+  .friend-link-application__copy[data-tooltip]::after {
+    top: calc(100% + 13px);
+    bottom: auto;
+  }
+
+  .friend-link-application__copy[data-tooltip]:hover::before,
+  .friend-link-application__copy[data-tooltip]:hover::after,
+  .friend-link-application__copy[data-tooltip]:focus-visible::before,
+  .friend-link-application__copy[data-tooltip]:focus-visible::after {
+    transform: translateY(0);
+  }
+
+  .friend-link-application__copy:focus-visible,
+  .friend-link-application__apply:focus-visible,
+  .friend-link-application__switch:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--paper-accent) 48%, transparent);
+    outline-offset: 2px;
+  }
+
+  @container (max-width: 760px) {
+    .friend-link-application__header--with-live-preview {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .friend-link-application__header--with-live-preview .friend-link-application__intro {
+      grid-column: 1 / -1;
+    }
+
+    .friend-link-application__header--with-live-preview .friend-link-application__card-preview {
+      max-width: none;
+      justify-self: stretch;
+    }
+  }
+
+  @container (max-width: 620px) {
+    .friend-link-application__header {
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 24px;
+    }
+
+    .friend-link-application__switch--next {
+      align-self: stretch;
+    }
+
+    .friend-link-application__header--with-live-preview {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .friend-link-application__header--with-live-preview .friend-link-application__intro,
+    .friend-link-application__header--with-live-preview .friend-link-application__card-preview {
+      grid-column: auto;
+    }
+
+    .friend-link-application__fields {
+      grid-template-columns: 1fr;
+    }
+
+    .friend-link-application__field--wide {
+      grid-column: auto;
+    }
+
+    .friend-link-application__actions {
+      min-height: 64px;
+    }
+  }
+
+  @container (max-width: 420px) {
+    .friend-link-application__form-page,
+    .friend-link-application__preview {
+      padding: 18px 16px 22px;
+    }
+
+    .friend-link-application__field {
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 7px;
+    }
+
+    .friend-link-application__preview-header {
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+    }
+
+    .friend-link-application__preview-header h3 {
+      font-size: 0.98rem;
+    }
+
+    .friend-link-application__switch--back span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .friend-link-application__switch--back {
+      width: 34px;
+      min-height: 34px;
+      padding: 0;
+    }
+
+    .friend-link-application__code {
+      min-height: 280px;
+      padding-right: 16px;
+      padding-left: 16px;
+    }
+
+    .friend-link-application__code > svg {
+      left: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .friend-link-application__field input,
+    .friend-link-application__field textarea,
+    .friend-link-application__copy,
+    .friend-link-application__apply,
+    .friend-link-application__switch,
+    .friend-link-application__switch svg,
+    .friend-link-application__track,
+    [data-tooltip]::before,
+    [data-tooltip]::after {
+      transition: none;
+    }
+  }
+</style>

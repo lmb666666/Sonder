@@ -1,0 +1,82 @@
+.callout {
+  --callout-color: 8, 109, 221;
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 0.95rem 1rem 0.95rem 1.05rem;
+  border: 1px solid rgba(var(--callout-color), 0.28);
+  border-left: 4px solid rgb(var(--callout-color));
+  border-radius: 8px;
+  background: rgba(var(--callout-color), 0.08);
+  color: inherit;
+}
+
+.callout > :last-child {
+  margin-bottom: 0;
+}
+
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.65rem;
+  color: rgb(var(--callout-color));
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.callout-title-text {
+  min-width: 0;
+}
+
+.callout-icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+}
+
+details.callout {
+  padding-top: 0;
+}
+
+details.callout > summary.callout-title {
+  margin: 0 -1rem 0.65rem -1.05rem;
+  padding: 0.95rem 1rem 0 1.05rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+details.callout > summary.callout-title::-webkit-details-marker {
+  display: none;
+}
+
+details.callout > summary.callout-title::after {
+  content: '';
+  width: 0.48em;
+  height: 0.48em;
+  margin-left: auto;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.16s ease;
+}
+
+details.callout[open] > summary.callout-title::after {
+  transform: rotate(45deg);
+}
+
+details.callout:not([open]) {
+  padding-bottom: 0.95rem;
+}
+
+details.callout:not([open]) > summary.callout-title {
+  margin-bottom: 0;
+}
+
+.callout .callout {
+  margin: 1rem 0;
+}
+
+:root[data-theme='dark'] .callout {
+  border-color: rgba(var(--callout-color), 0.36);
+  background: rgba(var(--callout-color), 0.14);
+}

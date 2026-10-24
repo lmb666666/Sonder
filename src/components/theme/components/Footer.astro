@@ -1,0 +1,66 @@
+---
+import { Compass, Github, Mail } from 'lucide-astro';
+
+interface Props {
+  site: {
+    title: string;
+    footerNote: string;
+  };
+  profile: {
+    website: string;
+    github: string;
+    email: string;
+  };
+  year?: number;
+}
+
+const { site, profile, year = new Date().getFullYear() } = Astro.props;
+---
+
+<footer>
+  &copy; {year}
+  {site.title}. {site.footerNote}
+  <div class="social-links">
+    <a href={profile.website} target="_blank" rel="noreferrer">
+      <span class="sr-only">Open website</span>
+      <Compass size={18} stroke-width={1.9} aria-hidden="true" focusable="false" />
+    </a>
+    <a href={profile.github} target="_blank" rel="noreferrer">
+      <span class="sr-only">Open GitHub profile</span>
+      <Github size={18} stroke-width={1.9} aria-hidden="true" focusable="false" />
+    </a>
+    <a href={`mailto:${profile.email}`}>
+      <span class="sr-only">Email</span>
+      <Mail size={18} stroke-width={1.9} aria-hidden="true" focusable="false" />
+    </a>
+  </div>
+</footer>
+
+<style>
+  footer {
+    padding: 3em 1em 6em;
+    color: var(--paper-ink-faint);
+    font-size: 0.88rem;
+    text-align: center;
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin-top: 1em;
+  }
+
+  .social-links a {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    color: var(--paper-ink-soft);
+    text-decoration: none;
+  }
+
+  .social-links a:hover {
+    color: var(--paper-accent);
+  }
+</style>

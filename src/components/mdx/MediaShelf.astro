@@ -1,0 +1,304 @@
+---
+import type { ImageMetadata } from 'astro';
+import { BookOpenText } from 'lucide-astro';
+
+export type MediaShelfItem = {
+  title: string;
+  creator: string;
+  type: 'book' | 'film' | 'series' | 'album' | 'podcast';
+  cover?: string | ImageMetadata;
+  coverAspect?: 'portrait' | 'landscape' | 'square' | 'wide';
+  rating?: number;
+  href?: string;
+  reviewHref?: string;
+  reviewLabel?: string;
+  note?: string;
+};
+
+interface Props {
+  items: MediaShelfItem[];
+  variant?: 'shelf' | 'inline';
+  columns?: 2 | 3 | 4 | 5;
+  class?: string;
+}
+
+const { items, variant = 'shelf', columns = 4, class: className } = Astro.props;
+const coverSrc = (cover: MediaShelfItem['cover']) =>
+  typeof cover === 'string' ? cover : cover?.src;
+const ratingLabel = (rating: number | undefined) =>
+  rating ? '★'.repeat(Math.max(1, Math.min(5, Math.round(rating)))) : undefined;
+---
+
+<section
+  class:list={['navfolio-media-shelf', `navfolio-media-shelf--${variant}`, className]}
+  style={`--media-shelf-columns: ${columns};`}
+  aria-label="Media shelf"
+>
+  {
+    items.map((item) => {
+      const destination = item.reviewHref ?? item.href;
+      const rating = ratingLabel(item.rating);
+      const content = (
+        <>
+          <figure
+            class="navfolio-media-shelf__cover"
+            data-media-type={item.type}
+            data-cover-aspect={item.coverAspect}
+          >
+            {coverSrc(item.cover) ? (
+              <img
+                src={coverSrc(item.cover)}
+                alt={`${item.title} cover`}
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <span aria-hidden="true">{item.type}</span>
+            )}
+          </figure>
+          <div class="navfolio-media-shelf__content">
+            <strong>{item.title}</strong>
+            <span class="navfolio-media-shelf__meta">
+              <span class="navfolio-media-shelf__creator">{item.creator}</span>
+              {rating && <span class="navfolio-media-shelf__rating">{rating}</span>}
+            </span>
+            {item.reviewHref && item.reviewLabel ? (
+              <span class="navfolio-media-shelf__review">
+                <BookOpenText size={13} strokeWidth={1.8} aria-hidden="true" />
+                {item.reviewLabel}
+              </span>
+            ) : null}
+            {item.note ? <p>{item.note}</p> : null}
+          </div>
+        </>
+      );
+
+      return destination ? (
+        <a
+          class="navfolio-media-shelf__item"
+          href={destination}
+          target={item.reviewHref ? undefined : '_blank'}
+          rel={item.reviewHref ? undefined : 'noreferrer'}
+        >
+          {content}
+        </a>
+      ) : (
+        <article class="navfolio-media-shelf__item">{content}</article>
+      );
+    })
+  }
+</section>
+
+<style>
+  .navfolio-media-shelf {
+    container-type: inline-size;
+    width: 100%;
+    margin: 24px 0 28px;
+    color: var(--paper-ink);
+  }
+  .navfolio-media-shelf__item {
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .navfolio-media-shelf__cover {
+    display: grid;
+    margin: 0;
+    overflow: hidden;
+    place-items: center;
+    border: 1px solid var(--paper-line);
+    border-radius: 7px;
+    background: var(--paper-surface-muted);
+    color: var(--paper-ink-faint);
+  }
+  .navfolio-media-shelf__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .navfolio-media-shelf__cover span {
+    font-family: var(--font-meta);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .navfolio-media-shelf__content {
+    min-width: 0;
+  }
+  .navfolio-media-shelf__content strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .navfolio-media-shelf__content strong {
+    color: var(--paper-ink);
+    font-family: var(--font-ui-label);
+    font-size: 0.87rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .navfolio-media-shelf__meta {
+    display: flex;
+    min-width: 0;
+    gap: 0.45em;
+    margin-top: 3px;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.64rem;
+    line-height: 1.5;
+  }
+  .navfolio-media-shelf__creator {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .navfolio-media-shelf__rating {
+    flex: none;
+    white-space: nowrap;
+  }
+  .navfolio-media-shelf__review {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    width: max-content;
+    max-width: 100%;
+    margin-top: 7px;
+    color: var(--paper-accent);
+    font-family: var(--font-meta);
+    font-size: 0.64rem;
+    line-height: 1.25;
+  }
+  .navfolio-media-shelf__content p {
+    margin: 8px 0 0;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-serif-cn);
+    font-size: 0.9rem;
+    line-height: 1.75;
+  }
+  .navfolio-media-shelf__item:hover strong {
+    color: var(--paper-accent);
+  }
+
+  .navfolio-media-shelf--shelf {
+    display: grid;
+    grid-template-columns: repeat(var(--media-shelf-columns), minmax(0, 1fr));
+    gap: clamp(14px, 2vw, 22px) 14px;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__item {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+    width: 100%;
+    text-align: center;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover {
+    width: min(100%, 176px);
+    aspect-ratio: 2 / 3;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-media-type='film'],
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-media-type='series'] {
+    aspect-ratio: 16 / 10;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-media-type='album'],
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-media-type='podcast'] {
+    aspect-ratio: 1;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-cover-aspect='portrait'] {
+    aspect-ratio: 2 / 3;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-cover-aspect='landscape'] {
+    aspect-ratio: 16 / 10;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-cover-aspect='square'] {
+    aspect-ratio: 1;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__cover[data-cover-aspect='wide'] {
+    aspect-ratio: 16 / 9;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__content {
+    width: 100%;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__review {
+    justify-content: center;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__content p {
+    display: none;
+  }
+  .navfolio-media-shelf--shelf .navfolio-media-shelf__item:only-child {
+    grid-column: 1 / -1;
+    width: min(100%, 176px);
+    justify-self: center;
+  }
+
+  .navfolio-media-shelf--inline {
+    display: grid;
+    gap: 22px;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__item {
+    display: grid;
+    grid-template-columns: clamp(92px, 18cqi, 142px) minmax(0, 1fr);
+    gap: clamp(14px, 3cqi, 24px);
+    align-items: start;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover {
+    aspect-ratio: 2 / 3;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-media-type='film'],
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-media-type='series'] {
+    aspect-ratio: 16 / 10;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-media-type='album'],
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-media-type='podcast'] {
+    aspect-ratio: 1;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-cover-aspect='portrait'] {
+    aspect-ratio: 2 / 3;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-cover-aspect='landscape'] {
+    aspect-ratio: 16 / 10;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-cover-aspect='square'] {
+    aspect-ratio: 1;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__cover[data-cover-aspect='wide'] {
+    aspect-ratio: 16 / 9;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__content {
+    padding-top: 2px;
+  }
+  .navfolio-media-shelf--inline .navfolio-media-shelf__content strong {
+    font-size: 1rem;
+    white-space: normal;
+  }
+
+  @container (max-width: 620px) {
+    .navfolio-media-shelf--shelf {
+      grid-template-columns: repeat(min(3, var(--media-shelf-columns)), minmax(0, 1fr));
+    }
+  }
+  @container (max-width: 420px) {
+    .navfolio-media-shelf--shelf {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .navfolio-media-shelf--inline .navfolio-media-shelf__item {
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: 14px;
+    }
+  }
+  @media (max-width: 720px) {
+    .navfolio-media-shelf--shelf {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 430px) {
+    .navfolio-media-shelf--shelf {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .navfolio-media-shelf--shelf .navfolio-media-shelf__meta {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+</style>

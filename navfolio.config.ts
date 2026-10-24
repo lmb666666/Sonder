@@ -1,5 +1,7 @@
-import { mediaModule, pages, projectsModule, vibeModule } from '@navfolio/pages';
-import { markdownPlugin } from '@navfolio/plugin-markdown';
+// NOTE(M1 vendoring): relative imports — this file is evaluated by Astro's
+// config loader, which does not apply the @navfolio/* Vite aliases.
+import { mediaModule, pages, projectsModule, vibeModule } from './src/modules';
+import { markdownPlugin } from './src/plugins/markdown';
 
 import { defineNavfolioConfig } from './src/plugins/config';
 

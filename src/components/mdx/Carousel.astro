@@ -1,0 +1,108 @@
+---
+import { ChevronLeft, ChevronRight } from 'lucide-astro';
+interface Props {
+  label?: string;
+  id?: string;
+  showControls?: boolean;
+  class?: string;
+  aspectRatio?: string;
+}
+const {
+  label = 'Carousel',
+  id = `carousel-${crypto.randomUUID()}`,
+  showControls = true,
+  class: className,
+  aspectRatio,
+} = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={['navfolio-carousel', className]}
+  aria-label={label}
+  style={aspectRatio ? `--carousel-aspect-ratio: ${aspectRatio};` : undefined}
+>
+  <div class="navfolio-carousel__track" data-track><slot /></div>
+  {
+    showControls ? (
+      <div class="navfolio-carousel__controls">
+        <>
+          <button type="button" aria-label="Previous slide" data-prev>
+            <ChevronLeft size={18} />
+          </button>
+          <button type="button" aria-label="Next slide" data-next>
+            <ChevronRight size={18} />
+          </button>
+        </>
+      </div>
+    ) : null
+  }
+</section>
+<script>
+  const init = () =>
+    document.querySelectorAll<HTMLElement>('.navfolio-carousel').forEach((root) => {
+      if (root.dataset.ready) return;
+      root.dataset.ready = 'true';
+      const track = root.querySelector<HTMLElement>('[data-track]');
+      root
+        .querySelector('[data-prev]')
+        ?.addEventListener('click', () =>
+          track?.scrollBy({ left: -(track.clientWidth || 0), behavior: 'smooth' }),
+        );
+      root
+        .querySelector('[data-next]')
+        ?.addEventListener('click', () =>
+          track?.scrollBy({ left: track.clientWidth || 0, behavior: 'smooth' }),
+        );
+    });
+  document.addEventListener('astro:page-load', init);
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
+</script>
+<style>
+  .navfolio-carousel {
+    display: block;
+    margin: 30px 0;
+  }
+  .navfolio-carousel__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface-muted);
+  }
+  .navfolio-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+  .navfolio-carousel :global([data-carousel-slide]) {
+    margin: 0;
+    padding: 14px;
+    scroll-snap-align: center;
+  }
+  .navfolio-carousel__controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .navfolio-carousel button {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-control);
+    color: var(--paper-ink-soft);
+    cursor: pointer;
+  }
+  .navfolio-carousel button:hover {
+    background: var(--paper-control-hover);
+    color: var(--paper-ink);
+  }
+</style>

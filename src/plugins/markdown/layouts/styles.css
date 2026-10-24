@@ -1,0 +1,91 @@
+.markdown-layout {
+  margin: 2rem 0;
+}
+
+.markdown-columns {
+  display: grid;
+  grid-template-columns: var(--markdown-layout-column-template);
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  align-items: stretch;
+}
+
+.markdown-layout-column {
+  min-width: 0;
+}
+
+.markdown-layout-column > :first-child {
+  margin-top: 0;
+}
+
+.markdown-layout-column > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-layout-column.is-media > p:only-child {
+  margin: 0;
+}
+
+.markdown-layout-column.is-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+}
+
+.markdown-timeline.is-horizontal {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-color: currentColor transparent;
+  scrollbar-width: thin;
+  padding-inline: 6px;
+}
+
+.markdown-timeline-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.markdown-timeline.is-vertical .markdown-timeline-list {
+  gap: 0;
+}
+
+.markdown-timeline.is-vertical .markdown-timeline-event {
+  position: relative;
+  min-height: 5.5rem;
+  padding: 0 0 1.5rem 1.5rem;
+  border-left: 1px solid currentColor;
+}
+
+.markdown-timeline.is-horizontal .markdown-timeline-list {
+  grid-auto-columns: minmax(13rem, 1fr);
+  grid-auto-flow: column;
+  min-width: max-content;
+}
+
+.markdown-timeline.is-horizontal .markdown-timeline-event {
+  position: relative;
+  min-width: 13rem;
+  padding: 2.3rem 1.25rem 0 0;
+  border-top: 1px solid currentColor;
+}
+
+.markdown-timeline-event > :first-child {
+  margin-top: 0;
+}
+
+.markdown-timeline-event > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .markdown-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .markdown-columns.is-media-first .markdown-layout-column.is-media {
+    order: -1;
+  }
+}

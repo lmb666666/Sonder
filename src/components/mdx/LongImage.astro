@@ -1,0 +1,59 @@
+---
+import type { ImageMetadata } from 'astro';
+interface Props {
+  src: string | ImageMetadata;
+  alt?: string;
+  height?: string;
+  caption?: string;
+}
+const { src, alt = '', height = '420px', caption } = Astro.props;
+const imageSrc = typeof src === 'string' ? src : src.src;
+---
+
+<figure class="navfolio-long-image" style={`--long-image-height: ${height};`}>
+  <div
+    class="navfolio-long-image__viewport"
+    role="region"
+    aria-label={caption || alt || 'Scrollable image'}
+    tabindex="0"
+  >
+    <img src={imageSrc} alt={alt} loading="lazy" decoding="async" />
+  </div>
+  {caption ? <figcaption>{caption}</figcaption> : null}
+</figure>
+<style>
+  .navfolio-long-image {
+    margin: 28px 0 30px;
+  }
+  .navfolio-long-image__viewport {
+    max-height: var(--long-image-height);
+    overflow: auto;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface-muted);
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .navfolio-long-image__viewport:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--paper-accent) 40%, transparent);
+    outline-offset: 3px;
+  }
+  .navfolio-long-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .navfolio-long-image figcaption {
+    margin-top: 9px;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+  @media (max-width: 640px) {
+    .navfolio-long-image__viewport {
+      max-height: min(var(--long-image-height), 62vh);
+    }
+  }
+</style>

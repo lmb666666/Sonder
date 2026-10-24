@@ -1,0 +1,39 @@
+<script>
+  const selector = '[data-mermaid-diagram] .mermaid';
+  const sources = new WeakMap<Element, string>();
+  let module: typeof import('mermaid') | undefined;
+  const render = async () => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>(selector));
+    if (!nodes.length) return;
+    nodes.forEach((node) => {
+      const source = sources.get(node) ?? node.textContent ?? '';
+      sources.set(node, source);
+      node.textContent = source;
+      node.removeAttribute('data-processed');
+    });
+    try {
+      module ??= await import('mermaid');
+      const mermaid = module.default;
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+        fontFamily: getComputedStyle(document.documentElement)
+          .getPropertyValue('--font-article')
+          .trim(),
+      });
+      await mermaid.run({ nodes });
+    } catch (error) {
+      console.error('Unable to render Mermaid diagram.', error);
+    }
+  };
+  const schedule = () => void window.requestAnimationFrame(() => void render());
+  document.addEventListener('astro:page-load', schedule);
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', schedule, { once: true });
+  else schedule();
+  new MutationObserver(schedule).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+</script>

@@ -1,0 +1,20 @@
+---
+interface Props {
+  htmlLang: string;
+  palette: string;
+}
+
+const { htmlLang, palette } = Astro.props;
+---
+
+<!doctype html>
+<html lang={htmlLang} data-palette={palette}>
+  <head>
+    <slot name="head" />
+  </head>
+  <body>
+    <slot name="navigation" />
+    <slot />
+    <slot name="after-content" />
+  </body>
+</html>

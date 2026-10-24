@@ -1,3 +1,5 @@
+// NOTE(M1 vendoring): relative import — this file sits in Astro's config-loading
+// closure, where the @navfolio/* Vite aliases from astro.config.mjs are not applied.
 import {
   getConfiguredPageModules,
   getResolvedPageModuleI18n,
@@ -8,7 +10,7 @@ import {
   isPageModuleEnabled,
   normalizeModuleRoute,
   type NavfolioPageModuleRoute,
-} from '@navfolio/pages';
+} from '../modules';
 import type { NavfolioAstroPluginConfig, NavfolioConfig, NavfolioPluginContext } from './types';
 
 export {
@@ -20,7 +22,7 @@ export {
   getResolvedPageModules,
   isPageModuleEnabled,
   normalizeModuleRoute,
-} from '@navfolio/pages';
+} from '../modules';
 
 const defaultPluginContext: NavfolioPluginContext = {
   mathRenderer: 'katex',

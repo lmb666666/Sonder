@@ -1,0 +1,304 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import {
+  BaseHead,
+  BlogTopNav,
+  Footer,
+  getHtmlLang,
+  getSiteConfig,
+  getI18n,
+} from 'virtual:navfolio/page-runtime';
+
+type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
+type CoverAspect = 'portrait' | 'landscape' | 'square' | 'wide';
+type MediaEntry = {
+  id: string;
+  data: {
+    title: string;
+    creator: string;
+    type: MediaType;
+    cover?: ImageMetadata | string;
+    coverAspect?: CoverAspect;
+    rating?: number;
+    tags?: string[];
+    completedAt?: Date;
+    review?: boolean;
+    draft?: boolean;
+  };
+  body?: string;
+};
+
+export async function getStaticPaths() {
+  const entries = ((await getCollection('media')) as MediaEntry[]).filter(
+    (entry) => !entry.data.draft && entry.data.review,
+  );
+
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: entry }));
+}
+
+const media = Astro.props as MediaEntry;
+const { Content } = await render(media as never);
+const siteConfig = await getSiteConfig();
+const i18n = getI18n(siteConfig);
+const ui = {
+  media: {
+    backToShelf: i18n.t('media.backToShelf'),
+    ratingLabel: i18n.t('media.ratingLabel'),
+    types: Object.fromEntries(
+      ['book', 'film', 'series', 'album', 'podcast'].map((type) => [
+        type,
+        i18n.t(`media.types.${type}`),
+      ]),
+    ) as Record<MediaType, string>,
+    reviewKinds: Object.fromEntries(
+      ['book', 'film', 'series', 'album', 'podcast'].map((type) => [
+        type,
+        i18n.t(`media.reviewKinds.${type}`),
+      ]),
+    ) as Record<MediaType, string>,
+  },
+};
+const htmlLang = getHtmlLang(siteConfig);
+const mediaRoute = parentRoute(Astro.url.pathname, media.id);
+const coverSrc = typeof media.data.cover === 'string' ? media.data.cover : media.data.cover?.src;
+const stars = media.data.rating
+  ? '★'.repeat(Math.max(1, Math.min(5, Math.round(media.data.rating))))
+  : undefined;
+const reviewKind = ui.media.reviewKinds[media.data.type];
+
+function parentRoute(pathname: string, id: string) {
+  const normalized = pathname.replace(/\/$/, '');
+  const suffix = `/${id}`;
+  return normalized.endsWith(suffix) ? normalized.slice(0, -suffix.length) || '/' : '/media';
+}
+---
+
+<!doctype html>
+<html lang={htmlLang} data-palette={siteConfig.theme.palette}>
+  <head>
+    <BaseHead
+      title={`${media.data.title} | ${siteConfig.site.title}`}
+      description={media.data.creator}
+    />
+  </head>
+  <body class="media-review-page">
+    <BlogTopNav />
+    <main data-pagefind-body>
+      <a class="media-review-back" href={`${mediaRoute}/`}>{ui.media.backToShelf}</a>
+      <article>
+        <header class="media-review-header">
+          <figure
+            class="media-review-cover"
+            data-media-type={media.data.type}
+            data-cover-aspect={media.data.coverAspect}
+          >
+            {
+              coverSrc ? (
+                <img src={coverSrc} alt={`${media.data.title} cover`} />
+              ) : (
+                <span>{ui.media.types[media.data.type]}</span>
+              )
+            }
+          </figure>
+          <div class="media-review-intro">
+            <p class="media-review-kicker">{reviewKind}</p>
+            <h1 data-pagefind-meta="title">{media.data.title}</h1>
+            <p class="media-review-creator">{media.data.creator}</p>
+            <div class="media-review-details">
+              {media.data.completedAt ? <span>{media.data.completedAt.getFullYear()}</span> : null}
+              {stars ? <span aria-label={ui.media.ratingLabel}>{stars}</span> : null}
+              {media.data.tags?.map((tag) => <span>#{tag}</span>)}
+            </div>
+          </div>
+        </header>
+        <section class="media-review-content">
+          <Content />
+        </section>
+      </article>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  :global(html) {
+    background: var(--paper-bg);
+  }
+  :global(.media-review-page) {
+    min-height: 100vh;
+    background: var(--paper-detail-bg);
+    color: var(--paper-ink);
+  }
+  main {
+    width: min(100%, 920px);
+    margin: 0 auto;
+    padding: clamp(102px, 13vw, 148px) var(--layout-page-gutter) 88px;
+  }
+  article {
+    width: 100%;
+  }
+  .media-review-back {
+    display: inline-flex;
+    margin-bottom: clamp(28px, 5vw, 46px);
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.72rem;
+    text-decoration: none;
+  }
+  .media-review-back:hover {
+    color: var(--paper-accent);
+  }
+  .media-review-header {
+    display: grid;
+    grid-template-columns: clamp(128px, 23vw, 190px) minmax(0, 1fr);
+    gap: clamp(22px, 5vw, 42px);
+    align-items: end;
+    padding-bottom: clamp(32px, 6vw, 52px);
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .media-review-cover {
+    display: grid;
+    overflow: hidden;
+    place-items: center;
+    aspect-ratio: 2 / 3;
+    margin: 0;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface-muted);
+    color: var(--paper-ink-faint);
+  }
+  .media-review-cover[data-media-type='film'],
+  .media-review-cover[data-media-type='series'] {
+    aspect-ratio: 16 / 10;
+  }
+  .media-review-cover[data-media-type='album'],
+  .media-review-cover[data-media-type='podcast'] {
+    aspect-ratio: 1;
+  }
+  .media-review-cover[data-cover-aspect='portrait'] {
+    aspect-ratio: 2 / 3;
+  }
+  .media-review-cover[data-cover-aspect='landscape'] {
+    aspect-ratio: 16 / 10;
+  }
+  .media-review-cover[data-cover-aspect='square'] {
+    aspect-ratio: 1;
+  }
+  .media-review-cover[data-cover-aspect='wide'] {
+    aspect-ratio: 16 / 9;
+  }
+  .media-review-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .media-review-cover span,
+  .media-review-kicker,
+  .media-review-details {
+    font-family: var(--font-meta);
+  }
+  .media-review-kicker {
+    margin: 0 0 10px;
+    color: var(--paper-accent);
+    font-size: 0.67rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .media-review-intro h1 {
+    margin: 0;
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4.6vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  .media-review-creator {
+    margin: 12px 0 0;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-ui-label);
+    font-size: 1rem;
+  }
+  .media-review-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 18px;
+    color: var(--paper-ink-faint);
+    font-size: 0.68rem;
+  }
+  .media-review-details span + span {
+    padding-left: 12px;
+    border-left: 1px solid var(--paper-line);
+  }
+  .media-review-content {
+    width: min(100%, 680px);
+    margin-top: clamp(34px, 7vw, 64px);
+    color: var(--paper-ink);
+    font-family: var(--font-article);
+    font-size: 18px;
+    line-height: 1.78;
+    text-wrap: pretty;
+  }
+  .media-review-content :global(h2) {
+    margin: 52px 0 18px;
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: 1.72rem;
+    font-weight: 400;
+    line-height: 1.22;
+  }
+  .media-review-content :global(h3) {
+    margin: 38px 0 14px;
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: 1.26rem;
+  }
+  .media-review-content :global(p) {
+    margin: 0 0 22px;
+  }
+  .media-review-content :global(a) {
+    color: var(--paper-accent);
+    font-weight: 700;
+    text-decoration-color: color-mix(in srgb, var(--paper-accent) 40%, transparent);
+    text-underline-offset: 4px;
+  }
+  .media-review-content :global(blockquote) {
+    margin: 32px 0;
+    padding-left: 20px;
+    border-left: 2px solid var(--paper-line-strong);
+    color: var(--paper-ink-soft);
+    font-size: 1.05rem;
+  }
+  .media-review-content :global(img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 30px auto;
+    border-radius: 7px;
+  }
+  @media (max-width: 560px) {
+    main {
+      padding-top: 96px;
+    }
+    .media-review-header {
+      grid-template-columns: 104px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .media-review-intro h1 {
+      font-size: 1.76rem;
+    }
+    .media-review-creator {
+      margin-top: 8px;
+      font-size: 0.92rem;
+    }
+    .media-review-details {
+      margin-top: 12px;
+    }
+    .media-review-content {
+      font-size: 17px;
+    }
+  }
+</style>

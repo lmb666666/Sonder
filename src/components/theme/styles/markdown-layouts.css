@@ -1,0 +1,185 @@
+/* Local Markdown layout blocks. The plugin exposes equivalent structural rules
+   for custom themes; these defaults work without an extra stylesheet import. */
+
+:is(.article-content, .prose) .markdown-layout {
+  margin: 38px 0 42px;
+  color: var(--paper-ink);
+}
+
+:is(.article-content, .prose) .markdown-columns {
+  display: grid;
+  grid-template-columns: var(--markdown-layout-column-template);
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  align-items: stretch;
+  padding: 24px 0;
+  border-top: 1px solid var(--paper-line-strong);
+  border-bottom: 1px solid var(--paper-line-strong);
+}
+
+:is(.article-content, .prose) .markdown-layout-column {
+  min-width: 0;
+}
+
+:is(.article-content, .prose) .markdown-layout-column + .markdown-layout-column {
+  padding-left: clamp(1.25rem, 4vw, 2.5rem);
+  border-left: 1px solid var(--paper-line);
+}
+
+:is(.article-content, .prose) .markdown-layout-column.is-media {
+  align-self: center;
+  overflow: visible;
+  padding-left: 0;
+  border-left: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:is(.article-content, .prose) .markdown-layout-column.is-media > p:only-child {
+  margin: 0;
+}
+
+:is(.article-content, .prose) .markdown-layout-column.is-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  border-radius: 8px;
+  filter: none;
+}
+
+:is(.article-content, .prose) .markdown-timeline {
+  padding-bottom: 10px;
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-horizontal {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-color: var(--paper-ink-faint) transparent;
+  scrollbar-width: thin;
+  padding-inline: 6px;
+}
+
+:is(.article-content, .prose) .markdown-timeline-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--paper-ink);
+}
+
+:is(.article-content, .prose) .markdown-timeline-event {
+  color: var(--paper-ink);
+}
+
+:is(.article-content, .prose) .markdown-timeline-event::before {
+  position: absolute;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  content: attr(data-timeline-date);
+}
+
+:is(.article-content, .prose) .markdown-timeline-event::after {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--paper-surface);
+  border-radius: 999px;
+  background: var(--paper-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--paper-accent) 45%, transparent);
+  content: '';
+}
+
+:is(.article-content, .prose) .markdown-timeline-event > :first-child {
+  margin-top: 0;
+}
+
+:is(.article-content, .prose) .markdown-timeline-event > :last-child {
+  margin-bottom: 0;
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-vertical .markdown-timeline-list {
+  --timeline-rail-inset: clamp(5.75rem, 11vw, 6.5rem);
+  --timeline-content-gap: clamp(1.5rem, 3vw, 2rem);
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-vertical .markdown-timeline-event {
+  position: relative;
+  min-height: 5.5rem;
+  margin-left: var(--timeline-rail-inset);
+  padding: 0 0 1.5rem var(--timeline-content-gap);
+  border-left: 1px solid var(--paper-line-strong);
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-vertical .markdown-timeline-event::before {
+  top: 1px;
+  left: calc(0px - var(--timeline-rail-inset));
+  width: calc(var(--timeline-rail-inset) - 1rem);
+  text-align: right;
+  white-space: nowrap;
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-vertical .markdown-timeline-event::after {
+  top: 2px;
+  left: -5px;
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-horizontal .markdown-timeline-list {
+  grid-auto-columns: minmax(13rem, 1fr);
+  grid-auto-flow: column;
+  min-width: max-content;
+  padding-top: 8px;
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-horizontal .markdown-timeline-event {
+  position: relative;
+  min-width: 13rem;
+  padding: 2.8rem 1.25rem 0 0;
+  border-top: 1px solid var(--paper-line-strong);
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-horizontal .markdown-timeline-event::before {
+  top: 0.8rem;
+  left: 0;
+}
+
+:is(.article-content, .prose) .markdown-timeline.is-horizontal .markdown-timeline-event::after {
+  top: -5px;
+  left: -5px;
+}
+
+@media (max-width: 720px) {
+  :is(.article-content, .prose) .markdown-layout {
+    margin: 30px 0 34px;
+  }
+
+  :is(.article-content, .prose) .markdown-columns {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 18px 0;
+  }
+
+  :is(.article-content, .prose) .markdown-layout-column + .markdown-layout-column {
+    padding: 1.25rem 0 0;
+    border-top: 1px solid var(--paper-line);
+    border-left: 0;
+  }
+
+  :is(.article-content, .prose) .markdown-layout-column.is-media {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  :is(.article-content, .prose) .markdown-columns.is-media-first .markdown-layout-column.is-media {
+    order: -1;
+  }
+
+  :is(.article-content, .prose) .markdown-timeline.is-vertical .markdown-timeline-list {
+    --timeline-rail-inset: 4.75rem;
+    --timeline-content-gap: 1.25rem;
+  }
+}

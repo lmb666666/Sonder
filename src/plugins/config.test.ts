@@ -92,10 +92,10 @@ describe('navfolio plugin config', () => {
     expect(getPageModuleRoute(config, 'vibe')).toBe('/space');
     expect(getPageModuleRoute(config, 'media')).toBe('/shelf');
     expect(getResolvedPageModules(config)[1].routes?.[0]?.entrypoint?.pathname).toContain(
-      '/page-vibe/routes/vibe.astro',
+      '/src/modules/vibe/routes/vibe.astro',
     );
     expect(getResolvedPageModules(config)[2].routes?.[0]?.entrypoint?.pathname).toContain(
-      '/page-media/routes/media.astro',
+      '/src/modules/media/routes/media.astro',
     );
   });
 
