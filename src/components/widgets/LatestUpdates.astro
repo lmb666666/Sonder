@@ -1,19 +1,24 @@
 ---
 import { getCollection } from 'astro:content';
+import Icon from '../Icon.astro';
+import BlogPostMediaList from '../blog/BlogPostMediaList.astro';
 import { getSiteConfig } from '../../data/site';
 import { getLatestPosts } from '../../utils/blog-heatmap';
+import { sortByDateDesc } from '../../utils/content-dates';
 import { getUiText } from '../../utils/ui-text';
 
 interface Props {
   count?: number;
   excludeDraft?: boolean;
-  /** 最新动态行；与最新文章同处「最新」卡片 */
+  /** 最新动态行；与最新文章同处「最新」区块 */
   latestMoment?: { summary: string; date: Date; href: string } | null;
 }
 
 const { count = 1, excludeDraft = true, latestMoment } = Astro.props;
 const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
 const latestPosts = getLatestPosts(posts, count);
+// 移动端把最近两篇升级为封面卡（与博客列表同一张卡）
+const mobilePosts = sortByDateDesc(posts).slice(0, 2);
 const ui = getUiText(await getSiteConfig());
 const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
   month: 'short',
@@ -23,18 +28,16 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
 
 {
   (latestPosts.length > 0 || latestMoment) && (
-    <article class="latest-card" aria-label={ui.heatmap.latestPublishedPosts}>
-      <strong>{ui.heatmap.latest}</strong>
-      <div class="latest-list">
-        {latestPosts.map((post) => (
-          <a class="latest-link" href={post.href} title={post.title}>
-            <span class="latest-kind">{ui.heatmap.latestArticle}</span>
-            <em>{post.title}</em>
-            <time datetime={post.date.toISOString()}>{formatShortDate.format(post.date)}</time>
-          </a>
-        ))}
+    <section class="latest-block" aria-label={ui.heatmap.latestPublishedPosts}>
+      {/* 移动端：小组标题 + 两张封面卡 + 动态行 */}
+      <div class="latest-narrow">
+        <h2 class="latest-heading">
+          <Icon name="pen" size={14} />
+          {ui.heatmap.latest}
+        </h2>
+        {mobilePosts.length > 0 && <BlogPostMediaList posts={mobilePosts} />}
         {latestMoment && (
-          <a class="latest-link" href={latestMoment.href} title={latestMoment.summary}>
+          <a class="latest-moment" href={latestMoment.href} title={latestMoment.summary}>
             <span class="latest-kind latest-kind-moment">{ui.heatmap.latestMoment}</span>
             <em>{latestMoment.summary}</em>
             <time datetime={latestMoment.date.toISOString()}>
@@ -43,11 +46,43 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
           </a>
         )}
       </div>
-    </article>
+
+      {/* 桌面端：紧凑索引卡 */}
+      <article class="latest-card">
+        <strong>{ui.heatmap.latest}</strong>
+        <div class="latest-list">
+          {latestPosts.map((post) => (
+            <a class="latest-link" href={post.href} title={post.title}>
+              <span class="latest-kind">{ui.heatmap.latestArticle}</span>
+              <em>{post.title}</em>
+              <time datetime={post.date.toISOString()}>{formatShortDate.format(post.date)}</time>
+            </a>
+          ))}
+          {latestMoment && (
+            <a class="latest-link" href={latestMoment.href} title={latestMoment.summary}>
+              <span class="latest-kind latest-kind-moment">{ui.heatmap.latestMoment}</span>
+              <em>{latestMoment.summary}</em>
+              <time datetime={latestMoment.date.toISOString()}>
+                {formatShortDate.format(latestMoment.date)}
+              </time>
+            </a>
+          )}
+        </div>
+      </article>
+    </section>
   )
 }
 
 <style>
+  .latest-block {
+    display: grid;
+  }
+
+  /* 移动端区块默认隐藏，桌面显示索引卡 */
+  .latest-narrow {
+    display: none;
+  }
+
   .latest-card {
     display: grid;
     gap: 8px;
@@ -129,35 +164,58 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
     outline-offset: 3px;
   }
 
-  /* 移动端去掉卡片边框：改成与正文同语言的索引列表 */
   @media (max-width: 820px) {
     .latest-card {
+      display: none;
+    }
+
+    .latest-narrow {
+      display: grid;
+      gap: 14px;
+    }
+
+    .latest-heading {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 0;
+      color: var(--paper-ink-soft);
+      font-size: 0.82rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    }
+
+    .latest-heading :global(svg) {
+      color: var(--paper-accent);
+    }
+
+    /* 收进两栏滚动区之外：卡片间距与高度按移动端收紧 */
+    .latest-narrow :global(.media-stack) {
+      gap: 14px;
+    }
+
+    .latest-narrow :global(.media-card) {
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+    }
+
+    .latest-narrow :global(.media-body) {
+      padding: 14px 16px 15px;
+    }
+
+    .latest-narrow :global(.media-title) {
+      font-size: 1.04rem;
+    }
+
+    .latest-moment {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) max-content;
+      align-items: center;
       gap: 10px;
-      padding: 0;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-    }
-
-    .latest-card strong {
-      color: var(--paper-ink-faint);
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .latest-list {
-      gap: 0;
-    }
-
-    .latest-link {
-      padding: 11px 0;
+      padding-top: 12px;
       border-top: 1px solid var(--paper-line);
-    }
-
-    em {
-      font-size: 0.9rem;
+      text-decoration: none;
     }
   }
 </style>

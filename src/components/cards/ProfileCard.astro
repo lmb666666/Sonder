@@ -86,27 +86,24 @@ const { profile } = Astro.props as { profile: Profile };
   }
 
   @media (max-width: 820px) {
-    /* 移动端刊头：头像、名号、签名居中对齐 */
+    /* 移动端：身份行回到正文左轴，作为标题上方的署名 */
     .profile-card {
-      flex-direction: column;
-      justify-content: center;
-      gap: 10px;
+      gap: 12px;
       padding: 0;
-      text-align: center;
+      text-align: left;
     }
 
     .avatar-wrap {
-      width: 68px;
-      height: 68px;
+      width: 56px;
+      height: 56px;
     }
 
     .profile-heading h1 {
-      font-size: 1.16rem;
+      font-size: 1.06rem;
     }
 
     .profile-heading span {
-      justify-content: center;
-      margin-top: 6px;
+      margin-top: 4px;
       font-size: 0.8rem;
     }
   }

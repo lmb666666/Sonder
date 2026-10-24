@@ -37,10 +37,10 @@
 
   /* 主列下移：与侧栏底部对齐，避免左侧内容过早结束留出空档 */
   .main-column {
-    padding-top: 52px;
+    padding-top: 95px;
   }
 
-  .flow-grid .main-column :global(.latest-card) {
+  .flow-grid .main-column :global(.latest-block) {
     margin-top: 28px;
   }
 
@@ -129,25 +129,25 @@
       display: contents;
     }
 
-    /* 移动端：刊头（身份 + 社交）收口于发丝线，正文统一左对齐 */
+    /* 移动端：单一左轴 —— 署名、正文、社交图标，发丝线收口后接最新 */
     .flow-grid :global(.profile-card) {
       order: 1;
     }
 
-    .flow-grid :global(.connect-card) {
-      order: 2;
-      margin-top: -6px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--paper-line);
-    }
-
     .flow-grid :global(.intro-card) {
-      order: 3;
+      order: 2;
       min-height: auto;
       padding: 0;
     }
 
-    .flow-grid :global(.latest-card) {
+    .flow-grid :global(.connect-card) {
+      order: 3;
+      margin-top: -6px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .flow-grid :global(.latest-block) {
       order: 4;
       margin-top: 0;
     }
