@@ -134,7 +134,6 @@ export type SiteFonts = SiteConfig['fonts'];
 export type SitePages = SiteConfig['pages'];
 export type HomeNavigationItem = SiteConfig['home']['navigation'][number];
 export type HomeLinkItem = SiteConfig['home']['links'][number];
-export type HomeDoingItem = SiteConfig['home']['doing'][number];
 export type HomeIntro = SiteConfig['home']['intro'];
 export type HomeQuote = SiteConfig['home']['quote'];
 export type HomeLatest = SiteConfig['home']['latest'];

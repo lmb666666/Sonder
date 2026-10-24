@@ -5,7 +5,6 @@ import ConnectCard from '../components/cards/ConnectCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
 import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
-import DoingCard from '../components/widgets/DoingCard.astro';
 import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
 import { demoMoments, getMomentsTotal } from '../data/moments';
@@ -70,10 +69,6 @@ const latestMoment = newestMoment
 
     <Fragment slot="connect">
       <ConnectCard links={home.links} />
-    </Fragment>
-
-    <Fragment slot="doing">
-      <DoingCard items={home.doing} />
     </Fragment>
   </DashboardFlow>
 </BaseLayout>

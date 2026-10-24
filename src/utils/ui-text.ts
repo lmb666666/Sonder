@@ -19,9 +19,6 @@ type Message = string | { one?: string; other: string };
 
 type RawUiText = {
   locale: string;
-  doing: {
-    recently: string;
-  };
   heatmap: {
     totalPosts: string;
     activeDays: string;
@@ -187,7 +184,6 @@ function formatNumber(value: number, locale: string) {
 function createUiText(raw: RawUiText): UiText {
   return {
     locale: raw.locale,
-    doing: raw.doing,
     heatmap: {
       ...raw.heatmap,
       openLatestPost: (title) => formatMessage(raw.heatmap.openLatestPost, { title }),

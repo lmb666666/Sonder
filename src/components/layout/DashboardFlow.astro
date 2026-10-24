@@ -2,12 +2,11 @@
   <section class="flow-grid" aria-label="Sonder 个人出版物">
     <section class="flow-column main-column">
       <slot name="intro" />
-      <slot name="doing" />
+      <slot name="connect" />
     </section>
 
     <aside class="flow-column side-column">
       <slot name="profile" />
-      <slot name="connect" />
       <slot name="latest" />
       <slot name="siteInfo" />
     </aside>
@@ -77,7 +76,7 @@
   }
 
   .flow-grid :global(.connect-card) {
-    padding: 0 0 10px;
+    padding: 14px 0 10px;
   }
 
   .flow-grid :global(.site-info-card) {
@@ -140,10 +139,6 @@
       order: 4;
       margin-top: -8px;
       padding: 14px 2px;
-    }
-
-    .flow-grid :global(.doing-card) {
-      order: 6;
     }
 
     .flow-grid :global(.site-info-card) {

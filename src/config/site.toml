@@ -265,15 +265,3 @@ label = "RSS"
 icon = "rss"
 tooltip = "/rss.xml"
 copy = false
-
-[[config.home.doing]]
-text = "把博客从 Nuxt 重写为 Astro"
-mark = "01"
-
-[[config.home.doing]]
-text = "迁移文章、评论与友链"
-mark = "02"
-
-[[config.home.doing]]
-text = "打磨模板与文档"
-mark = "03"

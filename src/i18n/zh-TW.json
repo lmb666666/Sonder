@@ -1,8 +1,5 @@
 {
   "locale": "zh-TW",
-  "doing": {
-    "recently": "最近"
-  },
   "heatmap": {
     "totalPosts": "總文章",
     "activeDays": "活躍天數",

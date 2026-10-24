@@ -1,8 +1,5 @@
 {
   "locale": "en",
-  "doing": {
-    "recently": "Recently"
-  },
   "heatmap": {
     "totalPosts": "Total posts",
     "activeDays": "Active days",
