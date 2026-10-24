@@ -86,7 +86,7 @@ maxResults = 6
 title = "文章"
 kicker = "归档"
 subtitle = "每个人都有自己的故事。"
-note = "全部文章，按发布时间倒序排列。"
+note = ""
 postsPerPage = 6
 # date-fns 使用的日期格式模板。
 dateFormat = "yyyy-MM-dd"
