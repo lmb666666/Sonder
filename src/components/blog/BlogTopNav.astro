@@ -79,11 +79,15 @@ const paletteOptions = [
   data-pagefind-ignore
   data-toc-open-label={ui.toc.open}
   data-toc-close-label={ui.toc.close}
+  data-menu-open-label={ui.nav.openMenu}
+  data-menu-close-label={ui.nav.closeMenu}
+  data-palette-open-label={ui.nav.openPalette}
+  data-palette-close-label={ui.nav.closePalette}
 >
   <button
     class="mobile-menu-toggle"
     type="button"
-    aria-label="Open navigation menu"
+    aria-label={ui.nav.openMenu}
     aria-expanded="false"
     aria-controls="mobile-nav-menu"
     data-mobile-menu-toggle
@@ -151,7 +155,7 @@ const paletteOptions = [
   <nav
     class="mobile-menu-panel"
     id="mobile-nav-menu"
-    aria-label="Mobile navigation"
+    aria-label={ui.nav.mobileNav}
     data-mobile-menu
   >
     <div class="mobile-menu-links">
@@ -225,7 +229,7 @@ const paletteOptions = [
     <button
       type="button"
       data-palette-toggle
-      aria-label="打开主题色面板"
+      aria-label={ui.nav.openPalette}
       aria-expanded="false"
       aria-controls="nav-palette-panel"
       title={ui.nav.accentColor}
@@ -451,12 +455,12 @@ const paletteOptions = [
         header.dataset.mobileMenuReady = 'true';
 
         const setMenuOpen = (open: boolean) => {
+          const openLabel = header.dataset.menuOpenLabel ?? 'Open navigation menu';
+          const closeLabel = header.dataset.menuCloseLabel ?? 'Close navigation menu';
+
           header.dataset.mobileMenuOpen = open ? 'true' : 'false';
           toggle.setAttribute('aria-expanded', String(open));
-          toggle.setAttribute(
-            'aria-label',
-            open ? 'Close navigation menu' : 'Open navigation menu',
-          );
+          toggle.setAttribute('aria-label', open ? closeLabel : openLabel);
           header.dispatchEvent(new CustomEvent('navfolio:menu-toggle'));
         };
         const setTocOpen = (open: boolean) => {
@@ -548,9 +552,13 @@ const paletteOptions = [
 
         const setPaletteOpen = (open: boolean) => {
           if (!paletteToggle || !palettePanel) return;
+
+          const openLabel = header.dataset.paletteOpenLabel ?? 'Open accent color panel';
+          const closeLabel = header.dataset.paletteCloseLabel ?? 'Close accent color panel';
+
           header.dataset.paletteOpen = open ? 'true' : 'false';
           paletteToggle.setAttribute('aria-expanded', String(open));
-          paletteToggle.setAttribute('aria-label', open ? '关闭主题色面板' : '打开主题色面板');
+          paletteToggle.setAttribute('aria-label', open ? closeLabel : openLabel);
         };
 
         const syncActiveOption = () => {

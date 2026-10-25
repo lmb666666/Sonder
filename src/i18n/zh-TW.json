@@ -6,7 +6,12 @@
     "themeMode": "深淺色",
     "light": "淺色",
     "dark": "深色",
-    "accentColor": "主題色"
+    "accentColor": "主題色",
+    "mobileNav": "行動導覽",
+    "openMenu": "開啟導覽選單",
+    "closeMenu": "關閉導覽選單",
+    "openPalette": "開啟主題色面板",
+    "closePalette": "關閉主題色面板"
   },
   "palette": {
     "greenSoft": "苔綠",

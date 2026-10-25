@@ -158,13 +158,15 @@ Navfolio's module documentation is written as real blog content under `src/conte
 Site-level data lives in `src/config/site.toml`:
 
 - `[config.site]`: site title, descriptions, repository URL, and footer note.
+- `[config.siteInfo]`: site info card (uptime, last updated, site program, etc.).
 - `[config.profile]`: author name, handle, role, avatar, website, GitHub, email, and metadata.
 - `[[config.topNav.links]]`: top navigation links.
 - `[config.theme]`: built-in palette selection.
 - `[config.search]`: search entry, shortcut, placeholder, and result count.
 - `[config.comments]`: comment switch and provider.
 - `[config.vibe]`: Vibe timeline behavior.
-- `[config.home]`: homepage quote, introduction, navigation cards, contact links, and current focus list.
+- `[config.pages]`: titles, kickers, and subtitles for the article, media, moments, and friends pages.
+- `[config.home]`: homepage quote, introduction, latest posts and heatmap, navigation cards, and contact links.
 
 The config shape is validated by the Zod schema in `src/content.config.ts`. Missing or invalid fields fail during `bun run build`, which keeps configuration errors easy to locate.
 

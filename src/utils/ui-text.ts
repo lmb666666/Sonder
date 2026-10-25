@@ -26,6 +26,11 @@ type RawUiText = {
     light: string;
     dark: string;
     accentColor: string;
+    mobileNav: string;
+    openMenu: string;
+    closeMenu: string;
+    openPalette: string;
+    closePalette: string;
   };
   palette: {
     greenSoft: string;

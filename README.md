@@ -156,13 +156,15 @@ Navfolio 的模块说明都写成了真实博客内容，位于 `src/content/blo
 站点级信息集中在 `src/config/site.toml`：
 
 - `[config.site]`：站点标题、描述、仓库地址和页脚说明。
+- `[config.siteInfo]`：站点信息卡（运行时长、更新时间、站点程序等）。
 - `[config.profile]`：作者名称、账号、身份、头像、网站、GitHub、邮箱等信息。
 - `[[config.topNav.links]]`：顶部导航链接。
 - `[config.theme]`：内置色盘选择。
 - `[config.search]`：搜索入口、快捷键、占位文案和结果数量。
 - `[config.comments]`：评论开关和评论提供方。
 - `[config.vibe]`：Vibe 时间流显示行为。
-- `[config.home]`：首页引语、介绍、导航卡片、联系方式和当前关注事项。
+- `[config.pages]`：文章、书影音、动态和朋友页的标题、kicker 与说明文案。
+- `[config.home]`：首页引语、介绍、最新文章与热力图、导航卡片和联系方式。
 
 配置结构由 `src/content.config.ts` 中的 Zod schema 校验。字段缺失或类型不对时，`bun run build` 会直接报错，方便早发现。
 

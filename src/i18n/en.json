@@ -6,7 +6,12 @@
     "themeMode": "Theme mode",
     "light": "Light",
     "dark": "Dark",
-    "accentColor": "Accent color"
+    "accentColor": "Accent color",
+    "mobileNav": "Mobile navigation",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "openPalette": "Open accent color panel",
+    "closePalette": "Close accent color panel"
   },
   "palette": {
     "greenSoft": "Moss green",

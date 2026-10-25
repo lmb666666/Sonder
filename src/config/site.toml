@@ -220,6 +220,7 @@ body = [
 ]
 
 [config.home.latest]
+# 首页「最新」展示的文章数
 count = 2
 heatmapWeeks = 20
 showHeatmapLatest = true
