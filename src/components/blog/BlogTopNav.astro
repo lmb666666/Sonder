@@ -88,6 +88,19 @@ const paletteOptions = [
   </button>
 
   {
+    navStyle === 'pill' && currentPath === '/' && (
+      <a
+        class="nav-avatar-float"
+        data-avatar-float
+        href={withBase('/')}
+        aria-label={`${site.title} 首页`}
+      >
+        <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
+      </a>
+    )
+  }
+
+  {
     navStyle === 'pill' ? (
       currentPath !== '/' && (
         <a
@@ -233,18 +246,6 @@ const paletteOptions = [
     )
   }
 </header>
-{
-  navStyle === 'pill' && currentPath === '/' && (
-    <a
-      class="nav-avatar-float"
-      data-avatar-float
-      href={withBase('/')}
-      aria-label={`${site.title} 首页`}
-    >
-      <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
-    </a>
-  )
-}
 
 <script>
   let navigationSequence = 0;
@@ -556,12 +557,12 @@ const paletteOptions = [
     const slot = document.querySelector<HTMLElement>('[data-avatar-slot]');
     const header = document.querySelector<HTMLElement>('.blog-top-nav');
     const dockSize = 36;
-    const dockGap = 8;
     let slotTop = 0;
     let slotLeft = 20;
     let baseSize = 64;
-    let dockX = 0;
-    let dockY = 15;
+    let headerTop = 0;
+    let headerLeft = 0;
+    let dockOffsetY = 0;
     let lastScrollY = window.scrollY;
     let frame = 0;
 
@@ -573,30 +574,41 @@ const paletteOptions = [
         baseSize = rect.width || 64;
       }
 
-      // 停靠目标：紧贴「菜单」胶囊左侧，与菜单/主题/搜索连成一个整体
-      const anchor = header?.querySelector('.mobile-menu-toggle');
-      if (anchor) {
-        const rect = anchor.getBoundingClientRect();
-        dockX = rect.left - dockGap - dockSize;
-        dockY = rect.top + (rect.height - dockSize) / 2;
+      if (!header) {
+        return;
       }
+
+      // 以导航栏自身为坐标系：停靠点就是导航栏左缘、与操作区同一基线
+      const rect = header.getBoundingClientRect();
+      headerTop = rect.top;
+      headerLeft = rect.left;
+      const anchor = header.querySelector('.mobile-menu-toggle');
+      const anchorRect = anchor ? anchor.getBoundingClientRect() : rect;
+      dockOffsetY = anchorRect.top + (anchorRect.height - dockSize) / 2 - rect.top;
     };
 
     const update = () => {
       frame = 0;
 
+      // 导航收起时停止写入，让头像随导航一起被带走（节奏一致）
+      if (header?.dataset.navHidden === 'true') {
+        return;
+      }
+
+      measure();
+
       const scrollY = window.scrollY;
-      const travel = Math.max(1, slotTop - dockY);
+      const dockAbsY = headerTop + dockOffsetY;
+      const travel = Math.max(1, slotTop - dockAbsY);
       // 缩放区间等于「从内容位走到导航位」的距离
       const progress = Math.min(1, Math.max(0, scrollY / travel));
       const size = baseSize + (dockSize - baseSize) * progress;
-      const naturalY = slotTop - scrollY;
+      const yAbs = Math.max(dockAbsY, slotTop - scrollY);
+      // 横向从内容列左缘过渡到导航栏左缘（两者本就接近，收拢到同一列）
+      const startX = slotLeft - headerLeft;
+      const x = startX * (1 - progress);
+      const y = yAbs - headerTop;
       lastScrollY = scrollY;
-
-      // 缩小到位后并入导航栏左侧并停在那里，随导航一起隐藏/出现
-      const y = Math.max(dockY, naturalY);
-      // 横向同步并入导航栏，形成「头像胶囊 + 菜单/主题/搜索」的整体
-      const x = slotLeft + (dockX - slotLeft) * progress;
 
       floatAvatar.style.width = `${size}px`;
       floatAvatar.style.height = `${size}px`;
@@ -1161,11 +1173,12 @@ const paletteOptions = [
   }
 
   /* 首页浮动头像：移动端随滚动在内容区与导航之间连续移动（坐标由脚本写入） */
+  /* 浮动头像：位于导航栏内部，随导航一起淡出/位移，节奏完全一致 */
   .nav-avatar-float {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    z-index: 60;
+    z-index: 1;
     display: none;
     place-items: center;
     width: 64px;
@@ -1173,13 +1186,6 @@ const paletteOptions = [
     border-radius: 50%;
     visibility: hidden;
     will-change: transform, width, height;
-    transition: opacity 160ms ease;
-  }
-
-  /* 导航收起时，停靠中的头像一并淡出 */
-  .nav-avatar-float[data-nav-hidden='true'] {
-    opacity: 0;
-    pointer-events: none;
   }
 
   .nav-avatar-float::after {
