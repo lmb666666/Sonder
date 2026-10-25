@@ -251,6 +251,29 @@ const paletteOptions = [
   let navigationSequence = 0;
   let activeNavigationId = 0;
 
+  // 视图过渡会替换整个导航 DOM：旧元素上的监听随元素一起消失，
+  // 但挂在 window/document 上的监听必须显式回收，否则每次换页都会堆积。
+  // 按所属元素登记，只在元素已脱离文档（旧页面）时回收，当前页的绑定保持不动。
+  const navListenerDisposers = new Map<Element, Array<() => void>>();
+
+  const registerNavListeners = (owner: Element, disposers: Array<() => void>) => {
+    const existing = navListenerDisposers.get(owner) ?? [];
+    navListenerDisposers.set(owner, [...existing, ...disposers]);
+  };
+
+  const disposeStaleNavListeners = () => {
+    for (const [owner, disposers] of navListenerDisposers) {
+      if (owner.isConnected) {
+        continue;
+      }
+
+      for (const dispose of disposers) {
+        dispose();
+      }
+      navListenerDisposers.delete(owner);
+    }
+  };
+
   const clearPendingNavigation = (navigationId?: number) => {
     if (navigationId && navigationId !== activeNavigationId) {
       return;
@@ -306,7 +329,6 @@ const paletteOptions = [
         const hideAfterOffset = document.querySelector('[data-avatar-float]') ? 200 : 96;
         const scrollIntentDelta = 8;
         let lastScrollY = window.scrollY;
-        let scrollFrame = 0;
 
         const setNavHidden = (hidden: boolean) => {
           header.dataset.navHidden = hidden ? 'true' : 'false';
@@ -333,11 +355,8 @@ const paletteOptions = [
           header.matches(':focus-within');
 
         const updateNavVisibility = () => {
-          scrollFrame = 0;
           const currentScrollY = window.scrollY;
           const scrollDelta = currentScrollY - lastScrollY;
-
-          header.dataset.navScrolled = currentScrollY > 120 ? 'true' : 'false';
 
           if (shouldKeepVisible()) {
             setNavHidden(false);
@@ -353,26 +372,26 @@ const paletteOptions = [
           lastScrollY = currentScrollY;
         };
 
-        window.addEventListener(
-          'scroll',
-          () => {
-            if (scrollFrame) {
-              return;
-            }
+        const onWindowScroll = () => {
+          updateNavVisibility();
+        };
 
-            scrollFrame = window.requestAnimationFrame(updateNavVisibility);
-          },
-          { passive: true },
-        );
-
-        window.addEventListener('resize', () => {
+        const onWindowResize = () => {
           if (window.scrollY <= topRevealOffset) {
             setNavHidden(false);
           }
-        });
+        };
+
+        window.addEventListener('scroll', onWindowScroll, { passive: true });
+        window.addEventListener('resize', onWindowResize);
+        registerNavListeners(header, [
+          () => {
+            window.removeEventListener('scroll', onWindowScroll);
+            window.removeEventListener('resize', onWindowResize);
+          },
+        ]);
 
         setNavHidden(false);
-        header.dataset.navScrolled = window.scrollY > 120 ? 'true' : 'false';
       }
 
       if (toggle && menu && !header.dataset.mobileMenuReady) {
@@ -429,19 +448,28 @@ const paletteOptions = [
           }
         });
 
-        document.addEventListener('click', (event) => {
+        const onDocumentClick = (event: MouseEvent) => {
           if (!header.contains(event.target as Node)) {
             setMenuOpen(false);
             setTocOpen(false);
           }
-        });
+        };
 
-        document.addEventListener('keydown', (event) => {
+        const onDocumentKeydown = (event: KeyboardEvent) => {
           if (event.key === 'Escape') {
             setMenuOpen(false);
             setTocOpen(false);
           }
-        });
+        };
+
+        document.addEventListener('click', onDocumentClick);
+        document.addEventListener('keydown', onDocumentKeydown);
+        registerNavListeners(header, [
+          () => {
+            document.removeEventListener('click', onDocumentClick);
+            document.removeEventListener('keydown', onDocumentKeydown);
+          },
+        ]);
       }
 
       if (!header.dataset.paletteReady) {
@@ -531,17 +559,26 @@ const paletteOptions = [
           syncActiveOption();
         });
 
-        document.addEventListener('click', (event) => {
+        const onPaletteDocumentClick = (event: MouseEvent) => {
           if (header.dataset.paletteOpen === 'true' && !header.contains(event.target as Node)) {
             setPaletteOpen(false);
           }
-        });
+        };
 
-        document.addEventListener('keydown', (event) => {
+        const onPaletteDocumentKeydown = (event: KeyboardEvent) => {
           if (event.key === 'Escape' && header.dataset.paletteOpen === 'true') {
             setPaletteOpen(false);
           }
-        });
+        };
+
+        document.addEventListener('click', onPaletteDocumentClick);
+        document.addEventListener('keydown', onPaletteDocumentKeydown);
+        registerNavListeners(header, [
+          () => {
+            document.removeEventListener('click', onPaletteDocumentClick);
+            document.removeEventListener('keydown', onPaletteDocumentKeydown);
+          },
+        ]);
       }
     }
   };
@@ -563,8 +600,6 @@ const paletteOptions = [
     let headerTop = 0;
     let headerLeft = 0;
     let dockOffsetY = 0;
-    let lastScrollY = window.scrollY;
-    let frame = 0;
 
     const measure = () => {
       if (slot) {
@@ -588,14 +623,9 @@ const paletteOptions = [
     };
 
     const update = () => {
-      frame = 0;
-
-      // 导航收起时停止写入，让头像随导航一起被带走（节奏一致）
-      if (header?.dataset.navHidden === 'true') {
+      if (!header) {
         return;
       }
-
-      measure();
 
       const scrollY = window.scrollY;
       const dockAbsY = headerTop + dockOffsetY;
@@ -608,7 +638,6 @@ const paletteOptions = [
       const startX = slotLeft - headerLeft;
       const x = startX * (1 - progress);
       const y = yAbs - headerTop;
-      lastScrollY = scrollY;
 
       floatAvatar.style.width = `${size}px`;
       floatAvatar.style.height = `${size}px`;
@@ -617,8 +646,10 @@ const paletteOptions = [
     };
 
     // 点击导航栏里的头像胶囊：回到顶部（头像随之回到内容区）
+    const homePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+
     floatAvatar.addEventListener('click', (event) => {
-      if (window.location.pathname.replace(/\/$/, '') !== '') {
+      if (window.location.pathname.replace(/\/$/, '') !== homePath) {
         return;
       }
 
@@ -634,21 +665,27 @@ const paletteOptions = [
       }, 500);
     });
 
-    const schedule = () => {
-      if (!frame) {
-        frame = window.requestAnimationFrame(update);
-      }
+    const remeasure = () => {
+      measure();
+      update();
     };
 
     measure();
     update();
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', () => {
-      measure();
-      update();
-    });
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', remeasure);
+    // 字体/图片加载后内容高度可能变化，重新测量一次内容位
+    window.addEventListener('load', remeasure, { once: true });
+    registerNavListeners(floatAvatar, [
+      () => {
+        window.removeEventListener('scroll', update);
+        window.removeEventListener('resize', remeasure);
+        window.removeEventListener('load', remeasure);
+      },
+    ]);
   };
 
+  disposeStaleNavListeners();
   initMobileTopNav();
   initFloatingAvatar();
   document.addEventListener('astro:before-preparation', (event) => {
@@ -675,6 +712,8 @@ const paletteOptions = [
   });
   document.addEventListener('astro:after-swap', () => clearPendingNavigation());
   document.addEventListener('astro:page-load', () => {
+    // 新页面已替换整个导航 DOM，先回收上一页挂在 window/document 上的监听
+    disposeStaleNavListeners();
     initMobileTopNav();
     initFloatingAvatar();
   });

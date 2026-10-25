@@ -25,7 +25,7 @@ const formatShortDate = new Intl.DateTimeFormat(ui.locale, {
 ---
 
 {
-  latestPosts.length > 0 && (
+  (latestPosts.length > 0 || mobilePosts.length > 0) && (
     <section class="latest-block" aria-label={ui.heatmap.latestPublishedPosts}>
       {/* 移动端：小组标题 + 两张封面卡 + 动态行 */}
       <div class="latest-narrow">
