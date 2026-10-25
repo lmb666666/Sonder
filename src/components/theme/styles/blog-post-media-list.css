@@ -111,32 +111,51 @@
   backdrop-filter: blur(9px);
 }
 
-/* 深色主题：文字条和外框不再沿用封面的浅色主色，改用深纸面 + 深色描边 */
+/* 深色主题：保留封面主色的深色玻璃效果（压暗而不是统一改成黑色） */
 :root[data-theme='dark'] .media-card {
   --media-ring: color-mix(
     in srgb,
-    var(--media-band, var(--paper-line-strong)) 26%,
+    var(--media-band, var(--paper-line-strong)) 46%,
     var(--paper-bg)
   );
 }
 
 :root[data-theme='dark'] .media-body {
-  background-color: var(--paper-surface-muted);
-  background-blend-mode: multiply;
+  background-color: var(--media-band, var(--paper-surface-muted));
+  background-blend-mode: overlay;
 }
 
 :root[data-theme='dark'] .media-body::before {
   background: var(--paper-bg);
-  opacity: 0.62;
+  opacity: 0.5;
 }
 
 :root[data-theme='dark'] .media-body::after {
-  background: linear-gradient(to bottom, rgba(6, 8, 10, 0.2), rgba(6, 8, 10, 0.55));
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 8, 10, 0.14),
+    color-mix(in srgb, var(--media-band, rgb(12, 14, 18)) 14%, rgba(6, 8, 10, 0.42))
+  );
 }
 
 :root[data-theme='dark'] .media-title,
 :root[data-theme='dark'] .media-meta {
   color: var(--paper-ink);
+}
+
+:root[data-theme='dark'] .media-title {
+  opacity: 0.8;
+}
+
+:root[data-theme='dark'] .media-meta {
+  opacity: 0.62;
+}
+
+:root[data-theme='dark'] .media-card:hover .media-title,
+:root[data-theme='dark'] .media-card:hover .media-meta,
+:root[data-theme='dark'] .media-card:focus-visible .media-title,
+:root[data-theme='dark'] .media-card:focus-visible .media-meta {
+  opacity: 1;
 }
 
 .media-title {
