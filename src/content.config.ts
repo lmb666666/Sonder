@@ -450,8 +450,6 @@ const siteConfig = defineCollection({
     siteInfo: z
       .object({
         title: z.string().optional().default('站点信息'),
-        // 技术栈展示（留空隐藏该行）
-        techStack: z.string().optional().default(''),
         uptime: z.boolean().optional().default(true),
         lastUpdated: z.boolean().optional().default(true),
         buildPlatform: z.boolean().optional().default(true),
@@ -467,7 +465,6 @@ const siteConfig = defineCollection({
       .optional()
       .default({
         title: '站点信息',
-        techStack: '',
         uptime: true,
         lastUpdated: true,
         buildPlatform: true,

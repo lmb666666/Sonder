@@ -7,16 +7,11 @@ interface Props {
 
 const { align = 'start' } = Astro.props;
 const { site } = await getSiteConfig();
-const year = new Date().getFullYear();
 ---
 
 <p class:list={['colophon', { 'is-center': align === 'center' }]}>
-  <span class="copyright">&copy; {year} {site.title}.</span>
-  <span class="sep" aria-hidden="true">·</span>
   <span class="powered">
     <span>Powered by</span>
-    <a href="https://astro.build/" target="_blank" rel="noreferrer">Astro</a>
-    <span class="sep" aria-hidden="true">·</span>
     <a href={site.repository} target="_blank" rel="noreferrer">Sonder</a>
   </span>
 </p>
@@ -26,7 +21,6 @@ const year = new Date().getFullYear();
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.35em 0.5em;
     margin: 0;
     color: var(--paper-ink-faint);
     font-family: var(--font-meta);
@@ -39,19 +33,10 @@ const year = new Date().getFullYear();
     text-align: center;
   }
 
-  .copyright {
-    font-variant-numeric: tabular-nums;
-  }
-
   .powered {
     display: inline-flex;
-    flex-wrap: wrap;
     align-items: baseline;
     gap: 0.35em;
-  }
-
-  .sep {
-    opacity: 0.6;
   }
 
   a {

@@ -11,8 +11,6 @@ timeEstablished = "2026-10-04"
 
 [config.siteInfo]
 title = "站点信息"
-# 技术栈展示（留空隐藏该行）
-techStack = "Astro · Tailwind CSS · Pagefind"
 uptime = true
 lastUpdated = true
 buildPlatform = true

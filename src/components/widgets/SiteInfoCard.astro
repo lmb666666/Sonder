@@ -41,9 +41,6 @@ if (siteInfo.lastUpdated) {
 if (siteInfo.imageBed.enabled && siteInfo.imageBed.name) {
   rows.push({ label: '图片存储', value: siteInfo.imageBed.name });
 }
-if (siteInfo.techStack.trim()) {
-  rows.push({ label: '技术栈', value: siteInfo.techStack.trim() });
-}
 if (siteInfo.buildPlatform) {
   const platform = detectBuildPlatform();
   if (platform) rows.push({ label: '构建平台', value: platform });
