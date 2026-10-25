@@ -1,7 +1,22 @@
 {
   "locale": "en",
   "nav": {
-    "menu": "Menu"
+    "menu": "Menu",
+    "appearance": "Appearance",
+    "themeMode": "Theme mode",
+    "light": "Light",
+    "dark": "Dark",
+    "accentColor": "Accent color"
+  },
+  "palette": {
+    "greenSoft": "Moss green",
+    "greenVivid": "Leaf green",
+    "roseSoft": "Rose",
+    "pinkSoft": "Cherry pink",
+    "purpleSoft": "Lavender",
+    "blueSoft": "Ink blue",
+    "orangeSoft": "Warm orange",
+    "brownSoft": "Sepia"
   },
   "heatmap": {
     "totalPosts": "Total posts",

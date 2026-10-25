@@ -38,7 +38,9 @@ if (siteInfo.lastUpdated) {
     tip: '构建于页面生成时刻',
   });
 }
-rows.push({ label: '站点程序', value: 'Sonder' });
+if (siteInfo.program.trim()) {
+  rows.push({ label: '站点程序', value: siteInfo.program.trim() });
+}
 if (siteInfo.imageBed.enabled && siteInfo.imageBed.name) {
   rows.push({ label: '图片存储', value: siteInfo.imageBed.name });
 }

@@ -21,7 +21,8 @@ import demoFeed from '../data/friend-circle-demo.json';
 import { allFriendLinks, friendLinkGroups } from '../data/friends';
 
 const siteConfig = await getSiteConfig();
-const { site, theme, profile } = siteConfig;
+const { site, theme, profile, pages } = siteConfig;
+const pageMeta = pages.links;
 const htmlLang = getHtmlLang(siteConfig);
 const palette = theme.palette;
 
@@ -103,15 +104,15 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
 <!doctype html>
 <html lang={htmlLang} data-palette={palette}>
   <head>
-    <BaseHead title={`朋友 | ${site.title}`} description="朋友的博客与站点。" />
+    <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
   </head>
   <body>
     <BlogTopNav />
     <main class="links-page" data-pagefind-body>
       <PageHero
-        kicker="Friends"
-        title="朋友"
-        subtitle="那些人，那些事。"
+        kicker={pageMeta.kicker}
+        title={pageMeta.title}
+        subtitle={pageMeta.subtitle}
         note={`共 ${totalLinks} 位朋友，其中 ${rssCount} 位提供订阅源，动态会出现在下方朋友圈。`}
       />
 

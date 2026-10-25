@@ -21,6 +21,21 @@ type RawUiText = {
   locale: string;
   nav: {
     menu: string;
+    appearance: string;
+    themeMode: string;
+    light: string;
+    dark: string;
+    accentColor: string;
+  };
+  palette: {
+    greenSoft: string;
+    greenVivid: string;
+    roseSoft: string;
+    pinkSoft: string;
+    purpleSoft: string;
+    blueSoft: string;
+    orangeSoft: string;
+    brownSoft: string;
   };
   heatmap: {
     totalPosts: string;
@@ -188,6 +203,7 @@ function createUiText(raw: RawUiText): UiText {
   return {
     locale: raw.locale,
     nav: raw.nav,
+    palette: raw.palette,
     heatmap: {
       ...raw.heatmap,
       openLatestPost: (title) => formatMessage(raw.heatmap.openLatestPost, { title }),

@@ -1,15 +1,23 @@
 ---
 import { getSiteConfig } from '../data/site';
 
-const { site } = await getSiteConfig();
+const { site, siteInfo } = await getSiteConfig();
 const year = new Date().getFullYear();
+const program = siteInfo.program.trim();
 ---
 
 <footer>
   <p class="copyright">&copy; {year} {site.title}.</p>
-  <p class="powered">
-    Powered by <a href={site.repository} target="_blank" rel="noreferrer">Sonder</a>
-  </p>
+  {
+    program && (
+      <p class="powered">
+        Powered by{' '}
+        <a href={site.repository} target="_blank" rel="noreferrer">
+          {program}
+        </a>
+      </p>
+    )
+  }
 </footer>
 
 <style>

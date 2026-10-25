@@ -1,7 +1,22 @@
 {
   "locale": "zh-TW",
   "nav": {
-    "menu": "選單"
+    "menu": "選單",
+    "appearance": "外觀",
+    "themeMode": "深淺色",
+    "light": "淺色",
+    "dark": "深色",
+    "accentColor": "主題色"
+  },
+  "palette": {
+    "greenSoft": "苔綠",
+    "greenVivid": "葉綠",
+    "roseSoft": "玫瑰",
+    "pinkSoft": "櫻粉",
+    "purpleSoft": "薰衣草",
+    "blueSoft": "墨藍",
+    "orangeSoft": "暖橙",
+    "brownSoft": "棕褐"
   },
   "heatmap": {
     "totalPosts": "總文章",

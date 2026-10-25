@@ -1,5 +1,11 @@
+---
+import { getSiteConfig } from '../../data/site';
+
+const { site } = await getSiteConfig();
+---
+
 <main class="flow-shell" data-pagefind-body>
-  <section class="flow-grid" aria-label="Sonder 个人出版物">
+  <section class="flow-grid" aria-label={`${site.title} 个人出版物`}>
     <section class="flow-column main-column">
       <slot name="intro" />
       <slot name="latest" />

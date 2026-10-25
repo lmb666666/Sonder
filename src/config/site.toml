@@ -11,6 +11,8 @@ timeEstablished = "2026-10-04"
 
 [config.siteInfo]
 title = "站点信息"
+# 站点程序（显示在站点信息卡；留空隐藏该行）
+program = "Sonder"
 uptime = true
 lastUpdated = true
 buildPlatform = true
@@ -119,6 +121,7 @@ showTrail = true
 
 [config.pages.moments]
 title = "动态"
+kicker = "Moments"
 subtitle = "记录生活点滴。"
 note = ""
 # Ech0 后端地址（可选）。配置后动态页改为在浏览器里拉取真实动态；留空使用内置演示数据。
@@ -128,8 +131,14 @@ showPoweredBy = true
 
 [config.pages.media]
 title = "书影音"
+kicker = "Media"
 subtitle = "读过、看过、听过的作品。"
 note = ""
+
+[config.pages.links]
+title = "朋友"
+kicker = "Friends"
+subtitle = "那些人，那些事。"
 
 [config.comments.giscus]
 repo = ""

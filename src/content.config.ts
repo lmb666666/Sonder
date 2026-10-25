@@ -251,8 +251,14 @@ const defaultPagesConfig = {
   },
   media: {
     title: 'Media',
+    kicker: 'Media',
     subtitle: 'Books, films, and music worth returning to.',
     note: 'A personal shelf for what I have read, watched, and heard.',
+  },
+  links: {
+    title: '朋友',
+    kicker: 'Friends',
+    subtitle: '那些人，那些事。',
   },
 } as const;
 
@@ -310,12 +316,14 @@ const vibePageSchema = z.object({
 
 const mediaPageSchema = z.object({
   title: z.string().optional().default(defaultPagesConfig.media.title),
+  kicker: z.string().optional().default(defaultPagesConfig.media.kicker),
   subtitle: z.string().optional().default(defaultPagesConfig.media.subtitle),
   note: z.string().optional().default(defaultPagesConfig.media.note),
 });
 
 const momentsPageSchema = z.object({
   title: z.string().optional().default('动态'),
+  kicker: z.string().optional().default('Moments'),
   subtitle: z.string().optional().default('记录生活点滴。'),
   note: z.string().optional().default(''),
   // Ech0 后端地址（可选）。配置后页面在浏览器里从 Ech0 拉取动态；
@@ -323,6 +331,12 @@ const momentsPageSchema = z.object({
   apiUrl: z.string().optional().default(''),
   pageSize: z.number().int().positive().optional().default(20),
   showPoweredBy: z.boolean().optional().default(true),
+});
+
+const linksPageSchema = z.object({
+  title: z.string().optional().default(defaultPagesConfig.links.title),
+  kicker: z.string().optional().default(defaultPagesConfig.links.kicker),
+  subtitle: z.string().optional().default(defaultPagesConfig.links.subtitle),
 });
 
 const siteConfig = defineCollection({
@@ -450,6 +464,7 @@ const siteConfig = defineCollection({
     siteInfo: z
       .object({
         title: z.string().optional().default('站点信息'),
+        program: z.string().optional().default('Sonder'),
         uptime: z.boolean().optional().default(true),
         lastUpdated: z.boolean().optional().default(true),
         buildPlatform: z.boolean().optional().default(true),
@@ -465,6 +480,7 @@ const siteConfig = defineCollection({
       .optional()
       .default({
         title: '站点信息',
+        program: 'Sonder',
         uptime: true,
         lastUpdated: true,
         buildPlatform: true,
@@ -504,12 +520,14 @@ const siteConfig = defineCollection({
         media: mediaPageSchema.optional().default(defaultPagesConfig.media),
         moments: momentsPageSchema.optional().default({
           title: '动态',
+          kicker: 'Moments',
           subtitle: '记录生活点滴。',
           note: '',
           apiUrl: '',
           pageSize: 20,
           showPoweredBy: true,
         }),
+        links: linksPageSchema.optional().default(defaultPagesConfig.links),
       })
       .optional()
       .default(defaultPagesConfig),
@@ -524,7 +542,7 @@ const siteConfig = defineCollection({
       }),
       latest: z
         .object({
-          count: z.number().int().positive().default(1),
+          count: z.number().int().positive().default(2),
           heatmapWeeks: z.number().int().positive().default(24),
           showHeatmapLatest: z.boolean().optional().default(true),
           excludeDraft: z.boolean().optional().default(true),
@@ -533,7 +551,7 @@ const siteConfig = defineCollection({
         })
         .optional()
         .default({
-          count: 1,
+          count: 2,
           heatmapWeeks: 24,
           showHeatmapLatest: true,
           excludeDraft: true,

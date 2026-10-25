@@ -16,6 +16,7 @@ const htmlLang = getHtmlLang(siteConfig);
 const palette = theme.palette;
 const pageMeta = (siteConfig.pages as Record<string, unknown>).moments as {
   title: string;
+  kicker: string;
   subtitle: string;
   note: string;
   apiUrl: string;
@@ -57,7 +58,7 @@ const extensionLabels: Record<string, string> = {
   <body>
     <BlogTopNav />
     <main class="moments-page" data-pagefind-body>
-      <PageHero kicker="Moments" title={pageMeta.title} subtitle={pageMeta.subtitle}>
+      <PageHero kicker={pageMeta.kicker} title={pageMeta.title} subtitle={pageMeta.subtitle}>
         <p class="moments-stats" data-moments-stats>
           {ech0Mode ? '正在从 Ech0 拉取动态…' : `${initialItems.length} 条动态`}
         </p>

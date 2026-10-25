@@ -57,14 +57,19 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
 
 // 控制面板可切换的色盘（与 palettes.css 的 data-palette 一一对应）
 const paletteOptions = [
-  { id: 'green-soft', label: '苔绿', accent: '#6b7d70', accentDark: '#a8baa9' },
-  { id: 'green-vivid', label: '叶绿', accent: '#4e8a61', accentDark: '#93c9a1' },
-  { id: 'rose-soft', label: '玫瑰', accent: '#9b6b70', accentDark: '#d2a6ab' },
-  { id: 'pink-soft', label: '樱粉', accent: '#a66d8a', accentDark: '#d6a8c2' },
-  { id: 'purple-soft', label: '薰衣草', accent: '#7b6fa8', accentDark: '#b9addd' },
-  { id: 'blue-soft', label: '墨蓝', accent: '#5b7488', accentDark: '#a4b6c6' },
-  { id: 'orange-soft', label: '暖橙', accent: '#9a7650', accentDark: '#d0b18a' },
-  { id: 'brown-soft', label: '棕褐', accent: '#836f5d', accentDark: '#c3b09d' },
+  { id: 'green-soft', label: ui.palette.greenSoft, accent: '#6b7d70', accentDark: '#a8baa9' },
+  { id: 'green-vivid', label: ui.palette.greenVivid, accent: '#4e8a61', accentDark: '#93c9a1' },
+  { id: 'rose-soft', label: ui.palette.roseSoft, accent: '#9b6b70', accentDark: '#d2a6ab' },
+  { id: 'pink-soft', label: ui.palette.pinkSoft, accent: '#a66d8a', accentDark: '#d6a8c2' },
+  {
+    id: 'purple-soft',
+    label: ui.palette.purpleSoft,
+    accent: '#7b6fa8',
+    accentDark: '#b9addd',
+  },
+  { id: 'blue-soft', label: ui.palette.blueSoft, accent: '#5b7488', accentDark: '#a4b6c6' },
+  { id: 'orange-soft', label: ui.palette.orangeSoft, accent: '#9a7650', accentDark: '#d0b18a' },
+  { id: 'brown-soft', label: ui.palette.brownSoft, accent: '#836f5d', accentDark: '#c3b09d' },
 ];
 ---
 
@@ -170,8 +175,8 @@ const paletteOptions = [
     </div>
 
     <div class="mobile-menu-appearance">
-      <p class="mobile-menu-section-title">外观</p>
-      <div class="mobile-theme-switch" role="group" aria-label="深浅色">
+      <p class="mobile-menu-section-title">{ui.nav.appearance}</p>
+      <div class="mobile-theme-switch" role="group" aria-label={ui.nav.themeMode}>
         <button
           type="button"
           class="mobile-theme-option"
@@ -179,7 +184,7 @@ const paletteOptions = [
           aria-pressed="false"
         >
           <Sun size={15} stroke-width={2} aria-hidden="true" />
-          浅色
+          {ui.nav.light}
         </button>
         <button
           type="button"
@@ -188,12 +193,12 @@ const paletteOptions = [
           aria-pressed="false"
         >
           <Moon size={15} stroke-width={2} aria-hidden="true" />
-          深色
+          {ui.nav.dark}
         </button>
       </div>
 
-      <p class="mobile-menu-section-title">主题色</p>
-      <div class="mobile-palette-grid" role="group" aria-label="主题色">
+      <p class="mobile-menu-section-title">{ui.nav.accentColor}</p>
+      <div class="mobile-palette-grid" role="group" aria-label={ui.nav.accentColor}>
         {
           paletteOptions.map((option) => (
             <button
@@ -223,7 +228,7 @@ const paletteOptions = [
       aria-label="打开主题色面板"
       aria-expanded="false"
       aria-controls="nav-palette-panel"
-      title="主题色"
+      title={ui.nav.accentColor}
     >
       <Palette size={17} stroke-width={2} />
     </button>
@@ -253,10 +258,10 @@ const paletteOptions = [
     class="palette-panel"
     id="nav-palette-panel"
     role="group"
-    aria-label="主题色"
+    aria-label={ui.nav.accentColor}
     data-palette-panel
   >
-    <p class="palette-panel-title">主题色</p>
+    <p class="palette-panel-title">{ui.nav.accentColor}</p>
     <div class="palette-options">
       {
         paletteOptions.map((option) => (
@@ -1291,7 +1296,7 @@ const paletteOptions = [
 
     .mobile-palette-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 4px;
     }
 
