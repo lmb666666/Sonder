@@ -15,6 +15,8 @@
 }
 
 .media-card {
+  --media-ring: var(--media-band, var(--paper-line-strong));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -22,7 +24,7 @@
   border-radius: 24px;
   background: var(--paper-surface-muted);
   /* krisyan 式彩色描边：2px ring，颜色为逐卡提取的封面主色。 */
-  box-shadow: 0 0 0 2px var(--media-band, var(--paper-line-strong));
+  box-shadow: 0 0 0 2px var(--media-ring);
   text-decoration: none;
   transition:
     transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -33,7 +35,7 @@
 .media-card:hover,
 .media-card:focus-visible {
   box-shadow:
-    0 0 0 2px var(--media-band, var(--paper-line-strong)),
+    0 0 0 2px var(--media-ring),
     var(--paper-shadow-lift);
   transform: translateY(-2px);
 }
@@ -107,6 +109,34 @@
   content: '';
   -webkit-backdrop-filter: blur(9px);
   backdrop-filter: blur(9px);
+}
+
+/* 深色主题：文字条和外框不再沿用封面的浅色主色，改用深纸面 + 深色描边 */
+:root[data-theme='dark'] .media-card {
+  --media-ring: color-mix(
+    in srgb,
+    var(--media-band, var(--paper-line-strong)) 26%,
+    var(--paper-bg)
+  );
+}
+
+:root[data-theme='dark'] .media-body {
+  background-color: var(--paper-surface-muted);
+  background-blend-mode: multiply;
+}
+
+:root[data-theme='dark'] .media-body::before {
+  background: var(--paper-bg);
+  opacity: 0.62;
+}
+
+:root[data-theme='dark'] .media-body::after {
+  background: linear-gradient(to bottom, rgba(6, 8, 10, 0.2), rgba(6, 8, 10, 0.55));
+}
+
+:root[data-theme='dark'] .media-title,
+:root[data-theme='dark'] .media-meta {
+  color: var(--paper-ink);
 }
 
 .media-title {
