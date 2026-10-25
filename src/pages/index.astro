@@ -3,8 +3,8 @@ import { getCollection } from 'astro:content';
 import IntroCard from '../components/cards/IntroCard.astro';
 import ConnectCard from '../components/cards/ConnectCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
-import Colophon from '../components/Colophon.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
+import Footer from '../components/Footer.astro';
 import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
 import LatestUpdates from '../components/widgets/LatestUpdates.astro';
 import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
@@ -62,9 +62,21 @@ const stats = [
     <Fragment slot="connect">
       <ConnectCard links={home.links} />
     </Fragment>
-
-    <Fragment slot="sideFooter">
-      <Colophon align="center" powered />
-    </Fragment>
   </DashboardFlow>
+  <div class="home-footer">
+    <Footer />
+  </div>
 </BaseLayout>
+
+<style>
+  /* 桌面首页的版权在站点信息卡里；移动端站点信息收起后使用全站页脚 */
+  .home-footer {
+    display: none;
+  }
+
+  @media (max-width: 820px) {
+    .home-footer {
+      display: block;
+    }
+  }
+</style>
