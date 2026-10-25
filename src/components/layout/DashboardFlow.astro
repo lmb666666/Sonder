@@ -18,7 +18,7 @@
   .flow-shell {
     width: min(100%, var(--layout-shell-width));
     margin: 0 auto;
-    padding: 132px var(--layout-page-gutter) var(--layout-page-bottom);
+    padding: 112px var(--layout-page-gutter) var(--layout-page-bottom);
   }
 
   .flow-grid {
@@ -35,13 +35,13 @@
     min-width: 0;
   }
 
-  /* 主列下移：与侧栏底部对齐，避免左侧内容过早结束留出空档 */
+  /* 主列上移：首屏内尽量完整展示最新文章卡 */
   .main-column {
-    padding-top: 95px;
+    padding-top: 32px;
   }
 
   .flow-grid .main-column :global(.latest-block) {
-    margin-top: 55px;
+    margin-top: 28px;
   }
 
   /* 侧栏为身份与寻路，跟随滚动（主栏承载长内容） */
@@ -95,6 +95,22 @@
   .flow-grid :global(.intro-card) {
     min-height: 0;
     padding: 0 0 8px;
+  }
+
+  /* 桌面双栏：最新卡收窄一档，侧栏整体下移并用更松的间距向下铺开 */
+  @media (min-width: 921px) {
+    .side-column {
+      gap: 38px;
+      margin-top: 70px;
+    }
+
+    .flow-grid :global(.heatmap-card) {
+      margin-top: 0;
+    }
+
+    .flow-grid .main-column :global(.latest-block) {
+      max-width: 680px;
+    }
   }
 
   @media (max-width: 920px) {
