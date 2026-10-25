@@ -3,15 +3,32 @@ import { getSiteConfig } from '../data/site';
 
 interface Props {
   align?: 'start' | 'center';
+  powered?: boolean;
 }
 
-const { align = 'start' } = Astro.props;
-const { site } = await getSiteConfig();
+const { align = 'start', powered = false } = Astro.props;
+const { site, siteInfo, profile } = await getSiteConfig();
 const year = new Date().getFullYear();
+const program = siteInfo.program.trim();
 ---
 
 <p class:list={['colophon', { 'is-center': align === 'center' }]}>
-  <span class="copyright">&copy; {year} {site.title}.</span>
+  <span class="copyright">&copy; {year} {profile.name}.</span>
+  {
+    powered && program && (
+      <>
+        <span class="sep" aria-hidden="true">
+          ·
+        </span>
+        <span class="powered">
+          <span>Powered by</span>
+          <a href={site.repository} target="_blank" rel="noreferrer">
+            {program}
+          </a>
+        </span>
+      </>
+    )
+  }
 </p>
 
 <style>
@@ -19,6 +36,7 @@ const year = new Date().getFullYear();
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
+    gap: 0.35em 0.5em;
     margin: 0;
     color: var(--paper-ink-faint);
     font-family: var(--font-meta);
@@ -33,5 +51,30 @@ const year = new Date().getFullYear();
 
   .copyright {
     font-variant-numeric: tabular-nums;
+  }
+
+  .powered {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+  }
+
+  .sep {
+    opacity: 0.6;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--paper-line);
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    color: var(--paper-accent);
+    border-color: currentColor;
   }
 </style>

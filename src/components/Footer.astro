@@ -1,13 +1,13 @@
 ---
 import { getSiteConfig } from '../data/site';
 
-const { site, siteInfo } = await getSiteConfig();
+const { site, siteInfo, profile } = await getSiteConfig();
 const year = new Date().getFullYear();
 const program = siteInfo.program.trim();
 ---
 
 <footer>
-  <p class="copyright">&copy; {year} {site.title}.</p>
+  <p class="copyright">&copy; {year} {profile.name}.</p>
   {
     program && (
       <p class="powered">

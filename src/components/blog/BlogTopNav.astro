@@ -457,6 +457,7 @@ const paletteOptions = [
             'aria-label',
             open ? 'Close navigation menu' : 'Open navigation menu',
           );
+          header.dispatchEvent(new CustomEvent('navfolio:menu-toggle'));
         };
         const setTocOpen = (open: boolean) => {
           if (!tocTrigger || !tocMenu) {
@@ -695,6 +696,8 @@ const paletteOptions = [
     let headerTop = 0;
     let headerLeft = 0;
     let dockOffsetY = 0;
+    let lastMenuOpen = header?.dataset.mobileMenuOpen === 'true';
+    let menuTransitionTimer: number | undefined;
 
     const measure = () => {
       if (slot) {
@@ -719,6 +722,25 @@ const paletteOptions = [
 
     const update = () => {
       if (!header) {
+        return;
+      }
+
+      const menuOpen = header.dataset.mobileMenuOpen === 'true';
+      if (menuOpen !== lastMenuOpen) {
+        lastMenuOpen = menuOpen;
+        floatAvatar.style.transition = 'transform 220ms ease, width 180ms ease, height 180ms ease';
+        window.clearTimeout(menuTransitionTimer);
+        menuTransitionTimer = window.setTimeout(() => {
+          floatAvatar.style.transition = '';
+        }, 260);
+      }
+
+      // 菜单展开时把首页头像停靠进导航左缘，避免被弹出面板遮住
+      if (menuOpen) {
+        floatAvatar.style.width = `${dockSize}px`;
+        floatAvatar.style.height = `${dockSize}px`;
+        floatAvatar.style.transform = `translate3d(0, ${dockOffsetY}px, 0)`;
+        floatAvatar.style.visibility = 'visible';
         return;
       }
 
@@ -765,6 +787,9 @@ const paletteOptions = [
       update();
     };
 
+    const onMenuToggle = () => update();
+    header?.addEventListener('navfolio:menu-toggle', onMenuToggle);
+
     measure();
     update();
     window.addEventListener('scroll', update, { passive: true });
@@ -773,6 +798,8 @@ const paletteOptions = [
     window.addEventListener('load', remeasure, { once: true });
     registerNavListeners(floatAvatar, [
       () => {
+        header?.removeEventListener('navfolio:menu-toggle', onMenuToggle);
+        window.clearTimeout(menuTransitionTimer);
         window.removeEventListener('scroll', update);
         window.removeEventListener('resize', remeasure);
         window.removeEventListener('load', remeasure);
@@ -1456,7 +1483,6 @@ const paletteOptions = [
     background: var(--paper-surface);
     box-shadow: var(--paper-shadow);
     visibility: hidden;
-    transition: opacity 160ms ease;
     will-change: transform, width, height;
   }
 
@@ -1559,12 +1585,6 @@ const paletteOptions = [
 
     .nav-avatar-float {
       display: grid;
-    }
-
-    /* 菜单展开时头像被面板覆盖，淡出避免透视与遮挡闪烁 */
-    .blog-top-nav[data-mobile-menu-open='true'] .nav-avatar-float {
-      opacity: 0;
-      pointer-events: none;
     }
 
     .nav-pill .mobile-menu-toggle,
