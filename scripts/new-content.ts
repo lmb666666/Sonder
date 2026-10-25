@@ -1,15 +1,15 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { renderScaffoldTemplate } from '@navfolio/pages';
-import type { NavfolioContentExtension, NavfolioScaffoldTemplateContext } from '@navfolio/pages';
-import navfolioConfig from '../navfolio.config';
+import { renderScaffoldTemplate } from '@sonder/pages';
+import type { SonderContentExtension, SonderScaffoldTemplateContext } from '@sonder/pages';
+import sonderConfig from '../sonder.config';
 import { getConfiguredPageModules, getResolvedPageModuleScaffolds } from '../src/plugins/config';
 
 interface ContentScaffold {
   command: string;
   collection: string;
   directory: string;
-  defaultExtension: NavfolioContentExtension;
+  defaultExtension: SonderContentExtension;
   template: URL;
 }
 
@@ -77,7 +77,7 @@ const templateContext = {
   slug,
   isoDate,
   date: isoDate.slice(0, 10),
-} satisfies NavfolioScaffoldTemplateContext;
+} satisfies SonderScaffoldTemplateContext;
 const outputDirectory = outputDirectoryArg ?? scaffold.directory;
 const relativePath = path.join(outputDirectory, `${slug}.${extension}`);
 const targetPath = path.resolve(relativePath);
@@ -97,7 +97,7 @@ console.log(`Created new ${scaffold.collection} file:`);
 console.log(relativePath);
 
 function getContentScaffolds(): ContentScaffold[] {
-  const moduleScaffolds = getResolvedPageModuleScaffolds(navfolioConfig).map((scaffold) => ({
+  const moduleScaffolds = getResolvedPageModuleScaffolds(sonderConfig).map((scaffold) => ({
     command: scaffold.command,
     collection: scaffold.collection,
     directory: scaffold.directory,
@@ -125,7 +125,7 @@ function rejectDuplicateCommands(scaffolds: ContentScaffold[]): ContentScaffold[
 function getDisabledModuleScaffold(command: string | undefined) {
   if (!command) return undefined;
 
-  return getConfiguredPageModules(navfolioConfig).find(
+  return getConfiguredPageModules(sonderConfig).find(
     (module) => module.enabled === false && module.scaffold?.command === command,
   )?.scaffold;
 }
@@ -133,8 +133,8 @@ function getDisabledModuleScaffold(command: string | undefined) {
 function resolveExtension(
   args: string[],
   filename: string,
-  defaultExtension: NavfolioContentExtension,
-): NavfolioContentExtension {
+  defaultExtension: SonderContentExtension,
+): SonderContentExtension {
   if (args.includes('--md') && args.includes('--mdx')) {
     console.error('Choose only one extension option: --md or --mdx.');
     process.exit(1);
@@ -173,7 +173,7 @@ function readScaffoldTemplate(scaffold: ContentScaffold): string {
 function renderContentTemplate(
   scaffold: ContentScaffold,
   template: string,
-  context: NavfolioScaffoldTemplateContext,
+  context: SonderScaffoldTemplateContext,
 ): string {
   try {
     return renderScaffoldTemplate(template, context);
@@ -203,7 +203,7 @@ ${scaffolds.map((scaffold) => `- bun run ${scaffold.command}:new <filename> [out
 }
 
 function printDisabledContentType(command: string): void {
-  console.error(`The ${command} content module is disabled in navfolio.config.ts.`);
+  console.error(`The ${command} content module is disabled in sonder.config.ts.`);
 }
 
 function printTooManyArguments(command: string): void {

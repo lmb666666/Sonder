@@ -56,9 +56,9 @@ const ui = getUiText(await getSiteConfig());
 }
 
 <script>
-  import { mountNavfolioTocSpy } from '../../utils/toc-spy';
+  import { mountSonderTocSpy } from '../../utils/toc-spy';
 
-  mountNavfolioTocSpy();
+  mountSonderTocSpy();
 
   const initMobileTocToggle = () => {
     for (const toc of document.querySelectorAll<HTMLElement>('[data-mobile-toc]')) {

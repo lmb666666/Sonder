@@ -20,9 +20,9 @@ import { ArrowUp } from 'lucide-astro';
   };
 
   const scrollTopWindow = window as Window & {
-    __navfolioScrollTopState?: ScrollToTopState;
+    __sonderScrollTopState?: ScrollToTopState;
   };
-  const scrollTopState = (scrollTopWindow.__navfolioScrollTopState ??= {
+  const scrollTopState = (scrollTopWindow.__sonderScrollTopState ??= {
     lifecycleReady: false,
     observers: new Set<IntersectionObserver>(),
   });

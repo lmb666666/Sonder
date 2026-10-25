@@ -1,9 +1,9 @@
 import remarkCallouts from './remark-callouts.js';
-import type { CalloutPluginOptions, NavfolioPlugin } from './types.js';
+import type { CalloutPluginOptions, SonderPlugin } from './types.js';
 
-export function calloutPlugin(options: CalloutPluginOptions = {}): NavfolioPlugin {
+export function calloutPlugin(options: CalloutPluginOptions = {}): SonderPlugin {
   return {
-    name: '@navfolio/plugin-callout',
+    name: '@sonder/plugin-callout',
     enabled: options.enabled ?? true,
     astro: {
       remarkPlugins: [remarkCallouts],

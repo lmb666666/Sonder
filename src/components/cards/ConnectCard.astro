@@ -12,7 +12,7 @@ const { links } = Astro.props as { links: ConnectLink[] };
 
 <script>
   type ConnectCopyWindow = Window & {
-    __navfolioConnectCopyController?: AbortController;
+    __sonderConnectCopyController?: AbortController;
   };
 
   const connectWindow = window as ConnectCopyWindow;
@@ -65,11 +65,11 @@ const { links } = Astro.props as { links: ConnectLink[] };
     copyTimeouts.set(button, timeoutId);
   };
 
-  connectWindow.__navfolioConnectCopyController?.abort();
+  connectWindow.__sonderConnectCopyController?.abort();
 
-  connectWindow.__navfolioConnectCopyController = new AbortController();
+  connectWindow.__sonderConnectCopyController = new AbortController();
   document.addEventListener('click', handleConnectCopyClick, {
-    signal: connectWindow.__navfolioConnectCopyController.signal,
+    signal: connectWindow.__sonderConnectCopyController.signal,
   });
 </script>
 

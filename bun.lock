@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "astro-navfolio",
+      "name": "sonder",
       "dependencies": {
         "@astrojs/mdx": "^7.0.3",
         "@astrojs/rss": "^4.0.19",

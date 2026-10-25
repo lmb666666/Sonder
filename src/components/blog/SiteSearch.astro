@@ -1,7 +1,7 @@
 ---
 import { Search, X } from 'lucide-astro';
 import { getSiteConfig, type SiteSearch as SiteSearchConfig } from '../../data/site';
-import navfolioConfig from '../../../navfolio.config';
+import sonderConfig from '../../../sonder.config';
 import { getPageModuleRoute } from '../../plugins/config';
 import { getUiText } from '../../utils/ui-text';
 
@@ -12,8 +12,7 @@ interface Props {
 const { search } = Astro.props;
 const ui = getUiText(await getSiteConfig());
 const shortcutLabel = search.shortcut === 'mod+k' ? 'Ctrl K / Cmd K' : search.shortcut;
-const projectsRoute = getPageModuleRoute(navfolioConfig, 'projects');
-const vibeRoute = getPageModuleRoute(navfolioConfig, 'vibe');
+const projectsRoute = getPageModuleRoute(sonderConfig, 'projects');
 ---
 
 <div
@@ -26,10 +25,8 @@ const vibeRoute = getPageModuleRoute(navfolioConfig, 'vibe');
   data-search-unavailable-label={ui.search.unavailable}
   data-search-kind-blog-note={ui.search.resultKinds.blogNote}
   data-search-kind-blog-index={ui.search.resultKinds.blogIndex}
-  data-search-kind-vibe={ui.search.resultKinds.vibe}
   data-search-kind-project={ui.search.resultKinds.project}
   data-search-kind-page={ui.search.resultKinds.page}
-  data-search-route-vibe={vibeRoute}
   data-search-route-projects={projectsRoute}
   data-search-match-label={ui.search.matchedPassage}
   data-pagefind-ignore

@@ -128,7 +128,6 @@
     "resultKinds": {
       "blogNote": "Post",
       "blogIndex": "Post index",
-      "vibe": "Vibe",
       "project": "Project",
       "page": "Page"
     },

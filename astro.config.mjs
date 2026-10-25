@@ -9,7 +9,7 @@ import { parse } from 'smol-toml';
 
 import tailwindcss from '@tailwindcss/vite';
 
-import navfolioConfig from './navfolio.config';
+import sonderConfig from './sonder.config';
 import { getAstroPluginConfig } from './src/plugins/config';
 
 /**
@@ -25,7 +25,7 @@ const mathConfig = isRecord(configToml.math) ? configToml.math : {};
 const configuredSiteUrl = siteConfig.url;
 const configuredMathRenderer = mathConfig.render;
 const mathRenderer = configuredMathRenderer === 'mathjax' ? 'mathjax' : 'katex';
-const astroPluginConfig = getAstroPluginConfig(navfolioConfig, { mathRenderer });
+const astroPluginConfig = getAstroPluginConfig(sonderConfig, { mathRenderer });
 /**
  * @param {unknown} value
  */
@@ -76,80 +76,76 @@ export default defineConfig({
     plugins: [tailwindcss()],
     resolve: {
       alias: [
-        // Vendored @navfolio/* packages (see VENDORED.md) — specifiers stay
+        // Vendored @sonder/* packages — specifiers stay
         // unchanged, they resolve to in-repo source instead of node_modules.
         {
-          find: /^@navfolio\/theme-default\/components\/(.*)$/,
+          find: /^@sonder\/theme-default\/components\/(.*)$/,
           replacement: fileURLToPath(
             new URL('./src/components/theme/components/$1', import.meta.url),
           ),
         },
         {
-          find: /^@navfolio\/theme-default\/styles\/(.*)$/,
+          find: /^@sonder\/theme-default\/styles\/(.*)$/,
           replacement: fileURLToPath(new URL('./src/components/theme/styles/$1', import.meta.url)),
         },
         {
-          find: /^@navfolio\/theme-default$/,
+          find: /^@sonder\/theme-default$/,
           replacement: fileURLToPath(new URL('./src/components/theme/index.ts', import.meta.url)),
         },
         {
-          find: /^@navfolio\/mdx-components\/(.*)$/,
+          find: /^@sonder\/mdx-components\/(.*)$/,
           replacement: fileURLToPath(new URL('./src/components/mdx/$1', import.meta.url)),
         },
         {
-          find: /^@navfolio\/plugin-markdown\/styles\.css$/,
+          find: /^@sonder\/plugin-markdown\/styles\.css$/,
           replacement: fileURLToPath(new URL('./src/plugins/markdown/styles.css', import.meta.url)),
         },
         {
-          find: /^@navfolio\/plugin-markdown$/,
+          find: /^@sonder\/plugin-markdown$/,
           replacement: fileURLToPath(new URL('./src/plugins/markdown/index.ts', import.meta.url)),
         },
         {
-          find: /^@navfolio\/plugin-callout\/styles\.css$/,
+          find: /^@sonder\/plugin-callout\/styles\.css$/,
           replacement: fileURLToPath(
             new URL('./src/plugins/markdown/callout/styles.css', import.meta.url),
           ),
         },
         {
-          find: /^@navfolio\/plugin-callout$/,
+          find: /^@sonder\/plugin-callout$/,
           replacement: fileURLToPath(
             new URL('./src/plugins/markdown/callout/index.ts', import.meta.url),
           ),
         },
         {
-          find: /^@navfolio\/plugin-markdown-layouts\/styles\.css$/,
+          find: /^@sonder\/plugin-markdown-layouts\/styles\.css$/,
           replacement: fileURLToPath(
             new URL('./src/plugins/markdown/layouts/styles.css', import.meta.url),
           ),
         },
         {
-          find: /^@navfolio\/plugin-markdown-layouts$/,
+          find: /^@sonder\/plugin-markdown-layouts$/,
           replacement: fileURLToPath(
             new URL('./src/plugins/markdown/layouts/index.ts', import.meta.url),
           ),
         },
         {
-          find: /^@navfolio\/pages$/,
+          find: /^@sonder\/pages$/,
           replacement: fileURLToPath(new URL('./src/modules/index.ts', import.meta.url)),
         },
         {
-          find: /^@navfolio\/page-projects$/,
+          find: /^@sonder\/page-projects$/,
           replacement: fileURLToPath(new URL('./src/modules/projects/index.ts', import.meta.url)),
         },
         {
-          find: /^@navfolio\/page-vibe$/,
-          replacement: fileURLToPath(new URL('./src/modules/vibe/index.ts', import.meta.url)),
-        },
-        {
-          find: /^@navfolio\/page-media$/,
+          find: /^@sonder\/page-media$/,
           replacement: fileURLToPath(new URL('./src/modules/media/index.ts', import.meta.url)),
         },
         {
-          find: /^@navfolio\/core$/,
+          find: /^@sonder\/core$/,
           replacement: fileURLToPath(new URL('./src/framework/index.ts', import.meta.url)),
         },
         {
-          find: 'virtual:navfolio/page-runtime',
+          find: 'virtual:sonder/page-runtime',
           replacement: fileURLToPath(new URL('./src/modules/page-runtime.ts', import.meta.url)),
         },
       ],

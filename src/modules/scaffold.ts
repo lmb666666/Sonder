@@ -1,15 +1,15 @@
-import type { NavfolioScaffoldTemplateContext, NavfolioScaffoldTemplateVariable } from './types';
+import type { SonderScaffoldTemplateContext, SonderScaffoldTemplateVariable } from './types';
 
 const templateVariablePattern = /<%=\s*(title|slug|isoDate|date)(?:\s*\|\s*(yaml))?\s*%>/g;
 const unresolvedTemplateExpressionPattern = /<%=[\s\S]*?%>/;
 
 export function renderScaffoldTemplate(
   template: string,
-  context: NavfolioScaffoldTemplateContext,
+  context: SonderScaffoldTemplateContext,
 ): string {
   const rendered = template.replace(
     templateVariablePattern,
-    (_placeholder, variable: NavfolioScaffoldTemplateVariable, filter: 'yaml' | undefined) => {
+    (_placeholder, variable: SonderScaffoldTemplateVariable, filter: 'yaml' | undefined) => {
       const value = context[variable];
 
       return filter === 'yaml' ? JSON.stringify(value) : value;
@@ -20,7 +20,7 @@ export function renderScaffoldTemplate(
 
   if (unresolvedExpression) {
     throw new Error(
-      `Unsupported Navfolio scaffold template expression ${JSON.stringify(unresolvedExpression)}. ` +
+      `Unsupported Sonder scaffold template expression ${JSON.stringify(unresolvedExpression)}. ` +
         'Supported variables are title, slug, isoDate, and date; the only supported filter is yaml.',
     );
   }

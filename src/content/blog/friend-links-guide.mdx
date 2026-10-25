@@ -1,0 +1,87 @@
+---
+title: '朋友页与友链卡片'
+description: '维护友链分组、朋友圈聚合与友链申请：Sonder 的朋友页由数据文件和可组合的 MDX 卡片组成。'
+date: '2026-05-19T00:00:00+08:00'
+draft: false
+heroImage: '/src/assets/figure/covers/cover-14-apricot.png'
+showHeroImage: false
+tags:
+  - MDX
+  - 友链
+  - 组件
+categories:
+  - 功能
+comments: true
+sidebar:
+  enable: true
+  toc: true
+  relatedPosts: true
+---
+
+import FriendLinkCard from '@sonder/mdx-components/FriendLinkCard.astro';
+
+朋友页由三部分组成：友链分组、朋友圈聚合和友链申请。友链数据在 `src/data/friends.ts` 中维护，卡片视觉由主题组件统一渲染。
+
+## 友链分组
+
+```ts
+export const friendLinkGroups = [
+  {
+    title: '技术伙伴',
+    description: '写代码的人，和他们的博客。',
+    items: [
+      {
+        name: '一叶之秋',
+        url: 'https://example.com/blog',
+        bio: '示例友链：记录折腾与思考',
+      },
+    ],
+  },
+];
+```
+
+每项支持 `name`、`url`、`bio`、`avatar`、`rss` 和 `sticky`。没有头像时，卡片会使用名称首字母作为占位。
+
+## 在 MDX 中使用卡片
+
+`FriendLinkCard` 也可以在文章正文中直接使用：
+
+<FriendLinkCard
+  items={[
+    {
+      name: 'Sonder',
+      url: 'https://sonder.liang.one',
+      bio: '这份模板的线上版本',
+      avatar: 'https://github.com/lmb666666.png?size=64',
+    },
+    {
+      name: 'Astro',
+      url: 'https://astro.build/',
+      bio: '静态站点框架',
+      avatar: 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
+    },
+  ]}
+/>
+
+## 朋友圈
+
+朋友圈默认按以下顺序取数据：
+
+1. `src/config/site.toml` 中 `[config.friendCircle].feed_src` 指向的订阅源
+2. `public/friend-circle.json`（自行同步或生成的聚合文件）
+3. 构建期抓取友链的 RSS / Atom
+4. 内置演示数据 `src/data/friend-circle-demo.json`
+
+```toml
+[config.friendCircle]
+feed_src = ""
+pageSize = 20
+```
+
+`feed_src` 可以是 URL，也可以是 `public/` 下的文件路径。没有配置时，构建会尝试抓取友链里带 `rss` 的站点；全部失败则展示演示数据。
+
+## 友链申请
+
+友链申请表单由 `site.repository` 指向的 GitHub 仓库生成 Issue。仓库地址为空或不可解析时，申请区不会显示。提交的 Issue 通过 `friend-link` 标签归档，博主确认后把友链加入 `src/data/friends.ts`。
+
+朋友页的标题、kicker 和副标题在 `src/config/site.toml` 的 `[config.pages.links]` 中配置。

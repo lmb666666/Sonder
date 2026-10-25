@@ -461,7 +461,7 @@ const paletteOptions = [
           header.dataset.mobileMenuOpen = open ? 'true' : 'false';
           toggle.setAttribute('aria-expanded', String(open));
           toggle.setAttribute('aria-label', open ? closeLabel : openLabel);
-          header.dispatchEvent(new CustomEvent('navfolio:menu-toggle'));
+          header.dispatchEvent(new CustomEvent('sonder:menu-toggle'));
         };
         const setTocOpen = (open: boolean) => {
           if (!tocTrigger || !tocMenu) {
@@ -535,7 +535,7 @@ const paletteOptions = [
 
         const paletteToggle = header.querySelector<HTMLButtonElement>('[data-palette-toggle]');
         const palettePanel = header.querySelector<HTMLElement>('[data-palette-panel]');
-        const storageKey = 'navfolio-palette';
+        const storageKey = 'sonder-palette';
         const knownPalettes = new Set(
           [...header.querySelectorAll('[data-palette-option]')].map(
             (option) => option.getAttribute('data-palette-option') ?? '',
@@ -650,9 +650,8 @@ const paletteOptions = [
         const themeOptions = [
           ...header.querySelectorAll<HTMLButtonElement>('[data-mobile-theme-option]'),
         ];
-        const themeApi = (
-          window as Window & { __navfolioTheme?: { set?: (theme: string) => void } }
-        ).__navfolioTheme;
+        const themeApi = (window as Window & { __sonderTheme?: { set?: (theme: string) => void } })
+          .__sonderTheme;
 
         const syncThemeOptions = () => {
           const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
@@ -677,9 +676,9 @@ const paletteOptions = [
         }
 
         const onThemeChange = () => syncThemeOptions();
-        window.addEventListener('navfolio:theme-change', onThemeChange);
+        window.addEventListener('sonder:theme-change', onThemeChange);
         registerNavListeners(header, [
-          () => window.removeEventListener('navfolio:theme-change', onThemeChange),
+          () => window.removeEventListener('sonder:theme-change', onThemeChange),
         ]);
 
         syncThemeOptions();
@@ -796,7 +795,7 @@ const paletteOptions = [
     };
 
     const onMenuToggle = () => update();
-    header?.addEventListener('navfolio:menu-toggle', onMenuToggle);
+    header?.addEventListener('sonder:menu-toggle', onMenuToggle);
 
     measure();
     update();
@@ -806,7 +805,7 @@ const paletteOptions = [
     window.addEventListener('load', remeasure, { once: true });
     registerNavListeners(floatAvatar, [
       () => {
-        header?.removeEventListener('navfolio:menu-toggle', onMenuToggle);
+        header?.removeEventListener('sonder:menu-toggle', onMenuToggle);
         window.clearTimeout(menuTransitionTimer);
         window.removeEventListener('scroll', update);
         window.removeEventListener('resize', remeasure);

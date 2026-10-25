@@ -1,13 +1,13 @@
 import { getEntry } from 'astro:content';
-import navfolioConfig from '../../navfolio.config';
+import sonderConfig from '../../sonder.config';
 import {
   getConfiguredPageModules,
   getResolvedPageModule,
   getResolvedPageModules,
   normalizeModuleRoute,
 } from '../plugins/config';
-import type { NavfolioPageModuleId } from '@navfolio/pages';
-import type { NavfolioConfig } from '../plugins/types';
+import type { SonderPageModuleId } from '@sonder/pages';
+import type { SonderConfig } from '../plugins/types';
 
 export async function getSiteConfig() {
   const entry = await getEntry('siteConfig', 'config');
@@ -27,7 +27,6 @@ export async function getThemePalette() {
 
 const defaultModuleRoutes: Record<string, string> = {
   projects: '/projects',
-  vibe: '/vibe',
 };
 
 interface TopNavLinkConfig {
@@ -42,7 +41,7 @@ export interface ResolvedTopNavLink {
   href: string;
 }
 
-function linkMatchesModule(href: string, moduleId: NavfolioPageModuleId, moduleRoute: string) {
+function linkMatchesModule(href: string, moduleId: SonderPageModuleId, moduleRoute: string) {
   if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
     return false;
   }
@@ -54,12 +53,12 @@ function linkMatchesModule(href: string, moduleId: NavfolioPageModuleId, moduleR
 
 export async function getTopNavLinks() {
   const { topNav } = await getSiteConfig();
-  return resolveTopNavLinks(topNav.links, navfolioConfig);
+  return resolveTopNavLinks(topNav.links, sonderConfig);
 }
 
 export function resolveTopNavLinks(
   links: TopNavLinkConfig[],
-  config: NavfolioConfig,
+  config: SonderConfig,
 ): ResolvedTopNavLink[] {
   const configuredModules = getConfiguredPageModules(config);
 
@@ -116,7 +115,7 @@ export function getRouteLabels(): Record<string, string> {
     '/about': 'about',
   };
 
-  for (const module of getResolvedPageModules(navfolioConfig)) {
+  for (const module of getResolvedPageModules(sonderConfig)) {
     routeLabels[module.route] = module.id;
   }
 

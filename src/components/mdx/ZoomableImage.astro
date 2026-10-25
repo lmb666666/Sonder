@@ -13,7 +13,7 @@ const resolvedSrc = typeof src === 'string' ? src : image?.src;
 
 {
   resolvedSrc ? (
-    <span class="navfolio-zoomable" data-navfolio-zoomable>
+    <span class="sonder-zoomable" data-sonder-zoomable>
       <>
         <img
           {...imageProps}
@@ -30,7 +30,7 @@ const resolvedSrc = typeof src === 'string' ? src : image?.src;
     </span>
   ) : null
 }
-<dialog class="navfolio-zoom-dialog" data-navfolio-zoom-dialog>
+<dialog class="sonder-zoom-dialog" data-sonder-zoom-dialog>
   <button type="button" aria-label="Close image preview" data-close><X size={20} /></button><img
     alt=""
     data-image
@@ -38,11 +38,11 @@ const resolvedSrc = typeof src === 'string' ? src : image?.src;
 </dialog>
 <script>
   const init = () => {
-    const dialog = document.querySelector<HTMLDialogElement>('[data-navfolio-zoom-dialog]');
+    const dialog = document.querySelector<HTMLDialogElement>('[data-sonder-zoom-dialog]');
     if (!dialog || dialog.dataset.ready) return;
     dialog.dataset.ready = 'true';
     const image = dialog.querySelector<HTMLImageElement>('[data-image]');
-    document.querySelectorAll<HTMLElement>('[data-navfolio-zoomable]').forEach((item) =>
+    document.querySelectorAll<HTMLElement>('[data-sonder-zoomable]').forEach((item) =>
       item.addEventListener('click', () => {
         const source = item.querySelector('img');
         if (source && image) {
@@ -63,7 +63,7 @@ const resolvedSrc = typeof src === 'string' ? src : image?.src;
   else init();
 </script>
 <style>
-  :global(.navfolio-zoomable) {
+  :global(.sonder-zoomable) {
     position: relative;
     display: block;
     width: fit-content;
@@ -74,12 +74,12 @@ const resolvedSrc = typeof src === 'string' ? src : image?.src;
     border-radius: 8px;
     cursor: zoom-in;
   }
-  :global(.navfolio-zoomable img) {
+  :global(.sonder-zoomable img) {
     display: block;
     max-width: 100%;
     height: auto;
   }
-  :global(.navfolio-zoomable > span) {
+  :global(.sonder-zoomable > span) {
     position: absolute;
     inset: 0;
     display: grid;
@@ -89,10 +89,10 @@ const resolvedSrc = typeof src === 'string' ? src : image?.src;
     opacity: 0;
     transition: opacity 160ms ease;
   }
-  :global(.navfolio-zoomable:hover > span) {
+  :global(.sonder-zoomable:hover > span) {
     opacity: 1;
   }
-  :global(.navfolio-zoom-dialog) {
+  :global(.sonder-zoom-dialog) {
     width: 100%;
     max-width: none;
     height: 100%;
@@ -101,16 +101,16 @@ const resolvedSrc = typeof src === 'string' ? src : image?.src;
     border: 0;
     background: color-mix(in srgb, var(--paper-ink) 74%, transparent);
   }
-  :global(.navfolio-zoom-dialog[open]) {
+  :global(.sonder-zoom-dialog[open]) {
     display: grid;
     place-items: center;
   }
-  :global(.navfolio-zoom-dialog img) {
+  :global(.sonder-zoom-dialog img) {
     max-width: min(100%, 1180px);
     max-height: 86vh;
     object-fit: contain;
   }
-  :global(.navfolio-zoom-dialog button) {
+  :global(.sonder-zoom-dialog button) {
     position: fixed;
     top: 18px;
     right: 18px;

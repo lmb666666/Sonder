@@ -1,12 +1,12 @@
-import type { NavfolioPagesPlugin } from './types';
+import type { SonderPagesPlugin } from './types';
 
 export interface PagesOptions {
   enabled?: boolean;
 }
 
-export function pages(options: PagesOptions = {}): NavfolioPagesPlugin {
+export function pages(options: PagesOptions = {}): SonderPagesPlugin {
   return {
-    name: '@navfolio/pages',
+    name: '@sonder/pages',
     enabled: options.enabled,
   };
 }

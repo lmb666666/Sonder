@@ -16,20 +16,6 @@ export const friendLinkGroups: FriendLinkGroup[] = [
     description: '写代码的人，和他们的博客。',
     items: [
       {
-        name: 'navfolio',
-        url: 'https://astro.navfolio.site',
-        bio: '本站主题的出生地',
-        avatar: 'https://github.com/dodolalorc.png?size=64',
-        rss: 'https://astro.navfolio.site/rss.xml',
-        sticky: true,
-      },
-      {
-        name: 'Sonder v1',
-        url: 'https://github.com/lmb666666/Sonder',
-        bio: '本站组件的旧居，Nuxt 时代的 Sonder',
-        avatar: 'https://github.com/lmb666666.png?size=64',
-      },
-      {
         name: '一叶之秋',
         url: 'https://example.com/blog',
         bio: '示例友链：记录折腾与思考',

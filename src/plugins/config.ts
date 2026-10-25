@@ -1,5 +1,5 @@
 // NOTE(M1 vendoring): relative import — this file sits in Astro's config-loading
-// closure, where the @navfolio/* Vite aliases from astro.config.mjs are not applied.
+// closure, where the @sonder/* Vite aliases from astro.config.mjs are not applied.
 import {
   getConfiguredPageModules,
   getResolvedPageModuleI18n,
@@ -9,9 +9,9 @@ import {
   getResolvedPageModules,
   isPageModuleEnabled,
   normalizeModuleRoute,
-  type NavfolioPageModuleRoute,
+  type SonderPageModuleRoute,
 } from '../modules';
-import type { NavfolioAstroPluginConfig, NavfolioConfig, NavfolioPluginContext } from './types';
+import type { SonderAstroPluginConfig, SonderConfig, SonderPluginContext } from './types';
 
 export {
   getConfiguredPageModules,
@@ -24,21 +24,21 @@ export {
   normalizeModuleRoute,
 } from '../modules';
 
-const defaultPluginContext: NavfolioPluginContext = {
+const defaultPluginContext: SonderPluginContext = {
   mathRenderer: 'katex',
 };
 
-export function defineNavfolioConfig(config: NavfolioConfig): NavfolioConfig {
+export function defineSonderConfig(config: SonderConfig): SonderConfig {
   return config;
 }
 
 function createPageModuleRoutesIntegration(
-  config: NavfolioConfig,
-): NonNullable<Required<NavfolioAstroPluginConfig>['integrations']>[number] {
+  config: SonderConfig,
+): NonNullable<Required<SonderAstroPluginConfig>['integrations']>[number] {
   const modules = getResolvedPageModules(config);
 
   return {
-    name: '@navfolio/page-modules',
+    name: '@sonder/page-modules',
     hooks: {
       'astro:config:setup': ({ injectRoute }) => {
         for (const module of modules) {
@@ -72,7 +72,7 @@ function createPageModuleRoutesIntegration(
   };
 }
 
-function getModuleRoutePattern(route: NavfolioPageModuleRoute, moduleRoute: string): string {
+function getModuleRoutePattern(route: SonderPageModuleRoute, moduleRoute: string): string {
   if (typeof route.pattern === 'function') {
     return route.pattern(moduleRoute);
   }
@@ -81,9 +81,9 @@ function getModuleRoutePattern(route: NavfolioPageModuleRoute, moduleRoute: stri
 }
 
 export function getAstroPluginConfig(
-  config: NavfolioConfig,
-  context: NavfolioPluginContext = defaultPluginContext,
-): Required<NavfolioAstroPluginConfig> {
+  config: SonderConfig,
+  context: SonderPluginContext = defaultPluginContext,
+): Required<SonderAstroPluginConfig> {
   const astroConfigs = (config.plugins ?? []).flatMap((plugin) => {
     if (plugin.enabled === false) return [];
     if (!plugin.astro) return [];

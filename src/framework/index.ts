@@ -2,7 +2,7 @@ export type I18nValue = string | { one?: string; other: string };
 export type I18nMessages = { [key: string]: I18nValue | I18nMessages };
 export type I18nCatalogs = Record<string, I18nMessages>;
 
-export interface NavfolioI18nContribution {
+export interface SonderI18nContribution {
   namespace?: string;
   messages: I18nCatalogs;
 }
@@ -20,10 +20,10 @@ export interface I18n {
 }
 
 /**
- * Stable UI surfaces a Navfolio theme can provide. Feature plugins consume
+ * Stable UI surfaces a Sonder theme can provide. Feature plugins consume
  * these names instead of importing a concrete theme's source files.
  */
-export type NavfolioThemeComponent =
+export type SonderThemeComponent =
   | 'baseHead'
   | 'footer'
   | 'layout'
@@ -36,17 +36,17 @@ export type NavfolioThemeComponent =
  * A serializable theme description. Component and stylesheet values are
  * package specifiers so the core never needs to import a theme's UI directly.
  */
-export interface NavfolioTheme {
+export interface SonderTheme {
   name: string;
-  components: Partial<Record<NavfolioThemeComponent, string>>;
+  components: Partial<Record<SonderThemeComponent, string>>;
   styles?: readonly string[];
   slots?: readonly string[];
 }
 
 /**
- * Marks a theme manifest as a Navfolio theme while preserving its exact type.
+ * Marks a theme manifest as a Sonder theme while preserving its exact type.
  */
-export function defineTheme<const Theme extends NavfolioTheme>(theme: Theme): Theme {
+export function defineTheme<const Theme extends SonderTheme>(theme: Theme): Theme {
   return theme;
 }
 
@@ -54,8 +54,8 @@ export function defineTheme<const Theme extends NavfolioTheme>(theme: Theme): Th
  * Resolves an optional theme component without coupling callers to a package.
  */
 export function getThemeComponent(
-  theme: NavfolioTheme,
-  component: NavfolioThemeComponent,
+  theme: SonderTheme,
+  component: SonderThemeComponent,
 ): string | undefined {
   return theme.components[component];
 }
@@ -82,7 +82,7 @@ export function normalizeLocale(value?: string, fallback = 'en') {
   return normalized ? (localeAliases[normalized] ?? fallback) : fallback;
 }
 
-export function defineI18nContribution(contribution: NavfolioI18nContribution) {
+export function defineI18nContribution(contribution: SonderI18nContribution) {
   return contribution;
 }
 

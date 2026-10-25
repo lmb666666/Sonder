@@ -43,7 +43,7 @@ const { config } = Astro.props;
 
   // TODO: Not sure if this event could cost some delay
 
-  window.addEventListener('navfolio:theme-change', (event) => {
+  window.addEventListener('sonder:theme-change', (event) => {
     const iframe = document.querySelector('iframe.giscus-frame');
     const siteTheme = event.detail?.theme === 'dark' ? 'dark' : 'light';
 

@@ -1,13 +1,12 @@
 ---
-title: '关于 navfolio'
-description: '一个安静的 Astro 个人发布空间，用于整合主页、博客、项目文档、Vibe 短记录、搜索和评论系统。'
+title: '关于 Sonder'
+description: 'Sonder 是一份以纸面阅读感为核心的个人发布模板，用 Astro 与 Bun 把长文、书影音、动态和朋友页收在一处。'
 date: '2026-05-01T00:00:00+08:00'
 draft: false
 showHeroImage: false
 tags:
   - About
-  - Navfolio
-  - Personal Site
+  - Sonder
 comments: false
 sidebar:
   enable: false
@@ -15,74 +14,61 @@ sidebar:
   relatedPosts: false
 ---
 
-import FriendLinkCard from '@navfolio/mdx-components/FriendLinkCard.astro';
+import FriendLinkCard from '@sonder/mdx-components/FriendLinkCard.astro';
 
-navfolio 是一个轻量的个人发布起点，适合想把个人资料、常用链接、项目笔记、长文写作和短记录集中到同一处的人。
+Sonder 是一份安静的个人发布模板。它不把首页做成营销落地页，而是把身份、近况、写作和阅读痕迹放在同一张纸面上：左侧是正文与最新文章，右侧是身份、统计、热力图和站点信息。
 
-它把个人网站从“静态简历页”转向“可阅读的内容操作面板”：既是公开思考的笔记本，也是身份入口的轻量索引，同时还是可长期积累的写作归档空间。
+模板基于 Astro 静态构建，使用 Bun 运行脚本，内容由 Markdown / MDX 管理。没有后端依赖，也没有复杂的状态管理；所有页面在构建时生成，适合部署到 GitHub Pages、Vercel、Netlify、Cloudflare Pages 或任意静态托管平台。
 
-如果这个项目对你有帮助，欢迎在 GitHub 仓库点一个 star：[dodolalorc/astro-navfolio](https://github.com/dodolalorc/astro-navfolio)。
+## 这里有什么
 
-## 这个空间适合做什么
+- **文章**：文章卡片使用 16:9 封面和磨砂文字条，支持分类、标签、目录、相关文章和深色模式。
+- **书影音**：书籍、电影、剧集、专辑与播客的媒体架，按类型分区浏览。
+- **动态**：按时间排列的短记录，可切换为 Ech0 数据源。
+- **朋友**：友链分组与朋友圈聚合，支持 RSS 同步和友链申请。
+- **个人资料**：头像、身份、社交链接和站点信息都可以在 `src/config/site.toml` 中维护。
 
-你可以在这里沉淀长期笔记、文章草稿、项目记录、生活片段，以及那些原本会分散在多个主页与仓库里的上下文信息。
+## 从哪里开始
 
-默认内容是示例数据。替换 starter 内容时，通常优先编辑这些位置：
+1. 阅读 [Sonder 快速开始](/blog/get-start/)。
+2. 在 `src/config/site.toml` 里替换站点标题、作者资料、导航和首页文案。
+3. 在 `src/content/` 下编辑或删除示例内容。
+4. 运行 `bun run build`，把 `dist/` 部署到你的托管平台。
 
-- `src/config/site.toml`：站点标题、作者资料、导航、首页、主题、搜索和评论配置。
-- `src/content/blog/`：长文、教程和模块使用手册。
-- `src/content/projects/`：项目入口和项目文档。
-- `src/content/vibe/`：更短、更即时的记录。
-- `src/content/about.mdx`：当前这个关于页面。
-
-## 它是如何构建的
-
-项目采用 Astro-first、内容驱动、默认静态输出的方式。你可以直接编辑 Markdown 和 MDX 内容，将其渲染为文章页面，并部署到 GitHub Pages、Vercel、Netlify、Cloudflare Pages，或任何支持 Astro 构建的平台。
-
-视觉语言刻意保持克制：结构柔和、界面低噪、排版可读，交互也以轻量为主，服务阅读而不打断阅读。
-
-## 当前支持的模块
-
-- 内容集合：博客、项目、About 和 Vibe 都由 Astro Content Collection 管理。
-- 全文搜索：Pagefind 负责构建静态搜索索引，支持 `Ctrl+K` / `Cmd+K`。
-- 评论系统：可在 giscus、utterances、Waline 和关闭状态之间切换。
-- 主题色盘：站点维护者可以在 `site.toml` 中选择内置色盘。
-- MDX 组件：支持友链卡片、长图、轮播和可缩放图片等内容组件。
-- RSS / Sitemap：构建时自动生成，适合静态站点发布。
+视觉上，模板尽量保持克制：纸面底色、发丝线、低饱和色盘和轻量动效。需要调整时，优先改主题色盘与 CSS 变量，而不是在每个页面里单独覆盖样式。
 
 ## 相关链接
 
 <FriendLinkCard
   items={[
     {
-      name: '主题作者：哆哆啦',
-      url: 'https://dodolalorc.cn/',
-      bio: '项目作者的个人主页',
-      avatar: 'https://avatars.githubusercontent.com/u/114007020?v=4',
+      name: 'Sonder 仓库',
+      url: 'https://github.com/lmb666666/Sonder',
+      bio: '模板源码与更新记录',
+      avatar: 'https://github.com/lmb666666.png?size=64',
+    },
+    {
+      name: 'Sonder 站点',
+      url: 'https://sonder.liang.one',
+      bio: '这份模板的线上版本',
+      avatar: 'https://github.com/lmb666666.png?size=64',
     },
     {
       name: 'Astro',
       url: 'https://astro.build/',
-      bio: 'Navfolio 的静态站点框架',
+      bio: '静态站点框架',
       avatar: 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
     },
     {
       name: 'Bun',
       url: 'https://bun.com/',
-      bio: '项目使用的运行时和包管理工具',
+      bio: '运行时与包管理工具',
       avatar: 'https://bun.com/favicon.ico',
     },
     {
-      name: 'Starlight',
-      url: 'https://starlight.astro.build/',
-      bio: 'Astro 官方文档主题，也是搜索方案的重要参考',
-      avatar: 'https://starlight.astro.build/_astro/hero-star.CRrHICv4_Z1lBjS1.webp',
-    },
-    {
-      name: 'giscus',
-      url: 'https://giscus.app/zh-CN',
-      bio: '基于 GitHub Discussions 的评论系统',
-      avatar: 'https://giscus.app/favicon.ico',
+      name: 'Pagefind',
+      url: 'https://pagefind.app/',
+      bio: '静态全文搜索索引',
     },
   ]}
 />

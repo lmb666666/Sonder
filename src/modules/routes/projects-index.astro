@@ -18,7 +18,7 @@ import {
 import FormattedDate from '../../components/FormattedDate.astro';
 import BlogArticle from '../../layouts/BlogArticle.astro';
 import { getSiteConfig } from '../../data/site';
-import navfolioConfig from '../../../navfolio.config';
+import sonderConfig from '../../../sonder.config';
 import { getPageModuleRoute } from '../../plugins/config';
 import { sortBlogPostsForArchive } from '../../utils/content-dates';
 import { getI18n } from '../../utils/ui-text';
@@ -47,7 +47,7 @@ const projectIndexPage = {
 };
 
 const relatedProjects = projects;
-const projectsRoute = getPageModuleRoute(navfolioConfig, 'projects');
+const projectsRoute = getPageModuleRoute(sonderConfig, 'projects');
 const i18n = getI18n(siteConfig);
 
 const projectIcons = {

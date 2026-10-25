@@ -1,7 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import navfolioConfig from '../navfolio.config';
+import sonderConfig from '../sonder.config';
 import { isPageModuleEnabled } from './plugins/config';
 
 type CollectionSchemaFactory = Extract<
@@ -74,10 +74,8 @@ const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
       .optional(),
   });
 
-const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';
-const contentBase = contentSource === 'docs' ? './src/docs' : './src/content';
-const vibeModuleEnabled = isPageModuleEnabled(navfolioConfig, 'vibe');
-const mediaModuleEnabled = isPageModuleEnabled(navfolioConfig, 'media');
+const contentBase = './src/content';
+const mediaModuleEnabled = isPageModuleEnabled(sonderConfig, 'media');
 
 const commentProviderSchema = z.enum(['giscus', 'utterances', 'waline', 'twikoo', 'none']);
 const mathRendererSchema = z.enum(['katex', 'mathjax']);
@@ -242,13 +240,6 @@ const defaultPagesConfig = {
     subtitle: 'Small tools and site systems.',
     note: 'A compact shelf for implementation choices, releases, and publishing experiments.',
   },
-  vibe: {
-    title: 'vibe',
-    kicker: '',
-    subtitle: 'Life and coding fragments.',
-    note: 'Not formal enough for blog posts, but still part of the story.',
-    showTrail: true,
-  },
   media: {
     title: 'Media',
     kicker: 'Media',
@@ -304,14 +295,6 @@ const projectsPageSchema = z.object({
   kicker: z.string().optional().default(defaultPagesConfig.projects.kicker),
   subtitle: z.string().optional().default(defaultPagesConfig.projects.subtitle),
   note: z.string().optional().default(defaultPagesConfig.projects.note),
-});
-
-const vibePageSchema = z.object({
-  title: z.string().optional().default(defaultPagesConfig.vibe.title),
-  kicker: z.string().optional().default(defaultPagesConfig.vibe.kicker),
-  subtitle: z.string().optional().default(defaultPagesConfig.vibe.subtitle),
-  note: z.string().optional().default(defaultPagesConfig.vibe.note),
-  showTrail: z.boolean().optional().default(defaultPagesConfig.vibe.showTrail),
 });
 
 const mediaPageSchema = z.object({
@@ -516,7 +499,6 @@ const siteConfig = defineCollection({
       .object({
         blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
         projects: projectsPageSchema.optional().default(defaultPagesConfig.projects),
-        vibe: vibePageSchema.optional().default(defaultPagesConfig.vibe),
         media: mediaPageSchema.optional().default(defaultPagesConfig.media),
         moments: momentsPageSchema.optional().default({
           title: '动态',
@@ -629,24 +611,6 @@ const projects = defineCollection({
     }),
 });
 
-const vibe = defineCollection({
-  loader: glob({ base: `${contentBase}/vibe`, pattern: '**/*.{md,mdx}' }),
-  schema: ({ image }) =>
-    z.object({
-      title: z.string().optional(),
-      date: z.coerce.date(),
-      updatedDate: z.coerce.date().optional(),
-      draft: z.boolean().optional().default(false),
-      type: z.enum(['text', 'photo', 'quote', 'code', 'mixed']).optional().default('text'),
-      mood: z.string().optional(),
-      location: z.string().optional(),
-      images: z.array(contentImageSchema({ image })).optional().default([]),
-      tags: z.array(z.string()).optional().default([]),
-      align: z.enum(['left', 'right', 'center']).optional(),
-      size: z.enum(['sm', 'md', 'lg']).optional().default('md'),
-    }),
-});
-
 const media = defineCollection({
   loader: glob({ base: `${contentBase}/media`, pattern: '**/*.{md,mdx}' }),
   schema: ({ image }) =>
@@ -672,6 +636,5 @@ export const collections = {
   siteConfig,
   // projects 集合与页面模块解耦：项目卡片现由关于页展示
   projects,
-  ...(vibeModuleEnabled ? { vibe } : {}),
   ...(mediaModuleEnabled ? { media } : {}),
 };

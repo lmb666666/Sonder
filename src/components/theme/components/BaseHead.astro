@@ -126,8 +126,8 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
   }}
 >
   (() => {
-    const storageKey = 'navfolio-theme';
-    const paletteKey = 'navfolio-palette';
+    const storageKey = 'sonder-theme';
+    const paletteKey = 'sonder-palette';
     const root = document.documentElement;
     const themeMeta = () => document.querySelector('meta[name="theme-color"]');
     const systemTheme = () =>
@@ -171,7 +171,7 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
       }
       if (persist) setStoredTheme(nextTheme);
       window.dispatchEvent(
-        new CustomEvent('navfolio:theme-change', { detail: { theme: nextTheme } }),
+        new CustomEvent('sonder:theme-change', { detail: { theme: nextTheme } }),
       );
     };
     const syncThemeControls = () => {
@@ -180,8 +180,8 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
 
     applyTheme(storedTheme() || systemTheme(), false);
 
-    if (!window.__navfolioTheme) {
-      window.__navfolioTheme = {
+    if (!window.__sonderTheme) {
+      window.__sonderTheme = {
         toggle() {
           applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
         },
@@ -191,16 +191,16 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
       };
     }
 
-    if (window.__navfolioThemeInitialized) {
+    if (window.__sonderThemeInitialized) {
       syncThemeControls();
       return;
     }
 
-    window.__navfolioThemeInitialized = true;
+    window.__sonderThemeInitialized = true;
 
     document.addEventListener('click', (event) => {
       const toggle = event.target.closest?.('[data-theme-toggle]');
-      if (toggle) window.__navfolioTheme.toggle();
+      if (toggle) window.__sonderTheme.toggle();
     });
 
     document.addEventListener('DOMContentLoaded', syncThemeControls, { once: true });

@@ -1,14 +1,14 @@
 import remarkLayouts from './remark-layouts.js';
-import type { LayoutPluginOptions, NavfolioPlugin } from './types.js';
+import type { LayoutPluginOptions, SonderPlugin } from './types.js';
 
 /**
- * Adds Navfolio's local Markdown layout directives to Astro's remark pipeline.
- * Import `@navfolio/plugin-markdown-layouts/styles.css` once to include the
+ * Adds Sonder's local Markdown layout directives to Astro's remark pipeline.
+ * Import `@sonder/plugin-markdown-layouts/styles.css` once to include the
  * structural responsive styles when the active theme does not provide them.
  */
-export function layoutPlugin(options: LayoutPluginOptions = {}): NavfolioPlugin {
+export function layoutPlugin(options: LayoutPluginOptions = {}): SonderPlugin {
   return {
-    name: '@navfolio/plugin-markdown-layouts',
+    name: '@sonder/plugin-markdown-layouts',
     enabled: options.enabled ?? true,
     astro: {
       remarkPlugins: [remarkLayouts],

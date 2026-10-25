@@ -1,19 +1,19 @@
-import { defineTheme } from '@navfolio/core';
+import { defineTheme } from '@sonder/core';
 
 /**
- * The built-in Navfolio visual system. Component entry points are added as
+ * The built-in Sonder visual system. Component entry points are added as
  * they are migrated out of the legacy Astro application.
  */
 export const defaultTheme = defineTheme({
-  name: '@navfolio/theme-default',
+  name: '@sonder/theme-default',
   components: {
-    baseHead: '@navfolio/theme-default/components/BaseHead.astro',
-    footer: '@navfolio/theme-default/components/Footer.astro',
-    layout: '@navfolio/theme-default/components/BaseLayout.astro',
+    baseHead: '@sonder/theme-default/components/BaseHead.astro',
+    footer: '@sonder/theme-default/components/Footer.astro',
+    layout: '@sonder/theme-default/components/BaseLayout.astro',
   },
-  styles: ['@navfolio/theme-default/styles/global.css'],
+  styles: ['@sonder/theme-default/styles/global.css'],
   slots: ['head', 'footer', 'article.after', 'sidebar.after'],
 });
 
-export { defineTheme } from '@navfolio/core';
-export type { NavfolioTheme, NavfolioThemeComponent } from '@navfolio/core';
+export { defineTheme } from '@sonder/core';
+export type { SonderTheme, SonderThemeComponent } from '@sonder/core';

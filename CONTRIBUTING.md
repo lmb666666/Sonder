@@ -1,172 +1,45 @@
-# Contributing to Navfolio
+# 参与 Sonder
 
-Languages: English | [简体中文](#简体中文)
-
-Navfolio is an Astro starter for personal publishing, project display, lightweight notes, and optional page modules. Contributions should keep the template readable, modular, easy to configure, and consistent with the existing calm interface.
-
-## Project Structure
-
-- `astro-navfolio` is the main template repository.
-- `src/docs` is a git submodule for the documentation/demo content repository.
-- `@navfolio/plugin-markdown` owns Markdown and MDX rendering extensions.
-- `@navfolio/pages` is the unified page-module entry.
-- `@navfolio/page-projects` is the default page module; `@navfolio/page-vibe` is
-  an optional package that owns and injects its Vibe page UI.
-- `@navfolio/page-template` is the reference package for custom page modules.
-
-Keep changes in the package that owns the behavior. A Markdown syntax feature belongs in the Markdown plugin. A reusable page capability should be shaped as a page module. The main template should mostly wire configuration, content, routes, and visual integration together.
-
-## Discuss First
-
-Open an issue before starting any non-trivial PR. Please describe:
-
-- which page, component, config field, content workflow, plugin, or page module will change;
-- what real use case is blocked or improved;
-- whether it changes routes, schemas, visual behavior, dependencies, generated content, or existing user config;
-- how it should behave when the related page module or content source is disabled.
-
-Typos, broken links, and small documentation fixes can go straight to a PR.
-
-## Development Rules
-
-- Keep one PR focused on one problem.
-- Use Bun and the existing Astro, TypeScript, content collection, CSS token, and module patterns.
-- Do not add dependencies, large refactors, route changes, or visual redesigns without issue agreement.
-- Prefer configuration-driven behavior in `navfolio.config.ts` for advanced module/page behavior.
-- Keep `src/config/site.toml` as the quick site/content styling entry, not a place for complex module logic.
-- Update docs when behavior, configuration, scripts, page modules, or plugin usage changes.
-- Include screenshots or short screen recordings for visible UI changes, including mobile when relevant.
-
-## Content And Docs
-
-The documentation site is mounted through the `src/docs` submodule. When docs content changes:
-
-1. Commit and push the docs submodule first.
-2. Update the submodule pointer in `astro-navfolio`.
-3. Run `bun run docs:build` from the main repository.
-
-Use demo content that explains Navfolio itself. Avoid long sample articles that distract from template usage unless they demonstrate a specific feature.
-
-## Local Checks
-
-The production build requires Python 3, FontTools, and Brotli to generate the CJK UI font subset. Install them in a project-local virtual environment before running build checks; the script automatically uses `.venv`, so activation is not required.
-
-macOS / Linux:
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip fonttools brotli
-```
-
-Windows (PowerShell or Command Prompt):
-
-```powershell
-py -3 -m venv .venv
-.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
-```
-
-```sh
-bun install
-bun run dev
-bun run build
-bun run format:check
-```
-
-For docs/demo content:
-
-```sh
-bun run docs:build
-bun run docs:dev
-```
-
-Run `bun install` only when dependencies are missing or changed. For meaningful code, route, schema, config, plugin, or page-module changes, run `bun run build` before submitting.
-
-## Review
-
-Maintainers review for project fit, scope, build health, route safety, configuration clarity, reading comfort, mobile behavior, and maintenance cost. A PR may be closed if the idea is only suitable for a personal fork or if the implementation expands beyond the issue agreement.
-
----
-
-# 简体中文
-
-Navfolio 是一个基于 Astro 的个人发布、项目展示、轻量笔记和可选页面模块模板。贡献时请保持项目可读、模块化、易配置，并与现有安静克制的界面风格一致。
+Sonder 是一份 Astro 个人发布模板。贡献时请保持页面可读、配置集中、内容可替换，并维持现有的纸面视觉语言。
 
 ## 项目结构
 
-- `astro-navfolio` 是博客模板主仓库。
-- `src/docs` 是文档站和演示内容的 git 子仓库。
-- `@navfolio/plugin-markdown` 负责 Markdown 和 MDX 渲染扩展。
-- `@navfolio/pages` 是统一的页面模块入口。
-- `@navfolio/page-projects` 是默认页面模块；`@navfolio/page-vibe` 是可选包，负责并注入自己的 Vibe 页面 UI。
-- `@navfolio/page-template` 是给自定义页面模块贡献者参考的模板包。
+- `src/config/site.toml`：站点、作者、导航、页面文案、首页和功能开关
+- `src/content.config.ts`：站点配置与内容集合的 Zod schema
+- `src/content/`：about、blog、media、projects 内容
+- `src/components/`：页面组件、卡片、博客工具和首页 widget
+- `src/components/theme/`：主题组件与样式
+- `src/modules/`、`src/plugins/`、`src/framework/`：页面模块与 Markdown 能力
+- `sonder.config.ts`：页面模块和插件注册
 
-请把改动放在真正拥有该行为的包里。Markdown 语法能力应放在 Markdown 插件中。可复用的页面能力应按页面模块组织。主模板应主要负责配置、内容、路由和视觉整合。
+## 内容
 
-## 先讨论
+- 文章、书影音和项目内容使用 Markdown / MDX。
+- 友链、朋友圈演示数据和动态演示数据在 `src/data/`。
+- 新增文章前，先确认 frontmatter 字段符合 `src/content.config.ts` 中的 schema。
+- 示例内容应解释 Sonder 本身或展示某项能力，避免加入与模板无关的长篇素材。
 
-非微小改动请先开 issue，再开始写 PR。Issue 中请说明：
+## 开发
 
-- 会改动哪个页面、组件、配置字段、内容工作流、插件或页面模块；
-- 解决了什么真实使用问题；
-- 是否会影响路由、schema、视觉行为、依赖、生成内容或既有用户配置；
-- 当相关页面模块或内容源被禁用时应该如何表现。
-
-错别字、失效链接和很小的文档修正可以直接提交 PR。
-
-## 开发规则
-
-- 一个 PR 只解决一个清晰的问题。
-- 使用 Bun，并沿用现有 Astro、TypeScript、内容集合、CSS token 和模块写法。
-- 未经 issue 确认，不要新增依赖、大范围重构、路由变更或视觉改版。
-- 高级页面/模块行为优先放在 `navfolio.config.ts` 中配置。
-- `src/config/site.toml` 应作为快速站点和内容样式入口，不承载复杂模块逻辑。
-- 行为、配置、脚本、页面模块或插件用法变化时，请同步更新文档。
-- UI 改动请附截图或简短录屏；涉及移动端时也要覆盖移动端。
-
-## 内容与文档
-
-文档站通过 `src/docs` 子仓库挂载。修改文档内容时：
-
-1. 先在 docs 子仓库提交并推送。
-2. 再在 `astro-navfolio` 中更新子仓库指针。
-3. 在主仓库运行 `bun run docs:build`。
-
-演示内容应优先解释 Navfolio 本身。除非是为了展示特定功能，否则不要加入会分散注意力的长篇示例文章。
-
-## 本地检查
-
-生产构建依赖 Python 3、FontTools 和 Brotli 来生成中日韩 UI 字体子集。请在运行构建检查前将它们安装到项目虚拟环境中；无需激活虚拟环境，脚本会自动使用 `.venv`。
-
-macOS / Linux：
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip fonttools brotli
-```
-
-Windows（PowerShell 或命令提示符）：
-
-```powershell
-py -3 -m venv .venv
-.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
-```
-
-```sh
+```bash
 bun install
 bun run dev
-bun run build
+bun run lint
 bun run format:check
+bun test
+bun run build
 ```
 
-文档站和演示内容：
+提交前至少运行 `bun run lint`、`bun run format:check` 和 `bun test`。修改构建、schema 或页面路由后还要运行 `bun run build`。
 
-```sh
-bun run docs:build
-bun run docs:dev
-```
+## 视觉与交互
 
-只有依赖缺失或发生变化时才需要运行 `bun install`。涉及代码、路由、schema、配置、插件或页面模块的有效改动，提交前请运行 `bun run build`。
+- 使用 `src/config/site.toml` 的主题色盘和 CSS 变量，不要在各页面重复写死颜色。
+- 新增交互时优先使用原生 HTML 和轻量脚本；需要客户端状态时，保持无框架依赖。
+- 深色模式、移动端断点和键盘焦点状态需要一起检查。
 
-## Review
+## 提交
 
-维护者会关注项目契合度、改动范围、构建状态、路由安全、配置清晰度、阅读舒适度、移动端表现和维护成本。如果想法只适合个人 fork，或实现超出 issue 中确认的范围，PR 可能会被关闭。
+- 提交信息保持简短、具体。
+- 不提交构建产物、缓存或本地环境文件。
+- 涉及依赖、配置 schema 或公开 API 的改动，请同时更新 README 和相关文档。

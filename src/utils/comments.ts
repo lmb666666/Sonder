@@ -48,13 +48,13 @@ function withEnvString<T extends Record<string, unknown>, K extends keyof T>(
 }
 
 export function resolveCommentsConfig(config: CommentsConfig): CommentsConfig {
-  const enabled = envBoolean('NAVFOLIO_COMMENTS_ENABLED') ?? config.enabled;
-  const provider = envProvider('NAVFOLIO_COMMENTS_PROVIDER') ?? config.provider;
-  let giscus = withEnvString(config.giscus, 'repo', 'NAVFOLIO_GISCUS_REPO');
-  giscus = withEnvString(giscus, 'repo_id', 'NAVFOLIO_GISCUS_REPO_ID');
-  giscus = withEnvString(giscus, 'category', 'NAVFOLIO_GISCUS_CATEGORY');
-  giscus = withEnvString(giscus, 'category_id', 'NAVFOLIO_GISCUS_CATEGORY_ID');
-  const twikoo = withEnvString(config.twikoo, 'env_id', 'NAVFOLIO_TWIKOO_ENV_ID');
+  const enabled = envBoolean('SONDER_COMMENTS_ENABLED') ?? config.enabled;
+  const provider = envProvider('SONDER_COMMENTS_PROVIDER') ?? config.provider;
+  let giscus = withEnvString(config.giscus, 'repo', 'SONDER_GISCUS_REPO');
+  giscus = withEnvString(giscus, 'repo_id', 'SONDER_GISCUS_REPO_ID');
+  giscus = withEnvString(giscus, 'category', 'SONDER_GISCUS_CATEGORY');
+  giscus = withEnvString(giscus, 'category_id', 'SONDER_GISCUS_CATEGORY_ID');
+  const twikoo = withEnvString(config.twikoo, 'env_id', 'SONDER_TWIKOO_ENV_ID');
 
   return {
     ...config,
@@ -71,7 +71,7 @@ export function warnMissingCommentConfig(provider: CommentProvider, fields: stri
   }
 
   console.warn(
-    `[navfolio comments] ${provider} comments are enabled but missing required config: ${fields.join(
+    `[sonder comments] ${provider} comments are enabled but missing required config: ${fields.join(
       ', ',
     )}. The comment block will not render for this page.`,
   );

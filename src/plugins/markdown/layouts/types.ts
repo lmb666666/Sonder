@@ -1,18 +1,17 @@
-export interface NavfolioPluginContext {
+export interface SonderPluginContext {
   [key: string]: unknown;
 }
 
-export interface NavfolioAstroPluginConfig {
+export interface SonderAstroPluginConfig {
   integrations?: any[];
   remarkPlugins?: any[];
   rehypePlugins?: any[];
 }
 
-export interface NavfolioPlugin {
+export interface SonderPlugin {
   name: string;
   enabled?: boolean;
-  astro?:
-    NavfolioAstroPluginConfig | ((context: NavfolioPluginContext) => NavfolioAstroPluginConfig);
+  astro?: SonderAstroPluginConfig | ((context: SonderPluginContext) => SonderAstroPluginConfig);
 }
 
 export interface LayoutPluginOptions {

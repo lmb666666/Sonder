@@ -1,29 +1,28 @@
 import type { defineConfig } from 'astro/config';
-import type { NavfolioPageModule } from '@navfolio/pages';
+import type { SonderPageModule } from '@sonder/pages';
 
 type AstroUserConfig = Parameters<typeof defineConfig>[0];
 type AstroMarkdownConfig = NonNullable<AstroUserConfig['markdown']>;
 
 export type MathRenderer = 'katex' | 'mathjax';
 
-export interface NavfolioPluginContext {
+export interface SonderPluginContext {
   mathRenderer: MathRenderer;
 }
 
-export interface NavfolioAstroPluginConfig {
+export interface SonderAstroPluginConfig {
   integrations?: NonNullable<AstroUserConfig['integrations']>;
   remarkPlugins?: NonNullable<AstroMarkdownConfig['remarkPlugins']>;
   rehypePlugins?: NonNullable<AstroMarkdownConfig['rehypePlugins']>;
 }
 
-export interface NavfolioPlugin {
+export interface SonderPlugin {
   name: string;
   enabled?: boolean;
-  astro?:
-    NavfolioAstroPluginConfig | ((context: NavfolioPluginContext) => NavfolioAstroPluginConfig);
+  astro?: SonderAstroPluginConfig | ((context: SonderPluginContext) => SonderAstroPluginConfig);
 }
 
-export interface NavfolioConfig {
-  plugins?: NavfolioPlugin[];
-  modules?: NavfolioPageModule[];
+export interface SonderConfig {
+  plugins?: SonderPlugin[];
+  modules?: SonderPageModule[];
 }

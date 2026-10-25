@@ -8,15 +8,15 @@ import TableOfContents from '../components/blog/TableOfContents.astro';
 import BaseHead from '../components/BaseHead.astro';
 import CommentSection from '../components/comments/CommentSection.astro';
 import Footer from '../components/Footer.astro';
-import MermaidRenderer from '@navfolio/mdx-components/MermaidRenderer.astro';
-import ZoomableImage from '@navfolio/mdx-components/ZoomableImage.astro';
+import MermaidRenderer from '@sonder/mdx-components/MermaidRenderer.astro';
+import ZoomableImage from '@sonder/mdx-components/ZoomableImage.astro';
 import { getThemePalette, getSiteConfig } from '../data/site';
 import { resolveCommentsConfig, supportsCommentSection } from '../utils/comments';
 import { sortByDateDesc } from '../utils/content-dates';
 import { getSeriesContext, slugifyGroupName } from '../utils/content-groups';
 import { buildTocTree, countTocItems } from '../utils/toc-tree';
 import { getUiText } from '../utils/ui-text';
-import '@navfolio/theme-default/styles/blog-article.css';
+import '@sonder/theme-default/styles/blog-article.css';
 
 const siteConfig = await getSiteConfig();
 const { comments: rawComments } = siteConfig;

@@ -17,15 +17,13 @@ test('merges catalogs and lets later values override earlier ones', () => {
 
 test('keeps a theme manifest package-addressable', () => {
   const theme = defineTheme({
-    name: '@navfolio/theme-default',
+    name: '@sonder/theme-default',
     components: {
-      layout: '@navfolio/theme-default/layouts/BaseLayout.astro',
+      layout: '@sonder/theme-default/layouts/BaseLayout.astro',
     },
-    styles: ['@navfolio/theme-default/styles/palettes.css'],
+    styles: ['@sonder/theme-default/styles/palettes.css'],
   });
 
-  expect(getThemeComponent(theme, 'layout')).toBe(
-    '@navfolio/theme-default/layouts/BaseLayout.astro',
-  );
+  expect(getThemeComponent(theme, 'layout')).toBe('@sonder/theme-default/layouts/BaseLayout.astro');
   expect(getThemeComponent(theme, 'footer')).toBeUndefined();
 });

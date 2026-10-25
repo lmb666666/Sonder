@@ -1,61 +1,61 @@
-export type NavfolioPageModuleId = string;
+export type SonderPageModuleId = string;
 
-export type NavfolioPageModuleBuiltinId = 'projects' | 'vibe' | 'media';
+export type SonderPageModuleBuiltinId = 'projects' | 'media';
 
-export type NavfolioContentExtension = 'md' | 'mdx';
+export type SonderContentExtension = 'md' | 'mdx';
 
-export interface NavfolioScaffoldTemplateContext {
+export interface SonderScaffoldTemplateContext {
   title: string;
   slug: string;
   isoDate: string;
   date: string;
 }
 
-export type NavfolioScaffoldTemplateVariable = 'title' | 'slug' | 'isoDate' | 'date';
+export type SonderScaffoldTemplateVariable = 'title' | 'slug' | 'isoDate' | 'date';
 
-export interface NavfolioPageModuleNav {
+export interface SonderPageModuleNav {
   label: string;
   href: string;
 }
 
-export interface NavfolioPageModuleScaffold {
+export interface SonderPageModuleScaffold {
   command: string;
   collection: string;
   directory: string;
-  defaultExtension?: NavfolioContentExtension;
+  defaultExtension?: SonderContentExtension;
   template: URL;
 }
 
-export interface NavfolioPageModuleRoute {
+export interface SonderPageModuleRoute {
   pattern?: string | ((moduleRoute: string) => string);
   entrypoint: URL;
   prerender?: boolean;
 }
 
-export interface NavfolioPageModule {
-  id: NavfolioPageModuleId;
+export interface SonderPageModule {
+  id: SonderPageModuleId;
   enabled?: boolean;
   route: string;
-  nav: NavfolioPageModuleNav;
+  nav: SonderPageModuleNav;
   collections: string[];
-  i18n?: NavfolioI18nContribution;
-  scaffold?: NavfolioPageModuleScaffold;
-  routes?: NavfolioPageModuleRoute[];
+  i18n?: SonderI18nContribution;
+  scaffold?: SonderPageModuleScaffold;
+  routes?: SonderPageModuleRoute[];
 }
 
-export interface NavfolioPageModuleOptions {
+export interface SonderPageModuleOptions {
   enabled?: boolean;
   route?: string;
 }
 
-export interface ResolvedNavfolioPageModule extends NavfolioPageModule {
+export interface ResolvedSonderPageModule extends SonderPageModule {
   enabled: true;
   route: string;
-  nav: NavfolioPageModuleNav;
+  nav: SonderPageModuleNav;
 }
 
-export interface NavfolioPagesPlugin {
-  name: '@navfolio/pages';
+export interface SonderPagesPlugin {
+  name: '@sonder/pages';
   enabled?: boolean;
 }
-import type { NavfolioI18nContribution } from '@navfolio/core';
+import type { SonderI18nContribution } from '@sonder/core';

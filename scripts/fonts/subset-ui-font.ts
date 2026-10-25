@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, extname, isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'smol-toml';
-import navfolioConfig from '../../navfolio.config';
+import sonderConfig from '../../sonder.config';
 import {
   getResolvedPageModule,
   getResolvedPageModuleI18n,
@@ -36,14 +36,9 @@ const pythonCommands = [
   (command, index, commands) =>
     (index === 0 ? existsSync(command) : true) && commands.indexOf(command) === index,
 );
-const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';
-const contentRoot = contentSource === 'docs' ? 'src/docs' : 'src/content';
-const projectsModuleEnabled = isPageModuleEnabled(navfolioConfig, 'projects');
-const resolvedVibeModule = getResolvedPageModule(navfolioConfig, 'vibe');
-const vibeModuleEnabled = Boolean(resolvedVibeModule);
-const vibeRouteEntrypoint = resolvedVibeModule?.routes?.[0]?.entrypoint;
-const vibeRouteSourceFile = vibeRouteEntrypoint ? fileURLToPath(vibeRouteEntrypoint) : undefined;
-const resolvedMediaModule = getResolvedPageModule(navfolioConfig, 'media');
+const contentRoot = 'src/content';
+const projectsModuleEnabled = isPageModuleEnabled(sonderConfig, 'projects');
+const resolvedMediaModule = getResolvedPageModule(sonderConfig, 'media');
 const mediaModuleEnabled = Boolean(resolvedMediaModule);
 const mediaRouteEntrypoint = resolvedMediaModule?.routes?.[0]?.entrypoint;
 const mediaRouteSourceFile = mediaRouteEntrypoint ? fileURLToPath(mediaRouteEntrypoint) : undefined;
@@ -60,19 +55,14 @@ const sourceFiles = [
   ...(projectsModuleEnabled
     ? ['src/modules/routes/projects-index.astro', 'src/modules/routes/project-detail.astro']
     : []),
-  ...(vibeRouteSourceFile ? [vibeRouteSourceFile] : []),
   ...(mediaRouteSourceFile ? [mediaRouteSourceFile] : []),
 ];
 const contentFrontmatterDirs = [
   `${contentRoot}/blog`,
   ...(projectsModuleEnabled ? [`${contentRoot}/projects`] : []),
-  ...(vibeModuleEnabled ? [`${contentRoot}/vibe`] : []),
   ...(mediaModuleEnabled ? [`${contentRoot}/media`] : []),
 ];
-const lightweightContentDirs = [
-  ...(vibeModuleEnabled ? [`${contentRoot}/vibe`] : []),
-  ...(mediaModuleEnabled ? [`${contentRoot}/media`] : []),
-];
+const lightweightContentDirs = [...(mediaModuleEnabled ? [`${contentRoot}/media`] : [])];
 const lightweightContentFiles = [
   `${contentRoot}/about.mdx`,
   `${contentRoot}/about.md`,
@@ -291,7 +281,7 @@ font.save(path)
 
 const chars = new Set<string>();
 
-for (const contribution of getResolvedPageModuleI18n(navfolioConfig)) {
+for (const contribution of getResolvedPageModuleI18n(sonderConfig)) {
   collectCjk(chars, JSON.stringify(contribution.messages));
 }
 

@@ -7,7 +7,7 @@ export {
 } from './markdown-options.js';
 export type {
   MathRenderer,
-  NavfolioAstroPluginConfig,
-  NavfolioPlugin,
-  NavfolioPluginContext,
+  SonderAstroPluginConfig,
+  SonderPlugin,
+  SonderPluginContext,
 } from './types.js';

@@ -3,15 +3,13 @@ title: 'Markdown 语法渲染示例'
 description: '这是一篇用于展示 Astro 中常见 Markdown 语法渲染效果的中文示例文章。'
 date: '2026-05-19T00:00:00+08:00'
 draft: false
-heroImage: '/src/assets/figure/blog-sample-picture.png'
-showHeroImage: true
+heroImage: '/src/assets/figure/covers/cover-11-sand.png'
+showHeroImage: false
 tags:
-  - 'Markdown'
-  - '教程'
+  - Markdown
+  - 写作
 categories:
-  - 内容创作
-series:
-  - 内容创作
+  - 写作
 comments: true
 sidebar:
   enable: true
@@ -48,16 +46,16 @@ sidebar:
 ### 语法
 
 ```markdown
-![图片替代文本](../../assets/figure/blog-sample-picture.png)
+![图片替代文本](../../assets/figure/covers/cover-11-sand.png)
 ```
 
-正文中的本地图片路径相对于当前 Markdown 文件书写。`src/docs/blog/` 下的文章
-使用 `../../assets/figure/` 引用 `src/assets/figure/`；不要写成
+正文中的本地图片路径相对于当前 Markdown 文件书写。文章位于 `src/content/blog/`，
+引用 `src/assets/figure/` 时写 `../../assets/figure/...`；不要写成
 `/src/assets/...`，否则它会被当作普通站点 URL，而 `src` 目录不会发布到构建产物。
 
 ### 渲染效果
 
-![blog placeholder](../../assets/figure/blog-sample-picture.png)
+![blog placeholder](../../assets/figure/covers/cover-11-sand.png)
 
 ## 引用
 

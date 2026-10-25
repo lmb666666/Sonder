@@ -1,6 +1,6 @@
 declare global {
   interface Window {
-    __navfolioZoomableImagesReady?: boolean;
+    __sonderZoomableImagesReady?: boolean;
   }
 }
 
@@ -273,11 +273,11 @@ const handleLightboxClick = (target: EventTarget | null) => {
 };
 
 export const initZoomableImages = () => {
-  if (window.__navfolioZoomableImagesReady) {
+  if (window.__sonderZoomableImagesReady) {
     return;
   }
 
-  window.__navfolioZoomableImagesReady = true;
+  window.__sonderZoomableImagesReady = true;
 
   document.addEventListener('click', (event) => {
     if (handleLightboxClick(event.target)) {

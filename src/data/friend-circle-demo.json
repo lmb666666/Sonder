@@ -1,32 +1,11 @@
 {
   "friends": [
-    {
-      "name": "navfolio",
-      "url": "https://astro.navfolio.site",
-      "avatar": "https://github.com/dodolalorc.png?size=64"
-    },
+    { "name": "一叶之秋", "url": "https://example.com/blog", "avatar": "" },
     { "name": "南山客", "url": "https://example.org", "avatar": "" },
+    { "name": "拾光集", "url": "https://example.net", "avatar": "" },
     { "name": "慢速公路", "url": "https://example.dev", "avatar": "" }
   ],
   "posts": [
-    {
-      "title": "Friend Link Page：把友链做成一页杂志",
-      "url": "https://astro.navfolio.site/blog/friend-link-card/",
-      "author": "navfolio",
-      "authorUrl": "https://astro.navfolio.site",
-      "avatar": "https://github.com/dodolalorc.png?size=64",
-      "date": "2026-07-26",
-      "tags": ["friendlink", "components"]
-    },
-    {
-      "title": "用 GitHub Actions 同步友链 RSS",
-      "url": "https://astro.navfolio.site/blog/friend-circle-sync/",
-      "author": "navfolio",
-      "authorUrl": "https://astro.navfolio.site",
-      "avatar": "https://github.com/dodolalorc.png?size=64",
-      "date": "2026-07-14",
-      "tags": ["friendlink", "github-actions"]
-    },
     {
       "title": "记一次 Nginx 反代的坑",
       "url": "https://example.org/posts/nginx-proxy",
@@ -44,7 +23,7 @@
       "tags": ["travel"]
     },
     {
-      "title": "示例动态：数据换成本站真实订阅源后会自动更新",
+      "title": "示例动态：配置 feed_src 后会显示真实订阅内容",
       "url": "https://example.org/demo",
       "author": "南山客",
       "authorUrl": "https://example.org",

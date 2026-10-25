@@ -1,18 +1,18 @@
 import { projectsModule } from './projects/index.js';
-import type { NavfolioI18nContribution } from '@navfolio/core';
-import type { NavfolioPageModule, ResolvedNavfolioPageModule } from './types';
+import type { SonderI18nContribution } from '@sonder/core';
+import type { SonderPageModule, ResolvedSonderPageModule } from './types';
 
-export interface NavfolioPageModuleConfig {
-  modules?: NavfolioPageModule[];
+export interface SonderPageModuleConfig {
+  modules?: SonderPageModule[];
 }
 
-export const defaultPageModules = [projectsModule()] satisfies NavfolioPageModule[];
+export const defaultPageModules = [projectsModule()] satisfies SonderPageModule[];
 
 export function normalizeModuleRoute(route: string): string {
   const trimmed = route.trim();
 
   if (!trimmed) {
-    throw new Error('Navfolio page module route cannot be empty.');
+    throw new Error('Sonder page module route cannot be empty.');
   }
 
   const withoutSlashes = trimmed.replace(/^\/+|\/+$/g, '');
@@ -22,13 +22,11 @@ export function normalizeModuleRoute(route: string): string {
   return `/${withoutSlashes}`;
 }
 
-export function getConfiguredPageModules(config: NavfolioPageModuleConfig): NavfolioPageModule[] {
+export function getConfiguredPageModules(config: SonderPageModuleConfig): SonderPageModule[] {
   return config.modules ?? defaultPageModules;
 }
 
-export function getResolvedPageModules(
-  config: NavfolioPageModuleConfig,
-): ResolvedNavfolioPageModule[] {
+export function getResolvedPageModules(config: SonderPageModuleConfig): ResolvedSonderPageModule[] {
   const modules = getConfiguredPageModules(config);
   const routeOwners = new Map<string, string>();
 
@@ -40,7 +38,7 @@ export function getResolvedPageModules(
 
     if (existingOwner) {
       throw new Error(
-        `Duplicate Navfolio page module route "${route}" for "${existingOwner}" and "${module.id}".`,
+        `Duplicate Sonder page module route "${route}" for "${existingOwner}" and "${module.id}".`,
       );
     }
 
@@ -61,27 +59,27 @@ export function getResolvedPageModules(
 }
 
 export function getResolvedPageModule(
-  config: NavfolioPageModuleConfig,
+  config: SonderPageModuleConfig,
   moduleId: string,
-): ResolvedNavfolioPageModule | undefined {
+): ResolvedSonderPageModule | undefined {
   return getResolvedPageModules(config).find((module) => module.id === moduleId);
 }
 
-export function getPageModuleRoute(config: NavfolioPageModuleConfig, moduleId: string): string {
+export function getPageModuleRoute(config: SonderPageModuleConfig, moduleId: string): string {
   return getResolvedPageModule(config, moduleId)?.route ?? `/${moduleId}`;
 }
 
-export function isPageModuleEnabled(config: NavfolioPageModuleConfig, moduleId: string): boolean {
+export function isPageModuleEnabled(config: SonderPageModuleConfig, moduleId: string): boolean {
   return getResolvedPageModule(config, moduleId) !== undefined;
 }
 
-export function getResolvedPageModuleScaffolds(config: NavfolioPageModuleConfig) {
+export function getResolvedPageModuleScaffolds(config: SonderPageModuleConfig) {
   return getResolvedPageModules(config).flatMap((module) => {
     if (!module.scaffold) return [];
 
     if (!module.collections.includes(module.scaffold.collection)) {
       throw new Error(
-        `Navfolio page module "${module.id}" scaffold collection ` +
+        `Sonder page module "${module.id}" scaffold collection ` +
           `"${module.scaffold.collection}" must be declared in module.collections.`,
       );
     }
@@ -97,8 +95,8 @@ export function getResolvedPageModuleScaffolds(config: NavfolioPageModuleConfig)
   });
 }
 
-export function getResolvedPageModuleI18n(config: NavfolioPageModuleConfig) {
-  return getResolvedPageModules(config).flatMap((module): NavfolioI18nContribution[] =>
+export function getResolvedPageModuleI18n(config: SonderPageModuleConfig) {
+  return getResolvedPageModules(config).flatMap((module): SonderI18nContribution[] =>
     module.i18n ? [module.i18n] : [],
   );
 }

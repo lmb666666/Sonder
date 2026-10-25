@@ -1,7 +1,7 @@
 import type { SiteConfig } from '../data/site';
-import { createI18n, normalizeLocale, type I18nMessages } from '@navfolio/core';
-import { getResolvedPageModuleI18n } from '@navfolio/pages';
-import navfolioConfig from '../../navfolio.config';
+import { createI18n, normalizeLocale, type I18nMessages } from '@sonder/core';
+import { getResolvedPageModuleI18n } from '@sonder/pages';
+import sonderConfig from '../../sonder.config';
 import en from '../i18n/en.json';
 import zhCN from '../i18n/zh-CN.json';
 import zhTW from '../i18n/zh-TW.json';
@@ -129,7 +129,6 @@ type RawUiText = {
     resultKinds: {
       blogNote: string;
       blogIndex: string;
-      vibe: string;
       project: string;
       page: string;
     };
@@ -268,7 +267,7 @@ export function getI18n(config: SiteConfig) {
     locale: getUiLanguage(config),
     catalogs: [
       rawUiText as unknown as Record<string, I18nMessages>,
-      ...getResolvedPageModuleI18n(navfolioConfig).map((contribution) => contribution.messages),
+      ...getResolvedPageModuleI18n(sonderConfig).map((contribution) => contribution.messages),
     ],
   });
 }

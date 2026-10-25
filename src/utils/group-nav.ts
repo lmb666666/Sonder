@@ -1,7 +1,7 @@
 import { hasTopicOverflow } from './topic-overflow';
 
 type GroupNavWindow = Window & {
-  __navfolioGroupNavMounted?: boolean;
+  __sonderGroupNavMounted?: boolean;
 };
 
 const groupNavObservers = new Set<ResizeObserver>();
@@ -68,8 +68,8 @@ function disconnectGroupNavObservers() {
 export function mountGroupNav() {
   const groupNavWindow = getGroupNavWindow();
 
-  if (!groupNavWindow.__navfolioGroupNavMounted) {
-    groupNavWindow.__navfolioGroupNavMounted = true;
+  if (!groupNavWindow.__sonderGroupNavMounted) {
+    groupNavWindow.__sonderGroupNavMounted = true;
     document.addEventListener('astro:page-load', mountCurrentGroupNav);
     document.addEventListener('astro:before-swap', disconnectGroupNavObservers);
   }

@@ -25,7 +25,7 @@ icon = ""
 [config.theme]
 # 可用色盘：
 # green-soft, green-vivid, rose-soft, pink-soft, purple-soft, blue-soft, orange-soft, brown-soft
-# Sonder logo 主色 #2A58B5，对应 blue-soft。
+# Sonder logo 主色 #5B7488，对应 blue-soft。
 palette = "blue-soft"
 # 原生 UI 语言。可用值：en、zh-CN、zh-TW。未知值会回退到 en。
 lang = "zh-CN"
@@ -62,7 +62,7 @@ meting_api = "https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=
 
 [config.friendCircle]
 # Friend-Circle-Lite 订阅源（URL 或 public/ 下的文件路径）。
-# 留空时依次尝试 public/friend-circle.json（FCL 工作流同步产物）、内置演示数据。
+# 留空时依次尝试 public/friend-circle.json（外部同步产物）、内置演示数据。
 # feed_src = "https://fcl.example.com/api"
 feed_src = ""
 pageSize = 20
@@ -111,13 +111,6 @@ title = "项目"
 kicker = "项目架"
 subtitle = "小工具与站点系统。"
 note = "实现选择、发布与实验的陈列架。"
-
-[config.pages.vibe]
-title = "随记"
-kicker = ""
-subtitle = "生活与代码的碎片。"
-note = "不够写成文章，但也是故事的一部分。"
-showTrail = true
 
 [config.pages.moments]
 title = "动态"

@@ -1,6 +1,5 @@
 export { projectsModule } from './projects/index.js';
 export { mediaModule } from './media/index.js';
-export { vibeModule } from './vibe/index.js';
 export {
   defaultPageModules,
   getConfiguredPageModules,
@@ -15,16 +14,16 @@ export {
 export { pages } from './plugin.js';
 export { renderScaffoldTemplate } from './scaffold.js';
 export type {
-  NavfolioContentExtension,
-  NavfolioPageModule,
-  NavfolioPageModuleBuiltinId,
-  NavfolioPageModuleId,
-  NavfolioPageModuleNav,
-  NavfolioPageModuleOptions,
-  NavfolioPageModuleRoute,
-  NavfolioPageModuleScaffold,
-  NavfolioPagesPlugin,
-  NavfolioScaffoldTemplateContext,
-  NavfolioScaffoldTemplateVariable,
-  ResolvedNavfolioPageModule,
+  SonderContentExtension,
+  SonderPageModule,
+  SonderPageModuleBuiltinId,
+  SonderPageModuleId,
+  SonderPageModuleNav,
+  SonderPageModuleOptions,
+  SonderPageModuleRoute,
+  SonderPageModuleScaffold,
+  SonderPagesPlugin,
+  SonderScaffoldTemplateContext,
+  SonderScaffoldTemplateVariable,
+  ResolvedSonderPageModule,
 } from './types';

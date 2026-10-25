@@ -122,19 +122,19 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
 
 <figure
   class:list={[
-    'navfolio-music-player',
-    `navfolio-music-player--${variant}`,
-    `navfolio-music-player--${size}`,
+    'sonder-music-player',
+    `sonder-music-player--${variant}`,
+    `sonder-music-player--${size}`,
     className,
   ]}
   style={themeStyle}
-  data-navfolio-music-player
+  data-sonder-music-player
 >
-  <div class="navfolio-music-player__body">
+  <div class="sonder-music-player__body">
     {
       resolvedArtwork ? (
         <img
-          class="navfolio-music-player__artwork"
+          class="sonder-music-player__artwork"
           src={resolvedArtwork}
           alt={`《${resolvedTitle}》封面`}
           loading="lazy"
@@ -143,15 +143,15 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
         />
       ) : (
         <div
-          class="navfolio-music-player__artwork navfolio-music-player__artwork--placeholder"
+          class="sonder-music-player__artwork sonder-music-player__artwork--placeholder"
           aria-hidden="true"
         >
           <span>♫</span>
         </div>
       )
     }
-    <div class="navfolio-music-player__content">
-      <div class="navfolio-music-player__meta">
+    <div class="sonder-music-player__content">
+      <div class="sonder-music-player__meta">
         <strong data-title data-marquee><span>{resolvedTitle}</span></strong>{
           resolvedArtist ? (
             <span data-artist data-marquee>
@@ -162,10 +162,10 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
       </div>
       {
         isNative ? (
-          <div class="navfolio-music-player__controls">
+          <div class="sonder-music-player__controls">
             <button
               type="button"
-              class="navfolio-music-player__play"
+              class="sonder-music-player__play"
               aria-label={`播放 ${resolvedTitle}`}
               data-play
             >
@@ -175,7 +175,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
               </>
             </button>
             <input
-              class="navfolio-music-player__progress"
+              class="sonder-music-player__progress"
               type="range"
               min="0"
               max="0"
@@ -183,10 +183,10 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
               aria-label={`${resolvedTitle} 播放进度`}
               data-progress
             />
-            <span class="navfolio-music-player__time" aria-live="off" data-time>
+            <span class="sonder-music-player__time" aria-live="off" data-time>
               0:00
             </span>
-            <button type="button" class="navfolio-music-player__mute" aria-label="静音" data-mute>
+            <button type="button" class="sonder-music-player__mute" aria-label="静音" data-mute>
               <>
                 <Volume2 size={16} data-volume-icon />
                 <VolumeX size={16} data-muted-icon />
@@ -200,7 +200,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
             </audio>
           </div>
         ) : embed ? (
-          <div class="navfolio-music-player__provider">
+          <div class="sonder-music-player__provider">
             <span>{providerName} 官方播放器</span>
             {url ? (
               <a href={url} target="_blank" rel="noreferrer">
@@ -209,7 +209,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
             ) : null}
           </div>
         ) : (
-          <p class="navfolio-music-player__unavailable">未能生成可用的官方播放器地址。</p>
+          <p class="sonder-music-player__unavailable">未能生成可用的官方播放器地址。</p>
         )
       }
     </div>
@@ -217,7 +217,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
   {
     embed ? (
       <iframe
-        class="navfolio-music-player__embed"
+        class="sonder-music-player__embed"
         src={embed}
         title={`${title} — ${providerName} 播放器`}
         loading="lazy"
@@ -228,7 +228,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
   }
   {
     playlist.length > 0 && isNative ? (
-      <details class="navfolio-music-player__playlist">
+      <details class="sonder-music-player__playlist">
         <>
           <summary>
             <ListMusic size={14} /> 歌单 · {playlist.length}
@@ -267,7 +267,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
       .padStart(2, '0')}`;
   };
   const init = () =>
-    document.querySelectorAll<HTMLElement>('[data-navfolio-music-player]').forEach((root) => {
+    document.querySelectorAll<HTMLElement>('[data-sonder-music-player]').forEach((root) => {
       if (root.dataset.ready) return;
       root.dataset.ready = 'true';
       const audio = root.querySelector<HTMLAudioElement>('[data-audio]');
@@ -369,7 +369,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
 </script>
 
 <style>
-  :global(.navfolio-music-player) {
+  :global(.sonder-music-player) {
     --music-surface: var(--music-surface-light);
     --music-surface-muted: var(--music-surface-muted-light);
     --music-text: var(--music-text-light);
@@ -381,7 +381,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     color: var(--music-text);
     font-family: var(--font-meta, ui-monospace, monospace);
   }
-  :global(:root[data-theme='dark'] .navfolio-music-player) {
+  :global(:root[data-theme='dark'] .sonder-music-player) {
     --music-surface: var(--music-surface-dark);
     --music-surface-muted: var(--music-surface-muted-dark);
     --music-text: var(--music-text-dark);
@@ -391,7 +391,7 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     --music-line: var(--music-line-dark);
   }
   @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme]) .navfolio-music-player) {
+    :global(:root:not([data-theme]) .sonder-music-player) {
       --music-surface: var(--music-surface-dark);
       --music-surface-muted: var(--music-surface-muted-dark);
       --music-text: var(--music-text-dark);
@@ -401,28 +401,28 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
       --music-line: var(--music-line-dark);
     }
   }
-  :global(.navfolio-music-player--card) {
+  :global(.sonder-music-player--card) {
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--music-line) 86%, transparent);
     border-radius: 10px;
     background: var(--music-surface);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--music-text) 5%, transparent);
   }
-  :global(.navfolio-music-player--inline) {
+  :global(.sonder-music-player--inline) {
     padding: 8px 0;
     background: transparent;
   }
-  :global(.navfolio-music-player__body) {
+  :global(.sonder-music-player__body) {
     display: flex;
     gap: 11px;
     align-items: center;
     min-width: 0;
     padding: 10px 12px;
   }
-  :global(.navfolio-music-player--inline .navfolio-music-player__body) {
+  :global(.sonder-music-player--inline .sonder-music-player__body) {
     padding: 0;
   }
-  :global(.navfolio-music-player__artwork) {
+  :global(.sonder-music-player__artwork) {
     flex: 0 0 48px;
     width: 48px;
     height: 48px;
@@ -430,47 +430,47 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     object-fit: cover;
     background: var(--music-surface-muted);
   }
-  :global(.navfolio-music-player__artwork--placeholder) {
+  :global(.sonder-music-player__artwork--placeholder) {
     display: grid;
     place-items: center;
     color: var(--music-accent);
     font-size: 1.25rem;
   }
-  :global(.navfolio-music-player__content) {
+  :global(.sonder-music-player__content) {
     display: grid;
     gap: 7px;
     min-width: 0;
     flex: 1;
   }
-  :global(.navfolio-music-player__meta) {
+  :global(.sonder-music-player__meta) {
     display: grid;
     gap: 1px;
     min-width: 0;
   }
-  :global(.navfolio-music-player__meta strong),
-  :global(.navfolio-music-player__meta span) {
+  :global(.sonder-music-player__meta strong),
+  :global(.sonder-music-player__meta span) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  :global(.navfolio-music-player__meta strong) {
+  :global(.sonder-music-player__meta strong) {
     font-size: 0.82rem;
     line-height: 1.25;
   }
-  :global(.navfolio-music-player__meta span),
-  :global(.navfolio-music-player__provider),
-  :global(.navfolio-music-player__unavailable) {
+  :global(.sonder-music-player__meta span),
+  :global(.sonder-music-player__provider),
+  :global(.sonder-music-player__unavailable) {
     color: var(--music-text-muted);
     font-size: 0.7rem;
     line-height: 1.35;
   }
-  :global(.navfolio-music-player__controls) {
+  :global(.sonder-music-player__controls) {
     display: grid;
     grid-template-columns: auto minmax(64px, 1fr) auto auto;
     align-items: center;
     gap: 7px;
   }
-  :global(.navfolio-music-player button) {
+  :global(.sonder-music-player button) {
     display: grid;
     width: 27px;
     height: 27px;
@@ -481,47 +481,47 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     color: var(--music-accent);
     cursor: pointer;
   }
-  :global(.navfolio-music-player__play) {
+  :global(.sonder-music-player__play) {
     border-color: var(--music-accent) !important;
     background: var(--music-accent) !important;
     color: var(--music-accent-contrast) !important;
   }
-  :global(.navfolio-music-player [data-pause-icon]),
-  :global(.navfolio-music-player[data-playing] [data-play-icon]),
-  :global(.navfolio-music-player [data-muted-icon]) {
+  :global(.sonder-music-player [data-pause-icon]),
+  :global(.sonder-music-player[data-playing] [data-play-icon]),
+  :global(.sonder-music-player [data-muted-icon]) {
     display: none;
   }
-  :global(.navfolio-music-player[data-playing] [data-pause-icon]),
-  :global(.navfolio-music-player[data-muted] [data-muted-icon]) {
+  :global(.sonder-music-player[data-playing] [data-pause-icon]),
+  :global(.sonder-music-player[data-muted] [data-muted-icon]) {
     display: block;
   }
-  :global(.navfolio-music-player[data-muted] [data-volume-icon]) {
+  :global(.sonder-music-player[data-muted] [data-volume-icon]) {
     display: none;
   }
-  :global(.navfolio-music-player__progress) {
+  :global(.sonder-music-player__progress) {
     width: 100%;
     accent-color: var(--music-accent);
   }
-  :global(.navfolio-music-player__time) {
+  :global(.sonder-music-player__time) {
     color: var(--music-text-muted);
     font-size: 0.66rem;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
-  :global(.navfolio-music-player__provider) {
+  :global(.sonder-music-player__provider) {
     display: flex;
     gap: 8px;
     align-items: center;
     justify-content: space-between;
   }
-  :global(.navfolio-music-player__provider a) {
+  :global(.sonder-music-player__provider a) {
     display: inline-flex;
     gap: 3px;
     align-items: center;
     color: var(--music-accent);
     text-decoration: none;
   }
-  :global(.navfolio-music-player__embed) {
+  :global(.sonder-music-player__embed) {
     display: block;
     width: 100%;
     height: 152px;
@@ -529,61 +529,61 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     border-top: 1px solid var(--music-line);
     background: var(--music-surface-muted);
   }
-  :global(.navfolio-music-player--inline .navfolio-music-player__embed) {
+  :global(.sonder-music-player--inline .sonder-music-player__embed) {
     margin-top: 8px;
     border-top: 0;
     border-radius: 7px;
   }
-  :global(.navfolio-music-player figcaption) {
+  :global(.sonder-music-player figcaption) {
     padding: 0 12px 10px;
     color: var(--music-text-muted);
     font-size: 0.7rem;
     line-height: 1.45;
   }
-  :global(.navfolio-music-player--inline figcaption) {
+  :global(.sonder-music-player--inline figcaption) {
     padding: 8px 0 0;
   }
   @media (max-width: 540px) {
-    :global(.navfolio-music-player__artwork) {
+    :global(.sonder-music-player__artwork) {
       flex-basis: 44px;
       width: 44px;
       height: 44px;
     }
-    :global(.navfolio-music-player__controls) {
+    :global(.sonder-music-player__controls) {
       grid-template-columns: auto minmax(40px, 1fr) auto;
     }
-    :global(.navfolio-music-player__mute) {
+    :global(.sonder-music-player__mute) {
       display: none !important;
     }
   }
-  :global(.navfolio-music-player) {
+  :global(.sonder-music-player) {
     width: 100%;
     max-width: 620px;
     margin-inline: auto;
   }
-  :global(.navfolio-music-player--narrow) {
+  :global(.sonder-music-player--narrow) {
     max-width: 400px;
   }
-  :global(.navfolio-music-player--compact) {
+  :global(.sonder-music-player--compact) {
     max-width: 500px;
   }
-  :global(.navfolio-music-player--wide) {
+  :global(.sonder-music-player--wide) {
     max-width: 720px;
   }
-  :global(.navfolio-music-player--full) {
+  :global(.sonder-music-player--full) {
     max-width: none;
   }
-  :global(.navfolio-music-player__controls) {
+  :global(.sonder-music-player__controls) {
     grid-template-columns: 28px minmax(0, 1fr) auto 28px;
   }
-  :global(.navfolio-music-player button) {
+  :global(.sonder-music-player button) {
     line-height: 0;
   }
-  :global(.navfolio-music-player button svg) {
+  :global(.sonder-music-player button svg) {
     display: block;
     margin: auto;
   }
-  :global(.navfolio-music-player__progress) {
+  :global(.sonder-music-player__progress) {
     appearance: none;
     height: 4px;
     border: 0;
@@ -595,13 +595,13 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     );
     cursor: pointer;
   }
-  :global(.navfolio-music-player__progress::-webkit-slider-runnable-track) {
+  :global(.sonder-music-player__progress::-webkit-slider-runnable-track) {
     height: 4px;
     border: 0;
     border-radius: 999px;
     background: transparent;
   }
-  :global(.navfolio-music-player__progress::-webkit-slider-thumb) {
+  :global(.sonder-music-player__progress::-webkit-slider-thumb) {
     width: 10px;
     height: 10px;
     margin-top: -3px;
@@ -611,47 +611,47 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     background: var(--music-accent);
     box-shadow: 0 0 0 2px var(--music-surface);
   }
-  :global(.navfolio-music-player__progress::-moz-range-track) {
+  :global(.sonder-music-player__progress::-moz-range-track) {
     height: 4px;
     border: 0;
     border-radius: 999px;
     background: color-mix(in srgb, var(--music-line) 88%, transparent);
   }
-  :global(.navfolio-music-player__progress::-moz-range-progress) {
+  :global(.sonder-music-player__progress::-moz-range-progress) {
     height: 4px;
     border-radius: 999px;
     background: var(--music-accent);
   }
-  :global(.navfolio-music-player__progress::-moz-range-thumb) {
+  :global(.sonder-music-player__progress::-moz-range-thumb) {
     width: 8px;
     height: 8px;
     border: 2px solid var(--music-surface);
     border-radius: 50%;
     background: var(--music-accent);
   }
-  :global(.navfolio-music-player [data-marquee]) {
+  :global(.sonder-music-player [data-marquee]) {
     overflow: hidden;
   }
-  :global(.navfolio-music-player [data-marquee] > span) {
+  :global(.sonder-music-player [data-marquee] > span) {
     display: inline-block;
     min-width: 100%;
     white-space: nowrap;
   }
-  :global(.navfolio-music-player [data-marquee][data-overflow] > span) {
+  :global(.sonder-music-player [data-marquee][data-overflow] > span) {
     padding-right: 2rem;
-    animation: navfolio-music-marquee 9s linear infinite alternate;
+    animation: sonder-music-marquee 9s linear infinite alternate;
   }
-  :global(.navfolio-music-player [data-marquee]:hover > span) {
+  :global(.sonder-music-player [data-marquee]:hover > span) {
     animation-play-state: paused;
   }
-  :global(.navfolio-music-player figcaption) {
+  :global(.sonder-music-player figcaption) {
     opacity: 0.68;
     font-size: 0.63rem;
   }
-  :global(.navfolio-music-player__playlist) {
+  :global(.sonder-music-player__playlist) {
     border-top: 1px solid color-mix(in srgb, var(--music-line) 75%, transparent);
   }
-  :global(.navfolio-music-player__playlist summary) {
+  :global(.sonder-music-player__playlist summary) {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -661,15 +661,15 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     font-size: 0.68rem;
     list-style: none;
   }
-  :global(.navfolio-music-player__playlist summary::-webkit-details-marker) {
+  :global(.sonder-music-player__playlist summary::-webkit-details-marker) {
     display: none;
   }
-  :global(.navfolio-music-player__playlist > div) {
+  :global(.sonder-music-player__playlist > div) {
     max-height: 168px;
     overflow: auto;
     padding: 0 6px 7px;
   }
-  :global(.navfolio-music-player__playlist button) {
+  :global(.sonder-music-player__playlist button) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     width: 100%;
@@ -682,21 +682,21 @@ const playlistPayload = JSON.stringify(playlist).replace(/</g, '\\u003c');
     text-align: left;
     line-height: 1.25;
   }
-  :global(.navfolio-music-player__playlist button:hover),
-  :global(.navfolio-music-player__playlist button[data-current-track]) {
+  :global(.sonder-music-player__playlist button:hover),
+  :global(.sonder-music-player__playlist button[data-current-track]) {
     background: var(--music-surface-muted);
   }
-  :global(.navfolio-music-player__playlist button span),
-  :global(.navfolio-music-player__playlist button small) {
+  :global(.sonder-music-player__playlist button span),
+  :global(.sonder-music-player__playlist button small) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  :global(.navfolio-music-player__playlist button small) {
+  :global(.sonder-music-player__playlist button small) {
     color: var(--music-text-muted);
     font-size: 0.62rem;
   }
-  @keyframes navfolio-music-marquee {
+  @keyframes sonder-music-marquee {
     from {
       transform: translateX(0);
     }

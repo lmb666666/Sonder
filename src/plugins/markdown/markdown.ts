@@ -12,7 +12,7 @@ import remarkMath from 'remark-math';
 import { resolveMarkdownOptions, type MarkdownPluginOptions } from './markdown-options.js';
 import rehypeResponsiveTables from './rehype-responsive-tables.js';
 import remarkMermaid from './remark-mermaid.js';
-import type { NavfolioPlugin } from './types.js';
+import type { SonderPlugin } from './types.js';
 
 function loadMarkdownStyles(options: { callouts: boolean; layouts: boolean }): string {
   const stylePaths = [
@@ -28,7 +28,7 @@ function markdownStylesIntegration(options: {
   layouts: boolean;
 }): AstroIntegration {
   return {
-    name: '@navfolio/plugin-markdown/styles',
+    name: '@sonder/plugin-markdown/styles',
     hooks: {
       'astro:config:setup': ({ injectScript }) => {
         const styles = loadMarkdownStyles(options);
@@ -36,8 +36,8 @@ function markdownStylesIntegration(options: {
         injectScript(
           'head-inline',
           `
-const styleId = 'navfolio-markdown-styles';
-const persistId = 'navfolio-markdown-styles';
+const styleId = 'sonder-markdown-styles';
+const persistId = 'sonder-markdown-styles';
 const styles = ${JSON.stringify(styles)};
 
 function ensureMarkdownStyles() {
@@ -61,11 +61,11 @@ document.addEventListener('astro:after-swap', ensureMarkdownStyles);
   };
 }
 
-export function markdownPlugin(options: MarkdownPluginOptions = {}): NavfolioPlugin {
+export function markdownPlugin(options: MarkdownPluginOptions = {}): SonderPlugin {
   const initialOptions = resolveMarkdownOptions(options);
 
   return {
-    name: '@navfolio/plugin-markdown',
+    name: '@sonder/plugin-markdown',
     enabled: initialOptions.enabled,
     astro: ({ mathRenderer }) => {
       const resolvedOptions = resolveMarkdownOptions(options, { mathRenderer });

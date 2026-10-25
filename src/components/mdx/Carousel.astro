@@ -18,14 +18,14 @@ const {
 
 <section
   id={id}
-  class:list={['navfolio-carousel', className]}
+  class:list={['sonder-carousel', className]}
   aria-label={label}
   style={aspectRatio ? `--carousel-aspect-ratio: ${aspectRatio};` : undefined}
 >
-  <div class="navfolio-carousel__track" data-track><slot /></div>
+  <div class="sonder-carousel__track" data-track><slot /></div>
   {
     showControls ? (
-      <div class="navfolio-carousel__controls">
+      <div class="sonder-carousel__controls">
         <>
           <button type="button" aria-label="Previous slide" data-prev>
             <ChevronLeft size={18} />
@@ -40,7 +40,7 @@ const {
 </section>
 <script>
   const init = () =>
-    document.querySelectorAll<HTMLElement>('.navfolio-carousel').forEach((root) => {
+    document.querySelectorAll<HTMLElement>('.sonder-carousel').forEach((root) => {
       if (root.dataset.ready) return;
       root.dataset.ready = 'true';
       const track = root.querySelector<HTMLElement>('[data-track]');
@@ -61,11 +61,11 @@ const {
   else init();
 </script>
 <style>
-  .navfolio-carousel {
+  .sonder-carousel {
     display: block;
     margin: 30px 0;
   }
-  .navfolio-carousel__track {
+  .sonder-carousel__track {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 100%;
@@ -76,21 +76,21 @@ const {
     border-radius: 8px;
     background: var(--paper-surface-muted);
   }
-  .navfolio-carousel__track::-webkit-scrollbar {
+  .sonder-carousel__track::-webkit-scrollbar {
     display: none;
   }
-  .navfolio-carousel :global([data-carousel-slide]) {
+  .sonder-carousel :global([data-carousel-slide]) {
     margin: 0;
     padding: 14px;
     scroll-snap-align: center;
   }
-  .navfolio-carousel__controls {
+  .sonder-carousel__controls {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
     margin-top: 10px;
   }
-  .navfolio-carousel button {
+  .sonder-carousel button {
     display: grid;
     width: 34px;
     height: 34px;
@@ -101,7 +101,7 @@ const {
     color: var(--paper-ink-soft);
     cursor: pointer;
   }
-  .navfolio-carousel button:hover {
+  .sonder-carousel button:hover {
     background: var(--paper-control-hover);
     color: var(--paper-ink);
   }

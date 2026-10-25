@@ -45,6 +45,6 @@ describe('renderScaffoldTemplate', () => {
         isoDate: now.toISOString(),
         date: now.toISOString().slice(0, 10),
       }),
-    ).toThrow('Unsupported Navfolio scaffold template expression');
+    ).toThrow('Unsupported Sonder scaffold template expression');
   });
 });

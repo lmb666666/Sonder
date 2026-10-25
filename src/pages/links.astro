@@ -2,20 +2,20 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import FriendLinkApplication from '@navfolio/mdx-components/FriendLinkApplication.astro';
-import FriendLinkCard from '@navfolio/mdx-components/FriendLinkCard.astro';
+import FriendLinkApplication from '@sonder/mdx-components/FriendLinkApplication.astro';
+import FriendLinkCard from '@sonder/mdx-components/FriendLinkCard.astro';
 import {
   crawlFriendPosts,
   parseFriendCircleFeed,
   type FriendPost,
-} from '@navfolio/mdx-components/lib/friend-data';
+} from '@sonder/mdx-components/lib/friend-data';
 import {
   BaseHead,
   BlogTopNav,
   Footer,
   getHtmlLang,
   getSiteConfig,
-} from 'virtual:navfolio/page-runtime';
+} from 'virtual:sonder/page-runtime';
 import PageHero from '../components/PageHero.astro';
 import demoFeed from '../data/friend-circle-demo.json';
 import { allFriendLinks, friendLinkGroups } from '../data/friends';

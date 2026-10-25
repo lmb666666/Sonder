@@ -10,7 +10,7 @@ import { getSiteConfig } from '../../data/site';
 import { slugifyGroupName } from '../../utils/content-groups';
 import { isStickyEntry } from '../../utils/content-dates';
 import { getUiText } from '../../utils/ui-text';
-import '@navfolio/theme-default/styles/blog-post-list.css';
+import '@sonder/theme-default/styles/blog-post-list.css';
 
 type BlogPost = CollectionEntry<'blog'>;
 type CoverImageStyle = 'card' | 'mask';
@@ -142,9 +142,9 @@ function getGroups(post: BlogPost) {
 
 <script is:inline>
   (() => {
-    if (window.__navfolioArchivePostClick) return;
+    if (window.__sonderArchivePostClick) return;
 
-    window.__navfolioArchivePostClick = true;
+    window.__sonderArchivePostClick = true;
 
     document.addEventListener('click', (event) => {
       if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {

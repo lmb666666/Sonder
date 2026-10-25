@@ -10,7 +10,7 @@ describe('markdownPlugin', () => {
 
     expect(
       astroConfig?.integrations?.some(
-        (integration) => integration.name === '@navfolio/plugin-markdown/styles',
+        (integration) => integration.name === '@sonder/plugin-markdown/styles',
       ),
     ).toBe(true);
   });
@@ -20,7 +20,7 @@ describe('markdownPlugin', () => {
     const astroConfig =
       typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
     const stylesIntegration = astroConfig?.integrations?.find(
-      (integration) => integration.name === '@navfolio/plugin-markdown/styles',
+      (integration) => integration.name === '@sonder/plugin-markdown/styles',
     );
     const injectedScripts: Array<{ stage: string; content: string }> = [];
 
@@ -46,7 +46,7 @@ describe('markdownPlugin', () => {
 
     expect(
       astroConfig?.integrations?.some(
-        (integration) => integration.name === '@navfolio/plugin-markdown/styles',
+        (integration) => integration.name === '@sonder/plugin-markdown/styles',
       ),
     ).toBe(true);
   });
@@ -58,7 +58,7 @@ describe('markdownPlugin', () => {
 
     expect(
       astroConfig?.integrations?.some(
-        (integration) => integration.name === '@navfolio/plugin-markdown/styles',
+        (integration) => integration.name === '@sonder/plugin-markdown/styles',
       ),
     ).toBe(false);
   });

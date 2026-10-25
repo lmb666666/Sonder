@@ -5,20 +5,19 @@
   "compilerOptions": {
     "strictNullChecks": true,
     "paths": {
-      "@navfolio/core": ["./src/framework/index.ts"],
-      "@navfolio/pages": ["./src/modules/index.ts"],
-      "@navfolio/page-projects": ["./src/modules/projects/index.ts"],
-      "@navfolio/page-vibe": ["./src/modules/vibe/index.ts"],
-      "@navfolio/page-media": ["./src/modules/media/index.ts"],
-      "@navfolio/mdx-components/*": ["./src/components/mdx/*"],
-      "@navfolio/plugin-markdown": ["./src/plugins/markdown/index.ts"],
-      "@navfolio/plugin-markdown/styles.css": ["./src/plugins/markdown/styles.css"],
-      "@navfolio/plugin-callout": ["./src/plugins/markdown/callout/index.ts"],
-      "@navfolio/plugin-callout/styles.css": ["./src/plugins/markdown/callout/styles.css"],
-      "@navfolio/plugin-markdown-layouts": ["./src/plugins/markdown/layouts/index.ts"],
-      "@navfolio/plugin-markdown-layouts/styles.css": ["./src/plugins/markdown/layouts/styles.css"],
-      "@navfolio/theme-default": ["./src/components/theme/index.ts"],
-      "@navfolio/theme-default/*": ["./src/components/theme/*"]
+      "@sonder/core": ["./src/framework/index.ts"],
+      "@sonder/pages": ["./src/modules/index.ts"],
+      "@sonder/page-projects": ["./src/modules/projects/index.ts"],
+      "@sonder/page-media": ["./src/modules/media/index.ts"],
+      "@sonder/mdx-components/*": ["./src/components/mdx/*"],
+      "@sonder/plugin-markdown": ["./src/plugins/markdown/index.ts"],
+      "@sonder/plugin-markdown/styles.css": ["./src/plugins/markdown/styles.css"],
+      "@sonder/plugin-callout": ["./src/plugins/markdown/callout/index.ts"],
+      "@sonder/plugin-callout/styles.css": ["./src/plugins/markdown/callout/styles.css"],
+      "@sonder/plugin-markdown-layouts": ["./src/plugins/markdown/layouts/index.ts"],
+      "@sonder/plugin-markdown-layouts/styles.css": ["./src/plugins/markdown/layouts/styles.css"],
+      "@sonder/theme-default": ["./src/components/theme/index.ts"],
+      "@sonder/theme-default/*": ["./src/components/theme/*"]
     }
   }
 }
