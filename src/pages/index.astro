@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import IntroCard from '../components/cards/IntroCard.astro';
 import ConnectCard from '../components/cards/ConnectCard.astro';
 import ProfileCard from '../components/cards/ProfileCard.astro';
+import Colophon from '../components/Colophon.astro';
 import DashboardFlow from '../components/layout/DashboardFlow.astro';
 import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
 import LatestUpdates from '../components/widgets/LatestUpdates.astro';
@@ -10,7 +11,6 @@ import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
 import { formatCount } from '../utils/word-count';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Footer from '../components/Footer.astro';
 
 const { home, profile, site } = await getSiteConfig();
 
@@ -64,7 +64,7 @@ const stats = [
     </Fragment>
 
     <Fragment slot="sideFooter">
-      <Footer sidebar />
+      <Colophon align="center" />
     </Fragment>
   </DashboardFlow>
 </BaseLayout>

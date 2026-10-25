@@ -38,6 +38,11 @@
     min-width: 0;
   }
 
+  /* 桌面署名已在站点信息卡内，独立署名只在站点信息被收起的移动端出现 */
+  .side-footer {
+    display: none;
+  }
+
   /* 主列上移：首屏内尽量完整展示最新文章卡 */
   .main-column {
     padding-top: 32px;
@@ -174,9 +179,11 @@
       display: none;
     }
 
-    /* 首页页脚随侧栏内容流到最末 */
+    /* 首页署名随侧栏内容流到最末 */
     .side-footer {
+      display: block;
       order: 5;
+      padding-top: 2.2em;
     }
   }
 </style>

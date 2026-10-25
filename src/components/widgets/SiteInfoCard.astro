@@ -1,6 +1,7 @@
 ---
 import { format } from 'date-fns';
 import { name as ciName, isCI } from 'ci-info';
+import Colophon from '../Colophon.astro';
 import { getSiteConfig } from '../../data/site';
 import { timeElapse } from '../../utils/time';
 
@@ -60,21 +61,10 @@ if (siteInfo.buildPlatform) {
             <dd title={row.tip}>{row.value}</dd>
           </div>
         ))}
-        <div class="site-info-row">
-          <dt>Powered by</dt>
-          <dd class="site-info-powered">
-            <a href="https://astro.build/" target="_blank" rel="noreferrer">
-              Astro
-            </a>
-            <span class="sep" aria-hidden="true">
-              ·
-            </span>
-            <a href={site.repository} target="_blank" rel="noreferrer">
-              Sonder
-            </a>
-          </dd>
-        </div>
       </dl>
+      <div class="site-info-colophon">
+        <Colophon />
+      </div>
     </article>
   )
 }
@@ -130,28 +120,9 @@ if (siteInfo.buildPlatform) {
     overflow-wrap: anywhere;
   }
 
-  .site-info-powered {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.35em;
-  }
-
-  .site-info-powered a {
-    color: var(--paper-ink-soft);
-    text-decoration: none;
-    border-bottom: 1px solid var(--paper-line);
-    transition:
-      color 180ms ease,
-      border-color 180ms ease;
-  }
-
-  .site-info-powered a:hover,
-  .site-info-powered a:focus-visible {
-    color: var(--paper-accent);
-    border-color: currentColor;
-  }
-
-  .site-info-powered .sep {
-    opacity: 0.7;
+  /* 书末署名：比数据行更轻，用发丝线收住站点信息 */
+  .site-info-colophon {
+    padding-top: 9px;
+    border-top: 1px solid var(--paper-line);
   }
 </style>
