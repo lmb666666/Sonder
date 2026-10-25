@@ -68,7 +68,7 @@ const cards = await Promise.all(
       words: formatCount(countWords(bodyText)),
       minutes: readingMinutes(bodyText),
       bandStyle: band ? `--media-band:${band.band};--media-fg:${band.fg}` : undefined,
-      bandVars: bandImage ? `--media-image:url(${bandImage})` : undefined,
+      bandVars: bandImage ? `--media-image:url("${bandImage.replace(/"/g, '%22')}")` : undefined,
     };
   }),
 );
