@@ -38,7 +38,7 @@ const ui = getUiText(siteConfig);
       main {
         width: min(100%, var(--layout-shell-width));
         max-width: none;
-        padding: 118px var(--layout-page-gutter) var(--layout-page-bottom);
+        padding: var(--layout-page-top) var(--layout-page-gutter) var(--layout-page-bottom);
       }
 
       .series-detail-header {
@@ -48,7 +48,7 @@ const ui = getUiText(siteConfig);
 
       @media (max-width: 720px) {
         main {
-          padding-top: 88px;
+          padding-top: 92px;
         }
       }
     </style>

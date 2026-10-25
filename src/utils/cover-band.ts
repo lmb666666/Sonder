@@ -14,6 +14,8 @@ export interface CoverBand {
 
 const FG_DARK = '#272d28';
 const FG_LIGHT = '#fffefb';
+// 纸墨与纸白相对背景的对比度相等处约在 L≈0.23，越亮越适合深色字。
+const DARK_TEXT_LUMINANCE = 0.23;
 
 const bandCache = new Map<string, CoverBand | null>();
 const heroPathCache = new Map<string, string | null>();
@@ -88,7 +90,7 @@ export async function getCoverBand(
         const hex = `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
         band = {
           band: hex,
-          fg: relativeLuminance({ r, g, b }) > 0.55 ? FG_DARK : FG_LIGHT,
+          fg: relativeLuminance({ r, g, b }) > DARK_TEXT_LUMINANCE ? FG_DARK : FG_LIGHT,
         };
       }
     } catch (error) {

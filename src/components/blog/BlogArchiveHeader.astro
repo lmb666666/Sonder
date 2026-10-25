@@ -1,5 +1,5 @@
 ---
-import ThemeBlogArchiveHeader from '@navfolio/theme-default/components/BlogArchiveHeader.astro';
+import PageHero from '../PageHero.astro';
 
 interface Props {
   kicker?: string;
@@ -8,7 +8,7 @@ interface Props {
   note?: string;
 }
 
-const { kicker, title, subtitle, note } = Astro.props;
+const { kicker = 'Notebook archive', title = 'Writing notes', subtitle, note } = Astro.props;
 ---
 
-<ThemeBlogArchiveHeader kicker={kicker} title={title} subtitle={subtitle} note={note} />
+<PageHero kicker={kicker} title={title} subtitle={subtitle} note={note} />

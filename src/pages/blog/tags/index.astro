@@ -58,7 +58,7 @@ function getTagWeight(count: number) {
       main {
         width: min(100%, var(--layout-shell-width));
         max-width: none;
-        padding: 118px var(--layout-page-gutter) var(--layout-page-bottom);
+        padding: var(--layout-page-top) var(--layout-page-gutter) var(--layout-page-bottom);
       }
 
       .tag-cloud {
@@ -146,7 +146,7 @@ function getTagWeight(count: number) {
 
       @media (max-width: 720px) {
         main {
-          padding-top: 88px;
+          padding-top: 92px;
         }
 
         .tag-cloud {

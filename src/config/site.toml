@@ -213,7 +213,7 @@ body = [
 ]
 
 [config.home.latest]
-count = 1
+count = 2
 heatmapWeeks = 20
 showHeatmapLatest = true
 excludeDraft = true

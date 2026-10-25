@@ -2,6 +2,7 @@
 title: '分类与系列模块使用说明'
 description: '了解 Navfolio 如何用轻量 frontmatter 自动生成分类页和系列阅读路径。'
 date: '2026-05-25'
+heroImage: '/src/assets/figure/covers/cover-12-plum.png'
 draft: false
 showHeroImage: false
 tags:

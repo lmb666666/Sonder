@@ -7,6 +7,7 @@ import {
   getHtmlLang,
   getSiteConfig,
 } from 'virtual:navfolio/page-runtime';
+import PageHero from '../components/PageHero.astro';
 import { demoMoments } from '../data/moments';
 
 const siteConfig = await getSiteConfig();
@@ -56,10 +57,7 @@ const extensionLabels: Record<string, string> = {
   <body>
     <BlogTopNav />
     <main class="moments-page" data-pagefind-body>
-      <header class="moments-hero">
-        <p class="moments-kicker">Moments</p>
-        <h1 class="moments-title">{pageMeta.title}</h1>
-        <p class="moments-subtitle">{pageMeta.subtitle}</p>
+      <PageHero kicker="Moments" title={pageMeta.title} subtitle={pageMeta.subtitle}>
         <p class="moments-stats" data-moments-stats>
           {ech0Mode ? '正在从 Ech0 拉取动态…' : `${initialItems.length} 条动态`}
         </p>
@@ -74,7 +72,7 @@ const extensionLabels: Record<string, string> = {
             </p>
           )
         }
-      </header>
+      </PageHero>
 
       <ol class="moments-timeline" data-moments-list data-page-size={pageSize}>
         {
@@ -187,55 +185,33 @@ const extensionLabels: Record<string, string> = {
       /* is:global：Ech0 模式下卡片由脚本插入，scoped 样式不匹配，整块全局化并以页面类收拢作用域 */
       .moments-page {
         width: min(100%, var(--layout-reading-width));
-        padding-top: 126px;
-      }
-
-      .moments-hero {
-        margin-bottom: clamp(36px, 6vw, 60px);
-      }
-
-      .moments-kicker {
-        margin: 0 0 12px;
-        color: var(--paper-ink-soft);
-        font-family: var(--font-meta);
-        font-size: 0.68rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .moments-title {
-        margin: 0;
-        color: var(--paper-ink);
-        font-size: clamp(2.32rem, 6.6vw, 4.35rem);
-        font-weight: 400;
-        line-height: 0.96;
-      }
-
-      .moments-subtitle {
-        max-width: 34ch;
-        margin: 18px 0 0;
-        color: var(--paper-ink-soft);
-        font-family: var(--font-ui-label);
-        font-size: clamp(0.98rem, 1.7vw, 1.16rem);
-        line-height: 1.68;
       }
 
       .moments-stats {
-        margin: 14px 0 0;
+        margin: 0;
         color: var(--paper-ink-soft);
         font-family: var(--font-meta);
         font-size: 0.8rem;
+        text-align: center;
       }
 
       .moments-note {
-        margin: 10px 0 0;
+        margin: 0;
         color: var(--paper-ink-faint);
         font-family: var(--font-meta);
         font-size: 0.78rem;
+        text-align: center;
       }
 
       .moments-note a {
         color: var(--paper-accent);
+      }
+
+      @media (max-width: 720px) {
+        .moments-stats,
+        .moments-note {
+          text-align: left;
+        }
       }
 
       .moments-timeline {

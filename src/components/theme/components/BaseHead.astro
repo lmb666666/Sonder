@@ -185,6 +185,9 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
         toggle() {
           applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
         },
+        set(theme) {
+          applyTheme(theme === 'dark' ? 'dark' : 'light');
+        },
       };
     }
 

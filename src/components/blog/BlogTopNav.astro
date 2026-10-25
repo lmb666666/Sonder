@@ -149,23 +149,71 @@ const paletteOptions = [
     aria-label="Mobile navigation"
     data-mobile-menu
   >
-    {
-      links.map((link) =>
-        link.disabled ? (
-          <span class="mobile-menu-link mobile-menu-placeholder" aria-disabled="true">
-            {link.label}
-          </span>
-        ) : (
-          <a
-            class:list={['mobile-menu-link', { active: isActive(link.href) }]}
-            href={withBase(link.href)}
-            data-mobile-menu-link
-          >
-            {link.label}
-          </a>
-        ),
-      )
-    }
+    <div class="mobile-menu-links">
+      {
+        links.map((link) =>
+          link.disabled ? (
+            <span class="mobile-menu-link mobile-menu-placeholder" aria-disabled="true">
+              {link.label}
+            </span>
+          ) : (
+            <a
+              class:list={['mobile-menu-link', { active: isActive(link.href) }]}
+              href={withBase(link.href)}
+              data-mobile-menu-link
+            >
+              {link.label}
+            </a>
+          ),
+        )
+      }
+    </div>
+
+    <div class="mobile-menu-appearance">
+      <p class="mobile-menu-section-title">外观</p>
+      <div class="mobile-theme-switch" role="group" aria-label="深浅色">
+        <button
+          type="button"
+          class="mobile-theme-option"
+          data-mobile-theme-option="light"
+          aria-pressed="false"
+        >
+          <Sun size={15} stroke-width={2} aria-hidden="true" />
+          浅色
+        </button>
+        <button
+          type="button"
+          class="mobile-theme-option"
+          data-mobile-theme-option="dark"
+          aria-pressed="false"
+        >
+          <Moon size={15} stroke-width={2} aria-hidden="true" />
+          深色
+        </button>
+      </div>
+
+      <p class="mobile-menu-section-title">主题色</p>
+      <div class="mobile-palette-grid" role="group" aria-label="主题色">
+        {
+          paletteOptions.map((option) => (
+            <button
+              type="button"
+              class="mobile-palette-option"
+              data-palette-option={option.id}
+              aria-label={option.label}
+              aria-pressed="false"
+            >
+              <span
+                class="palette-dot"
+                aria-hidden="true"
+                style={`--swatch-light: ${option.accent}; --swatch-dark: ${option.accentDark};`}
+              />
+              {option.label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
   </nav>
 
   <div class="nav-actions" aria-label="Page actions">
@@ -542,7 +590,8 @@ const paletteOptions = [
           }
         });
 
-        palettePanel?.addEventListener('click', (event) => {
+        // 色盘按钮同时出现在桌面面板与移动端菜单，统一在 header 上委托
+        header.addEventListener('click', (event) => {
           const option = (event.target as Element).closest<HTMLButtonElement>(
             '[data-palette-option]',
           );
@@ -579,6 +628,47 @@ const paletteOptions = [
             document.removeEventListener('keydown', onPaletteDocumentKeydown);
           },
         ]);
+      }
+
+      if (!header.dataset.appearanceReady) {
+        header.dataset.appearanceReady = 'true';
+
+        const themeOptions = [
+          ...header.querySelectorAll<HTMLButtonElement>('[data-mobile-theme-option]'),
+        ];
+        const themeApi = (
+          window as Window & { __navfolioTheme?: { set?: (theme: string) => void } }
+        ).__navfolioTheme;
+
+        const syncThemeOptions = () => {
+          const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+
+          for (const option of themeOptions) {
+            const active = option.dataset.mobileThemeOption === current;
+            option.setAttribute('aria-pressed', String(active));
+            option.classList.toggle('active', active);
+          }
+        };
+
+        for (const option of themeOptions) {
+          option.addEventListener('click', () => {
+            const theme = option.dataset.mobileThemeOption;
+            if (theme !== 'light' && theme !== 'dark') {
+              return;
+            }
+
+            themeApi?.set?.(theme);
+            syncThemeOptions();
+          });
+        }
+
+        const onThemeChange = () => syncThemeOptions();
+        window.addEventListener('navfolio:theme-change', onThemeChange);
+        registerNavListeners(header, [
+          () => window.removeEventListener('navfolio:theme-change', onThemeChange),
+        ]);
+
+        syncThemeOptions();
       }
     }
   };
@@ -1033,24 +1123,38 @@ const paletteOptions = [
       display: inline-grid;
     }
 
+    /* 深浅色与主题色收进菜单面板，顶栏只留菜单与搜索 */
+    .nav-actions [data-theme-toggle],
+    .nav-actions [data-palette-toggle] {
+      display: none;
+    }
+
     .mobile-menu-panel {
       position: absolute;
       top: calc(100% + 8px);
+      right: 0;
       left: 0;
+      z-index: 2;
       display: grid;
-      min-width: min(260px, calc(100vw - 20px));
-      gap: 4px;
-      padding: 8px;
-      border: 1px solid var(--paper-line);
-      border-radius: 8px;
+      gap: 12px;
+      max-height: calc(100vh - 96px);
+      overflow: auto;
+      overscroll-behavior: contain;
+      padding: 12px;
+      border: 1px solid var(--paper-line-strong);
+      border-radius: 16px;
+      /* 菜单需要完整盖住首页浮动头像与正文，保持纸面实色 */
       background: var(--paper-surface);
-      box-shadow: var(--paper-shadow);
+      box-shadow: var(--paper-shadow-lift);
       opacity: 0;
       pointer-events: none;
-      transform: translateY(-4px);
+      visibility: hidden;
+      transform: translateY(-6px) scale(0.99);
+      transform-origin: top center;
       transition:
         opacity 160ms ease,
-        transform 160ms ease;
+        transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        visibility 0s linear 200ms;
     }
 
     .mobile-toc-panel {
@@ -1078,7 +1182,9 @@ const paletteOptions = [
     .blog-top-nav[data-mobile-menu-open='true'] .mobile-menu-panel {
       opacity: 1;
       pointer-events: auto;
-      transform: translateY(0);
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      transition-delay: 0s;
     }
 
     .blog-top-nav[data-mobile-toc-open='true'] .mobile-toc-panel {
@@ -1087,26 +1193,144 @@ const paletteOptions = [
       transform: translateY(0);
     }
 
+    .mobile-menu-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
     .mobile-menu-link {
       display: flex;
       align-items: center;
-      min-height: 38px;
-      padding: 8px 10px;
-      border-radius: 7px;
+      min-height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      background: var(--paper-control);
       color: var(--paper-ink-soft);
-      font-size: 0.92rem;
-      font-weight: 700;
+      font-size: 0.9rem;
+      font-weight: 650;
+      text-decoration: none;
+      transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
     }
 
     .mobile-menu-link:hover,
     .mobile-menu-link.active,
     .mobile-menu-link[data-nav-link-pending] {
-      background: var(--paper-control-hover);
+      border-color: color-mix(in srgb, var(--paper-accent) 24%, var(--paper-line));
+      background: var(--paper-accent-soft);
       color: var(--paper-accent);
     }
 
     .mobile-menu-placeholder {
+      opacity: 0.5;
+    }
+
+    .mobile-menu-appearance {
+      display: grid;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--paper-line);
+    }
+
+    .mobile-menu-section-title {
+      margin: 0;
+      padding: 0 2px;
       color: var(--paper-ink-faint);
+      font-family: var(--font-ui-label);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .mobile-theme-switch {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      padding: 3px;
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      background: var(--paper-surface-muted);
+    }
+
+    .mobile-theme-option {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 8px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: none;
+      color: var(--paper-ink-soft);
+      cursor: pointer;
+      font-family: var(--font-ui-label);
+      font-size: 0.8rem;
+      font-weight: 650;
+      transition:
+        background 160ms ease,
+        color 160ms ease;
+    }
+
+    .mobile-theme-option:hover {
+      color: var(--paper-ink);
+    }
+
+    .mobile-theme-option.active {
+      border-color: var(--paper-line);
+      background: var(--paper-surface);
+      color: var(--paper-accent);
+      box-shadow: var(--paper-shadow);
+    }
+
+    .mobile-palette-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .mobile-palette-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+      min-height: 34px;
+      padding: 4px 3px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: none;
+      color: var(--paper-ink-soft);
+      cursor: pointer;
+      font-family: var(--font-meta);
+      font-size: 0.68rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
+    }
+
+    .mobile-palette-option:hover {
+      background: var(--paper-control-hover);
+      color: var(--paper-ink);
+    }
+
+    .mobile-palette-option.active {
+      border-color: var(--paper-line-strong);
+      background: var(--paper-accent-soft);
+      color: var(--paper-accent);
+    }
+
+    .mobile-palette-option .palette-dot {
+      width: 10px;
+      height: 10px;
     }
 
     .mobile-toc-panel p {
@@ -1227,6 +1451,7 @@ const paletteOptions = [
     background: var(--paper-surface);
     box-shadow: var(--paper-shadow);
     visibility: hidden;
+    transition: opacity 160ms ease;
     will-change: transform, width, height;
   }
 
@@ -1331,6 +1556,12 @@ const paletteOptions = [
       display: grid;
     }
 
+    /* 菜单展开时头像被面板覆盖，淡出避免透视与遮挡闪烁 */
+    .blog-top-nav[data-mobile-menu-open='true'] .nav-avatar-float {
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .nav-pill .mobile-menu-toggle,
     .nav-pill .nav-actions {
       position: static;
@@ -1392,7 +1623,7 @@ const paletteOptions = [
 
     .nav-pill .mobile-menu-panel {
       right: 0;
-      left: auto;
+      left: 0;
     }
   }
 </style>

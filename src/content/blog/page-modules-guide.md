@@ -2,6 +2,7 @@
 title: 'Page Module 页面能力配置指南'
 description: '了解 navfolio 如何用 @navfolio/pages 统一管理 Projects、Vibe、书影音等可开启、可关闭、可改路由的页面模块。'
 date: '2026-07-12T16:30:00+08:00'
+heroImage: '/src/assets/figure/covers/cover-04-lavender.png'
 draft: false
 showHeroImage: false
 tags:

@@ -16,6 +16,7 @@ import {
   getHtmlLang,
   getSiteConfig,
 } from 'virtual:navfolio/page-runtime';
+import PageHero from '../components/PageHero.astro';
 import demoFeed from '../data/friend-circle-demo.json';
 import { allFriendLinks, friendLinkGroups } from '../data/friends';
 
@@ -107,14 +108,12 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
   <body>
     <BlogTopNav />
     <main class="links-page" data-pagefind-body>
-      <header class="links-hero">
-        <p class="links-kicker">Friends</p>
-        <h1 class="links-title">朋友</h1>
-        <p class="links-subtitle">那些人，那些事。</p>
-        <p class="links-note">
-          共 {totalLinks} 位朋友，其中 {rssCount} 位提供订阅源，动态会出现在下方朋友圈。
-        </p>
-      </header>
+      <PageHero
+        kicker="Friends"
+        title="朋友"
+        subtitle="那些人，那些事。"
+        note={`共 ${totalLinks} 位朋友，其中 ${rssCount} 位提供订阅源，动态会出现在下方朋友圈。`}
+      />
 
       {
         friendLinkGroups.map((group) => (
@@ -232,44 +231,6 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
     <style>
       main {
         width: min(100%, var(--layout-shell-width));
-        padding-top: 126px;
-      }
-
-      .links-hero {
-        margin-bottom: clamp(46px, 8vw, 88px);
-      }
-
-      .links-kicker {
-        margin: 0 0 12px;
-        color: var(--paper-ink-faint);
-        font-family: var(--font-meta);
-        font-size: 0.68rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .links-title {
-        margin: 0;
-        color: var(--paper-ink);
-        font-size: clamp(2.32rem, 6.6vw, 4.35rem);
-        font-weight: 400;
-        line-height: 0.96;
-      }
-
-      .links-subtitle {
-        max-width: 34ch;
-        margin: 18px 0 0;
-        color: var(--paper-ink-soft);
-        font-family: var(--font-ui-label);
-        font-size: clamp(0.98rem, 1.7vw, 1.16rem);
-        line-height: 1.68;
-      }
-
-      .links-note {
-        margin: 14px 0 0;
-        color: var(--paper-ink-faint);
-        font-family: var(--font-meta);
-        font-size: 0.8rem;
       }
 
       .links-group,

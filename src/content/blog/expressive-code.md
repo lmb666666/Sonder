@@ -2,6 +2,7 @@
 title: '使用 Expressive Code 展示代码块'
 description: '了解 Navfolio 如何配置 Expressive Code 的主题、行号、换行、高亮和长代码折叠。'
 date: '2026-05-24T16:21:33.842Z'
+heroImage: '/src/assets/figure/covers/cover-03-slate.png'
 draft: false
 showHeroImage: false
 tags: []

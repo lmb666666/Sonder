@@ -296,3 +296,28 @@
     font-size: 1.1rem;
   }
 }
+
+/* 320px 级窄屏：字号与间距再收一档，分类最多占 4em，四项信息保持单行 */
+@media (max-width: 360px) {
+  .media-meta {
+    gap: 2px 4px;
+    font-size: 0.6875rem;
+  }
+
+  .media-meta-side {
+    gap: 2px 4px;
+  }
+
+  .media-meta-chip {
+    gap: 2px;
+  }
+
+  .media-meta-chip > svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .media-meta-groups {
+    max-width: 4em;
+  }
+}

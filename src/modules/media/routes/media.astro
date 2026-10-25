@@ -8,6 +8,7 @@ import {
   getSiteConfig,
   getI18n,
 } from 'virtual:navfolio/page-runtime';
+import PageHero from '../../../components/PageHero.astro';
 import MediaShelf from '@navfolio/mdx-components/MediaShelf.astro';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
@@ -37,7 +38,6 @@ const { site, theme, pages } = siteConfig;
 const i18n = getI18n(siteConfig);
 const ui = {
   media: {
-    shelf: i18n.t('media.shelf'),
     browse: i18n.t('media.browse'),
     sectionsLabel: i18n.t('media.sectionsLabel'),
     empty: i18n.t('media.empty'),
@@ -117,52 +117,17 @@ function isPageMeta(value: unknown): value is { title: string; subtitle: string;
       }
       main {
         width: min(100%, var(--layout-shell-width));
-        padding-top: 126px;
       }
       .media-layout {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 156px;
         gap: clamp(28px, 5vw, 68px);
       }
-      .media-hero {
-        margin-bottom: clamp(46px, 8vw, 88px);
-      }
-      .media-kicker,
       .media-count,
       .media-meta,
       .media-nav p,
       .media-nav a {
         font-family: var(--font-meta);
-      }
-      .media-kicker {
-        margin: 0 0 12px;
-        color: var(--paper-ink-faint);
-        font-size: 0.68rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-      .media-title {
-        max-width: 560px;
-        margin: 0;
-        color: var(--paper-ink);
-        font-size: clamp(2.32rem, 6.6vw, 4.35rem);
-        font-weight: 400;
-        line-height: 0.96;
-      }
-      .media-subtitle {
-        max-width: 34ch;
-        margin: 18px 0 0;
-        color: var(--paper-ink-soft);
-        font-family: var(--font-ui-label);
-        font-size: clamp(0.98rem, 1.7vw, 1.16rem);
-        line-height: 1.68;
-      }
-      .media-note {
-        max-width: 48ch;
-        margin: 14px 0 0;
-        color: var(--paper-ink-faint);
-        font-size: 0.7rem;
-        line-height: 1.75;
       }
       .media-section {
         scroll-margin-top: 92px;
@@ -246,9 +211,6 @@ function isPageMeta(value: unknown): value is { title: string; subtitle: string;
         font-weight: 600;
       }
       @media (max-width: 760px) {
-        main {
-          padding-top: 98px;
-        }
         .media-layout {
           display: block;
         }
@@ -269,14 +231,14 @@ function isPageMeta(value: unknown): value is { title: string; subtitle: string;
   <body>
     <BlogTopNav />
     <main>
+      <PageHero
+        kicker="Media"
+        title={pageMeta.title}
+        subtitle={pageMeta.subtitle}
+        note={pageMeta.note || undefined}
+      />
       <div class="media-layout">
         <div>
-          <header class="media-hero">
-            <p class="media-kicker">{ui.media.shelf}</p>
-            <h1 class="media-title">{pageMeta.title}</h1>
-            <p class="media-subtitle">{pageMeta.subtitle}</p>
-            {pageMeta.note && <p class="media-note">{pageMeta.note}</p>}
-          </header>
           <nav class="media-mobile-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
             {
               sections.map((section, index) => (

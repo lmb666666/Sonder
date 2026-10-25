@@ -2,6 +2,7 @@
 title: '书影音页面使用指南'
 description: '使用 @navfolio/page-media，在一个可定位的页面里展示书籍、电影、剧集、专辑和播客。'
 date: '2026-07-20T16:30:00+08:00'
+heroImage: '/src/assets/figure/covers/cover-08-cocoa.png'
 draft: false
 showHeroImage: false
 tags:

@@ -2,6 +2,7 @@
 title: Astro Navfolio 快速上手部署指南
 description: 使用navfolio主题的第 0 篇必读使用手册，快速get start
 date: 2026-07-05T08:13:22.188Z
+heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 draft: false
 sticky: true
 showHeroImage: false

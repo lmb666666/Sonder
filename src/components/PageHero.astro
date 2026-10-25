@@ -1,0 +1,32 @@
+---
+/**
+ * 页面级 hero：文章、书影音、动态、朋友共用同一套排版
+ * （左标题 / 右说明，样式来自 theme 的 .archive-header-shared）。
+ * 额外信息（统计、状态）通过默认插槽放进右列。
+ */
+interface Props {
+  kicker: string;
+  title: string;
+  subtitle?: string;
+  note?: string;
+}
+
+const { kicker, title, subtitle, note } = Astro.props;
+const hasCopy = Boolean(subtitle || note || Astro.slots.has('default'));
+---
+
+<header class="archive-hero archive-header-shared page-header-spacing">
+  <div class="archive-header-main">
+    <p class="archive-kicker">{kicker}</p>
+    <h1 class="archive-title">{title}</h1>
+  </div>
+  {
+    hasCopy && (
+      <div class="archive-copy">
+        {subtitle && <p class="archive-subtitle">{subtitle}</p>}
+        {note && <p class="archive-note">{note}</p>}
+        <slot />
+      </div>
+    )
+  }
+</header>

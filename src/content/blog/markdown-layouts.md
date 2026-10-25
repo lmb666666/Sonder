@@ -2,6 +2,7 @@
 title: 'Markdown 局部布局：分栏与时间线'
 description: '使用 @navfolio/plugin-markdown 在文章正文中创建响应式分栏、媒体列和纵向或横向时间线。'
 date: '2026-07-24T00:00:00+08:00'
+heroImage: '/src/assets/figure/covers/cover-11-sand.png'
 draft: false
 showHeroImage: false
 tags:

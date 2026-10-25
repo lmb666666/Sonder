@@ -2,6 +2,7 @@
 title: '使用 Callout 插件渲染 Obsidian 风格提示框'
 description: '了解 @navfolio/plugin-markdown 如何在 Navfolio 中解析 Obsidian Callout 语法，并渲染全部内置 Callout 类型。'
 date: '2026-07-12T03:00:00+08:00'
+heroImage: '/src/assets/figure/covers/cover-05-ochre.png'
 draft: false
 showHeroImage: false
 tags:

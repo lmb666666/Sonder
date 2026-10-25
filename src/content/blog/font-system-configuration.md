@@ -2,6 +2,7 @@
 title: 'Navfolio 字体系统配置'
 description: '了解 Navfolio 如何配置本地字体、WebFont、UI 字体子集和站点级字体选择。'
 date: '2026-07-04T07:19:41.131Z'
+heroImage: '/src/assets/figure/covers/cover-07-teal.png'
 draft: false
 sticky: false
 showHeroImage: false
