@@ -37,3 +37,6 @@ public/friend-circle.json
 
 # baseline comparison screenshots (internal, not published)
 screenshots/
+
+# Local agent working notes
+.agents/
