@@ -613,7 +613,6 @@ const paletteOptions = [
       floatAvatar.style.width = `${size}px`;
       floatAvatar.style.height = `${size}px`;
       floatAvatar.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      floatAvatar.style.setProperty('--avatar-dock', String(progress));
       floatAvatar.style.visibility = 'visible';
     };
 
@@ -1173,7 +1172,7 @@ const paletteOptions = [
   }
 
   /* 首页浮动头像：移动端随滚动在内容区与导航之间连续移动（坐标由脚本写入） */
-  /* 浮动头像：位于导航栏内部，随导航一起淡出/位移，节奏完全一致 */
+  /* 浮动头像：与内页导航头像同一套外框（纸面底 + 发丝圆环 + 阴影） */
   .nav-avatar-float {
     position: absolute;
     top: 0;
@@ -1183,20 +1182,13 @@ const paletteOptions = [
     place-items: center;
     width: 64px;
     height: 64px;
-    border-radius: 50%;
-    visibility: hidden;
-    will-change: transform, width, height;
-  }
-
-  .nav-avatar-float::after {
-    position: absolute;
-    inset: 0;
+    padding: 2px;
     border: 1px solid var(--paper-line-strong);
     border-radius: 50%;
+    background: var(--paper-surface);
     box-shadow: var(--paper-shadow);
-    content: '';
-    opacity: var(--avatar-dock, 0);
-    transition: opacity 120ms linear;
+    visibility: hidden;
+    will-change: transform, width, height;
   }
 
   .nav-avatar-float img {

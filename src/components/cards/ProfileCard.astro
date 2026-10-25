@@ -44,13 +44,16 @@ const { theme } = await getSiteConfig();
     overflow: hidden;
   }
 
+  /* 与导航栏头像同一套外框（纸面底 + 发丝圆环 + 阴影），保证各页一致 */
   .avatar-wrap {
     flex: 0 0 auto;
     width: 64px;
     height: 64px;
+    padding: 2px;
+    border: 1px solid var(--paper-line-strong);
     border-radius: 50%;
-    background: transparent;
-    box-shadow: none;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
   }
 
   .avatar-wrap img {
