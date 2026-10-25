@@ -25,7 +25,7 @@ const { config } = Astro.props;
     if (walineInstance) {
       walineInstance.update({
         path: window.location.pathname,
-        pageview: config.pageview,
+        pageview: false,
         comment: config.comment,
       });
       return;
@@ -36,7 +36,7 @@ const { config } = Astro.props;
       serverURL: config.server_url,
       lang: config.lang,
       dark: config.dark,
-      pageview: config.pageview,
+      pageview: false,
       comment: config.comment,
     });
   };

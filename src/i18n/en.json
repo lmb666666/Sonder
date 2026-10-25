@@ -11,7 +11,8 @@
     "openMenu": "Open navigation menu",
     "closeMenu": "Close navigation menu",
     "openPalette": "Open accent color panel",
-    "closePalette": "Close accent color panel"
+    "closePalette": "Close accent color panel",
+    "backToTop": "Back to top"
   },
   "palette": {
     "greenSoft": "Moss green",
@@ -44,7 +45,6 @@
   },
   "groups": {
     "categories": "Categories",
-    "series": "Series",
     "category": "Category",
     "tag": "Tag",
     "tags": "Tags",
@@ -58,7 +58,6 @@
     "followConnectedNotes": "Follow connected notes",
     "blogBrowsingGroups": "Post browsing groups",
     "emptyCategories": "No categories have been added yet.",
-    "emptySeries": "No series have been added yet.",
     "emptyTags": "No tags have been added yet.",
     "emptyArchives": "No articles are ready to archive yet.",
     "tagCloud": "Tag cloud",
@@ -74,10 +73,6 @@
     "categoryNote": {
       "one": "{count} article in this topic.",
       "other": "{count} articles in this topic."
-    },
-    "seriesNote": {
-      "one": "{count} article in reading order.",
-      "other": "{count} articles in reading order."
     },
     "tagNote": {
       "one": "{count} article with this tag.",
@@ -96,11 +91,39 @@
     "readingTools": "Reading tools",
     "wordCount": "{count} words",
     "readingTime": "{minutes} min read",
-    "moreInSeries": "More in {name}",
-    "previousInSeries": "Previous in {name}",
-    "nextInSeries": "Next in {name}",
     "pinned": "Pinned",
-    "moreFromSite": "More from {siteTitle}"
+    "navigation": "Article navigation",
+    "pagerLabel": "Previous and next articles",
+    "previous": "Previous",
+    "next": "Next",
+    "previousLabel": "Previous: {title}",
+    "nextLabel": "Next: {title}",
+    "firstArticle": "This is the first article",
+    "lastArticle": "This is the last article",
+    "moreArticles": "More articles",
+    "moreCount": {
+      "one": "{count} article",
+      "other": "{count} articles"
+    },
+    "references": "References",
+    "referencesLabel": "Reference links"
+  },
+  "share": {
+    "title": "Share this article",
+    "description": "Create a poster with a QR code, or copy a share message with the link.",
+    "trigger": "Share",
+    "posterKicker": "Share poster",
+    "close": "Close share poster",
+    "loading": "Generating poster…",
+    "posterAlt": "Article share poster",
+    "copy": "Copy share message",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
+    "save": "Save poster",
+    "author": "Author",
+    "scan": "Scan to read",
+    "error": "Could not generate the poster. Please try again later.",
+    "copyTitle": "\"{title}\""
   },
   "toc": {
     "title": "Table of contents",
@@ -128,7 +151,6 @@
     "resultKinds": {
       "blogNote": "Post",
       "blogIndex": "Post index",
-      "project": "Project",
       "page": "Page"
     },
     "matchedPassage": "Matched passage"

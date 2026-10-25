@@ -1,6 +1,6 @@
 export type SonderPageModuleId = string;
 
-export type SonderPageModuleBuiltinId = 'projects' | 'media';
+export type SonderPageModuleBuiltinId = 'media';
 
 export type SonderContentExtension = 'md' | 'mdx';
 

@@ -70,13 +70,9 @@ function getResultPath(url: string) {
 
 function getResultKind(root: HTMLElement, url: string) {
   const path = getResultPath(url);
-  const projectsRoute = root.dataset.searchRouteProjects || '/projects';
 
   if (/^\/blog\/[^/]+\/?$/.test(path)) return root.dataset.searchKindBlogNote || 'Blog note';
   if (path.startsWith('/blog')) return root.dataset.searchKindBlogIndex || 'Blog index';
-  if (path === projectsRoute || path.startsWith(`${projectsRoute}/`)) {
-    return root.dataset.searchKindProject || 'Project';
-  }
 
   return root.dataset.searchKindPage || 'Page';
 }

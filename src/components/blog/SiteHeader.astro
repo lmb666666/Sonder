@@ -1,0 +1,22 @@
+---
+import Header from '../Header.astro';
+import BlogTopNav from './BlogTopNav.astro';
+import { getSiteConfig } from '../../data/site';
+import type { TocItem } from '../../utils/toc-tree';
+
+interface Props {
+  showTocIcon?: boolean;
+  tocItems?: TocItem[];
+}
+
+const { showTocIcon = false, tocItems = [] } = Astro.props;
+const { theme } = await getSiteConfig();
+---
+
+{
+  theme.navStyle === 'legacy' ? (
+    <Header />
+  ) : (
+    <BlogTopNav showTocIcon={showTocIcon} tocItems={tocItems} />
+  )
+}

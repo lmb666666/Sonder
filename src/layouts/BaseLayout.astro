@@ -1,8 +1,7 @@
 ---
 import ThemeBaseLayout from '@sonder/theme-default/components/BaseLayout.astro';
 import BaseHead from '../components/BaseHead.astro';
-import BlogTopNav from '../components/blog/BlogTopNav.astro';
-import FullFontWarmup from '../components/FullFontWarmup.astro';
+import SiteHeader from '../components/blog/SiteHeader.astro';
 import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import { getSiteConfig } from '../data/site';
 import { getHtmlLang } from '../utils/ui-text';
@@ -23,11 +22,10 @@ const htmlLang = getHtmlLang(siteConfig);
     <BaseHead title={title} description={description} />
   </Fragment>
   <Fragment slot="navigation">
-    <BlogTopNav />
+    <SiteHeader />
   </Fragment>
   <slot />
   <Fragment slot="after-content">
     <ScrollToTopButton />
-    <FullFontWarmup />
   </Fragment>
 </ThemeBaseLayout>

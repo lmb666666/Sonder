@@ -15,7 +15,6 @@ comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 ---
 
 书影音页面把读过的书、看过的电影、追过的剧、听过的专辑和播客放在一张按类型分区的媒体架上。桌面端右侧固定显示「书／影／音」章节导航，移动端收为页面顶部的章节标签。

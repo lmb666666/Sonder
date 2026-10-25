@@ -31,6 +31,7 @@ type RawUiText = {
     closeMenu: string;
     openPalette: string;
     closePalette: string;
+    backToTop: string;
   };
   palette: {
     greenSoft: string;
@@ -60,7 +61,6 @@ type RawUiText = {
   };
   groups: {
     categories: string;
-    series: string;
     category: string;
     tag: string;
     tags: string;
@@ -74,7 +74,6 @@ type RawUiText = {
     followConnectedNotes: string;
     blogBrowsingGroups: string;
     emptyCategories: string;
-    emptySeries: string;
     emptyTags: string;
     emptyArchives: string;
     tagCloud: string;
@@ -85,7 +84,6 @@ type RawUiText = {
     yearArchivesNote: string;
     articleCount: Message;
     categoryNote: Message;
-    seriesNote: Message;
     tagNote: Message;
     publishedCount: Message;
     publishedArticles: Message;
@@ -97,11 +95,36 @@ type RawUiText = {
     readingTools: string;
     wordCount: Message;
     readingTime: Message;
-    moreInSeries: Message;
-    previousInSeries: Message;
-    nextInSeries: Message;
     pinned: string;
-    moreFromSite: Message;
+    navigation: string;
+    pagerLabel: string;
+    previous: string;
+    next: string;
+    previousLabel: string;
+    nextLabel: string;
+    firstArticle: string;
+    lastArticle: string;
+    moreArticles: string;
+    moreCount: Message;
+    references: string;
+    referencesLabel: string;
+  };
+  share: {
+    title: string;
+    description: string;
+    trigger: string;
+    posterKicker: string;
+    close: string;
+    loading: string;
+    posterAlt: string;
+    copy: string;
+    copied: string;
+    copyFailed: string;
+    save: string;
+    author: string;
+    scan: string;
+    error: string;
+    copyTitle: string;
   };
   toc: {
     title: string;
@@ -129,7 +152,6 @@ type RawUiText = {
     resultKinds: {
       blogNote: string;
       blogIndex: string;
-      project: string;
       page: string;
     };
     matchedPassage: string;
@@ -138,7 +160,7 @@ type RawUiText = {
 
 export type UiLanguage = keyof typeof rawUiText;
 
-export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'pagination'> & {
+export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'share' | 'pagination'> & {
   heatmap: Omit<
     RawUiText['heatmap'],
     'openLatestPost' | 'writingSince' | 'recentWeeks' | 'postCount'
@@ -152,7 +174,6 @@ export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'paginat
     RawUiText['groups'],
     | 'articleCount'
     | 'categoryNote'
-    | 'seriesNote'
     | 'tagNote'
     | 'publishedCount'
     | 'publishedArticles'
@@ -160,7 +181,6 @@ export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'paginat
   > & {
     articleCount: (count: number) => string;
     categoryNote: (count: number) => string;
-    seriesNote: (count: number) => string;
     tagNote: (count: number) => string;
     publishedCount: (count: number) => string;
     publishedArticles: (count: number) => string;
@@ -168,19 +188,16 @@ export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'paginat
   };
   article: Omit<
     RawUiText['article'],
-    | 'wordCount'
-    | 'readingTime'
-    | 'moreInSeries'
-    | 'previousInSeries'
-    | 'nextInSeries'
-    | 'moreFromSite'
+    'wordCount' | 'readingTime' | 'previousLabel' | 'nextLabel' | 'moreCount'
   > & {
     wordCount: (count: number) => string;
     readingTime: (minutes: number) => string;
-    moreInSeries: (name: string) => string;
-    previousInSeries: (name: string) => string;
-    nextInSeries: (name: string) => string;
-    moreFromSite: (siteTitle: string) => string;
+    previousLabel: (title: string) => string;
+    nextLabel: (title: string) => string;
+    moreCount: (count: number) => string;
+  };
+  share: Omit<RawUiText['share'], 'copyTitle'> & {
+    copyTitle: (title: string) => string;
   };
   nav: RawUiText['nav'];
   pagination: Omit<RawUiText['pagination'], 'page'> & {
@@ -219,7 +236,6 @@ function createUiText(raw: RawUiText): UiText {
       ...raw.groups,
       articleCount: (count) => formatMessage(raw.groups.articleCount, { count }),
       categoryNote: (count) => formatMessage(raw.groups.categoryNote, { count }),
-      seriesNote: (count) => formatMessage(raw.groups.seriesNote, { count }),
       tagNote: (count) => formatMessage(raw.groups.tagNote, { count }),
       publishedCount: (count) => formatMessage(raw.groups.publishedCount, { count }),
       publishedArticles: (count) => formatMessage(raw.groups.publishedArticles, { count }),
@@ -232,10 +248,13 @@ function createUiText(raw: RawUiText): UiText {
           count: formatNumber(count, raw.locale),
         }),
       readingTime: (minutes) => formatMessage(raw.article.readingTime, { minutes }),
-      moreInSeries: (name) => formatMessage(raw.article.moreInSeries, { name }),
-      previousInSeries: (name) => formatMessage(raw.article.previousInSeries, { name }),
-      nextInSeries: (name) => formatMessage(raw.article.nextInSeries, { name }),
-      moreFromSite: (siteTitle) => formatMessage(raw.article.moreFromSite, { siteTitle }),
+      previousLabel: (title) => formatMessage(raw.article.previousLabel, { title }),
+      nextLabel: (title) => formatMessage(raw.article.nextLabel, { title }),
+      moreCount: (count) => formatMessage(raw.article.moreCount, { count }),
+    },
+    share: {
+      ...raw.share,
+      copyTitle: (title) => formatMessage(raw.share.copyTitle, { title }),
     },
     toc: raw.toc,
     pagination: {

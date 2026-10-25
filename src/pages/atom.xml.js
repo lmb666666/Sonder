@@ -13,13 +13,7 @@ export async function GET(context) {
   const entries = posts
     .map((post) => {
       const url = new URL(`/blog/${post.id}/`, origin);
-      const categories = [
-        ...new Set([
-          ...(post.data.categories ?? []),
-          ...(post.data.tags ?? []),
-          ...(post.data.series ?? []),
-        ]),
-      ]
+      const categories = [...new Set([...(post.data.categories ?? []), ...(post.data.tags ?? [])])]
         .map((label) => `    <category term="${escapeXml(label)}" />`)
         .join('\n');
 

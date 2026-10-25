@@ -16,7 +16,6 @@ comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 ---
 
 Sonder 是一份以纸面阅读感为核心的个人发布模板，使用 Astro 静态构建、Bun 运行脚本。它把文章、书影音、动态、朋友页和个人资料收在同一套版式里，适合作为长期写作与个人出版的起点。

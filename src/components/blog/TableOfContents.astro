@@ -9,14 +9,24 @@ interface Props {
   compact?: boolean;
   collapsible?: boolean;
   font?: 'ui' | 'article';
+  idPrefix?: string;
+  hideHeading?: boolean;
 }
 
-const { items, compact = false, collapsible = false, font = 'ui' } = Astro.props;
+const {
+  items,
+  compact = false,
+  collapsible = false,
+  font = 'ui',
+  idPrefix,
+  hideHeading = false,
+} = Astro.props;
 
 const hasItems = items.length > 0;
 const canCollapse = collapsible && countTocItems(items) > 3;
-const listId = collapsible ? 'mobile-article-toc-list' : undefined;
-const treeIdPrefix = collapsible ? 'article-toc' : 'sidebar-toc';
+const resolvedIdPrefix = idPrefix ?? (collapsible ? 'article-toc' : 'sidebar-toc');
+const listId = collapsible ? `${resolvedIdPrefix}-list` : undefined;
+const treeIdPrefix = resolvedIdPrefix;
 const ui = getUiText(await getSiteConfig());
 ---
 
@@ -34,7 +44,7 @@ const ui = getUiText(await getSiteConfig());
       data-expand-label={ui.toc.showAll}
       data-collapse-label={ui.toc.collapseButton}
     >
-      <h2>{ui.toc.title}</h2>
+      {!hideHeading && <h2>{ui.toc.title}</h2>}
       <div id={listId} class="toc-list-wrap" data-toc-scroll>
         <TocTree items={items} idPrefix={treeIdPrefix} />
       </div>

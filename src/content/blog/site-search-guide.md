@@ -15,7 +15,6 @@ comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 ---
 
 站内搜索使用 Pagefind 生成静态索引，不需要后端服务，也不需要把全文提前打包进页面。生产构建结束后，搜索脚本从 `dist/pagefind` 按需加载索引。

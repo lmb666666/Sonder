@@ -50,21 +50,6 @@ function createPageModuleRoutesIntegration(
                 prerender: route.prerender ?? true,
               });
             }
-
-            continue;
-          }
-
-          if (module.id === 'projects') {
-            injectRoute({
-              pattern: module.route,
-              entrypoint: new URL('../modules/routes/projects-index.astro', import.meta.url),
-              prerender: true,
-            });
-            injectRoute({
-              pattern: `${module.route}/[...slug]`,
-              entrypoint: new URL('../modules/routes/project-detail.astro', import.meta.url),
-              prerender: true,
-            });
           }
         }
       },

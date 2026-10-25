@@ -8,10 +8,6 @@ export interface ContentGroup {
   count: number;
 }
 
-export interface SeriesGroup extends ContentGroup {
-  posts: BlogPost[];
-}
-
 export interface TagGroup extends ContentGroup {
   posts: BlogPost[];
 }
@@ -21,16 +17,6 @@ export const uncategorizedCategory = {
   slug: 'uncategorized',
 } as const;
 
-export interface SeriesContext {
-  name: string;
-  slug: string;
-  prev?: BlogPost;
-  next?: BlogPost;
-  current: number;
-  total: number;
-  posts: BlogPost[];
-}
-
 function isPublished(post: BlogPost) {
   return !post.data.draft;
 }
@@ -39,7 +25,7 @@ function getComparableName(name: string) {
   return name.trim().replace(/\s+/g, ' ').toLocaleLowerCase();
 }
 
-type GroupField = 'categories' | 'series' | 'tags';
+type GroupField = 'categories' | 'tags';
 
 function getGroupItems(post: BlogPost, field: GroupField) {
   const seen = new Set<string>();
@@ -61,16 +47,6 @@ function getGroupItems(post: BlogPost, field: GroupField) {
 
 function sortByName(a: ContentGroup, b: ContentGroup) {
   return a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'base' });
-}
-
-function sortBySeriesDateAsc(a: BlogPost, b: BlogPost) {
-  const dateDelta = a.data.date.valueOf() - b.data.date.valueOf();
-
-  if (dateDelta !== 0) {
-    return dateDelta;
-  }
-
-  return a.id.localeCompare(b.id);
 }
 
 export function slugifyGroupName(name: string) {
@@ -162,58 +138,4 @@ export function getPostsByTag(posts: BlogPost[], tagSlug: string) {
       isPublished(post) &&
       getGroupItems(post, 'tags').some((name) => slugifyGroupName(name) === tagSlug),
   );
-}
-
-export function getAllSeries(posts: BlogPost[]): SeriesGroup[] {
-  return [...createGroupMap(posts, 'series').values()]
-    .map(({ name, slug, posts: groupPosts }) => ({
-      name,
-      slug,
-      posts: groupPosts.sort(sortBySeriesDateAsc),
-      count: groupPosts.length,
-    }))
-    .sort((a, b) => {
-      const latestA = Math.max(...a.posts.map((post) => post.data.date.valueOf()));
-      const latestB = Math.max(...b.posts.map((post) => post.data.date.valueOf()));
-
-      return latestB - latestA || sortByName(a, b);
-    });
-}
-
-export function getPostsBySeries(posts: BlogPost[], seriesSlug: string) {
-  return posts
-    .filter(
-      (post) =>
-        isPublished(post) &&
-        getGroupItems(post, 'series').some((name) => slugifyGroupName(name) === seriesSlug),
-    )
-    .sort(sortBySeriesDateAsc);
-}
-
-export function getSeriesContext(
-  post: BlogPost,
-  allPosts: BlogPost[],
-  seriesName = getGroupItems(post, 'series')[0],
-): SeriesContext | undefined {
-  if (!seriesName) {
-    return undefined;
-  }
-
-  const slug = slugifyGroupName(seriesName);
-  const posts = getPostsBySeries(allPosts, slug);
-  const index = posts.findIndex((seriesPost) => seriesPost.id === post.id);
-
-  if (index < 0) {
-    return undefined;
-  }
-
-  return {
-    name: seriesName,
-    slug,
-    prev: posts[index - 1],
-    next: posts[index + 1],
-    current: index + 1,
-    total: posts.length,
-    posts,
-  };
 }

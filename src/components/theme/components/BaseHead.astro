@@ -85,22 +85,30 @@ function createFontCss(fonts: { en: string; code: string; zh: string; file: stri
   const zhFontName = normalizeFontFamilyName(fonts.zh);
   const zhFamily = toCssFontFamily(zhFontName);
   const zhSubsetFamily = toCssFontFamily(`${zhFontName} UI Subset`);
+  const zhContentSubsetFamily = toCssFontFamily(`${zhFontName} Content Subset`);
   const enFamily = toCssFontFamily(fonts.en);
   const codeFontName = normalizeFontFamilyName(fonts.code);
   const codeFamily = toCssFontFamily(fonts.code);
   const fontFile = toCssString(resolveAssetUrl(fonts.file));
   const subsetUrl = getSubsetFontUrl(fonts.file);
   const subsetFile = toCssString(resolveAssetUrl(subsetUrl));
+  const contentSubsetUrl = subsetUrl.replace('-ui-subset.woff2', '-content-subset.woff2');
+  const contentSubsetFile = toCssString(resolveAssetUrl(contentSubsetUrl));
   const monacoFontFace =
     codeFontName === 'Monaco'
       ? `@font-face{font-family:"Monaco";src:url(${toCssString(resolveAssetUrl('/fonts/Monaco.ttf'))}) format("truetype");font-style:normal;font-weight:400;font-display:swap;}`
       : '';
+  const mapleSubsetFontFace = `
+@font-face{font-family:${enFamily};src:url(${toCssString(resolveAssetUrl('/fonts/maple-mono-400-subset.woff2'))}) format("woff2");font-style:normal;font-weight:400;font-display:swap;}
+@font-face{font-family:${enFamily};src:url(${toCssString(resolveAssetUrl('/fonts/maple-mono-700-subset.woff2'))}) format("woff2");font-style:normal;font-weight:700;font-display:swap;}
+`;
 
-  return `
+  return `${mapleSubsetFontFace}
 @font-face{font-family:${zhSubsetFamily};src:url(${subsetFile}) format("${getFontFormat(subsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
+@font-face{font-family:${zhContentSubsetFamily};src:url(${contentSubsetFile}) format("${getFontFormat(contentSubsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
 @font-face{font-family:${zhFamily};src:url(${fontFile}) format("${getFontFormat(fonts.file)}");font-style:normal;font-weight:400;font-display:swap;}
 ${monacoFontFace}
-html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-config-zh:${zhFamily};--font-config-zh-subset:${zhSubsetFamily};}
+html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-config-zh:${zhFamily};--font-config-zh-subset:${zhSubsetFamily};--font-config-zh-content:${zhContentSubsetFamily};}
 `;
 }
 ---
@@ -163,7 +171,7 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
         .trim();
       themeMeta()?.setAttribute(
         'content',
-        paletteThemeColor || (nextTheme === 'dark' ? '#171b18' : '#fdfdf9'),
+        paletteThemeColor || (nextTheme === 'dark' ? '#1c1610' : '#f7f3ed'),
       );
       for (const button of document.querySelectorAll('[data-theme-toggle]')) {
         button.setAttribute('aria-label', toggleLabel);
@@ -226,7 +234,7 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
 <link rel="icon" type="image/png" sizes="16x16" href={assetPath('favicon-16x16.png')} />
 <link rel="apple-touch-icon" sizes="180x180" href={assetPath('apple-touch-icon.png')} />
 <link rel="manifest" href={assetPath('manifest.json')} />
-<meta name="theme-color" content="#fdfdf9" />
+<meta name="theme-color" content="#f7f3ed" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
   rel="alternate"

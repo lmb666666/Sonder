@@ -1,14 +1,14 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import BackLink from '../../components/blog/BackLink.astro';
-import BlogArchive from '../../components/blog/BlogArchive.astro';
-import BlogTopNav from '../../components/blog/BlogTopNav.astro';
-import { getSiteConfig } from '../../data/site';
-import { sortBlogPostsForArchive } from '../../utils/content-dates';
-import { getAllTags } from '../../utils/content-groups';
-import { getUiText } from '../../utils/ui-text';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import BackLink from '../../../components/blog/BackLink.astro';
+import BlogArchive from '../../../components/blog/BlogArchive.astro';
+import SiteHeader from '../../../components/blog/SiteHeader.astro';
+import { getSiteConfig } from '../../../data/site';
+import { sortBlogPostsForArchive } from '../../../utils/content-dates';
+import { getAllTags } from '../../../utils/content-groups';
+import { getUiText } from '../../../utils/ui-text';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -27,7 +27,7 @@ export async function getStaticPaths() {
           total: tagPosts.length,
           size: tagPosts.length,
           url: {
-            current: `/tags/${tag.slug}/`,
+            current: `/blog/tags/${tag.slug}/`,
           },
         },
       },
@@ -62,7 +62,7 @@ const ui = getUiText(siteConfig);
     </style>
   </head>
   <body>
-    <BlogTopNav />
+    <SiteHeader />
     <main data-pagefind-body>
       <BackLink href="/blog/" label={ui.groups.back} />
       <BlogArchive

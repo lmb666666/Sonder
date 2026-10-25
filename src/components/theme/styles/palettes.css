@@ -326,9 +326,9 @@
 }
 
 :root[data-palette='orange-soft'] {
-  --accent: #9a7650;
-  --accent-dark: #73532f;
-  --paper-accent: #987451;
+  --accent: #8a5a32;
+  --accent-dark: #653d1e;
+  --paper-accent: #8a5a32;
   --paper-accent-soft: #f5f0e8;
   --paper-fog: #eee3d4;
   --paper-dust: #e5e7dc;

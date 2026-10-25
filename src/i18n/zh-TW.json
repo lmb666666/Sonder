@@ -11,7 +11,8 @@
     "openMenu": "開啟導覽選單",
     "closeMenu": "關閉導覽選單",
     "openPalette": "開啟主題色面板",
-    "closePalette": "關閉主題色面板"
+    "closePalette": "關閉主題色面板",
+    "backToTop": "返回頂部"
   },
   "palette": {
     "greenSoft": "苔綠",
@@ -41,7 +42,6 @@
   },
   "groups": {
     "categories": "分類",
-    "series": "系列",
     "category": "分類",
     "tag": "標籤",
     "tags": "標籤",
@@ -55,7 +55,6 @@
     "followConnectedNotes": "閱讀連續筆記",
     "blogBrowsingGroups": "文章瀏覽分組",
     "emptyCategories": "還沒有新增分類。",
-    "emptySeries": "還沒有新增系列。",
     "emptyTags": "還沒有可展示的標籤。",
     "emptyArchives": "還沒有可歸檔的文章。",
     "tagCloud": "標籤雲",
@@ -66,7 +65,6 @@
     "yearArchivesNote": "按發布時間回看所有文章，只保留標題、日期和前三個標籤。",
     "articleCount": "{count} 篇文章",
     "categoryNote": "這個主題下有 {count} 篇文章。",
-    "seriesNote": "按閱讀順序排列，共 {count} 篇文章。",
     "tagNote": "帶有這個標籤的文章共 {count} 篇。",
     "publishedCount": "已發布 {count} 篇",
     "publishedArticles": "已發布 {count} 篇文章",
@@ -78,11 +76,36 @@
     "readingTools": "閱讀工具",
     "wordCount": "{count} 字",
     "readingTime": "{minutes}分鐘閱讀",
-    "moreInSeries": "{name} 系列更多文章",
-    "previousInSeries": "{name} 上一篇",
-    "nextInSeries": "{name} 下一篇",
     "pinned": "置頂",
-    "moreFromSite": "{siteTitle} 的更多文章"
+    "navigation": "文章導覽",
+    "pagerLabel": "上一篇和下一篇",
+    "previous": "上一篇",
+    "next": "下一篇",
+    "previousLabel": "上一篇：{title}",
+    "nextLabel": "下一篇：{title}",
+    "firstArticle": "已經是第一篇",
+    "lastArticle": "已經是最後一篇",
+    "moreArticles": "更多文章",
+    "moreCount": "{count} 篇",
+    "references": "參考連結",
+    "referencesLabel": "參考連結"
+  },
+  "share": {
+    "title": "文章分享",
+    "description": "產生一張帶 QR Code 的分享海報，或複製帶連結的分享文案。",
+    "trigger": "分享",
+    "posterKicker": "分享海報",
+    "close": "關閉分享海報",
+    "loading": "海報產生中…",
+    "posterAlt": "文章分享海報",
+    "copy": "複製分享文案",
+    "copied": "已複製",
+    "copyFailed": "複製失敗",
+    "save": "儲存海報",
+    "author": "作者",
+    "scan": "掃碼閱讀",
+    "error": "海報產生失敗，請稍後再試。",
+    "copyTitle": "《{title}》"
   },
   "toc": {
     "title": "目錄",
@@ -110,7 +133,6 @@
     "resultKinds": {
       "blogNote": "文章",
       "blogIndex": "文章索引",
-      "project": "專案",
       "page": "頁面"
     },
     "matchedPassage": "匹配段落"

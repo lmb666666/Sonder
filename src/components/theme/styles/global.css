@@ -1,4 +1,4 @@
-@import './fonts.css';
+@import 'katex/dist/katex.min.css';
 @import './markdown-layouts.css';
 @import './palettes.css';
 
@@ -21,8 +21,9 @@
   --paper-line: rgba(31, 35, 40, 0.075);
   --paper-line-strong: rgba(31, 35, 40, 0.12);
   --paper-ink: #272d28;
-  --paper-ink-soft: #667066;
-  --paper-ink-faint: #90998f;
+  --paper-ink-soft: #5f695f;
+  /* 小号 meta 文本在纸面/表面底色上达到 WCAG AA（4.5:1） */
+  --paper-ink-faint: #626c62;
   --paper-control: rgba(246, 248, 245, 0.76);
   --paper-control-hover: rgba(238, 243, 237, 0.92);
   --paper-nav: rgba(255, 255, 252, 0.92);
@@ -45,20 +46,19 @@
   --font-config-code: 'Monaco';
   --font-config-zh: 'ChillRoundM';
   --font-config-zh-subset: 'ChillRoundM UI Subset';
+  --font-config-zh-content: 'ChillRoundM Content Subset';
   --font-cjk-system: var(--font-config-en), 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-  --font-ui-cjk: var(--font-config-zh-subset), var(--font-config-zh), var(--font-cjk-system);
+  --font-ui-cjk: var(--font-config-zh-subset), var(--font-cjk-system);
   --font-serif-cn: var(--font-ui-cjk);
   --font-mono:
-    var(--font-config-en), var(--font-config-zh-subset), var(--font-config-zh), ui-monospace,
-    SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    var(--font-config-en), var(--font-config-zh-subset), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, monospace;
   --font-body: var(--font-mono);
   --font-display: var(--font-mono);
   --font-note: var(--font-mono);
-  --font-article: var(--font-config-en), var(--font-config-zh), var(--font-cjk-system);
-  --font-heading: var(--font-config-en), var(--font-config-zh), var(--font-cjk-system);
-  --font-page-heading:
-    var(--font-config-en), var(--font-config-zh-subset), var(--font-config-zh),
-    var(--font-cjk-system);
+  --font-article: var(--font-config-en), var(--font-config-zh-content), var(--font-cjk-system);
+  --font-heading: var(--font-config-en), var(--font-config-zh-content), var(--font-cjk-system);
+  --font-page-heading: var(--font-config-en), var(--font-config-zh-subset), var(--font-cjk-system);
   --font-meta: var(--font-mono);
   --font-code: var(--font-config-code), var(--font-mono);
   --font-ui-label: var(--font-mono);

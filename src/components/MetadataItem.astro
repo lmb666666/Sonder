@@ -2,7 +2,7 @@
 import { getSiteConfig } from '../data/site';
 import Icon from './Icon.astro';
 
-type MetadataKind = 'date' | 'words' | 'reading' | 'tags' | 'categories' | 'series' | 'default';
+type MetadataKind = 'date' | 'words' | 'reading' | 'tags' | 'categories' | 'default';
 
 interface Props {
   kind?: MetadataKind;
@@ -20,7 +20,6 @@ const iconByKind: Record<MetadataKind, string | undefined> = {
   reading: 'book-open-check',
   tags: 'tags',
   categories: 'folder',
-  series: 'layers',
   default: 'sparkle',
 };
 const iconName = iconByKind[kind];
@@ -94,10 +93,6 @@ const iconName = iconByKind[kind];
 
   .metadata-item-categories {
     --metadata-icon-color: #8b76df;
-  }
-
-  .metadata-item-series {
-    --metadata-icon-color: #c69a2e;
   }
 
   .metadata-content {

@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import {
   BaseHead,
-  BlogTopNav,
+  SiteHeader,
   Footer,
   getHtmlLang,
   getSiteConfig,
@@ -236,7 +236,7 @@ function isPageMeta(value: unknown): value is {
     </style>
   </head>
   <body>
-    <BlogTopNav />
+    <SiteHeader />
     <main>
       <PageHero
         kicker={pageMeta.kicker}

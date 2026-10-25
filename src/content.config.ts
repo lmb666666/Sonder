@@ -13,7 +13,6 @@ const sidebarSchema = z
   .object({
     enable: z.boolean().optional(),
     toc: z.boolean().optional(),
-    relatedPosts: z.boolean().optional(),
   })
   .optional();
 
@@ -44,7 +43,6 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     showHeroImage: z.boolean().optional().default(true),
     tags: z.array(z.string()).optional().default([]),
     categories: z.array(z.string()).optional().default([]),
-    series: z.array(z.string()).optional().default([]),
     comments: z.boolean().optional().default(true),
     sidebar: sidebarSchema,
   });
@@ -153,7 +151,6 @@ const defaultWalineConfig = {
   server_url: '',
   lang: 'zh-CN',
   dark: 'html.dark',
-  pageview: true,
   comment: true,
 };
 
@@ -196,13 +193,6 @@ const topNavLinkSchema = linkSchema
     message: 'Top nav links must define either href or module.',
   });
 
-const navigationItemSchema = z.object({
-  icon: z.string(),
-  title: z.string(),
-  subtitle: z.string(),
-  href: z.string(),
-});
-
 const homeLinkSchema = z.object({
   label: z.string(),
   icon: z.string(),
@@ -227,18 +217,6 @@ const defaultPagesConfig = {
       subtitle: '',
       note: 'A quiet index of recurring topics, gathered from article frontmatter.',
     },
-    series: {
-      title: 'Series',
-      kicker: 'Reading paths',
-      subtitle: '',
-      note: 'Connected notes that can be followed in the order they were written.',
-    },
-  },
-  projects: {
-    title: 'Projects',
-    kicker: 'Project shelf',
-    subtitle: 'Small tools and site systems.',
-    note: 'A compact shelf for implementation choices, releases, and publishing experiments.',
   },
   media: {
     title: 'Media',
@@ -279,22 +257,6 @@ const blogPageSchema = z.object({
     })
     .optional()
     .default(defaultPagesConfig.blog.categories),
-  series: z
-    .object({
-      title: z.string().optional().default(defaultPagesConfig.blog.series.title),
-      kicker: z.string().optional().default(defaultPagesConfig.blog.series.kicker),
-      subtitle: z.string().optional().default(defaultPagesConfig.blog.series.subtitle),
-      note: z.string().optional().default(defaultPagesConfig.blog.series.note),
-    })
-    .optional()
-    .default(defaultPagesConfig.blog.series),
-});
-
-const projectsPageSchema = z.object({
-  title: z.string().optional().default(defaultPagesConfig.projects.title),
-  kicker: z.string().optional().default(defaultPagesConfig.projects.kicker),
-  subtitle: z.string().optional().default(defaultPagesConfig.projects.subtitle),
-  note: z.string().optional().default(defaultPagesConfig.projects.note),
 });
 
 const mediaPageSchema = z.object({
@@ -338,17 +300,26 @@ const siteConfig = defineCollection({
     }),
     theme: z
       .object({
-        palette: paletteSchema.optional().default('green-soft'),
+        palette: paletteSchema.optional().default('orange-soft'),
         lang: z.string().optional().default('en'),
-        // 导航栏样式："bar" 通栏工具条，"pill" 居中胶囊（带头像交接）
-        navStyle: z.enum(['bar', 'pill']).optional().default('bar'),
+        // 导航栏样式："bar" 通栏工具条，"pill" 居中胶囊（带头像交接），
+        // "legacy" 旧版 Astro 通栏 Header（站点标题 + 文字导航 + 社交图标）
+        navStyle: z.enum(['bar', 'pill', 'legacy']).optional().default('bar'),
       })
       .optional()
       .default({
-        palette: 'green-soft',
+        palette: 'orange-soft',
         lang: 'en',
         navStyle: 'bar',
       }),
+    article: z
+      .object({
+        share: z.boolean().optional().default(true),
+        navigation: z.boolean().optional().default(true),
+        morePosts: z.boolean().optional().default(true),
+      })
+      .optional()
+      .default({ share: true, navigation: true, morePosts: true }),
     fonts: z
       .object({
         en: nonEmptyStringSchema(defaultFontConfig.en),
@@ -428,7 +399,6 @@ const siteConfig = defineCollection({
             server_url: z.string().optional().default(''),
             lang: z.string().optional().default('zh-CN'),
             dark: z.string().optional().default('html.dark'),
-            pageview: z.boolean().optional().default(true),
             comment: z.boolean().optional().default(true),
           })
           .optional()
@@ -498,7 +468,6 @@ const siteConfig = defineCollection({
     pages: z
       .object({
         blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
-        projects: projectsPageSchema.optional().default(defaultPagesConfig.projects),
         media: mediaPageSchema.optional().default(defaultPagesConfig.media),
         moments: momentsPageSchema.optional().default({
           title: '动态',
@@ -540,7 +509,6 @@ const siteConfig = defineCollection({
           startDate: '',
           dateArchiveBaseHref: '',
         }),
-      navigation: z.array(navigationItemSchema),
       links: z.array(homeLinkSchema).optional().default([]),
     }),
   }),

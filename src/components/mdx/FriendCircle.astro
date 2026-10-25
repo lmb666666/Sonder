@@ -103,9 +103,8 @@ const activeFriends = new Set(allPosts.map((post) => post.authorUrl || post.auth
             href={post.authorUrl || post.url}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Visit ${post.author}`}
           >
-            <span class="friend-circle__author-avatar">
+            <span class="friend-circle__author-avatar" aria-hidden="true">
               {post.avatar ? (
                 <img src={post.avatar} alt="" loading="lazy" decoding="async" />
               ) : (
@@ -189,7 +188,7 @@ const activeFriends = new Set(allPosts.map((post) => post.authorUrl || post.auth
           .slice(0, 3)
           .map((tag) => `<span>${escape(tag)}</span>`)
           .join('');
-        return `<article class="friend-circle__post"><a class="friend-circle__author-link" href="${escape(post.authorUrl || post.url)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escape(post.author)}"><span class="friend-circle__author-avatar">${avatar}</span><span class="friend-circle__author">${escape(post.author)}</span></a><a class="friend-circle__post-title" href="${escape(post.url)}" target="_blank" rel="noopener noreferrer">${escape(post.title)}</a><span class="friend-circle__post-meta">${tags ? `<span class="friend-circle__tags">${tags}</span>` : ''}${post.date ? `<time>${escape(post.date)}</time>` : ''}</span></article>`;
+        return `<article class="friend-circle__post"><a class="friend-circle__author-link" href="${escape(post.authorUrl || post.url)}" target="_blank" rel="noopener noreferrer"><span class="friend-circle__author-avatar" aria-hidden="true">${avatar}</span><span class="friend-circle__author">${escape(post.author)}</span></a><a class="friend-circle__post-title" href="${escape(post.url)}" target="_blank" rel="noopener noreferrer">${escape(post.title)}</a><span class="friend-circle__post-meta">${tags ? `<span class="friend-circle__tags">${tags}</span>` : ''}${post.date ? `<time>${escape(post.date)}</time>` : ''}</span></article>`;
       })
       .join('');
   };

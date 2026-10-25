@@ -1,13 +1,17 @@
 ---
 import { ArrowUp } from 'lucide-astro';
+import { getSiteConfig } from '../data/site';
+import { getUiText } from '../utils/ui-text';
+
+const ui = getUiText(await getSiteConfig());
 ---
 
 <span class="scroll-top-marker" data-scroll-top-marker aria-hidden="true"></span>
 <button
   class="scroll-top-button"
   type="button"
-  aria-label="返回顶部"
-  title="返回顶部"
+  aria-label={ui.nav.backToTop}
+  title={ui.nav.backToTop}
   data-scroll-top-button
 >
   <ArrowUp size={18} stroke-width={2} aria-hidden="true" focusable="false" />
@@ -142,6 +146,21 @@ import { ArrowUp } from 'lucide-astro';
       width: 40px;
       height: 40px;
       border-radius: 7px;
+    }
+  }
+
+  /* 文章页移动端：与右下角目录按钮组成同一组悬浮控件 */
+  @media (max-width: 900px) {
+    :global(.blog-detail-page.has-mobile-toc) .scroll-top-button {
+      right: max(18px, env(safe-area-inset-right));
+      bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+      width: 40px;
+      height: 40px;
+      border-color: var(--paper-line);
+      border-radius: 9px;
+      background: var(--paper-surface);
+      color: var(--paper-ink-soft);
+      box-shadow: var(--paper-shadow);
     }
   }
 

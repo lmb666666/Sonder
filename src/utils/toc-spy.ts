@@ -76,18 +76,24 @@ const keepLinkVisible = (link: TocLink): void => {
 
   const linkRect = link.getBoundingClientRect();
   const areaRect = scrollArea.getBoundingClientRect();
-  const margin = 12;
   const relativeTop = linkRect.top - areaRect.top + scrollArea.scrollTop;
-  const relativeBottom = relativeTop + linkRect.height;
-  let targetScrollTop = scrollArea.scrollTop;
+  const itemCenter = relativeTop + linkRect.height / 2;
+  const containerCenter = scrollArea.scrollTop + scrollArea.clientHeight / 2;
 
-  if (relativeTop < scrollArea.scrollTop + margin) {
-    targetScrollTop = relativeTop - margin;
-  } else if (relativeBottom > scrollArea.scrollTop + scrollArea.clientHeight - margin) {
-    targetScrollTop = relativeBottom - scrollArea.clientHeight + margin;
+  // 活动项进入容器底部区域后，把它拉回中央；顶部同理。
+  if (Math.abs(itemCenter - containerCenter) <= scrollArea.clientHeight * 0.25) {
+    return;
   }
 
-  if (targetScrollTop !== scrollArea.scrollTop) {
+  const targetScrollTop = Math.max(
+    0,
+    Math.min(
+      scrollArea.scrollHeight - scrollArea.clientHeight,
+      itemCenter - scrollArea.clientHeight / 2,
+    ),
+  );
+
+  if (Math.abs(targetScrollTop - scrollArea.scrollTop) > 1) {
     scrollArea.scrollTo({
       top: targetScrollTop,
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',

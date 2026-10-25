@@ -16,14 +16,15 @@ Sonder is a paper-like personal publishing template built with Astro and Bun. It
 ## Features
 
 - Paper-inspired visual language: warm paper, ink text, hairlines, muted palettes
-- Article cards with 16:9 covers, frosted meta bands, categories, tags, TOC, related posts
+- Article cards with 16:9 covers, frosted meta bands, categories, tags, TOC, previous/next links, and more posts
 - Dark mode: cover-tinted glass bands and matching dark rings
 - Homepage: profile, stats, writing heatmap, site info, latest posts
 - Pages: media shelf, moments timeline, friends and friend circle
-- Navigation: pill or bar layout, selectable in `site.toml`
+- Navigation: pill, bar, or legacy header layout, selectable in `site.toml`
 - Search: Pagefind static full-text index with `Ctrl+K` / `Cmd+K`
 - Comments: giscus, utterances, Waline, Twikoo, or disabled
-- Static output: RSS, Atom, sitemap, and a GitHub Pages workflow
+- Sharing: copy a URL-bearing share message or generate a QR-coded share poster
+- Static output: RSS, Atom, and sitemap; deploy the build to any static host
 
 ## Quick start
 
@@ -38,6 +39,13 @@ bun run dev
 
 The dev server runs at `http://localhost:4321`.
 
+The build generates content-based CJK font subsets. Before the first build, install Python 3 with fonttools and brotli:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install fonttools brotli
+```
+
 ## Configuration
 
 Site-level settings live in `src/config/site.toml`:
@@ -46,8 +54,9 @@ Site-level settings live in `src/config/site.toml`:
 - `[config.profile]`: author name, role, avatar, email, website, GitHub
 - `[config.siteInfo]`: site info card; `program` also drives the footer credit
 - `[[config.topNav.links]]`: top navigation
-- `[config.theme]`: default palette, language, and `navStyle` (`pill` / `bar`)
+- `[config.theme]`: default palette, language, and `navStyle` (`pill` / `bar` / `legacy`)
 - `[config.pages]`: page titles, kickers, and subtitles
+- `[config.article]`: article share, previous/next navigation, and more-posts switches
 - `[config.home]`: quote, intro, latest post count, contact links
 - `[config.search]`, `[config.comments]`, `[config.friendCircle]`: search, comments, friend circle
 
@@ -69,7 +78,7 @@ Demo articles, media entries, and project cards can be edited or removed. Articl
 
 ```bash
 bun run dev          # local dev server
-bun run build        # static build + Pagefind index
+bun run build        # static build (font subsets) + Pagefind index
 bun run preview      # preview the build
 bun run post:new     # new article
 bun run media:new    # new media entry
@@ -80,7 +89,7 @@ bun test             # unit tests
 
 ## Deployment
 
-The build output is in `dist/` and can be deployed to GitHub Pages, Vercel, Netlify, Cloudflare Pages, or any static host. The included GitHub Pages workflow builds on pushes to `main` or `sonder`.
+The build output is in `dist/` and can be deployed manually to GitHub Pages, Vercel, Netlify, Cloudflare Pages, or any static host. No deployment workflow or platform config is included.
 
 For a subpath deployment:
 
@@ -104,6 +113,8 @@ sonder.config.ts    page module and plugin registration
 
 ## Credits & License
 
-Sonder is an independent template derived from Navfolio, which is MIT licensed. The original copyright notices are preserved in the root `LICENSE` and the vendored packages' `LICENSE` files.
+Sonder is an independent template developed and maintained by Liang, derived from Navfolio under the MIT license. The Navfolio and Sonder copyright notices are preserved in the root `LICENSE`.
+
+The article share poster layout and QR generation logic reference [Firefly](https://github.com/CuteLeaf/Firefly); its copyright notice is included in the root `LICENSE`.
 
 Sonder is released under the MIT license.

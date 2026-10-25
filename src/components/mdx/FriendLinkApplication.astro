@@ -282,6 +282,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
                 class="friend-link-application__apply"
                 target="_blank"
                 rel="noopener noreferrer"
+                href={config.issueBase}
                 aria-disabled="true"
                 data-tooltip={applyHint}
                 data-apply-application
@@ -585,7 +586,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
           applyLink.href = createIssueUrl(config, data);
           status.textContent = '资料已就绪，可复制数据或前往 GitHub 确认提交。';
         } else {
-          applyLink.removeAttribute('href');
+          applyLink.href = config.issueBase;
           status.textContent = '完成必填项后，将生成 GitHub Issue 申请链接。';
         }
       };

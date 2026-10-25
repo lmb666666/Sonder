@@ -111,19 +111,3 @@ export function canRenderProvider(config: CommentsConfig, provider: CommentProvi
 
   return missingFields.length === 0;
 }
-
-export function shouldRenderWalinePageView(config: CommentsConfig) {
-  if (
-    !config.enabled ||
-    !config.show_on_posts ||
-    config.provider !== 'waline' ||
-    !config.waline.pageview
-  ) {
-    return false;
-  }
-
-  const missingFields = getMissingProviderFields(config, 'waline');
-  warnMissingCommentConfig('waline', missingFields);
-
-  return missingFields.length === 0;
-}

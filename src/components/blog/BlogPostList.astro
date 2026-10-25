@@ -43,20 +43,12 @@ function withBase(href: string) {
   return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
 }
 
-// 分类与系列在界面上统一为「分类」：同名去重，系列独有的条目仍指向系列详情。
+// 分类入口只指向分类详情；没有分类总览页。
 function getGroups(post: BlogPost) {
-  return [
-    ...post.data.categories.map((name) => ({
-      name,
-      href: withBase(`/blog/categories/${slugifyGroupName(name)}/`),
-    })),
-    ...post.data.series
-      .filter((name) => !post.data.categories.includes(name))
-      .map((name) => ({
-        name,
-        href: withBase(`/blog/series/${slugifyGroupName(name)}/`),
-      })),
-  ];
+  return post.data.categories.map((name) => ({
+    name,
+    href: withBase(`/blog/categories/${slugifyGroupName(name)}/`),
+  }));
 }
 ---
 
@@ -113,7 +105,10 @@ function getGroups(post: BlogPost) {
                     {post.data.tags && post.data.tags.length > 0 && (
                       <MetadataItem kind="tags" class="post-tags">
                         {post.data.tags.map((tag) => (
-                          <a class="post-tag" href={withBase(`/tags/${slugifyGroupName(tag)}/`)}>
+                          <a
+                            class="post-tag"
+                            href={withBase(`/blog/tags/${slugifyGroupName(tag)}/`)}
+                          >
                             #{tag}
                           </a>
                         ))}

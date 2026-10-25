@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync } from 'node:fs';
-import { mediaModule, projectsModule } from '@sonder/pages';
+import { mediaModule } from '@sonder/pages';
 
 import {
   defineSonderConfig,
@@ -52,12 +52,11 @@ describe('sonder plugin config', () => {
     expect(astro.remarkPlugins).toEqual([]);
   });
 
-  test('keeps optional page modules out of protocol defaults', () => {
+  test('keeps page modules out of protocol defaults', () => {
     const config = defineSonderConfig({});
     const modules = getResolvedPageModules(config);
 
-    expect(modules.map((module) => module.id)).toEqual(['projects']);
-    expect(getPageModuleRoute(config, 'projects')).toBe('/projects');
+    expect(modules).toEqual([]);
     expect(isPageModuleEnabled(config, 'media')).toBe(false);
   });
 
@@ -68,29 +67,27 @@ describe('sonder plugin config', () => {
 
   test('supports disabled page modules', () => {
     const config = defineSonderConfig({
-      modules: [projectsModule(), mediaModule({ enabled: false })],
+      modules: [mediaModule({ enabled: false })],
     });
 
-    expect(isPageModuleEnabled(config, 'projects')).toBe(true);
     expect(isPageModuleEnabled(config, 'media')).toBe(false);
-    expect(getResolvedPageModules(config).map((module) => module.id)).toEqual(['projects']);
+    expect(getResolvedPageModules(config)).toEqual([]);
   });
 
   test('supports custom page module routes', () => {
     const config = defineSonderConfig({
-      modules: [projectsModule({ route: '/work' }), mediaModule({ route: '/shelf' })],
+      modules: [mediaModule({ route: '/shelf' })],
     });
 
-    expect(getPageModuleRoute(config, 'projects')).toBe('/work');
     expect(getPageModuleRoute(config, 'media')).toBe('/shelf');
-    expect(getResolvedPageModules(config)[1].routes?.[0]?.entrypoint?.pathname).toContain(
+    expect(getResolvedPageModules(config)[0].routes?.[0]?.entrypoint?.pathname).toContain(
       '/src/modules/media/routes/media.astro',
     );
   });
 
   test('rejects duplicate page module routes', () => {
     const config = defineSonderConfig({
-      modules: [projectsModule({ route: '/space' }), mediaModule({ route: '/space' })],
+      modules: [mediaModule({ route: '/space' }), mediaModule({ route: '/space' })],
     });
 
     expect(() => getResolvedPageModules(config)).toThrow('Duplicate Sonder page module route');
@@ -98,11 +95,11 @@ describe('sonder plugin config', () => {
 
   test('resolves scaffold metadata and templates from enabled page modules', () => {
     const config = defineSonderConfig({
-      modules: [projectsModule(), mediaModule({ enabled: false })],
+      modules: [mediaModule()],
     });
 
     const [scaffold] = getResolvedPageModuleScaffolds(config);
-    if (!scaffold) throw new Error('Expected the Projects scaffold.');
+    if (!scaffold) throw new Error('Expected the Media scaffold.');
 
     expect({
       moduleId: scaffold.moduleId,
@@ -111,11 +108,11 @@ describe('sonder plugin config', () => {
       directory: scaffold.directory,
       defaultExtension: scaffold.defaultExtension,
     }).toEqual({
-      moduleId: 'projects',
-      command: 'project',
-      collection: 'projects',
-      directory: 'src/content/projects',
-      defaultExtension: 'mdx',
+      moduleId: 'media',
+      command: 'media',
+      collection: 'media',
+      directory: 'src/content/media',
+      defaultExtension: 'md',
     });
     expect(scaffold.template instanceof URL).toBe(true);
     expect(existsSync(scaffold.template)).toBe(true);

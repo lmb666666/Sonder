@@ -14,7 +14,6 @@ comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 ---
 
 这篇文章用于集中展示常见 Markdown 语法在 Astro 中的渲染效果，便于你写作时快速对照。

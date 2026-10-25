@@ -68,7 +68,7 @@ const paletteOptions = [
     accentDark: '#b9addd',
   },
   { id: 'blue-soft', label: ui.palette.blueSoft, accent: '#5b7488', accentDark: '#a4b6c6' },
-  { id: 'orange-soft', label: ui.palette.orangeSoft, accent: '#9a7650', accentDark: '#d0b18a' },
+  { id: 'orange-soft', label: ui.palette.orangeSoft, accent: '#8a5a32', accentDark: '#d0b18a' },
   { id: 'brown-soft', label: ui.palette.brownSoft, accent: '#836f5d', accentDark: '#c3b09d' },
 ];
 ---
@@ -1656,6 +1656,13 @@ const paletteOptions = [
     .nav-pill .mobile-menu-panel {
       right: 0;
       left: 0;
+    }
+  }
+
+  /* 移动端文章目录改由文章页右下角的悬浮按钮承担 */
+  @media (max-width: 720px) {
+    .nav-actions .toc-action {
+      display: none;
     }
   }
 </style>

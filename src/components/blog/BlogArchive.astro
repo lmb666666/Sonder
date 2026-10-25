@@ -81,13 +81,15 @@ function getPageHref(pageNumber: number) {
 {
   hasPagination && (
     <nav class="archive-pagination" aria-label={ui.pagination.blog}>
-      <a
-        class:list={['pagination-link', 'pagination-prev', { disabled: !page.url.prev }]}
-        href={page.url.prev ? withBase(page.url.prev) : undefined}
-        aria-disabled={!page.url.prev}
-      >
-        {ui.pagination.previous}
-      </a>
+      {page.url.prev ? (
+        <a class="pagination-link pagination-prev" href={withBase(page.url.prev)}>
+          {ui.pagination.previous}
+        </a>
+      ) : (
+        <span class="pagination-link pagination-prev disabled" aria-disabled="true">
+          {ui.pagination.previous}
+        </span>
+      )}
       <div
         class="pagination-pages"
         aria-label={ui.pagination.page(page.currentPage, page.lastPage)}
@@ -115,13 +117,15 @@ function getPageHref(pageNumber: number) {
           );
         })}
       </div>
-      <a
-        class:list={['pagination-link', 'pagination-next', { disabled: !page.url.next }]}
-        href={page.url.next ? withBase(page.url.next) : undefined}
-        aria-disabled={!page.url.next}
-      >
-        {ui.pagination.next}
-      </a>
+      {page.url.next ? (
+        <a class="pagination-link pagination-next" href={withBase(page.url.next)}>
+          {ui.pagination.next}
+        </a>
+      ) : (
+        <span class="pagination-link pagination-next disabled" aria-disabled="true">
+          {ui.pagination.next}
+        </span>
+      )}
     </nav>
   )
 }

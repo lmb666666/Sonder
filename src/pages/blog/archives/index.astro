@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
 import BlogArchiveHeader from '../../../components/blog/BlogArchiveHeader.astro';
-import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import SiteHeader from '../../../components/blog/SiteHeader.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { slugifyGroupName } from '../../../utils/content-groups';
@@ -185,7 +185,7 @@ function formatMonthDay(date: Date) {
     </style>
   </head>
   <body>
-    <BlogTopNav />
+    <SiteHeader />
     <main data-pagefind-body>
       <BlogArchiveHeader
         kicker={pageMeta.kicker}
@@ -216,7 +216,7 @@ function formatMonthDay(date: Date) {
                       {post.data.tags.length > 0 && (
                         <span class="archive-tags">
                           {post.data.tags.slice(0, 3).map((tag) => (
-                            <a href={`${basePath}/tags/${slugifyGroupName(tag)}/`}>#{tag}</a>
+                            <a href={`${basePath}/blog/tags/${slugifyGroupName(tag)}/`}>#{tag}</a>
                           ))}
                         </span>
                       )}

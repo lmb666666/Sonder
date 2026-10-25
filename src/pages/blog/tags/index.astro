@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
 import BlogArchiveHeader from '../../../components/blog/BlogArchiveHeader.astro';
-import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import SiteHeader from '../../../components/blog/SiteHeader.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { getAllTags } from '../../../utils/content-groups';
@@ -164,7 +164,7 @@ function getTagWeight(count: number) {
     </style>
   </head>
   <body>
-    <BlogTopNav />
+    <SiteHeader />
     <main data-pagefind-body>
       <BlogArchiveHeader
         kicker={pageMeta.kicker}
@@ -182,7 +182,7 @@ function getTagWeight(count: number) {
 
               return (
                 <a
-                  href={`${basePath}/tags/${tag.slug}/`}
+                  href={`${basePath}/blog/tags/${tag.slug}/`}
                   style={`--tag-color: ${tagColors[index % tagColors.length]}; --tag-weight: ${weight.toFixed(
                     3,
                   )}; --tag-tilt: ${((index % 7) - 3) * 1.35}deg;`}

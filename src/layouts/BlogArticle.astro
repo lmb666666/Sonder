@@ -1,8 +1,10 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
+import { getCollection } from 'astro:content';
 import ArticleHeader from '../components/article/ArticleHeader.astro';
-import BlogTopNav from '../components/blog/BlogTopNav.astro';
-import RelatedPosts from '../components/blog/RelatedPosts.astro';
+import ShareActions from '../components/article/ShareActions.astro';
+import ArticleJourney from '../components/blog/ArticleJourney.astro';
+import MobileToc from '../components/blog/MobileToc.astro';
+import SiteHeader from '../components/blog/SiteHeader.astro';
 import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import BaseHead from '../components/BaseHead.astro';
@@ -13,20 +15,19 @@ import ZoomableImage from '@sonder/mdx-components/ZoomableImage.astro';
 import { getThemePalette, getSiteConfig } from '../data/site';
 import { resolveCommentsConfig, supportsCommentSection } from '../utils/comments';
 import { sortByDateDesc } from '../utils/content-dates';
-import { getSeriesContext, slugifyGroupName } from '../utils/content-groups';
+import { slugifyGroupName } from '../utils/content-groups';
 import { buildTocTree, countTocItems } from '../utils/toc-tree';
 import { getUiText } from '../utils/ui-text';
 import '@sonder/theme-default/styles/blog-article.css';
 
 const siteConfig = await getSiteConfig();
-const { comments: rawComments } = siteConfig;
+const { comments: rawComments, site, profile, article: articleConfig } = siteConfig;
 const comments = resolveCommentsConfig(rawComments);
 const ui = getUiText(siteConfig);
 
 type SidebarConfig = {
   enable?: boolean;
   toc?: boolean;
-  relatedPosts?: boolean;
 };
 
 interface Props {
@@ -42,7 +43,6 @@ interface Props {
       showHeroImage?: boolean;
       tags?: string[];
       categories?: string[];
-      series?: string[];
       comments?: boolean;
       draft?: boolean;
       sidebar?: SidebarConfig;
@@ -61,13 +61,11 @@ interface Props {
   showHeroImage?: boolean;
   tags?: string[];
   categories?: string[];
-  series?: string[];
   contentFont?: 'article' | 'ui';
 }
 
 const props = Astro.props;
 const palette = await getThemePalette();
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const headings = props.headings ?? [];
 const post = props.post ?? {
   id: 'standalone',
@@ -81,9 +79,8 @@ const post = props.post ?? {
     showHeroImage: props.showHeroImage ?? true,
     tags: props.tags ?? [],
     categories: props.categories ?? [],
-    series: props.series ?? [],
     draft: false,
-    sidebar: { enable: true, toc: true, relatedPosts: true },
+    sidebar: { enable: true, toc: true },
   },
 };
 const isBlogPost = post.collection === 'blog';
@@ -106,14 +103,12 @@ const categoryLinks = (post.data.categories ?? []).map((name) => ({
   name,
   slug: slugifyGroupName(name),
 }));
-const rawSeries = post.data.series ?? [];
 const references = post.data.references?.filter(({ title, link }) => title || link) ?? [];
 const tocItems = buildTocTree(headings);
 const tocItemCount = countTocItems(tocItems);
 const sidebarConfig = {
   enable: true,
   toc: true,
-  relatedPosts: true,
   ...post.data.sidebar,
   ...props.sidebar,
 };
@@ -122,24 +117,22 @@ const shouldRenderToc = sidebarConfig.toc ?? true;
 const hasToc = shouldRenderToc && tocItemCount > 0;
 
 const allBlogPosts = await getCollection('blog', ({ data }) => !data.draft);
-const currentBlogPost = isBlogPost ? (post as CollectionEntry<'blog'>) : undefined;
-const seriesContext = isBlogPost
-  ? getSeriesContext(currentBlogPost!, allBlogPosts, rawSeries[0])
-  : undefined;
-const seriesLinks = rawSeries.map((name) => {
-  const isPrimarySeries = seriesContext?.name === name;
-
-  return {
-    name,
-    slug: slugifyGroupName(name),
-    current: isPrimarySeries ? seriesContext.current : undefined,
-    total: isPrimarySeries ? seriesContext.total : undefined,
-  };
-});
-const relatedPosts = sortByDateDesc(allBlogPosts.filter(({ id }) => id !== post.id)).slice(0, 3);
-const hasRelatedPosts =
-  shouldRenderSidebar && (sidebarConfig.relatedPosts ?? true) && relatedPosts.length > 0;
+const timeline = sortByDateDesc(allBlogPosts);
+const currentIndex = timeline.findIndex((entry) => entry.id === post.id);
+const nextPost = currentIndex > 0 ? timeline[currentIndex - 1] : undefined;
+const previousPost =
+  currentIndex >= 0 && currentIndex < timeline.length - 1 ? timeline[currentIndex + 1] : undefined;
+const navigationIds = new Set(
+  [previousPost?.id, nextPost?.id].filter((id): id is string => Boolean(id)),
+);
+const morePostCandidates = timeline
+  .filter(({ id }) => id !== post.id && !navigationIds.has(id))
+  .slice(0, 3);
+const morePosts = articleConfig.morePosts ? morePostCandidates : [];
+const showJourney = articleConfig.navigation || (articleConfig.morePosts && morePosts.length > 0);
 const hasSidebar = shouldRenderSidebar && hasToc;
+const shareUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : heroImage.src) : '';
 ---
 
 <!doctype html>
@@ -152,8 +145,16 @@ const hasSidebar = shouldRenderSidebar && hasToc;
       )
     }
   </head>
-  <body class:list={['blog-detail-page', { 'blog-content-ui': contentFont === 'ui' }]}>
-    <BlogTopNav showTocIcon={hasToc} tocItems={tocItems} />
+  <body
+    class:list={[
+      'blog-detail-page',
+      {
+        'blog-content-ui': contentFont === 'ui',
+        'has-mobile-toc': hasToc,
+      },
+    ]}
+  >
+    <SiteHeader showTocIcon={hasToc} tocItems={tocItems} />
     <div class="blog-background" aria-hidden="true"></div>
 
     <main class:list={['blog-layout', { 'blog-layout-centered': !hasSidebar }]} data-pagefind-body>
@@ -167,14 +168,11 @@ const hasSidebar = shouldRenderSidebar && hasToc;
             readingTime={readingTime}
             tags={tagLinks}
             categories={categoryLinks}
-            series={seriesLinks}
             heroImage={heroImage}
             showHeroImage={showHeroImage}
             variant={props.headerVariant}
             kicker={props.headerKicker}
             note={props.headerNote}
-            pathname={Astro.url.pathname}
-            showPageView={isBlogPost}
           />
 
           <section
@@ -183,37 +181,11 @@ const hasSidebar = shouldRenderSidebar && hasToc;
           >
             <slot />
           </section>
-
-          {
-            seriesContext && (seriesContext.prev || seriesContext.next) && (
-              <nav
-                class="series-neighbor-nav"
-                aria-label={ui.article.moreInSeries(seriesContext.name)}
-              >
-                {seriesContext.prev ? (
-                  <a href={`${basePath}/blog/${seriesContext.prev.id}/`}>
-                    <small>{ui.article.previousInSeries(seriesContext.name)}</small>
-                    <span>{seriesContext.prev.data.title}</span>
-                  </a>
-                ) : (
-                  <span />
-                )}
-                {seriesContext.next ? (
-                  <a href={`${basePath}/blog/${seriesContext.next.id}/`} class="next">
-                    <small>{ui.article.nextInSeries(seriesContext.name)}</small>
-                    <span>{seriesContext.next.data.title}</span>
-                  </a>
-                ) : (
-                  <span />
-                )}
-              </nav>
-            )
-          }
         </article>
         {
           references.length > 0 && (
-            <section class="article-references" aria-label="参考链接">
-              <h2 class="article-references-title">参考链接</h2>
+            <section class="article-references" aria-label={ui.article.referencesLabel}>
+              <h2 class="article-references-title">{ui.article.references}</h2>
               <ol class="article-references-list">
                 {references.map(({ title, link }) => (
                   <li>
@@ -230,7 +202,32 @@ const hasSidebar = shouldRenderSidebar && hasToc;
             </section>
           )
         }
-        {hasRelatedPosts && <RelatedPosts posts={relatedPosts} class="article-after-related" />}
+        {
+          isBlogPost && articleConfig.share && (
+            <ShareActions
+              title={title}
+              description={description}
+              url={shareUrl}
+              siteTitle={site.title}
+              author={profile.name}
+              date={date.toISOString()}
+              avatar={profile.avatar}
+              logo={profile.avatar}
+              coverImage={posterCover}
+              coverSelector={showHeroImage && heroImage ? '.article-hero-image img' : ''}
+            />
+          )
+        }
+        {
+          isBlogPost && showJourney && (
+            <ArticleJourney
+              showPager={articleConfig.navigation}
+              previous={articleConfig.navigation ? previousPost : undefined}
+              next={articleConfig.navigation ? nextPost : undefined}
+              more={morePosts}
+            />
+          )
+        }
         {
           shouldMountCommentSection && (
             <CommentSection frontmatter={post.data} pathname={Astro.url.pathname} />
@@ -248,6 +245,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
         )
       }
     </main>
+    {hasToc && <MobileToc items={tocItems} font={contentFont} />}
     <ScrollToTopButton />
     <ZoomableImage />
     <MermaidRenderer />

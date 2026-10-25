@@ -4,11 +4,7 @@ import { dirname, extname, isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'smol-toml';
 import sonderConfig from '../../sonder.config';
-import {
-  getResolvedPageModule,
-  getResolvedPageModuleI18n,
-  isPageModuleEnabled,
-} from '../../src/plugins/config';
+import { getResolvedPageModule, getResolvedPageModuleI18n } from '../../src/plugins/config';
 
 type FontConfig = {
   en: string;
@@ -22,8 +18,12 @@ const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
 const fontConfig = readFontConfig();
 const subsetFontUrl = getSubsetFontUrl(fontConfig.file);
 const outputFontPath = resolveProjectPath(subsetFontUrl);
+const contentCharsPath = join(projectRoot, 'scripts/fonts/content-chars.txt');
+const contentSubsetFontUrl = subsetFontUrl.replace('-ui-subset.woff2', '-content-subset.woff2');
+const contentOutputFontPath = resolveProjectPath(contentSubsetFontUrl);
 const sourceFontPath = resolveProjectPath(fontConfig.file);
 const subsetFontName = `${fontConfig.zh} UI Subset`;
+const contentSubsetFontName = `${fontConfig.zh} Content Subset`;
 const isWindows = process.platform === 'win32';
 const venvBinDir = isWindows ? 'Scripts' : 'bin';
 const pythonExe = isWindows ? 'python.exe' : 'python';
@@ -37,7 +37,6 @@ const pythonCommands = [
     (index === 0 ? existsSync(command) : true) && commands.indexOf(command) === index,
 );
 const contentRoot = 'src/content';
-const projectsModuleEnabled = isPageModuleEnabled(sonderConfig, 'projects');
 const resolvedMediaModule = getResolvedPageModule(sonderConfig, 'media');
 const mediaModuleEnabled = Boolean(resolvedMediaModule);
 const mediaRouteEntrypoint = resolvedMediaModule?.routes?.[0]?.entrypoint;
@@ -50,26 +49,16 @@ const sourceDirs = [
   'src/config',
   'src/utils',
   'src/i18n',
+  'src/data',
 ];
-const sourceFiles = [
-  ...(projectsModuleEnabled
-    ? ['src/modules/routes/projects-index.astro', 'src/modules/routes/project-detail.astro']
-    : []),
-  ...(mediaRouteSourceFile ? [mediaRouteSourceFile] : []),
-];
+const sourceFiles = [...(mediaRouteSourceFile ? [mediaRouteSourceFile] : [])];
 const contentFrontmatterDirs = [
   `${contentRoot}/blog`,
-  ...(projectsModuleEnabled ? [`${contentRoot}/projects`] : []),
+  `${contentRoot}/projects`,
   ...(mediaModuleEnabled ? [`${contentRoot}/media`] : []),
 ];
 const lightweightContentDirs = [...(mediaModuleEnabled ? [`${contentRoot}/media`] : [])];
-const lightweightContentFiles = [
-  `${contentRoot}/about.mdx`,
-  `${contentRoot}/about.md`,
-  ...(projectsModuleEnabled
-    ? [`${contentRoot}/projects/index.mdx`, `${contentRoot}/projects/index.md`]
-    : []),
-];
+const lightweightContentFiles = [`${contentRoot}/about.mdx`, `${contentRoot}/about.md`];
 const sourceExtensions = new Set(['.astro', '.ts', '.js', '.mjs', '.cjs', '.json', '.toml']);
 const frontmatterExtensions = new Set(['.md', '.mdx']);
 const frontmatterKeys = new Set([
@@ -79,7 +68,6 @@ const frontmatterKeys = new Set([
   'note',
   'tags',
   'categories',
-  'series',
   'creator',
 ]);
 const cjkPattern =
@@ -209,22 +197,7 @@ function collectFriendCircleChars(chars: Set<string>) {
   }
 }
 
-function runSubset() {
-  const args = [
-    sourceFontPath,
-    `--text-file=${uiCharsPath}`,
-    `--output-file=${outputFontPath}`,
-    '--flavor=woff2',
-    '--with-zopfli',
-    '--layout-features=*',
-    '--name-IDs=*',
-    '--glyph-names',
-    '--notdef-glyph',
-    '--notdef-outline',
-    '--recommended-glyphs',
-    '--no-hinting',
-  ];
-
+function runPyftsubset(args: string[]) {
   const commands = [
     { command: join(projectRoot, '.venv', venvBinDir, pyftsubsetExe), args },
     ...pythonCommands.map((command) => ({ command, args: ['-m', 'fontTools.subset', ...args] })),
@@ -232,9 +205,7 @@ function runSubset() {
 
   for (const { command, args: commandArgs } of commands) {
     const result = spawnSync(command, commandArgs, { stdio: 'inherit' });
-    if (result.status === 0) {
-      return;
-    }
+    if (result.status === 0) return;
 
     if (result.error && 'code' in result.error && result.error.code === 'ENOENT') continue;
   }
@@ -244,7 +215,58 @@ function runSubset() {
   );
 }
 
-function syncSubsetFontName() {
+function runSubset(charsPath: string, fontOutputPath: string, unicodes?: string) {
+  runPyftsubset([
+    sourceFontPath,
+    `--text-file=${charsPath}`,
+    ...(unicodes ? [`--unicodes=${unicodes}`] : []),
+    `--output-file=${fontOutputPath}`,
+    '--flavor=woff2',
+    '--with-zopfli',
+    '--layout-features=*',
+    '--name-IDs=*',
+    '--glyph-names',
+    '--notdef-glyph',
+    '--notdef-outline',
+    '--recommended-glyphs',
+    '--no-hinting',
+  ]);
+}
+
+function runMapleSubsets() {
+  const mapleFontDir = join(projectRoot, 'node_modules/@fontsource/maple-mono/files');
+  const mapleUnicodes = 'U+0020-007E,U+00A0-00FF,U+2000-206F,U+20AC,U+2190-2193,U+2212';
+  const weights = ['400', '700'];
+
+  for (const weight of weights) {
+    const inputFontPath = join(mapleFontDir, `maple-mono-latin-${weight}-normal.woff2`);
+    const outputUrl = `/fonts/maple-mono-${weight}-subset.woff2`;
+    const outputPath = resolveProjectPath(outputUrl);
+
+    if (!existsSync(inputFontPath)) {
+      throw new Error(`Maple Mono source font not found at ${inputFontPath}.`);
+    }
+
+    mkdirSync(dirname(outputPath), { recursive: true });
+    runPyftsubset([
+      inputFontPath,
+      `--unicodes=${mapleUnicodes}`,
+      `--output-file=${outputPath}`,
+      '--flavor=woff2',
+      '--with-zopfli',
+      '--layout-features=*',
+      '--name-IDs=*',
+      '--glyph-names',
+      '--notdef-glyph',
+      '--notdef-outline',
+      '--recommended-glyphs',
+      '--no-hinting',
+    ]);
+    console.log(`Generated Maple Mono ${weight} subset at ${outputPath}.`);
+  }
+}
+
+function syncSubsetFontName(fontOutputPath: string, familyName: string) {
   const script = `
 from fontTools.ttLib import TTFont
 import sys
@@ -268,14 +290,14 @@ font.save(path)
 `;
   let result;
   for (const command of pythonCommands) {
-    result = spawnSync(command, ['-c', script, outputFontPath, subsetFontName], {
+    result = spawnSync(command, ['-c', script, fontOutputPath, familyName], {
       stdio: 'inherit',
     });
     if (result.status === 0) return;
   }
 
   throw new Error(
-    `Generated subset font, but failed to sync its internal name to ${subsetFontName}. Ensure Python 3 and fonttools are installed. Error: ${result?.error?.message ?? `status ${result?.status}`}`,
+    `Generated subset font, but failed to sync its internal name to ${familyName}. Ensure Python 3 and fonttools are installed. Error: ${result?.error?.message ?? `status ${result?.status}`}`,
   );
 }
 
@@ -320,9 +342,21 @@ collectFriendCircleChars(chars);
 const uiChars = [...chars].sort((a, b) => a.codePointAt(0)! - b.codePointAt(0)!).join('');
 if (!uiChars) throw new Error('No CJK UI characters were found for font subsetting.');
 
+const contentChars = new Set(chars);
+for (const file of walkFiles(join(projectRoot, 'src/content'), frontmatterExtensions)) {
+  collectCjk(contentChars, readFileSync(file, 'utf8'));
+}
+const contentCharsValue = [...contentChars]
+  .sort((a, b) => a.codePointAt(0)! - b.codePointAt(0)!)
+  .join('');
+if (!contentCharsValue)
+  throw new Error('No CJK content characters were found for font subsetting.');
+
 mkdirSync(join(projectRoot, 'scripts/fonts'), { recursive: true });
 mkdirSync(dirname(outputFontPath), { recursive: true });
+mkdirSync(dirname(contentOutputFontPath), { recursive: true });
 writeFileSync(uiCharsPath, `${uiChars}\n`, 'utf8');
+writeFileSync(contentCharsPath, `${contentCharsValue}\n`, 'utf8');
 
 if (!existsSync(sourceFontPath)) {
   throw new Error(
@@ -330,8 +364,17 @@ if (!existsSync(sourceFontPath)) {
   );
 }
 
-runSubset();
-syncSubsetFontName();
+runSubset(uiCharsPath, outputFontPath);
+syncSubsetFontName(outputFontPath, subsetFontName);
+runSubset(contentCharsPath, contentOutputFontPath);
+syncSubsetFontName(contentOutputFontPath, contentSubsetFontName);
+runMapleSubsets();
 
 console.log(`Generated ${uiCharsPath} with ${uiChars.length} CJK UI characters.`);
+console.log(
+  `Generated ${contentCharsPath} with ${contentCharsValue.length} CJK content characters.`,
+);
 console.log(`Generated ${subsetFontName} at ${outputFontPath} from ${sourceFontPath}.`);
+console.log(
+  `Generated ${contentSubsetFontName} at ${contentOutputFontPath} from ${sourceFontPath}.`,
+);

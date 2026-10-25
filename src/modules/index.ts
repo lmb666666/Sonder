@@ -1,4 +1,3 @@
-export { projectsModule } from './projects/index.js';
 export { mediaModule } from './media/index.js';
 export {
   defaultPageModules,

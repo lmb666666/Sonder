@@ -8,12 +8,10 @@ heroImage: ''
 showHeroImage: false
 tags: []
 categories: []
-series: []
 comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 ---
 
 # <%= title %>

@@ -11,7 +11,7 @@ import {
 } from '@sonder/mdx-components/lib/friend-data';
 import {
   BaseHead,
-  BlogTopNav,
+  SiteHeader,
   Footer,
   getHtmlLang,
   getSiteConfig,
@@ -75,24 +75,31 @@ let circlePosts: FriendPost[] = [];
 let circleFriendsCount = allFriendLinks.length;
 let feedNotice = '';
 
+const isPlaceholderFeed = (value: string | null | undefined) =>
+  /^https?:\/\/(?:www\.)?example\.(?:com|org|net|dev)(?:\/|$)/i.test(value ?? '');
+const feedFriends = allFriendLinks.filter((friend) => friend.rss && !isPlaceholderFeed(friend.rss));
+
 if (feedSrc) {
   try {
     const feed = parseFriendCircleFeed(JSON.parse(await readFeedSource(feedSrc)));
     circlePosts = feed.posts;
     if (feed.friends.length) circleFriendsCount = feed.friends.length;
   } catch (error) {
+    circlePosts = demoPosts;
     feedNotice = `feed 解析失败（${error instanceof Error ? error.message : error}），回退演示数据。`;
   }
-} else {
-  // 无 feed 时构建期抓取友链 RSS；全部失败则回退演示数据
-  const crawled = await crawlFriendPosts(allFriendLinks);
-  if (crawled.length) {
+} else if (feedFriends.length > 0) {
+  // 正式友链有 RSS 时构建期抓取；示例域名跳过，避免无意义的网络请求
+  const crawled = await crawlFriendPosts(feedFriends);
+  if (crawled.length > 0) {
     circlePosts = crawled;
   } else {
     circlePosts = demoPosts;
-    feedNotice =
-      '当前展示内置演示数据；配置 feed_src 或同步 public/friend-circle.json 后自动切换。';
+    feedNotice = '友链 RSS 暂不可用，当前展示内置演示数据。';
   }
+} else {
+  circlePosts = demoPosts;
+  feedNotice = '当前展示内置演示数据；配置 feed_src 或同步 public/friend-circle.json 后自动切换。';
 }
 
 const pageSize = siteConfig.friendCircle.pageSize;
@@ -107,7 +114,7 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
     <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
   </head>
   <body>
-    <BlogTopNav />
+    <SiteHeader />
     <main class="links-page" data-pagefind-body>
       <PageHero
         kicker={pageMeta.kicker}

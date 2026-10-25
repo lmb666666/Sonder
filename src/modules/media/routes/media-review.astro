@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import {
   BaseHead,
-  BlogTopNav,
+  SiteHeader,
   Footer,
   getHtmlLang,
   getSiteConfig,
@@ -83,7 +83,7 @@ function parentRoute(pathname: string, id: string) {
     />
   </head>
   <body class="media-review-page">
-    <BlogTopNav />
+    <SiteHeader />
     <main data-pagefind-body>
       <a class="media-review-back" href={`${mediaRoute}/`}>{ui.media.backToShelf}</a>
       <article>

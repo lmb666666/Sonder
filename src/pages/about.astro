@@ -26,7 +26,7 @@ if (!about) {
 
 const { Content, headings } = await render(about);
 
-// 项目卡片（原 /projects 页并入本页）：链接指向项目外部地址
+// 项目卡片：链接指向项目外部地址
 const projectEntries = (await getCollection('projects', ({ data }) => !data.draft)).filter(
   (entry) => entry.id !== 'index',
 );

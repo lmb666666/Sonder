@@ -65,6 +65,9 @@ const resolvedBase =
 // https://astro.build/config
 export default defineConfig({
   site: resolvedSite,
+  build: {
+    inlineStylesheets: 'always',
+  },
   base: resolvedBase,
   markdown: {
     remarkPlugins: astroPluginConfig.remarkPlugins,
@@ -131,10 +134,6 @@ export default defineConfig({
         {
           find: /^@sonder\/pages$/,
           replacement: fileURLToPath(new URL('./src/modules/index.ts', import.meta.url)),
-        },
-        {
-          find: /^@sonder\/page-projects$/,
-          replacement: fileURLToPath(new URL('./src/modules/projects/index.ts', import.meta.url)),
         },
         {
           find: /^@sonder\/page-media$/,

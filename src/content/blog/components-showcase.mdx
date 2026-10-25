@@ -1,7 +1,7 @@
 ---
 title: 'Sonder 组件速览'
-description: 'Sonder 沿用的十个内容组件——徽标、按键、剧透、诗歌、链接卡片、卡片列表、选项卡、聊天记录、视频嵌入与 ABC 乐谱——一篇看全。'
-date: '2026-10-24T00:00:00+08:00'
+description: 'Sonder 目前提供的二十个 MDX 内容组件——徽标、按键、剧透、诗歌、卡片、选项卡、聊天、链接、友链、轮播、长图、媒体架、图表、视频、音乐与乐谱——一篇看全。'
+date: '2026-10-25T00:00:00+08:00'
 heroImage: '/src/assets/figure/covers/cover-09-ink.png'
 draft: false
 showHeroImage: false
@@ -15,7 +15,6 @@ comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 references:
   - title: 'abcjs —— 标准 ABC 记谱法的 JavaScript 渲染与合成库'
     link: 'https://paulrosen.github.io/abcjs/'
@@ -26,16 +25,30 @@ references:
 import Badge from '@sonder/mdx-components/Badge.astro';
 import Blur from '@sonder/mdx-components/Blur.astro';
 import CardList from '@sonder/mdx-components/CardList.astro';
+import Carousel from '@sonder/mdx-components/Carousel.astro';
 import Chat from '@sonder/mdx-components/Chat.astro';
+import FriendCircle from '@sonder/mdx-components/FriendCircle.astro';
+import FriendLinkApplication from '@sonder/mdx-components/FriendLinkApplication.astro';
+import FriendLinkCard from '@sonder/mdx-components/FriendLinkCard.astro';
 import Key from '@sonder/mdx-components/Key.astro';
 import LinkCard from '@sonder/mdx-components/LinkCard.astro';
+import LongImage from '@sonder/mdx-components/LongImage.astro';
+import MediaShelf from '@sonder/mdx-components/MediaShelf.astro';
+import MusicPlayer from '@sonder/mdx-components/MusicPlayer.astro';
 import MusicScore from '@sonder/mdx-components/MusicScore.astro';
 import NeteasePlaylist from '@sonder/mdx-components/NeteasePlaylist.astro';
 import Poetry from '@sonder/mdx-components/Poetry.astro';
 import Tab from '@sonder/mdx-components/Tab.astro';
 import VideoEmbed from '@sonder/mdx-components/VideoEmbed.astro';
+import ZoomableImage from '@sonder/mdx-components/ZoomableImage.astro';
+import friendCircleDemo from '../../data/friend-circle-demo.json';
+import coverApricot from '../../assets/figure/covers/cover-14-apricot.png';
+import coverInk from '../../assets/figure/covers/cover-09-ink.png';
+import coverLavender from '../../assets/figure/covers/cover-04-lavender.png';
+import coverSage from '../../assets/figure/covers/cover-01-sage.png';
+import coverTeal from '../../assets/figure/covers/cover-07-teal.png';
 
-Sonder 从 v1 沿用十个内容组件。这篇速览逐一演示它们在 MDX 中的用法；
+Sonder 目前提供二十个 MDX 内容组件。这篇速览把每一个都放进真实文章里跑一遍；
 frontmatter 里也用到了模板扩展的 `postid` 与 `references` 字段（见文末参考链接）。
 
 ## 行内组件
@@ -59,7 +72,7 @@ frontmatter 里也用到了模板扩展的 `postid` 与 `references` 字段（�
 
 默认模糊，悬停、聚焦或按住时显形——剧透警告：<Blur text="他是凶手" />。
 
-## 结构组件
+## 排版与结构
 
 ### Poetry 诗歌排版
 
@@ -115,7 +128,7 @@ frontmatter 里也用到了模板扩展的 `postid` 与 `references` 字段（�
 
 </CardList>
 
-## 引用与嵌入
+## 链接与社群
 
 ### LinkCard 链接卡片
 
@@ -124,6 +137,115 @@ frontmatter 里也用到了模板扩展的 `postid` 与 `references` 字段（�
   title="Sonder"
   description="万千人生，各自成书"
   icon="https://github.com/lmb666666.png?size=64"
+/>
+
+### FriendLinkCard 友链卡片
+
+友链以卡片网格排列；传入 `items`、`src` 或 `source` 都可以。这里复用了站点内置的演示友链数据：
+
+<FriendLinkCard items={friendCircleDemo.friends.slice(0, 3)} columns={3} />
+
+### FriendCircle 朋友圈
+
+把友链的 RSS/Atom 动态聚合成时间线，右上角按钮可以重新洗牌。下面使用内置演示数据，不依赖外部订阅源：
+
+<FriendCircle
+  items={friendCircleDemo.friends}
+  posts={friendCircleDemo.posts}
+  limit={3}
+  title="朋友动态"
+/>
+
+### FriendLinkApplication 友链申请
+
+填写名称、主页、简介、头像和 RSS，实时生成友链 JSON；可以复制，也可以直接打开 GitHub Issue 申请。
+下面以 Sonder 仓库为例：
+
+<FriendLinkApplication
+  repository="https://github.com/lmb666666/Sonder"
+  title="申请友链"
+  description="填写站点信息，预览后复制，或前往 GitHub 提交申请。"
+  appearance="bordered"
+/>
+
+## 图像与媒体
+
+### Carousel 轮播
+
+轮播是一组横向滑动的幻灯片，左右按钮切换；每个子项加上 `data-carousel-slide` 即可：
+
+<Carousel label="封面轮播" aspectRatio="16 / 9">
+  <figure data-carousel-slide>
+    <img src={coverSage.src} alt="鼠尾草色封面" width={coverSage.width} height={coverSage.height} />
+    <figcaption>Sonder 的纸面与鼠尾草色。</figcaption>
+  </figure>
+  <figure data-carousel-slide>
+    <img src={coverLavender.src} alt="紫藤色封面" width={coverLavender.width} height={coverLavender.height} />
+    <figcaption>紫藤色用于更安静的段落。</figcaption>
+  </figure>
+  <figure data-carousel-slide>
+    <img src={coverApricot.src} alt="杏色封面" width={coverApricot.width} height={coverApricot.height} />
+    <figcaption>杏色与暖纸的搭配。</figcaption>
+  </figure>
+</Carousel>
+
+### LongImage 长图
+
+长图放在固定高度的可滚动视口中，适合截图、长表格或纵向信息图：
+
+<LongImage
+  src={coverInk}
+  alt="可滚动的长图示例"
+  height="320px"
+  caption="在视口内滚动查看完整图片；按 Tab 聚焦后也可以使用键盘滚动。"
+/>
+
+### ZoomableImage 图片放大
+
+点击图片打开大图预览，支持关闭按钮和键盘操作。文章里的 Markdown 图片默认也会经过这个组件：
+
+<ZoomableImage src={coverTeal} alt="点击放大的图片示例" />
+
+### MediaShelf 媒体架
+
+书、电影、剧集、专辑和播客共用一套货架。这里用本地封面演示四种类型：
+
+<MediaShelf
+  columns={4}
+  items={[
+    {
+      title: 'Sonder 手记',
+      creator: '示例作者',
+      type: 'book',
+      cover: coverSage,
+      coverAspect: 'portrait',
+      rating: 4,
+      note: '一本关于纸面与留白的书。',
+    },
+    {
+      title: '夜航',
+      creator: '示例导演',
+      type: 'film',
+      cover: coverInk,
+      coverAspect: 'portrait',
+      rating: 5,
+    },
+    {
+      title: '缓慢的下午',
+      creator: '示例音乐人',
+      type: 'album',
+      cover: coverApricot,
+      coverAspect: 'portrait',
+      rating: 4,
+    },
+    {
+      title: '城市观察',
+      creator: '示例播客',
+      type: 'podcast',
+      cover: coverLavender,
+      coverAspect: 'portrait',
+    },
+  ]}
 />
 
 ### VideoEmbed 视频嵌入
@@ -141,6 +263,19 @@ ABC 记谱法乐谱；soundfonts 可达时可试听（音色库不可达时仅�
   abc={`X:1\nT:小星星\nM:4/4\nL:1/4\nK:C\n"1"C C G G|A A G2|"5"F F E E|D D C2|w: Twink-le twink-le lit-tle star, how I won-der what you are.`}
 />
 
+### MusicPlayer 播放器
+
+播放器支持原生音频/歌单，也支持 Spotify、SoundCloud、Bandcamp、Apple Music 和网易云的官方
+embed。这里用 Spotify embed 演示，不新增本地音频文件：
+
+<MusicPlayer
+  title="示例曲目"
+  artist="Spotify 示例"
+  provider="spotify"
+  url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"
+  size="wide"
+/>
+
 ### NeteasePlaylist 网易云歌单
 
 构建期经 Meting API 解析歌单后交给原生播放器（模板默认携带社区公共实例，
@@ -150,6 +285,19 @@ ABC 记谱法乐谱；soundfonts 可达时可试听（音色库不可达时仅�
 
 Meting 实例不可达或未配置时，同一个组件会自动降级为打开歌单的链接卡片。
 
+## 图表
+
+### Mermaid 图表
+
+文章布局已经全局挂载 `MermaidRenderer`，正文里写 `mermaid` 代码块即可：
+
+```mermaid
+flowchart LR
+  A[Markdown] --> B[MDX]
+  B --> C[静态 HTML]
+  C --> D[浏览器]
+```
+
 ---
 
-十个组件到此看全。每个组件的属性说明见源码注释：`src/components/mdx/`。
+二十个组件到此看全。每个组件的属性说明见源码注释：`src/components/mdx/`。

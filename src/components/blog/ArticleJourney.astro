@@ -1,0 +1,358 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Layers3 } from 'lucide-astro';
+import FormattedDate from '../FormattedDate.astro';
+import { getSiteConfig } from '../../data/site';
+import { getUiText } from '../../utils/ui-text';
+
+interface Props {
+  previous?: CollectionEntry<'blog'>;
+  next?: CollectionEntry<'blog'>;
+  more?: CollectionEntry<'blog'>[];
+  showPager?: boolean;
+}
+
+const { previous, next, more = [], showPager = true } = Astro.props;
+const ui = getUiText(await getSiteConfig());
+const labels = ui.article;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function withBase(href: string) {
+  if (href === '/') return `${basePath}/` || '/';
+  return `${basePath}${href.startsWith('/') ? href : `/${href}`}`;
+}
+
+const postHref = (post: CollectionEntry<'blog'>) => withBase(`/blog/${post.id}/`);
+const categoryOf = (post: CollectionEntry<'blog'>) => post.data.categories[0];
+---
+
+<section class="article-journey" aria-label={labels.navigation} data-pagefind-ignore>
+  {
+    showPager && (
+      <nav class="journey-pager" aria-label={labels.pagerLabel}>
+        {previous ? (
+          <a
+            class="journey-step"
+            href={postHref(previous)}
+            aria-label={labels.previousLabel(previous.data.title)}
+          >
+            <span class="journey-step-label">
+              <ArrowLeft size={14} stroke-width={2} aria-hidden="true" />
+              {labels.previous}
+            </span>
+            <strong>{previous.data.title}</strong>
+          </a>
+        ) : (
+          <div class="journey-step is-empty">
+            <span class="journey-step-label">
+              <ArrowLeft size={14} stroke-width={2} aria-hidden="true" />
+              {labels.previous}
+            </span>
+            <span>{labels.firstArticle}</span>
+          </div>
+        )}
+        {next ? (
+          <a
+            class="journey-step journey-step-next"
+            href={postHref(next)}
+            aria-label={labels.nextLabel(next.data.title)}
+          >
+            <span class="journey-step-label">
+              {labels.next}
+              <ArrowRight size={14} stroke-width={2} aria-hidden="true" />
+            </span>
+            <strong>{next.data.title}</strong>
+          </a>
+        ) : (
+          <div class="journey-step journey-step-next is-empty">
+            <span class="journey-step-label">
+              {labels.next}
+              <ArrowRight size={14} stroke-width={2} aria-hidden="true" />
+            </span>
+            <span>{labels.lastArticle}</span>
+          </div>
+        )}
+      </nav>
+    )
+  }
+
+  {
+    more.length > 0 && (
+      <section class="journey-more" aria-labelledby="journey-more-title">
+        <div class="journey-more-heading">
+          <div class="journey-more-heading-title">
+            <Layers3 size={14} stroke-width={2} aria-hidden="true" />
+            <h2 id="journey-more-title">{labels.moreArticles}</h2>
+          </div>
+          <span class="journey-more-count">{labels.moreCount(more.length)}</span>
+        </div>
+        <ol class="journey-more-list">
+          {more.map((post, index) => (
+            <li>
+              <a href={postHref(post)}>
+                <span class="journey-more-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span class="journey-more-copy">
+                  <strong>{post.data.title}</strong>
+                  <small>
+                    {categoryOf(post) && <span>{categoryOf(post)}</span>}
+                    <FormattedDate date={post.data.date} />
+                  </small>
+                </span>
+                <ArrowUpRight
+                  class="journey-more-arrow"
+                  size={14}
+                  stroke-width={2}
+                  aria-hidden="true"
+                />
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
+</section>
+
+<style>
+  .article-journey {
+    display: grid;
+    gap: 17px;
+    margin-top: 26px;
+  }
+
+  .journey-pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .journey-step {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    min-height: 58px;
+    padding: 10px 13px;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
+    color: var(--paper-ink);
+    text-decoration: none;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease;
+  }
+
+  a.journey-step:hover {
+    border-color: var(--paper-accent);
+    background: var(--paper-control-hover);
+  }
+
+  a.journey-step:hover strong {
+    color: var(--paper-accent);
+  }
+
+  .journey-step-next {
+    text-align: right;
+  }
+
+  .journey-step-next .journey-step-label {
+    justify-content: flex-end;
+  }
+
+  .journey-step-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--paper-accent);
+    font-family: var(--font-meta);
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+
+  .journey-step strong,
+  .journey-step > span:last-child {
+    overflow: hidden;
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: 0.86rem;
+    font-weight: 650;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .journey-step.is-empty {
+    border-style: dashed;
+    background: var(--paper-surface-muted);
+  }
+
+  .journey-step.is-empty .journey-step-label {
+    color: var(--paper-ink-faint);
+  }
+
+  .journey-step.is-empty > span:last-child {
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.74rem;
+    font-weight: 500;
+  }
+
+  .journey-more {
+    padding: 14px 16px 12px;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
+  }
+
+  .journey-more-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--paper-line);
+  }
+
+  .journey-more-heading-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--paper-accent);
+  }
+
+  .journey-more-heading h2 {
+    margin: 0;
+    color: var(--paper-ink);
+    font-family: var(--font-meta);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .journey-more-count {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper-accent) 9%, transparent);
+    color: var(--paper-accent);
+    font-family: var(--font-meta);
+    font-size: 0.66rem;
+    font-weight: 650;
+  }
+
+  .journey-more-list {
+    margin: 0;
+    padding: 2px 0 0;
+    list-style: none;
+  }
+
+  .journey-more-list li + li {
+    border-top: 1px dashed var(--paper-line);
+  }
+
+  .journey-more-list a {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    margin: 0 -8px;
+    padding: 9px 8px;
+    border-radius: 6px;
+    color: var(--paper-ink);
+    text-decoration: none;
+    transition: background 160ms ease;
+  }
+
+  .journey-more-list a:hover {
+    background: var(--paper-control-hover);
+  }
+
+  .journey-more-index {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--paper-accent) 9%, transparent);
+    color: var(--paper-accent);
+    font-family: var(--font-meta);
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  .journey-more-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .journey-more-copy strong {
+    overflow: hidden;
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    font-weight: 650;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 160ms ease;
+  }
+
+  .journey-more-copy small {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    overflow: hidden;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.66rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .journey-more-copy small span {
+    flex: 0 0 auto;
+    color: var(--paper-accent);
+  }
+
+  .journey-more-arrow {
+    color: var(--paper-ink-faint);
+    transition:
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .journey-more-list a:hover .journey-more-copy strong,
+  .journey-more-list a:hover .journey-more-arrow {
+    color: var(--paper-accent);
+  }
+
+  .journey-more-list a:hover .journey-more-arrow {
+    transform: translate(1px, -1px);
+  }
+
+  @media (max-width: 640px) {
+    .journey-pager {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .journey-step-next {
+      text-align: left;
+    }
+
+    .journey-step-next .journey-step-label {
+      justify-content: flex-start;
+    }
+
+    .journey-more {
+      padding: 12px 13px 10px;
+    }
+
+    .journey-more-copy strong {
+      white-space: normal;
+    }
+  }
+</style>

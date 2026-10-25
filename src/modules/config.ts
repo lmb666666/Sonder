@@ -1,4 +1,3 @@
-import { projectsModule } from './projects/index.js';
 import type { SonderI18nContribution } from '@sonder/core';
 import type { SonderPageModule, ResolvedSonderPageModule } from './types';
 
@@ -6,7 +5,7 @@ export interface SonderPageModuleConfig {
   modules?: SonderPageModule[];
 }
 
-export const defaultPageModules = [projectsModule()] satisfies SonderPageModule[];
+export const defaultPageModules: SonderPageModule[] = [];
 
 export function normalizeModuleRoute(route: string): string {
   const trimmed = route.trim();

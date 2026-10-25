@@ -1,8 +1,6 @@
 ---
 import { Search, X } from 'lucide-astro';
 import { getSiteConfig, type SiteSearch as SiteSearchConfig } from '../../data/site';
-import sonderConfig from '../../../sonder.config';
-import { getPageModuleRoute } from '../../plugins/config';
 import { getUiText } from '../../utils/ui-text';
 
 interface Props {
@@ -12,7 +10,6 @@ interface Props {
 const { search } = Astro.props;
 const ui = getUiText(await getSiteConfig());
 const shortcutLabel = search.shortcut === 'mod+k' ? 'Ctrl K / Cmd K' : search.shortcut;
-const projectsRoute = getPageModuleRoute(sonderConfig, 'projects');
 ---
 
 <div
@@ -25,9 +22,7 @@ const projectsRoute = getPageModuleRoute(sonderConfig, 'projects');
   data-search-unavailable-label={ui.search.unavailable}
   data-search-kind-blog-note={ui.search.resultKinds.blogNote}
   data-search-kind-blog-index={ui.search.resultKinds.blogIndex}
-  data-search-kind-project={ui.search.resultKinds.project}
   data-search-kind-page={ui.search.resultKinds.page}
-  data-search-route-projects={projectsRoute}
   data-search-match-label={ui.search.matchedPassage}
   data-pagefind-ignore
 >
@@ -311,6 +306,7 @@ const projectsRoute = getPageModuleRoute(sonderConfig, 'projects');
   .site-search-results :global(.site-search-result-excerpt) {
     min-width: 0;
     color: var(--paper-ink-soft);
+    font-family: var(--font-article);
     font-size: 0.86rem;
     line-height: 1.55;
   }

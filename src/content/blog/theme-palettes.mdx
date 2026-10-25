@@ -15,7 +15,6 @@ comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 ---
 
 Sonder 的颜色系统围绕纸面底色、墨色文字和低饱和强调色展开。整站只维护一套 CSS 变量，页面组件从变量取值，所以切换色盘或深浅色时不需要逐个页面调整。
@@ -29,20 +28,20 @@ Sonder 的颜色系统围绕纸面底色、墨色文字和低饱和强调色展�
 | `rose-soft` | 玫瑰 | 偏灰的暖红 |
 | `pink-soft` | 樱粉 | 柔和粉紫 |
 | `purple-soft` | 紫藤 | 低饱和紫 |
-| `blue-soft` | 墨蓝 | Sonder 默认色 |
-| `orange-soft` | 暖橙 | 纸面暖色 |
+| `blue-soft` | 墨蓝 | 冷静的蓝色 |
+| `orange-soft` | 暖橙 | Sonder 默认色 |
 | `brown-soft` | 棕褐 | 旧书与木头 |
 
 在 `src/config/site.toml` 中选默认色盘：
 
 ```toml
 [config.theme]
-palette = "blue-soft"
+palette = "orange-soft"
 lang = "zh-CN"
 navStyle = "pill"
 ```
 
-`navStyle` 可以在 `pill` 胶囊导航和 `bar` 通栏工具条之间切换。顶部导航的主题色按钮会列出全部内置色盘，选择结果写入浏览器本地存储，刷新后保留。
+`navStyle` 可以在 `pill` 胶囊导航、`bar` 通栏工具条和 `legacy` 旧版 Astro 通栏 Header 之间切换。`pill` 与 `bar` 模式顶部导航的主题色按钮会列出全部内置色盘；`legacy` 使用旧 Header，只保留站点导航和社交入口。色盘选择结果写入浏览器本地存储，刷新后保留。
 
 ## 深色模式
 

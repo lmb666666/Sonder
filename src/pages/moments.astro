@@ -2,7 +2,7 @@
 import { format } from 'date-fns';
 import {
   BaseHead,
-  BlogTopNav,
+  SiteHeader,
   Footer,
   getHtmlLang,
   getSiteConfig,
@@ -56,7 +56,7 @@ const extensionLabels: Record<string, string> = {
     <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
   </head>
   <body>
-    <BlogTopNav />
+    <SiteHeader />
     <main class="moments-page" data-pagefind-body>
       <PageHero kicker={pageMeta.kicker} title={pageMeta.title} subtitle={pageMeta.subtitle}>
         <p class="moments-stats" data-moments-stats>

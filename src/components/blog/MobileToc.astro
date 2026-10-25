@@ -1,0 +1,249 @@
+---
+import { ListTree, X } from 'lucide-astro';
+import TableOfContents from './TableOfContents.astro';
+import { getSiteConfig } from '../../data/site';
+import { getUiText } from '../../utils/ui-text';
+import type { TocItem } from '../../utils/toc-tree';
+
+interface Props {
+  items: TocItem[];
+  font?: 'ui' | 'article';
+}
+
+const { items, font = 'ui' } = Astro.props;
+const ui = getUiText(await getSiteConfig());
+---
+
+{
+  items.length > 0 && (
+    <div
+      class="mobile-toc-float"
+      data-mobile-toc-float
+      data-open="false"
+      data-pagefind-ignore
+      data-toc-open-label={ui.toc.open}
+      data-toc-close-label={ui.toc.close}
+    >
+      <div
+        class="mobile-toc-float-panel"
+        id="mobile-float-toc-panel"
+        role="dialog"
+        aria-label={ui.toc.title}
+        aria-hidden="true"
+        inert
+        data-mobile-toc-float-panel
+      >
+        <TableOfContents
+          items={items}
+          compact
+          hideHeading
+          font={font}
+          idPrefix="mobile-float-toc"
+        />
+      </div>
+      <button
+        class="mobile-toc-float-trigger"
+        type="button"
+        aria-label={ui.toc.open}
+        aria-expanded="false"
+        aria-controls="mobile-float-toc-panel"
+        title={ui.toc.title}
+        data-mobile-toc-float-trigger
+      >
+        <ListTree
+          class="mobile-toc-icon mobile-toc-icon-list"
+          size={19}
+          stroke-width={2}
+          aria-hidden="true"
+        />
+        <X
+          class="mobile-toc-icon mobile-toc-icon-close"
+          size={19}
+          stroke-width={2}
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+  )
+}
+
+<script>
+  const tocWindow = window as Window & {
+    __sonderMobileTocCleanup?: () => void;
+  };
+
+  const init = () => {
+    document.querySelectorAll<HTMLElement>('[data-mobile-toc-float]').forEach((root) => {
+      if (root.dataset.tocFloatReady === 'true') return;
+      root.dataset.tocFloatReady = 'true';
+
+      const trigger = root.querySelector<HTMLButtonElement>('[data-mobile-toc-float-trigger]');
+      const panel = root.querySelector<HTMLElement>('[data-mobile-toc-float-panel]');
+      if (!trigger || !panel) return;
+      const openLabel = root.dataset.tocOpenLabel || 'Open table of contents';
+      const closeLabel = root.dataset.tocCloseLabel || 'Close table of contents';
+
+      const setOpen = (open: boolean) => {
+        root.dataset.open = String(open);
+        trigger.setAttribute('aria-expanded', String(open));
+        trigger.setAttribute('aria-label', open ? closeLabel : openLabel);
+        panel.setAttribute('aria-hidden', String(!open));
+        panel.toggleAttribute('inert', !open);
+        if (open) panel.scrollTop = 0;
+      };
+
+      const close = () => setOpen(false);
+      const onPointerDown = (event: PointerEvent) => {
+        if (
+          root.dataset.open === 'true' &&
+          event.target instanceof Node &&
+          !root.contains(event.target)
+        ) {
+          close();
+        }
+      };
+      const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && root.dataset.open === 'true') {
+          close();
+          trigger.focus();
+        }
+      };
+      const onHashChange = () => close();
+
+      trigger.addEventListener('click', () => setOpen(root.dataset.open !== 'true'));
+      panel.querySelectorAll<HTMLAnchorElement>('[data-toc-link]').forEach((link) => {
+        link.addEventListener('click', close);
+      });
+      document.addEventListener('pointerdown', onPointerDown);
+      document.addEventListener('keydown', onKeyDown);
+      window.addEventListener('hashchange', onHashChange);
+
+      tocWindow.__sonderMobileTocCleanup?.();
+      tocWindow.__sonderMobileTocCleanup = () => {
+        document.removeEventListener('pointerdown', onPointerDown);
+        document.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener('hashchange', onHashChange);
+      };
+    });
+  };
+
+  const closeAll = () => tocWindow.__sonderMobileTocCleanup?.();
+  document.addEventListener('astro:page-load', init);
+  document.addEventListener('astro:before-swap', closeAll);
+  window.addEventListener('pagehide', closeAll);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  .mobile-toc-float {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .mobile-toc-float {
+      position: fixed;
+      right: max(18px, env(safe-area-inset-right));
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      z-index: 48;
+      display: block;
+    }
+
+    .mobile-toc-float-panel {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 12px);
+      width: min(20rem, calc(100vw - 2rem));
+      max-height: min(24rem, calc(100dvh - 8rem));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      padding: 8px;
+      border: 1px solid var(--paper-line-strong);
+      border-radius: 16px;
+      background: var(--paper-surface);
+      color: var(--paper-ink);
+      box-shadow: var(--paper-shadow-lift);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transform: translateY(8px) scale(0.98);
+      transform-origin: bottom right;
+      transition:
+        opacity 160ms ease,
+        transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        visibility 0s linear 200ms;
+    }
+
+    .mobile-toc-float[data-open='true'] .mobile-toc-float-panel {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      transition-delay: 0s;
+    }
+
+    .mobile-toc-float-panel :global(.toc-card) {
+      padding: 8px;
+    }
+
+    .mobile-toc-float-trigger {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      place-items: center;
+      border: 1px solid var(--paper-line);
+      border-radius: 9px;
+      background: var(--paper-surface);
+      color: var(--paper-ink-soft);
+      box-shadow: var(--paper-shadow);
+      cursor: pointer;
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        border-color 180ms ease,
+        background 180ms ease,
+        color 180ms ease;
+    }
+
+    .mobile-toc-float-trigger:hover,
+    .mobile-toc-float-trigger:focus-visible {
+      border-color: var(--paper-line-strong);
+      background: var(--paper-control-hover);
+      color: var(--paper-accent);
+    }
+
+    .mobile-toc-float[data-open='true'] .mobile-toc-float-trigger {
+      border-color: var(--paper-line-strong);
+      background: var(--paper-control-hover);
+      color: var(--paper-accent);
+    }
+
+    .mobile-toc-float-trigger:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--paper-accent), transparent 58%);
+      outline-offset: 3px;
+    }
+
+    .mobile-toc-icon {
+      grid-area: 1 / 1;
+    }
+
+    .mobile-toc-icon-close {
+      display: none;
+    }
+
+    .mobile-toc-float[data-open='true'] .mobile-toc-icon-list {
+      display: none;
+    }
+
+    .mobile-toc-float[data-open='true'] .mobile-toc-icon-close {
+      display: block;
+    }
+  }
+</style>

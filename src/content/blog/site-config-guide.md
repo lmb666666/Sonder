@@ -15,7 +15,6 @@ comments: true
 sidebar:
   enable: true
   toc: true
-  relatedPosts: true
 ---
 
 Sonder 把站点级信息集中在 `src/config/site.toml`，而不是散落在组件里。配置结构由 `src/content.config.ts` 中的 Zod schema 校验；字段缺失或类型不对时，`bun run build` 会直接报错。
@@ -60,14 +59,14 @@ buildPlatform = true
 
 ```toml
 [config.theme]
-palette = "blue-soft"
+palette = "orange-soft"
 lang = "zh-CN"
 navStyle = "pill"
 ```
 
 - `palette`：默认色盘，可选 `green-soft`、`green-vivid`、`rose-soft`、`pink-soft`、`purple-soft`、`blue-soft`、`orange-soft`、`brown-soft`
 - `lang`：`zh-CN`、`zh-TW` 或 `en`
-- `navStyle`：`pill` 胶囊导航或 `bar` 通栏工具条
+- `navStyle`：`pill` 胶囊导航、`bar` 通栏工具条或 `legacy` 旧版 Astro 通栏 Header
 
 顶部导航由 `[[config.topNav.links]]` 控制，可以写普通 `href`，也可以引用已启用的页面模块。
 
@@ -90,6 +89,19 @@ subtitle = "那些人，那些事。"
 
 文章页的 `listLayout = "media"` 会使用带封面的磨砂卡片；改成 `rows` 则回到行式列表。`postsPerPage` 控制每页文章数。
 
+## 文章页组件
+
+```toml
+[config.article]
+share = true
+navigation = true
+morePosts = true
+```
+
+- `share`：文章底部分享卡片
+- `navigation`：上一篇 / 下一篇
+- `morePosts`：更多文章列表
+
 ## 首页
 
 ```toml
@@ -99,7 +111,7 @@ heatmapWeeks = 20
 showHeatmapLatest = true
 ```
 
-`count` 控制首页「最新」展示的文章数量。首页引语、介绍、导航卡片和联系方式分别在 `[config.home.quote]`、`[config.home.intro]`、`[[config.home.navigation]]` 与 `[[config.home.links]]` 中维护。
+`count` 控制首页「最新」展示的文章数量。首页引语、介绍和联系方式分别在 `[config.home.quote]`、`[config.home.intro]` 与 `[[config.home.links]]` 中维护。
 
 ## 搜索、评论与朋友圈
 
@@ -133,4 +145,4 @@ export default defineSonderConfig({
 });
 ```
 
-项目卡片直接读取 `src/content/projects/`，由关于页展示，不依赖单独的项目路由；短记录统一使用 `/moments`。
+项目卡片直接读取 `src/content/projects/`，由关于页展示；没有独立项目页。短记录统一使用 `/moments`。

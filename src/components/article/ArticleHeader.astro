@@ -1,8 +1,6 @@
 ---
 import SmartImage from '../SmartImage.astro';
-import PageView from '../comments/PageView.astro';
 import FormattedDate from '../FormattedDate.astro';
-import Icon from '../Icon.astro';
 import MetadataItem from '../MetadataItem.astro';
 import { getSiteConfig } from '../../data/site';
 import { slugifyGroupName } from '../../utils/content-groups';
@@ -18,14 +16,11 @@ interface Props {
   readingTime: string;
   tags?: TagLink[];
   categories?: { name: string; slug: string }[];
-  series?: { name: string; slug: string; current?: number; total?: number }[];
   heroImage?: ImageMetadata | string;
   showHeroImage?: boolean;
   variant?: 'default' | 'archive';
   kicker?: string;
   note?: string;
-  pathname?: string;
-  showPageView?: boolean;
 }
 
 const {
@@ -36,14 +31,11 @@ const {
   readingTime,
   tags = [],
   categories = [],
-  series = [],
   heroImage,
   showHeroImage = true,
   variant = 'default',
   kicker = 'Notebook entry',
   note,
-  pathname = Astro.url.pathname,
-  showPageView = false,
 } = Astro.props;
 const tagLinks = tags.map((tag) =>
   typeof tag === 'string' ? { name: tag, slug: slugifyGroupName(tag) } : tag,
@@ -54,20 +46,11 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const ui = getUiText(await getSiteConfig());
 const wordCountLabel = ui.article.wordCount(wordCount);
 
-// 分类与系列在界面上统一为「分类」：同名去重，系列独有的条目仍指向系列详情。
-const mergedGroups = [
-  ...categories.map((category) => ({
-    name: category.name,
-    href: `${basePath}/blog/categories/${category.slug}/`,
-  })),
-  ...series
-    .filter((item) => !categories.some((category) => category.name === item.name))
-    .map((item) => ({
-      name: item.name,
-      href: `${basePath}/blog/series/${item.slug}/`,
-    })),
-];
-const hasGroups = mergedGroups.length > 0;
+const categoryGroups = categories.map((category) => ({
+  name: category.name,
+  href: `${basePath}/blog/categories/${category.slug}/`,
+}));
+const hasGroups = categoryGroups.length > 0;
 ---
 
 <header
@@ -94,32 +77,25 @@ const hasGroups = mergedGroups.length > 0;
               {wordCountLabel}
             </MetadataItem>
             <MetadataItem kind="reading">{readingTime}</MetadataItem>
-            {showPageView && <PageView pathname={pathname} />}
+            {hasGroups && (
+              <MetadataItem kind="categories" class="category-list" aria-label={ui.article.groups}>
+                {categoryGroups.map((item) => (
+                  <a class="category-link" href={item.href}>
+                    {item.name}
+                  </a>
+                ))}
+              </MetadataItem>
+            )}
             {hasTags && (
               <MetadataItem kind="tags" class="tag-list">
                 {tagLinks.map((tag) => (
-                  <a class="tag" href={`${basePath}/tags/${tag.slug}/`}>
+                  <a class="tag" href={`${basePath}/blog/tags/${tag.slug}/`}>
                     #{tag.name}
                   </a>
                 ))}
               </MetadataItem>
             )}
           </div>
-          {hasGroups && (
-            <div class="group-meta-line" aria-label={ui.article.groups}>
-              <span class="group-meta-item">
-                <Icon name="folder" size={15} />
-                <span class="group-label">{ui.groups.categories}</span>
-                <span class="group-list">
-                  {mergedGroups.map((item) => (
-                    <a class="group-link" href={item.href}>
-                      {item.name}
-                    </a>
-                  ))}
-                </span>
-              </span>
-            </div>
-          )}
         </div>
         {(description || note) && (
           <div class="archive-copy">
@@ -142,32 +118,25 @@ const hasGroups = mergedGroups.length > 0;
             {wordCountLabel}
           </MetadataItem>
           <MetadataItem kind="reading">{readingTime}</MetadataItem>
-          {showPageView && <PageView pathname={pathname} />}
+          {hasGroups && (
+            <MetadataItem kind="categories" class="category-list" aria-label={ui.article.groups}>
+              {categoryGroups.map((item) => (
+                <a class="category-link" href={item.href}>
+                  {item.name}
+                </a>
+              ))}
+            </MetadataItem>
+          )}
           {hasTags && (
             <MetadataItem kind="tags" class="tag-list">
               {tagLinks.map((tag) => (
-                <a class="tag" href={`${basePath}/tags/${tag.slug}/`}>
+                <a class="tag" href={`${basePath}/blog/tags/${tag.slug}/`}>
                   #{tag.name}
                 </a>
               ))}
             </MetadataItem>
           )}
         </div>
-        {hasGroups && (
-          <div class="group-meta-line" aria-label={ui.article.groups}>
-            <span class="group-meta-item">
-              <Icon name="folder" size={15} />
-              <span class="group-label">{ui.groups.categories}</span>
-              <span class="group-list">
-                {mergedGroups.map((item) => (
-                  <a class="group-link" href={item.href}>
-                    {item.name}
-                  </a>
-                ))}
-              </span>
-            </span>
-          </div>
-        )}
       </>
     )
   }
@@ -230,7 +199,8 @@ const hasGroups = mergedGroups.length > 0;
 
   /* 移动端 MetadataItem 会把 content 改成 inline（同权重的 data-astro-cid 规则），
      这里用更高优先级保持弹性布局，否则标签之间会粘在一起 */
-  :global(.metadata-item.tag-list .metadata-content) {
+  :global(.metadata-item.tag-list .metadata-content),
+  :global(.metadata-item.category-list .metadata-content) {
     display: inline-flex;
     flex-wrap: wrap;
     column-gap: 8px;
@@ -250,61 +220,26 @@ const hasGroups = mergedGroups.length > 0;
   }
 
   .tag:focus-visible,
-  .group-link:focus-visible {
+  .category-link:focus-visible {
     border-radius: 4px;
     outline: 2px solid var(--paper-line-strong);
     outline-offset: 3px;
   }
 
-  .group-meta-line {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-    margin-top: 8px;
-    color: var(--paper-ink-faint);
+  .category-link {
+    color: var(--paper-accent);
     font-family: var(--font-meta);
-    font-size: 0.82rem;
-    font-weight: 600;
-  }
-
-  .group-meta-item {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-    min-height: 30px;
-    padding: 4px 8px;
-    border: 1px solid var(--paper-line);
-    border-radius: 999px;
-    background: var(--paper-control);
-  }
-
-  .group-meta-item :global(.site-icon) {
-    color: var(--paper-accent);
-    opacity: 0.82;
-  }
-
-  .group-label {
-    color: var(--paper-ink-faint);
-  }
-
-  .group-list {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .group-link {
-    color: var(--paper-accent);
-    font-family: var(--font-serif-cn);
     font-weight: 700;
-    text-decoration-color: rgba(102, 125, 109, 0.25);
-    text-underline-offset: 3px;
+    text-decoration: none;
+    transition: color 180ms ease;
   }
 
-  .group-link + .group-link::before {
-    margin: 0 6px 0 0;
+  .category-link:hover {
+    color: var(--paper-ink);
+  }
+
+  .category-link + .category-link::before {
+    margin: 0 8px 0 0;
     color: var(--paper-ink-faint);
     content: '\00b7';
   }

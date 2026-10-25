@@ -57,11 +57,8 @@ const cards = await Promise.all(
       index,
       postHref: withBase(`/blog/${post.id}/`),
       sticky: isStickyEntry(post),
-      // 分类与系列在界面上统一为「分类」，同名去重
-      groups: [
-        ...post.data.categories,
-        ...post.data.series.filter((name) => !post.data.categories.includes(name)),
-      ],
+      // 分类直接取文章 frontmatter
+      groups: [...post.data.categories],
       cover,
       bandImage,
       shortDate: format(post.data.date, 'MM-dd'),
@@ -101,7 +98,15 @@ const cards = await Promise.all(
             >
               {cover ? (
                 <span class="media-cover-frame">
-                  <SmartImage class="media-cover" width={960} height={540} src={cover} alt="" />
+                  <SmartImage
+                    class="media-cover"
+                    width={960}
+                    height={540}
+                    src={cover}
+                    alt=""
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={index === 0 ? 'high' : 'auto'}
+                  />
                 </span>
               ) : (
                 <span class="media-cover-frame media-cover-fallback" aria-hidden="true">

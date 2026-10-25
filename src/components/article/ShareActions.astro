@@ -1,0 +1,899 @@
+---
+import { Copy, Download, Share2, X } from 'lucide-astro';
+import { getSiteConfig } from '../../data/site';
+import { getUiText } from '../../utils/ui-text';
+
+interface Props {
+  title: string;
+  description?: string;
+  url: string;
+  siteTitle: string;
+  author: string;
+  date?: string;
+  avatar?: string;
+  logo?: string;
+  coverImage?: string;
+  coverSelector?: string;
+}
+
+const {
+  title,
+  description = '',
+  url,
+  siteTitle,
+  author,
+  date = '',
+  avatar = '',
+  logo = '',
+  coverImage = '',
+  coverSelector = '',
+} = Astro.props;
+const ui = getUiText(await getSiteConfig());
+const plainDescription = description.replace(/\s+/g, ' ').trim();
+const dateValue = date ? new Date(date) : null;
+const dateLabel =
+  dateValue && !Number.isNaN(dateValue.valueOf())
+    ? [
+        dateValue.getFullYear(),
+        String(dateValue.getMonth() + 1).padStart(2, '0'),
+        String(dateValue.getDate()).padStart(2, '0'),
+      ].join('-')
+    : '';
+---
+
+<section
+  class="article-share"
+  data-share-root
+  data-share-title={title}
+  data-share-description={plainDescription}
+  data-share-url={url}
+  data-share-site={siteTitle}
+  data-share-author={author}
+  data-share-date={dateLabel}
+  data-share-avatar={avatar}
+  data-share-logo={logo}
+  data-share-cover-image={coverImage}
+  data-share-cover-selector={coverSelector}
+  data-share-copy-title={ui.share.copyTitle(title)}
+  data-share-label-copied={ui.share.copied}
+  data-share-label-copy={ui.share.copy}
+  data-share-label-copy-failed={ui.share.copyFailed}
+  data-share-label-error={ui.share.error}
+  data-share-label-author={ui.share.author}
+  data-share-label-scan={ui.share.scan}
+  data-pagefind-ignore
+>
+  <div class="share-intro">
+    <span class="share-icon" aria-hidden="true">
+      <Share2 size={19} stroke-width={2} />
+    </span>
+    <div>
+      <h2>{ui.share.title}</h2>
+      <p>{ui.share.description}</p>
+    </div>
+  </div>
+  <button class="share-trigger" type="button" data-share-trigger aria-haspopup="dialog">
+    <Share2 size={16} stroke-width={2} aria-hidden="true" />
+    {ui.share.trigger}
+  </button>
+
+  <dialog class="share-modal" data-share-modal aria-labelledby="share-modal-title">
+    <div class="share-modal-card">
+      <div class="share-modal-heading">
+        <div>
+          <p class="share-modal-kicker">{ui.share.posterKicker}</p>
+          <h2 id="share-modal-title">{title}</h2>
+        </div>
+        <button class="share-close" type="button" aria-label={ui.share.close} data-share-close>
+          <X size={18} stroke-width={2} aria-hidden="true" />
+        </button>
+      </div>
+
+      <div class="share-preview" data-share-preview>
+        <div class="share-loading" data-share-loading role="status" aria-live="polite">
+          <span class="share-spinner" aria-hidden="true"></span>
+          <span>{ui.share.loading}</span>
+        </div>
+        <img data-share-poster alt={ui.share.posterAlt} hidden />
+        <p class="share-error" data-share-error role="alert" hidden></p>
+      </div>
+
+      <div class="share-modal-actions">
+        <button class="share-action" type="button" data-share-copy>
+          <Copy size={16} stroke-width={2} aria-hidden="true" />
+          <span data-share-copy-label>{ui.share.copy}</span>
+        </button>
+        <button
+          class="share-action share-action-primary"
+          type="button"
+          data-share-download
+          disabled
+        >
+          <Download size={16} stroke-width={2} aria-hidden="true" />
+          {ui.share.save}
+        </button>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  const init = () => {
+    document.querySelectorAll('[data-share-root]').forEach((root) => {
+      if (root.dataset.shareReady === 'true') return;
+      root.dataset.shareReady = 'true';
+
+      const shareTitle = root.dataset.shareTitle || 'Sonder';
+      const shareDescription = root.dataset.shareDescription || '';
+      const shareUrl = root.dataset.shareUrl || window.location.href;
+      const shareSite = root.dataset.shareSite || 'Sonder';
+      const shareAuthor = root.dataset.shareAuthor || shareSite;
+      const shareDate = root.dataset.shareDate || '';
+      const shareAvatar = root.dataset.shareAvatar || '';
+      const shareLogo = root.dataset.shareLogo || '';
+      const shareCoverImage = root.dataset.shareCoverImage || '';
+      const shareCoverSelector = root.dataset.shareCoverSelector || '';
+      const trigger = root.querySelector('[data-share-trigger]');
+      const modal = root.querySelector('[data-share-modal]');
+      const loading = root.querySelector('[data-share-loading]');
+      const poster = root.querySelector('[data-share-poster]');
+      const error = root.querySelector('[data-share-error]');
+      const copyButton = root.querySelector('[data-share-copy]');
+      const copyLabel = root.querySelector('[data-share-copy-label]');
+      const download = root.querySelector('[data-share-download]');
+      const labels = {
+        copied: root.dataset.shareLabelCopied || 'Copied',
+        copy: root.dataset.shareLabelCopy || 'Copy share message',
+        copyFailed: root.dataset.shareLabelCopyFailed || 'Copy failed',
+        error:
+          root.dataset.shareLabelError || 'Could not generate the poster. Please try again later.',
+        author: root.dataset.shareLabelAuthor || 'Author',
+        scan: root.dataset.shareLabelScan || 'Scan to read',
+      };
+      const copyTitle = root.dataset.shareCopyTitle || `"${shareTitle}"`;
+      let posterData = '';
+      let generating = false;
+      let copiedTimer;
+
+      const copyText = async (text) => {
+        if (navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(text);
+            return;
+          } catch {
+            // Fall through to the selection-based fallback.
+          }
+        }
+
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand('copy');
+        textarea.remove();
+        if (!copied) throw new Error('Copy command failed');
+      };
+
+      const copyShareText = async () => {
+        const attribution =
+          shareAuthor === shareSite ? shareAuthor : `${shareAuthor} · ${shareSite}`;
+        try {
+          await copyText(`${copyTitle}\n${shareUrl}\n\n${attribution}`);
+          if (copyLabel) copyLabel.textContent = labels.copied;
+          window.clearTimeout(copiedTimer);
+          copiedTimer = window.setTimeout(() => {
+            if (copyLabel) copyLabel.textContent = labels.copy;
+          }, 2000);
+        } catch {
+          if (copyLabel) copyLabel.textContent = labels.copyFailed;
+          window.clearTimeout(copiedTimer);
+          copiedTimer = window.setTimeout(() => {
+            if (copyLabel) copyLabel.textContent = labels.copy;
+          }, 2000);
+        }
+      };
+
+      const loadImage = (src) =>
+        new Promise((resolve) => {
+          if (!src) {
+            resolve(null);
+            return;
+          }
+
+          const image = new Image();
+          if (!src.startsWith('data:')) image.crossOrigin = 'anonymous';
+          image.onload = () => resolve(image);
+          image.onerror = () => resolve(null);
+          image.src = src;
+        });
+
+      const resolveImageSource = (source, selector) => {
+        if (!selector) return source;
+        const image = document.querySelector(selector);
+        return image?.currentSrc || image?.src || source || null;
+      };
+
+      const getLines = (context, text, maxWidth) => {
+        const chars = text.split('');
+        const lines = [];
+        let line = '';
+
+        for (const char of chars) {
+          const candidate = line + char;
+          if (line && context.measureText(candidate).width >= maxWidth) {
+            lines.push(line);
+            line = char;
+          } else {
+            line = candidate;
+          }
+        }
+
+        if (line) lines.push(line);
+        return lines;
+      };
+
+      const fitText = (context, text, maxWidth) => {
+        if (context.measureText(text).width <= maxWidth) return text;
+        const chars = Array.from(text);
+        while (chars.length > 0 && context.measureText(`${chars.join('')}…`).width > maxWidth) {
+          chars.pop();
+        }
+        return chars.length > 0 ? `${chars.join('')}…` : '…';
+      };
+
+      const roundedRect = (context, x, y, width, height, radius) => {
+        const r = Math.min(radius, width / 2, height / 2);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.lineTo(x + width - r, y);
+        context.quadraticCurveTo(x + width, y, x + width, y + r);
+        context.lineTo(x + width, y + height - r);
+        context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+        context.lineTo(x + r, y + height);
+        context.quadraticCurveTo(x, y + height, x, y + height - r);
+        context.lineTo(x, y + r);
+        context.quadraticCurveTo(x, y, x + r, y);
+        context.closePath();
+      };
+
+      const getFont = (name, fallback) =>
+        getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+
+      const buildPoster = async () => {
+        await document.fonts?.ready;
+        const { default: QRCode } = await import('qrcode');
+        const scale = 2;
+        const width = 425 * scale;
+        const padding = 24 * scale;
+        const logoBox = 22 * scale;
+        const themeColor =
+          getComputedStyle(document.documentElement).getPropertyValue('--paper-accent').trim() ||
+          '#5b7488';
+        const headingFont = getFont('--font-page-heading', '"ChillRoundM", sans-serif');
+        const metaFont = getFont('--font-meta', '"Maple Mono", monospace');
+
+        const qrCodeUrl = await QRCode.toDataURL(shareUrl, {
+          margin: 1,
+          width: 100 * scale,
+          color: { dark: '#111827', light: '#ffffff' },
+        }).catch(() => '');
+
+        const resolvedCover = resolveImageSource(shareCoverImage, shareCoverSelector);
+        const [qrImg, coverImg, avatarImg, logoImg] = await Promise.all([
+          qrCodeUrl ? loadImage(qrCodeUrl) : Promise.resolve(null),
+          resolvedCover ? loadImage(resolvedCover) : Promise.resolve(null),
+          loadImage(shareAvatar),
+          loadImage(shareLogo),
+        ]);
+
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Canvas context is unavailable');
+
+        canvas.width = width;
+        const contentWidth = width - padding * 2;
+        const coverHeight = (coverImg ? 200 : 64) * scale;
+        const titleLineHeight = 30 * scale;
+        const contentFont = `600 ${24 * scale}px ${headingFont}`;
+
+        context.font = contentFont;
+        const titleLines = getLines(context, shareTitle, contentWidth);
+        const titleHeight = titleLines.length * titleLineHeight;
+        let descLines = [];
+
+        if (shareDescription) {
+          context.font = `400 ${14 * scale}px ${headingFont}`;
+          descLines = getLines(context, shareDescription, contentWidth - 16 * scale).slice(0, 6);
+        }
+
+        const descHeight = descLines.length * 25 * scale;
+        const footerHeight = 80 * scale;
+        const contentHeight =
+          coverHeight +
+          padding +
+          titleHeight +
+          (shareDescription ? descHeight : 8 * scale) +
+          16 * scale +
+          footerHeight +
+          12 * scale;
+
+        canvas.height = contentHeight;
+
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.save();
+        context.globalAlpha = 0.1;
+        context.fillStyle = themeColor;
+        context.beginPath();
+        context.arc(width - 25 * scale, 25 * scale, 75 * scale, 0, Math.PI * 2);
+        context.fill();
+        context.beginPath();
+        context.arc(10 * scale, canvas.height - 10 * scale, 50 * scale, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+
+        let dateObj = null;
+        const dateParts = shareDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (dateParts) {
+          dateObj = { year: dateParts[1], month: dateParts[2], day: dateParts[3] };
+        } else {
+          try {
+            const dateValue = new Date(shareDate);
+            if (!Number.isNaN(dateValue.getTime())) {
+              dateObj = {
+                day: String(dateValue.getDate()).padStart(2, '0'),
+                month: String(dateValue.getMonth() + 1).padStart(2, '0'),
+                year: String(dateValue.getFullYear()),
+              };
+            }
+          } catch {
+            dateObj = null;
+          }
+        }
+
+        if (coverImg) {
+          const imgRatio = coverImg.width / coverImg.height;
+          const targetRatio = width / coverHeight;
+          let sx = 0;
+          let sy = 0;
+          let sWidth = coverImg.width;
+          let sHeight = coverImg.height;
+
+          if (imgRatio > targetRatio) {
+            sWidth = sHeight * targetRatio;
+            sx = (coverImg.width - sWidth) / 2;
+          } else {
+            sHeight = sWidth / targetRatio;
+            sy = (coverImg.height - sHeight) / 2;
+          }
+
+          context.drawImage(coverImg, sx, sy, sWidth, sHeight, 0, 0, width, coverHeight);
+        } else {
+          context.save();
+          context.globalAlpha = 0.2;
+          context.fillStyle = themeColor;
+          context.fillRect(0, 0, width, coverHeight);
+          context.restore();
+        }
+
+        const headerHeight = (coverImg ? 44 : 64) * scale;
+        const headerCenterY = headerHeight / 2;
+        const dateText = dateObj ? `${dateObj.year}.${dateObj.month}.${dateObj.day}` : '';
+
+        context.fillStyle = 'rgba(255, 255, 255, 0.76)';
+        context.fillRect(0, 0, width, headerHeight);
+
+        context.textAlign = 'right';
+        context.textBaseline = 'middle';
+        context.fillStyle = 'rgba(31, 41, 55, 0.68)';
+        context.font = `400 ${11 * scale}px ${metaFont}`;
+        const dateWidth = dateText ? context.measureText(dateText).width : 0;
+        if (dateText) context.fillText(dateText, width - padding, headerCenterY);
+
+        context.textAlign = 'left';
+        context.fillStyle = '#1f2937';
+        context.font = `700 ${16 * scale}px ${metaFont}`;
+
+        let logoWidth = 0;
+        let logoHeight = 0;
+        if (logoImg) {
+          const ratio = logoImg.width && logoImg.height ? logoImg.width / logoImg.height : 1;
+          logoWidth = ratio >= 1 ? logoBox : logoBox * ratio;
+          logoHeight = ratio >= 1 ? logoBox / ratio : logoBox;
+        }
+
+        const titleX = logoImg ? padding + logoWidth + 8 * scale : padding;
+        const siteTitleText = fitText(
+          context,
+          shareSite,
+          contentWidth - (titleX - padding) - (dateWidth > 0 ? dateWidth + 16 * scale : 0),
+        );
+
+        if (logoImg) {
+          const metrics = context.measureText(siteTitleText);
+          const ascent = metrics.actualBoundingBoxAscent;
+          const descent = metrics.actualBoundingBoxDescent;
+          const titleCenterY =
+            Number.isFinite(ascent) && Number.isFinite(descent)
+              ? headerCenterY + (descent - ascent) / 2
+              : headerCenterY;
+          context.drawImage(logoImg, padding, titleCenterY - logoHeight / 2, logoWidth, logoHeight);
+        }
+
+        context.fillText(siteTitleText, titleX, headerCenterY);
+
+        let drawY = coverHeight + padding;
+        context.textAlign = 'left';
+        context.textBaseline = 'top';
+        context.font = contentFont;
+        context.fillStyle = '#111827';
+        titleLines.forEach((line) => {
+          context.fillText(line, padding, drawY);
+          drawY += titleLineHeight;
+        });
+        drawY += 16 * scale - (titleLineHeight - 24 * scale);
+
+        if (shareDescription) {
+          context.fillStyle = '#e5e7eb';
+          roundedRect(
+            context,
+            padding,
+            drawY - 8 * scale,
+            4 * scale,
+            descHeight + 8 * scale,
+            2 * scale,
+          );
+          context.fill();
+          context.font = `400 ${14 * scale}px ${headingFont}`;
+          context.fillStyle = '#4b5563';
+          descLines.forEach((line) => {
+            context.fillText(line, padding + 16 * scale, drawY);
+            drawY += 25 * scale;
+          });
+        } else {
+          drawY += 8 * scale;
+        }
+
+        drawY += 8 * scale;
+        context.beginPath();
+        context.strokeStyle = '#f3f4f6';
+        context.lineWidth = 1 * scale;
+        context.moveTo(padding, drawY);
+        context.lineTo(width - padding, drawY);
+        context.stroke();
+        drawY += 8 * scale;
+
+        const footerY = drawY;
+        const qrSize = 64 * scale;
+        const qrX = width - padding - qrSize;
+        const authorY = footerY + 8 * scale;
+
+        if (avatarImg) {
+          const avatarSize = 64 * scale;
+          context.save();
+          context.beginPath();
+          context.arc(
+            padding + avatarSize / 2,
+            authorY + avatarSize / 2,
+            avatarSize / 2,
+            0,
+            Math.PI * 2,
+          );
+          context.closePath();
+          context.clip();
+          context.drawImage(avatarImg, padding, authorY, avatarSize, avatarSize);
+          context.restore();
+
+          context.beginPath();
+          context.arc(
+            padding + avatarSize / 2,
+            authorY + avatarSize / 2,
+            avatarSize / 2,
+            0,
+            Math.PI * 2,
+          );
+          context.strokeStyle = '#ffffff';
+          context.lineWidth = 2 * scale;
+          context.stroke();
+        }
+
+        const authorTextX = padding + (avatarImg ? 64 * scale + 16 * scale : 0);
+        const authorMaxWidth = qrX - 24 * scale - authorTextX;
+        const textCenterY = authorY + 32 * scale;
+
+        context.textAlign = 'left';
+        context.textBaseline = 'top';
+        context.fillStyle = '#9ca3af';
+        context.font = `400 ${12 * scale}px ${metaFont}`;
+        context.fillText(labels.author, authorTextX, textCenterY - 20 * scale);
+
+        context.fillStyle = '#1f2937';
+        context.font = `700 ${20 * scale}px ${metaFont}`;
+        context.fillText(
+          fitText(context, shareAuthor, authorMaxWidth),
+          authorTextX,
+          textCenterY + 4 * scale,
+        );
+
+        context.fillStyle = '#ffffff';
+        context.shadowColor = 'rgba(0, 0, 0, 0.05)';
+        context.shadowBlur = 4 * scale;
+        context.shadowOffsetY = 2 * scale;
+        roundedRect(context, qrX, footerY, qrSize, qrSize, 4 * scale);
+        context.fill();
+        context.shadowColor = 'transparent';
+        context.shadowBlur = 0;
+        context.shadowOffsetY = 0;
+
+        if (qrImg) {
+          const qrInnerSize = 56 * scale;
+          const qrPadding = (qrSize - qrInnerSize) / 2;
+          context.drawImage(qrImg, qrX + qrPadding, footerY + qrPadding, qrInnerSize, qrInnerSize);
+        }
+
+        context.textAlign = 'center';
+        context.textBaseline = 'top';
+        context.fillStyle = '#9ca3af';
+        context.font = `400 ${10 * scale}px ${metaFont}`;
+        context.fillText(labels.scan, qrX + qrSize / 2, footerY + qrSize + 6 * scale);
+
+        return canvas.toDataURL('image/png');
+      };
+
+      const showPoster = () => {
+        if (!poster || !loading || !error || !download) return;
+        if (posterData) {
+          poster.src = posterData;
+          poster.hidden = false;
+          loading.hidden = true;
+          error.hidden = true;
+          download.disabled = false;
+          return;
+        }
+
+        if (generating) return;
+        generating = true;
+        loading.hidden = false;
+        error.hidden = true;
+        poster.hidden = true;
+        download.disabled = true;
+
+        buildPoster()
+          .then((data) => {
+            posterData = data;
+            poster.src = data;
+            poster.hidden = false;
+            loading.hidden = true;
+            download.disabled = false;
+          })
+          .catch(() => {
+            loading.hidden = true;
+            error.hidden = false;
+            error.textContent = labels.error;
+          })
+          .finally(() => {
+            generating = false;
+          });
+      };
+
+      const openShare = () => {
+        if (!modal) return;
+        if (typeof modal.showModal === 'function') {
+          modal.showModal();
+        } else {
+          modal.setAttribute('open', '');
+        }
+        showPoster();
+      };
+
+      const closeShare = () => {
+        if (!modal) return;
+        if (typeof modal.close === 'function') {
+          modal.close();
+        } else {
+          modal.removeAttribute('open');
+        }
+      };
+
+      const downloadPoster = () => {
+        if (!posterData) return;
+        const anchor = document.createElement('a');
+        anchor.href = posterData;
+        anchor.download = `sonder-${
+          shareTitle.replace(/[\\/:*?"<>|\s]+/g, '-').slice(0, 48) || 'share'
+        }.png`;
+        anchor.click();
+      };
+
+      trigger?.addEventListener('click', openShare);
+      copyButton?.addEventListener('click', copyShareText);
+      download?.addEventListener('click', downloadPoster);
+      root.querySelectorAll('[data-share-close]').forEach((button) => {
+        button.addEventListener('click', closeShare);
+      });
+      modal?.addEventListener('click', (event) => {
+        if (event.target === modal) closeShare();
+      });
+    });
+  };
+
+  document.addEventListener('astro:page-load', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  .article-share {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 30px;
+    padding: 24px;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
+  }
+
+  .share-intro {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .share-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--paper-accent);
+    color: var(--paper-surface);
+  }
+
+  .share-intro h2 {
+    margin: 0 0 4px;
+    color: var(--paper-ink);
+    font-size: 1.06rem;
+    line-height: 1.35;
+  }
+
+  .share-intro p {
+    margin: 0;
+    color: var(--paper-ink-soft);
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+
+  .share-trigger,
+  .share-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid var(--paper-accent);
+    border-radius: 8px;
+    background: var(--paper-accent);
+    color: var(--paper-surface);
+    font-family: var(--font-meta);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      filter 160ms ease,
+      transform 160ms ease,
+      background 160ms ease;
+  }
+
+  .share-trigger {
+    flex: 0 0 auto;
+    min-height: 42px;
+  }
+
+  .share-trigger:hover,
+  .share-action-primary:hover {
+    filter: brightness(1.06);
+  }
+
+  .share-trigger:active,
+  .share-action:active {
+    transform: translateY(1px);
+  }
+
+  .share-modal {
+    width: min(92vw, 440px);
+    max-width: 440px;
+    max-height: 90vh;
+    padding: 0;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 14px;
+    background: var(--paper-surface);
+    color: var(--paper-ink);
+    box-shadow: var(--paper-shadow-lift);
+    overflow-y: auto;
+  }
+
+  :global(.share-modal::backdrop) {
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(3px);
+  }
+
+  .share-modal-card {
+    position: relative;
+    display: grid;
+  }
+
+  .share-modal-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 18px 12px;
+  }
+
+  .share-modal-heading > div {
+    min-width: 0;
+  }
+
+  .share-modal-kicker {
+    margin: 0 0 3px;
+    color: var(--paper-accent);
+    font-family: var(--font-meta);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .share-modal-heading h2 {
+    margin: 0;
+    overflow: hidden;
+    color: var(--paper-ink);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .share-close {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--paper-line);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--paper-ink-soft);
+    cursor: pointer;
+  }
+
+  .share-close:hover {
+    background: var(--paper-control-hover);
+    color: var(--paper-ink);
+  }
+
+  .share-preview {
+    display: grid;
+    min-height: 220px;
+    padding: 20px;
+    place-items: center;
+    background: var(--paper-surface-muted);
+  }
+
+  .share-preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: var(--paper-shadow-lift);
+  }
+
+  .share-loading[hidden],
+  .share-preview img[hidden],
+  .share-error[hidden] {
+    display: none !important;
+  }
+
+  .share-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.8rem;
+  }
+
+  .share-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--paper-line);
+    border-top-color: var(--paper-accent);
+    border-radius: 50%;
+    animation: share-spin 700ms linear infinite;
+  }
+
+  .share-error {
+    margin: 0;
+    color: var(--paper-ink-soft);
+    font-family: var(--font-meta);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .share-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 14px;
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .share-action {
+    min-height: 42px;
+    border-color: var(--paper-line-strong);
+    background: var(--paper-control);
+    color: var(--paper-ink);
+    font-weight: 650;
+  }
+
+  .share-action:hover {
+    border-color: var(--paper-accent);
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
+  }
+
+  .share-action-primary {
+    border-color: var(--paper-accent);
+    background: var(--paper-accent);
+    color: var(--paper-surface);
+  }
+
+  .share-action-primary:hover {
+    border-color: var(--paper-accent);
+    background: var(--paper-accent);
+    color: var(--paper-surface);
+  }
+
+  .share-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @keyframes share-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .article-share {
+      display: grid;
+      padding: 18px;
+    }
+
+    .share-trigger {
+      width: 100%;
+    }
+
+    .share-modal {
+      width: calc(100vw - 24px);
+    }
+
+    .share-modal-actions {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

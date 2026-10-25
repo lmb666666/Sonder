@@ -1,14 +1,13 @@
 import { defineTheme } from '@sonder/core';
 
 /**
- * The built-in Sonder visual system. Component entry points are added as
- * they are migrated out of the legacy Astro application.
+ * The built-in Sonder visual system. The shared application shell owns the
+ * footer; the theme only supplies the document head and base layout.
  */
 export const defaultTheme = defineTheme({
   name: '@sonder/theme-default',
   components: {
     baseHead: '@sonder/theme-default/components/BaseHead.astro',
-    footer: '@sonder/theme-default/components/Footer.astro',
     layout: '@sonder/theme-default/components/BaseLayout.astro',
   },
   styles: ['@sonder/theme-default/styles/global.css'],

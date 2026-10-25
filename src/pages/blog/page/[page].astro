@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../../components/BaseHead.astro';
 import Footer from '../../../components/Footer.astro';
 import BlogArchive from '../../../components/blog/BlogArchive.astro';
-import BlogTopNav from '../../../components/blog/BlogTopNav.astro';
+import SiteHeader from '../../../components/blog/SiteHeader.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { sortBlogPostsForArchive } from '../../../utils/content-dates';
@@ -71,7 +71,7 @@ const { page, postOffset } = Astro.props;
     </style>
   </head>
   <body>
-    <BlogTopNav />
+    <SiteHeader />
     <main data-pagefind-body>
       <BlogArchive
         page={page}

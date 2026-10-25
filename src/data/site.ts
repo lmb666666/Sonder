@@ -6,7 +6,6 @@ import {
   getResolvedPageModules,
   normalizeModuleRoute,
 } from '../plugins/config';
-import type { SonderPageModuleId } from '@sonder/pages';
 import type { SonderConfig } from '../plugins/types';
 
 export async function getSiteConfig() {
@@ -25,10 +24,6 @@ export async function getThemePalette() {
   return theme.palette;
 }
 
-const defaultModuleRoutes: Record<string, string> = {
-  projects: '/projects',
-};
-
 interface TopNavLinkConfig {
   label: string;
   href?: string;
@@ -41,14 +36,14 @@ export interface ResolvedTopNavLink {
   href: string;
 }
 
-function linkMatchesModule(href: string, moduleId: SonderPageModuleId, moduleRoute: string) {
+function linkMatchesModule(href: string, moduleRoute: string) {
   if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
     return false;
   }
 
   const normalizedHref = normalizeModuleRoute(href);
 
-  return normalizedHref === defaultModuleRoutes[moduleId] || normalizedHref === moduleRoute;
+  return normalizedHref === moduleRoute;
 }
 
 export async function getTopNavLinks() {
@@ -83,7 +78,7 @@ export function resolveTopNavLinks(
     if (!href) return [];
 
     const matchedModule = configuredModules.find((module) =>
-      linkMatchesModule(href, module.id, normalizeModuleRoute(module.route)),
+      linkMatchesModule(href, normalizeModuleRoute(module.route)),
     );
 
     if (!matchedModule) {
@@ -131,7 +126,6 @@ export type SiteSearch = SiteConfig['search'];
 export type SiteMath = SiteConfig['math'];
 export type SiteFonts = SiteConfig['fonts'];
 export type SitePages = SiteConfig['pages'];
-export type HomeNavigationItem = SiteConfig['home']['navigation'][number];
 export type HomeLinkItem = SiteConfig['home']['links'][number];
 export type HomeIntro = SiteConfig['home']['intro'];
 export type HomeQuote = SiteConfig['home']['quote'];
