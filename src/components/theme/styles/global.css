@@ -223,12 +223,17 @@ hr {
 }
 
 @media (max-width: 720px) {
+  :root {
+    /* 移动端统一页面留白，导航栏也按此对齐 */
+    --layout-page-gutter: 20px;
+  }
+
   body {
     font-size: 18px;
   }
 
   main {
-    padding: 92px 18px 42px;
+    padding: 92px var(--layout-page-gutter) 42px;
   }
 }
 

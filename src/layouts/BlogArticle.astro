@@ -177,14 +177,6 @@ const hasSidebar = shouldRenderSidebar && hasToc;
             showPageView={isBlogPost}
           />
 
-          {
-            hasToc && (
-              <section class="mobile-article-toc" aria-label={ui.toc.title}>
-                <TableOfContents items={tocItems} compact collapsible font={contentFont} />
-              </section>
-            )
-          }
-
           <section
             id="article-start"
             class:list={['article-content', { 'article-content-ui': contentFont === 'ui' }]}

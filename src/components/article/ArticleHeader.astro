@@ -228,7 +228,10 @@ const hasGroups = mergedGroups.length > 0;
     line-height: 1.5;
   }
 
-  :global(.tag-list .metadata-content) {
+  /* 移动端 MetadataItem 会把 content 改成 inline（同权重的 data-astro-cid 规则），
+     这里用更高优先级保持弹性布局，否则标签之间会粘在一起 */
+  :global(.metadata-item.tag-list .metadata-content) {
+    display: inline-flex;
     flex-wrap: wrap;
     column-gap: 8px;
     row-gap: 6px;

@@ -1004,7 +1004,7 @@ const paletteOptions = [
       padding: 8px;
       border: 1px solid var(--paper-line);
       border-radius: 8px;
-      background: var(--paper-nav);
+      background: var(--paper-surface);
       box-shadow: var(--paper-shadow);
       opacity: 0;
       pointer-events: none;
@@ -1026,7 +1026,7 @@ const paletteOptions = [
       padding: 10px;
       border: 1px solid var(--paper-line);
       border-radius: 8px;
-      background: var(--paper-nav);
+      background: var(--paper-surface);
       box-shadow: var(--paper-shadow);
       opacity: 0;
       pointer-events: none;
@@ -1263,8 +1263,8 @@ const paletteOptions = [
     /* 头部占满内容列宽度：头像贴左缘，控制组靠右，与首页浮动头像同一落点 */
     .blog-top-nav.nav-pill {
       top: 10px;
-      right: 10px;
-      left: 10px;
+      right: var(--layout-page-gutter, 20px);
+      left: var(--layout-page-gutter, 20px);
       width: auto;
       min-height: 0;
       margin: 0;
