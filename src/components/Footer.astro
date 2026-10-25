@@ -45,6 +45,18 @@ const year = new Date().getFullYear();
     padding: 2.2em 1em 0;
   }
 
+  /* 桌面把 Powered by 留在站点信息卡里，页脚只保留版权行；
+     移动端站点信息隐藏，页脚继续展示完整来源。 */
+  .footer-sidebar .powered {
+    display: none;
+  }
+
+  @media (max-width: 820px) {
+    .footer-sidebar .powered {
+      display: inline-flex;
+    }
+  }
+
   /* 桌面：页脚成为侧栏最后一格，与站点信息用发丝线分隔 */
   @media (min-width: 921px) {
     .footer-sidebar {
@@ -52,11 +64,6 @@ const year = new Date().getFullYear();
       border-top: 1px solid var(--paper-line);
       font-size: 0.76rem;
       text-align: left;
-    }
-
-    .footer-sidebar .powered {
-      margin-top: 4px;
-      font-size: 0.7rem;
     }
   }
 
