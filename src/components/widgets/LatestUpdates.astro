@@ -34,6 +34,7 @@ const ui = getUiText(await getSiteConfig());
   .latest-block {
     display: grid;
     gap: 14px;
+    container-type: inline-size;
   }
 
   .latest-heading {
@@ -50,5 +51,51 @@ const ui = getUiText(await getSiteConfig());
 
   .latest-heading :global(svg) {
     color: var(--paper-accent);
+  }
+
+  /* 首页桌面变体：更扁宽的封面 + 固定两行信息（标题一行、元信息一行） */
+  @container (min-width: 720px) {
+    .latest-block :global(.media-cover-frame) {
+      aspect-ratio: 2 / 1;
+    }
+
+    .latest-block :global(.media-body) {
+      gap: 5px;
+      padding: 14px 18px 16px;
+    }
+
+    .latest-block :global(.media-title) {
+      font-size: 1.1rem;
+      -webkit-line-clamp: 1;
+    }
+
+    .latest-block :global(.media-meta) {
+      flex-wrap: nowrap;
+      gap: 4px 8px;
+      font-size: 0.75rem;
+    }
+
+    .latest-block :global(.media-meta-side) {
+      flex-wrap: nowrap;
+      min-width: 0;
+      gap: 4px 8px;
+    }
+
+    .latest-block :global(.media-meta-chip) {
+      flex: 0 0 auto;
+      gap: 3px;
+    }
+
+    .latest-block :global(.media-meta-chip > svg) {
+      width: 12px;
+      height: 12px;
+    }
+
+    .latest-block :global(.media-meta-groups) {
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 </style>

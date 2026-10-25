@@ -10,6 +10,9 @@
       <slot name="connect" />
       <slot name="heatmap" />
       <slot name="siteInfo" />
+      <div class="side-footer">
+        <slot name="sideFooter" />
+      </div>
     </aside>
   </section>
 </main>
@@ -44,10 +47,9 @@
     margin-top: 28px;
   }
 
-  /* 侧栏为身份与寻路，跟随滚动（主栏承载长内容） */
+  /* 侧栏为身份与寻路；首页内容较短，不做吸顶，避免滚动到容器底部时的停顿感 */
   .side-column {
-    position: sticky;
-    top: 92px;
+    min-width: 0;
   }
 
   .flow-grid :global(.glass-card) {
@@ -97,19 +99,15 @@
     padding: 0 0 8px;
   }
 
-  /* 桌面双栏：最新卡收窄一档，侧栏整体下移并用更松的间距向下铺开 */
+  /* 桌面双栏：侧栏整体下移，首页页脚收在右栏底部 */
   @media (min-width: 921px) {
     .side-column {
-      gap: 38px;
+      gap: 25px;
       margin-top: 70px;
     }
 
     .flow-grid :global(.heatmap-card) {
       margin-top: 0;
-    }
-
-    .flow-grid .main-column :global(.latest-block) {
-      max-width: 680px;
     }
   }
 
@@ -174,6 +172,11 @@
     .flow-grid :global(.heatmap-card),
     .flow-grid :global(.site-info-card) {
       display: none;
+    }
+
+    /* 首页页脚随侧栏内容流到最末 */
+    .side-footer {
+      order: 5;
     }
   }
 </style>

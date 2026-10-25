@@ -1,11 +1,17 @@
 ---
 import { getSiteConfig } from '../data/site';
 
+interface Props {
+  /** 首页把页脚收进右侧边栏：桌面紧凑左对齐，移动端保持居中收尾。 */
+  sidebar?: boolean;
+}
+
+const { sidebar = false } = Astro.props;
 const { site } = await getSiteConfig();
 const year = new Date().getFullYear();
 ---
 
-<footer>
+<footer class:list={{ 'footer-sidebar': sidebar }}>
   <p class="copyright">&copy; {year} {site.title}.</p>
   <p class="powered">
     Powered by <a href="https://astro.build/" target="_blank" rel="noreferrer">Astro</a>
@@ -33,6 +39,25 @@ const year = new Date().getFullYear();
     gap: 0.45em;
     margin-top: 0.6em;
     font-size: 0.8rem;
+  }
+
+  .footer-sidebar {
+    padding: 2.2em 1em 0;
+  }
+
+  /* 桌面：页脚成为侧栏最后一格，与站点信息用发丝线分隔 */
+  @media (min-width: 921px) {
+    .footer-sidebar {
+      padding: 14px 0 0;
+      border-top: 1px solid var(--paper-line);
+      font-size: 0.76rem;
+      text-align: left;
+    }
+
+    .footer-sidebar .powered {
+      margin-top: 4px;
+      font-size: 0.7rem;
+    }
   }
 
   .sep {
