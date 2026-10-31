@@ -253,3 +253,70 @@ X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
 按下 <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd>。
 
 <mark>高亮文本</mark>
+
+
+## 外挂语法
+
+除标准 Markdown 外，模板提供一套**指令语法**：构建期渲染成 HTML，零 import，`.md` 与 `.mdx` 通用。三种形式：
+
+### 容器：`:::name[标题]{属性}` … `:::`
+
+| 名称 | 说明 |
+| --- | --- |
+| `note` / `tip` / `warning` / `danger` … | 提醒块，30+ 类型别名，`[标题]` 可选，`{foldable}` 折叠、`{open}` 默认展开 |
+| `details` | 折叠面板，需要 `[标题]`，`{open}` 默认展开 |
+| `grid` | 图片网格，内部放普通图片 |
+| `tabs` + `tab` | 标签页；外层围栏比内层多一道冒号 |
+| `columns` + `column` | 分栏；`{cols="2" ratio="1:2" mobile="media-first"}` |
+| `timeline` + `event` | 时间线；`{direction="horizontal"}`，`:::event[日期]` |
+
+```md
+:::tip[小技巧]
+内容。
+:::
+
+:::columns{cols="2"}
+:::column
+左栏。
+:::
+:::column
+右栏。
+:::
+:::
+```
+
+### 叶子：`::name{属性}`（自闭合块）
+
+| 名称 | 说明 |
+| --- | --- |
+| `github` | GitHub 仓库卡片，`{repo="owner/repo"}`，stars 与描述构建期预取 |
+| `bilibili` | B 站视频，`{bvid="BV…"}` |
+| `youtube` | YouTube 视频，`{id="…"}` |
+| `netease` | 网易云音乐，`{type="playlist" id="…"}`，type 可选 song / playlist / album / radio |
+| `link` | 链接卡片，`{href="…" title="…" description="…" icon="…"}` |
+
+```md
+::github{repo="lmb666666/Sonder"}
+```
+
+### 行内：`:name[文字]{属性}`
+
+| 名称 | 说明 |
+| --- | --- |
+| `badge` | 行内徽标；`{href="…"}` 可点击，`{img="…"}` 带图标 |
+| `key` | 键帽，如 `:key[Ctrl]` |
+| `blur` | 剧透模糊，悬停显形 |
+| `span` | 行内样式，`{color="#…" .class}` |
+| `btn` | 行内按钮，`{href="…"}` |
+
+```md
+按 :key[Ctrl] :key[K] 打开搜索，或 :btn[查看仓库]{href="https://github.com/lmb666666/Sonder"}。
+```
+
+### 规则
+
+- **嵌套**：外层围栏冒号数必须不少于内层（`::::tabs` 包 `:::tab`）
+- **属性**：`{a=b}`、`{a="b"}`、`{a='b'}` 等价；`#id`、`.class` 简写可用
+- **未知指令**：展开为普通内容并在构建时警告
+- **转义**：演示语法本身时放进代码围栏即可
+- 重交互组件（播放器、乐谱、表单等）仍使用上方组件写法

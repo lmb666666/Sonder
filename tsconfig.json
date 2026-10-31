@@ -13,8 +13,10 @@
       "@sonder/plugin-markdown/styles.css": ["./src/plugins/markdown/styles.css"],
       "@sonder/plugin-callout": ["./src/plugins/markdown/callout/index.ts"],
       "@sonder/plugin-callout/styles.css": ["./src/plugins/markdown/callout/styles.css"],
-      "@sonder/plugin-markdown-layouts": ["./src/plugins/markdown/layouts/index.ts"],
-      "@sonder/plugin-markdown-layouts/styles.css": ["./src/plugins/markdown/layouts/styles.css"],
+      "@sonder/plugin-markdown-directives": ["./src/plugins/markdown/directives/index.ts"],
+      "@sonder/plugin-markdown-directives/styles.css": [
+        "./src/plugins/markdown/directives/styles.css"
+      ],
       "@sonder/theme-default": ["./src/components/theme/index.ts"],
       "@sonder/theme-default/*": ["./src/components/theme/*"]
     }

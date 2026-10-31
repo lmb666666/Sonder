@@ -11,6 +11,7 @@ export interface MarkdownPluginOptions {
   expressiveCode?: boolean;
   math?: boolean | MarkdownPluginMathOptions;
   layouts?: boolean;
+  directives?: boolean;
   mermaid?: boolean;
   responsiveTables?: boolean;
 }
@@ -24,6 +25,7 @@ export interface ResolvedMarkdownPluginOptions {
     renderer: MathRenderer;
   };
   layouts: boolean;
+  directives: boolean;
   mermaid: boolean;
   responsiveTables: boolean;
 }
@@ -44,6 +46,7 @@ export function resolveMarkdownOptions(
       renderer: mathOptions.renderer ?? mathRenderer,
     },
     layouts: options.layouts ?? true,
+    directives: options.directives ?? true,
     mermaid: options.mermaid ?? true,
     responsiveTables: options.responsiveTables ?? true,
   };

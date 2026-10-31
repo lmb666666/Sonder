@@ -13,6 +13,7 @@ describe('resolveMarkdownOptions', () => {
         renderer: 'katex',
       },
       layouts: true,
+      directives: true,
       mermaid: true,
       responsiveTables: true,
     });
@@ -25,6 +26,7 @@ describe('resolveMarkdownOptions', () => {
         callouts: false,
         math: false,
         layouts: false,
+        directives: false,
         mermaid: false,
         responsiveTables: false,
       }),
@@ -37,6 +39,7 @@ describe('resolveMarkdownOptions', () => {
         renderer: 'katex',
       },
       layouts: false,
+      directives: false,
       mermaid: false,
       responsiveTables: false,
     });
@@ -58,6 +61,7 @@ describe('resolveMarkdownOptions', () => {
         renderer: 'mathjax',
       },
       layouts: true,
+      directives: true,
       mermaid: true,
       responsiveTables: true,
     });

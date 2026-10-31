@@ -117,15 +117,15 @@ export default defineConfig({
           ),
         },
         {
-          find: /^@sonder\/plugin-markdown-layouts\/styles\.css$/,
+          find: /^@sonder\/plugin-markdown-directives\/styles\.css$/,
           replacement: fileURLToPath(
-            new URL('./src/plugins/markdown/layouts/styles.css', import.meta.url),
+            new URL('./src/plugins/markdown/directives/styles.css', import.meta.url),
           ),
         },
         {
-          find: /^@sonder\/plugin-markdown-layouts$/,
+          find: /^@sonder\/plugin-markdown-directives$/,
           replacement: fileURLToPath(
-            new URL('./src/plugins/markdown/layouts/index.ts', import.meta.url),
+            new URL('./src/plugins/markdown/directives/index.ts', import.meta.url),
           ),
         },
         {

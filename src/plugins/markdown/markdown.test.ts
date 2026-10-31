@@ -15,7 +15,7 @@ describe('markdownPlugin', () => {
     ).toBe(true);
   });
 
-  test('inlines callout and layout styles in the document head', () => {
+  test('inlines callout and directive styles in the document head', () => {
     const plugin = markdownPlugin();
     const astroConfig =
       typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
@@ -30,16 +30,22 @@ describe('markdownPlugin', () => {
       },
     } as never);
 
-    expect(injectedScripts).toHaveLength(1);
-    expect(injectedScripts[0]?.stage).toBe('head-inline');
-    expect(injectedScripts[0]?.content).toContain('.callout');
-    expect(injectedScripts[0]?.content).toContain('.markdown-columns');
-    expect(injectedScripts[0]?.content).toContain('data-astro-transition-persist');
-    expect(injectedScripts[0]?.content).toContain('astro:after-swap');
-    expect(injectedScripts[0]?.content).not.toContain('?inline');
+    expect(injectedScripts).toHaveLength(2);
+    expect(injectedScripts.every((script) => script.stage === 'head-inline')).toBe(true);
+
+    const [styles, tabScript] = injectedScripts;
+    expect(styles?.content).toContain('.callout');
+    expect(styles?.content).toContain('.markdown-columns');
+    expect(styles?.content).toContain('.sd-badge');
+    expect(styles?.content).toContain('data-astro-transition-persist');
+    expect(styles?.content).toContain('astro:after-swap');
+    expect(styles?.content).not.toContain('?inline');
+
+    expect(tabScript?.content).toContain('data-sd-tab-btn');
+    expect(tabScript?.content).toContain('data-sd-tab-panel');
   });
 
-  test('keeps layout styles when callouts are disabled', () => {
+  test('keeps directive styles when callouts are disabled', () => {
     const plugin = markdownPlugin({ callouts: false });
     const astroConfig =
       typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
@@ -51,8 +57,8 @@ describe('markdownPlugin', () => {
     ).toBe(true);
   });
 
-  test('does not inject markdown styles when callouts and layouts are disabled', () => {
-    const plugin = markdownPlugin({ callouts: false, layouts: false });
+  test('does not inject markdown styles when callouts and directives are disabled', () => {
+    const plugin = markdownPlugin({ callouts: false, directives: false });
     const astroConfig =
       typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
 

@@ -1,0 +1,15 @@
+{
+  "cuteleaf/firefly": {
+    "name": "Firefly",
+    "description": "🍀Firefly, fresh and aesthetic Astro blog theme template",
+    "language": "TypeScript",
+    "url": "https://github.com/CuteLeaf/Firefly",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/43440669?v=4&s=64"
+  },
+  "lmb666666/sonder": {
+    "name": "Sonder",
+    "description": "以纸面阅读感为核心的个人发布模板",
+    "url": "https://github.com/lmb666666/Sonder",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/112293915?v=4&s=64"
+  }
+}

@@ -45,7 +45,7 @@ Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底�
 
 - **评论** —— giscus / utterances / Waline / Twikoo，可关闭
 - **数学公式与图表** —— KaTeX / MathJax、Mermaid、ABC 乐谱
-- **20 个 MDX 组件** —— 徽标、卡片、乐谱、看板等，见组件速览
+- **外挂语法与 MDX 组件** —— `:::note` / `:badge` / `::github` 等指令零 import 直写，另有 20 个 MDX 组件
 - **静态输出** —— RSS、Atom、sitemap、llms.txt；构建生成按需字体子集
 
 ## 🚀 快速开始

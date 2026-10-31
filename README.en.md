@@ -45,7 +45,7 @@ Sonder is a personal publishing template built around a paper-like reading exper
 
 - **Comments** — giscus / utterances / Waline / Twikoo, or none
 - **Math & diagrams** — KaTeX / MathJax, Mermaid, ABC music scores
-- **20 MDX components** — badges, cards, scores and more, see the showcase
+- **Directives & MDX components** — `:::note` / `:badge` / `::github` directives with zero imports, plus 20 MDX components
 - **Static output** — RSS, Atom, sitemap, llms.txt; on-demand font subsets at build
 
 ## 🚀 Quick start
