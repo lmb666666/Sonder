@@ -40,7 +40,7 @@ function isBlockContext(img: HTMLImageElement): boolean {
 }
 
 function shouldWrap(img: HTMLImageElement): boolean {
-  const src = img.currentSrc || img.src;
+  const src = img.getAttribute('src');
   if (!src) return false;
   if (img.closest('a')) return false;
   if (classNamesOf(img).some((name) => EXCLUDED_CLASSES.has(name))) return false;
@@ -52,11 +52,19 @@ function wrapImages(gallery: HTMLElement): HTMLAnchorElement[] {
   return images.map((img) => {
     const anchor = document.createElement('a');
     anchor.className = 'sd-lightbox-item';
-    anchor.href = img.currentSrc || img.src;
+    // 全尺寸 src（Astro 处理后的原图），而非 currentSrc——
+    // currentSrc 随版面宽度选中的是缩小变体，全屏看会糊
+    anchor.href = img.getAttribute('src') ?? '';
     anchor.dataset.sonderLightbox = '';
-    if (img.naturalWidth > 0) {
-      anchor.dataset.pswpWidth = String(img.naturalWidth);
-      anchor.dataset.pswpHeight = String(img.naturalHeight);
+    // 尺寸标注优先级：构建期写入的 width/height 属性（本地图必有）
+    // > 已加载的 naturalWidth；外链图两者皆无，点击时探测
+    const width =
+      img.getAttribute('width') ?? (img.naturalWidth > 0 ? String(img.naturalWidth) : null);
+    const height =
+      img.getAttribute('height') ?? (img.naturalHeight > 0 ? String(img.naturalHeight) : null);
+    if (width && height) {
+      anchor.dataset.pswpWidth = width;
+      anchor.dataset.pswpHeight = height;
     }
     img.replaceWith(anchor);
     anchor.append(img);
