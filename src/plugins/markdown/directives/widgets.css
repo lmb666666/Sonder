@@ -1854,3 +1854,35 @@
     transition: none;
   }
 }
+
+/* ═══ 图片灯箱（PhotoSwipe 5，rehype-lightbox 包装） ═══ */
+.sd-lightbox-item {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 30px auto;
+  overflow: hidden;
+  border: 1px solid var(--paper-line);
+  border-radius: 8px;
+  cursor: zoom-in;
+}
+
+.sd-lightbox-item img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  transition: opacity 160ms ease;
+}
+
+.sd-lightbox-item:hover img {
+  opacity: 0.88;
+}
+
+/* PhotoSwipe 纸面化：墨色遮罩、纸色控件 */
+.pswp {
+  --pswp-bg: #1f1c17;
+  --pswp-placeholder-bg: #1f1c17;
+  --pswp-icon-color: #f6f2ea;
+  --pswp-error-icon-color: #f6f2ea;
+  --pswp-icon-stroke-color: #f6f2ea;
+}

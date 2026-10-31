@@ -22,11 +22,13 @@ import '../../plugins/markdown/directives/widgets.css';
   import { initFriendLinkApplications } from '../../plugins/markdown/directives/widgets/friend-link-application.js';
   import { bindBlurs } from '../../plugins/markdown/directives/widgets/blur.js';
   import { applyVideoZoom } from '../../plugins/markdown/directives/widgets/video.js';
+  import { initLightbox } from '../../plugins/markdown/directives/widgets/lightbox.js';
 
   const boot = () => {
     bindKeys();
     bindBlurs();
     applyVideoZoom();
+    initLightbox();
     initCarousels();
     initFriendCircles();
     initMusicPlayers();

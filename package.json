@@ -40,6 +40,7 @@
     "lucide-astro": "^0.556.0",
     "mdast-util-to-hast": "^13.2.1",
     "mermaid": "^11.16.0",
+    "photoswipe": "^5.4.4",
     "qrcode": "^1.5.4",
     "rehype-katex": "^7.0.1",
     "rehype-mathjax": "^7.1.0",
