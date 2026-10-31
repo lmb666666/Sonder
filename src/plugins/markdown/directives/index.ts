@@ -1,5 +1,5 @@
-import remarkCallouts from '../callout/index.js';
-import { calloutTypes } from '../callout/index.js';
+import remarkCallouts, { calloutTypes } from '../callout/index.js';
+import { friendLinkApplicationHandler } from './application.js';
 import type { DirectiveFile, MdastNode } from './handlers.js';
 import {
   badgeHandler,
@@ -22,28 +22,40 @@ import {
   carouselHandler,
   chatHandler,
   friendCircleHandler,
-  friendLinkApplicationHandler,
   friendLinkCardHandler,
   longImageHandler,
-  musicPlayerHandler,
   mediaShelfHandler,
   musicScoreHandler,
   poetryHandler,
+  type FriendCirclePost,
+  type FriendLinkEntry,
 } from './heavy-handlers.js';
+import {
+  fetchMetingTracks,
+  musicPlayerEmbedHandler,
+  neteasePlaylistHandler,
+  type MetingTrack,
+} from './player.js';
 import friendCircleDemo from '../../../data/friend-circle-demo.json';
 import { githubCardData } from './github-cards.js';
 
 /**
  * Sonder 外挂指令统一入口。
  * `:::note` 家族复用 callout 渲染；columns/timeline 由 layouts 迁移而来；
- * 其余指令全部构建期输出 HTML。未知指令名展开内容并给出警告。
+ * 其余指令全部构建期输出 HTML，交互交给 MarkdownWidgets 客户端脚本。
+ * 未知指令名展开内容并给出警告；单个 handler 失败只降级自身。
  */
 
 type TreeNode = MdastNode;
 
-const dataSources: Record<string, { friends: unknown[]; posts: Array<Record<string, string>> }> = {
-  demo: friendCircleDemo as never,
+type FriendDataSource = { friends: FriendLinkEntry[]; posts: FriendCirclePost[] };
+
+const dataSources: Record<string, FriendDataSource> = {
+  demo: friendCircleDemo as unknown as FriendDataSource,
 };
+
+/** ::netease 歌单预取结果（id → tracks），转换前由异步预填 */
+type NeteasePrefetch = Map<string, MetingTrack[]>;
 
 const calloutTypeNames = new Set<string>(
   calloutTypes.flatMap((definition) => [definition.type, ...(definition.aliases ?? [])]),
@@ -54,6 +66,7 @@ const CONSUMED_CHILDREN: Record<string, string[]> = {
   columns: ['column'],
   timeline: ['event'],
   tabs: ['tab'],
+  'media-shelf': ['media-item'],
 };
 
 const CONTAINER_HANDLERS: Record<
@@ -100,26 +113,9 @@ const LEAF_HANDLERS: Record<
       ? `https://www.youtube-nocookie.com/embed/${id}`
       : undefined;
   }),
-  netease: embedHandler('netease', (attributes) => {
-    const type = typeof attributes.type === 'string' ? attributes.type : '';
-    const id = typeof attributes.id === 'string' ? attributes.id : '';
-    const outchainType: Record<string, string> = {
-      song: '2',
-      playlist: '0',
-      album: '10',
-      radio: '19',
-    };
-    const heights: Record<string, string> = {
-      song: '86',
-      album: '430',
-      playlist: '450',
-      radio: '330',
-    };
-    if (!outchainType[type] || !/^\d+$/.test(id)) return undefined;
-    return `https://music.163.com/outchain/player?type=${outchainType[type]}&id=${id}&auto=0&height=${heights[type]}`;
-  }),
+  netease: neteaseLeafHandler,
   link: linkHandler,
-  'music-player': musicPlayerHandler,
+  'music-player': musicPlayerEmbedHandler,
   'friend-link-card': friendLinkCardHandler(dataSources),
   'friend-circle': friendCircleHandler(dataSources),
   'friend-link-application': friendLinkApplicationHandler,
@@ -141,6 +137,32 @@ const INLINE_HANDLERS: Record<
   btn: btnHandler,
 };
 
+/** ::netease：playlist（或缺省）走 Meting 原生播放器，song/album/radio 走 outchain iframe */
+function neteaseLeafHandler(extras: { netease: NeteasePrefetch }) {
+  const playlistHandler = neteasePlaylistHandler(extras.netease);
+  const outchainHandler = embedHandler('netease', (attributes) => {
+    const type = typeof attributes.type === 'string' ? attributes.type : '';
+    const id = typeof attributes.id === 'string' ? attributes.id : '';
+    const outchainType: Record<string, string> = { song: '2', album: '10', radio: '19' };
+    const heights: Record<string, string> = { song: '86', album: '430', radio: '330' };
+    if (!outchainType[type] || !/^\d+$/.test(id)) return undefined;
+    return `https://music.163.com/outchain/player?type=${outchainType[type]}&id=${id}&auto=0&height=${heights[type]}`;
+  });
+
+  return ({
+    attributes,
+    file,
+  }: {
+    attributes: Record<string, string | true>;
+    file: DirectiveFile;
+  }) => {
+    const type = typeof attributes.type === 'string' ? attributes.type : 'playlist';
+    return type === 'playlist'
+      ? playlistHandler({ attributes, file })
+      : outchainHandler({ attributes, file });
+  };
+}
+
 function inlineText(node: TreeNode): string {
   return (node.children ?? [])
     .map((child) => (typeof child.value === 'string' ? child.value : ''))
@@ -158,10 +180,44 @@ function labelOf(node: TreeNode) {
   return undefined;
 }
 
+/** 取走并移除指令的标签段落（`:::name[标题]` 的标题），避免标题漏进正文 */
+function takeLabel(node: TreeNode) {
+  const labelInfo = labelOf(node);
+  if (labelInfo) {
+    node.children = (node.children ?? []).slice(1);
+  }
+  return labelInfo;
+}
+
+/** 预取文档内全部 ::netease 歌单（构建期 fetch，带缓存，从不失败） */
+async function prefetchNeteasePlaylists(tree: TreeNode): Promise<NeteasePrefetch> {
+  const ids = new Set<string>();
+  const visit = (nodes: TreeNode[] | undefined) => {
+    for (const node of nodes ?? []) {
+      if (node.type === 'leafDirective' && node.name === 'netease') {
+        const type = typeof node.attributes?.type === 'string' ? node.attributes.type : 'playlist';
+        const id = typeof node.attributes?.id === 'string' ? node.attributes.id : '';
+        if (type === 'playlist' && /^\d+$/.test(id)) ids.add(id);
+      }
+      visit(node.children);
+    }
+  };
+  visit(tree.children);
+
+  const map: NeteasePrefetch = new Map();
+  await Promise.all(
+    [...ids].map(async (id) => {
+      map.set(id, await fetchMetingTracks(id));
+    }),
+  );
+  return map;
+}
+
 function transformNodes(
   nodes: TreeNode[],
   parentDirective: string | undefined,
   file: DirectiveFile,
+  extras: { netease: NeteasePrefetch },
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
@@ -174,13 +230,13 @@ function transformNodes(
 
     if (!isDirective || !name) {
       if (node.children) {
-        node.children = transformNodes(node.children, parentDirective, file);
+        node.children = transformNodes(node.children, parentDirective, file, extras);
       }
       result.push(node);
       continue;
     }
 
-    // 父指令消费的子指令（column/tab/event），交给父指令的 handler 处理
+    // 父指令消费的子指令（column/tab/event/media-item），交给父指令的 handler 处理
     if (parentDirective && CONSUMED_CHILDREN[parentDirective]?.includes(name)) {
       result.push(node);
       continue;
@@ -188,45 +244,77 @@ function transformNodes(
 
     const containerHandler =
       node.type === 'containerDirective' ? CONTAINER_HANDLERS[name] : undefined;
-    const leafHandler = node.type === 'leafDirective' ? LEAF_HANDLERS[name] : undefined;
+    const leafHandler =
+      node.type === 'leafDirective'
+        ? name === 'netease'
+          ? neteaseLeafHandler(extras)
+          : LEAF_HANDLERS[name]
+        : undefined;
     const inlineHandler = node.type === 'textDirective' ? INLINE_HANDLERS[name] : undefined;
 
     if (containerHandler) {
-      const labelInfo = labelOf(node);
-      result.push(
-        ...containerHandler({
-          node,
-          children: transformNodes(node.children ?? [], name, file),
-          transform: (nodes, parentName) => transformNodes(nodes, parentName ?? name, file),
-          label: labelInfo?.label,
-          labelText: labelInfo?.labelText,
-          file,
-        }),
-      );
+      try {
+        // 先取走标签段落，再转换子节点：标题不能漏进正文
+        const labelInfo = takeLabel(node);
+        const inner = transformNodes(node.children ?? [], name, file, extras);
+        result.push(
+          ...containerHandler({
+            node,
+            children: inner,
+            transform: (nodes, parentName) =>
+              transformNodes(nodes, parentName ?? name, file, extras),
+            label: labelInfo?.label,
+            labelText: labelInfo?.labelText,
+            file,
+          }),
+        );
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        file.message(
+          `[sonder-directives] ::${name} 渲染失败，已降级：${detail}`,
+          positionOf(node),
+          'sonder-directives',
+        );
+        const fallback = transformNodes(node.children ?? [], name, file, extras);
+        result.push(...fallback);
+      }
       continue;
     }
 
     if (leafHandler) {
-      result.push(...leafHandler({ attributes: node.attributes ?? {}, file }));
+      try {
+        result.push(...leafHandler({ attributes: node.attributes ?? {}, file }));
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        file.message(
+          `[sonder-directives] ::${name} 渲染失败：${detail}`,
+          positionOf(node),
+          'sonder-directives',
+        );
+      }
       continue;
     }
 
     if (inlineHandler) {
-      const produced = inlineHandler({
-        label: node.children ?? [],
-        labelText: inlineText(node).trim(),
-        attributes: node.attributes ?? {},
-        file,
-      });
+      try {
+        const produced = inlineHandler({
+          label: node.children ?? [],
+          labelText: inlineText(node).trim(),
+          attributes: node.attributes ?? {},
+          file,
+        });
 
-      // handler 未带内容时保留方括号内的 mdast（行内 Markdown 能力）
-      for (const output of produced) {
-        if (!output.children && !output.data?.hChildren) {
-          output.children = node.children ?? [];
+        for (const output of produced) {
+          if (!output.children && !output.data?.hChildren) {
+            output.children = node.children ?? [];
+          }
         }
-      }
 
-      result.push(...produced);
+        result.push(...produced);
+      } catch (error) {
+        // 行内指令失败时保留原始文本
+        result.push({ type: 'text', value: `:${name}[${inlineText(node)}]` });
+      }
       continue;
     }
 
@@ -242,23 +330,26 @@ function transformNodes(
       continue;
     }
 
-    result.push(...transformNodes(node.children ?? [], parentDirective, file));
+    result.push(...transformNodes(node.children ?? [], parentDirective, file, extras));
   }
 
   return result;
 }
 
 export default function remarkSonderDirectives() {
-  return (tree: MdastNode, file: DirectiveFile & { path?: string }) => {
-    if (tree.children) {
-      try {
-        tree.children = transformNodes(tree.children, undefined, file);
-      } catch (error) {
-        throw new Error(
-          `[sonder-directives] 转换失败 @ ${file.path ?? '(unknown file)'}: ${(error as Error).message}`,
-          { cause: error },
-        );
-      }
+  return async (tree: MdastNode, file: DirectiveFile & { path?: string }) => {
+    if (!tree.children) return;
+    try {
+      const extras = { netease: await prefetchNeteasePlaylists(tree) };
+      tree.children = transformNodes(tree.children, undefined, file, extras);
+    } catch (error) {
+      // 转换失败时保留原始内容，确保文章不至于空白
+      const detail = error instanceof Error ? error.message : String(error);
+      file.message(
+        `[sonder-directives] 指令转换失败，已降级为原始内容：${detail}`,
+        undefined,
+        'sonder-directives',
+      );
     }
   };
 }

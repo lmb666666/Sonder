@@ -1,9 +1,12 @@
-import type { AttributeValue, ContainerContext, LeafContext, MdastNode } from './handlers.js';
-import { classNames, wrap } from './handlers.js';
+import { h } from 'hastscript';
+import type { AttributeValue, ContainerContext, MdastNode } from './handlers.js';
+import { classNames, labelText, wrap, wrapHast } from './handlers.js';
+import { icon } from './icons.js';
 
 /**
- * 重型组件的指令渲染：raw HTML 模板字面量 + 配置 JSON + bundled client 脚本。
- * 模板从对应 .astro 组件逐行翻译，视觉一致。
+ * 重型组件的指令渲染：全部构建期输出（mdast/hast 组合），
+ * 交互部分由 MarkdownWidgets 客户端脚本接管（标记探测 + 动态加载）。
+ * 视觉与原 .astro 组件逐类名对齐。
  */
 
 export function positionOfNode(node: MdastNode | undefined) {
@@ -14,59 +17,173 @@ function asString(value: AttributeValue | undefined): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
-/** 将 mdast 子节点序列化为 HTML 字符串（在 remark 阶段由 unified 完成）。 */
+/** 构建期可判定的文本（代码块、纯文本段落等） */
+function plainText(nodes: MdastNode[] | undefined): string {
+  return (nodes ?? []).map((node) => (typeof node.value === 'string' ? node.value : '')).join('');
+}
+
+type HastLike = ReturnType<typeof h>;
 
 // ─── 容器：poetry（诗歌排版） ────────────────────────────
 
 export function poetryHandler({
   node,
   children,
-  label,
-  labelText,
-  file,
+  labelText: labelValue,
 }: ContainerContext): MdastNode[] {
-  const toHtml = serializeChildren;
-  const title = labelText?.split('|')[0]?.trim() || asString(node.attributes?.title);
-  const author = labelText?.split('|')[1]?.trim() || asString(node.attributes?.author);
+  const inlineTitle = labelValue?.split('|')[0]?.trim();
+  const inlineAuthor = labelValue?.split('|')[1]?.trim();
+  const title = inlineTitle || asString(node.attributes?.title);
+  const author = inlineAuthor || asString(node.attributes?.author);
   const footer = asString(node.attributes?.footer);
 
-  const html = `<section class="poetry">${
-    title ? `<h2 class="poetry-title">${title}</h2>` : ''
-  }${author ? `<div class="poetry-meta">${author}</div>` : ''}<div class="poetry-content">${toHtml(children)}</div>${
-    footer ? `<div class="poetry-meta">${footer}</div>` : ''
-  }</section>`;
+  const parts: MdastNode[] = [];
+  if (title) {
+    // 标题取 `|` 切分后的部分，不能整段放行（否则把「|作者」一起带进标题与目录）
+    parts.push(wrap('h2', ['poetry-title'], [{ type: 'text', value: title }]));
+  }
+  if (author) parts.push(wrap('div', ['poetry-meta'], [{ type: 'text', value: author }]));
+  parts.push(wrap('div', ['poetry-content'], children));
+  if (footer) parts.push(wrap('div', ['poetry-meta'], [{ type: 'text', value: footer }]));
 
-  return [wrapRaw('section', html, { class: 'poetry' })];
+  return [wrap('section', ['poetry'], parts)];
 }
 
 // ─── 容器：cards（卡片列表） ────────────────────────────
 
 export function cardsHandler({ children }: ContainerContext): MdastNode[] {
-  return [wrapRaw('div', serializeChildren(children), { class: 'card-list' })];
+  return [wrap('div', ['card-list'], children)];
+}
+
+/**
+ * 网格/轮播的子项展开：Markdown 里相邻图片行会合并成同一段落
+ * （图片之间是空白软换行），这里把它们拆开，让每张图片独立成项。
+ */
+function flattenImageParagraphs(children: MdastNode[]): MdastNode[] {
+  return children.flatMap((child) => {
+    const imageOnly =
+      child.type === 'paragraph' &&
+      (child.children ?? []).some((node) => node.type === 'image') &&
+      (child.children ?? []).every(
+        (node) => node.type === 'image' || (node.type === 'text' && !node.value?.trim()),
+      );
+    if (imageOnly) {
+      return (child.children ?? []).filter((node) => node.type === 'image');
+    }
+    return [child];
+  });
 }
 
 // ─── 容器：long-image（长图滚动） ────────────────────────
 
-export function longImageHandler({
-  node,
-  children,
-  label,
-  labelText,
-  file,
-}: ContainerContext): MdastNode[] {
-  const toHtml = serializeChildren;
+export function longImageHandler({ node, children, label }: ContainerContext): MdastNode[] {
   const height = asString(node.attributes?.height) ?? '420px';
-  const caption = asString(node.attributes?.caption) ?? labelText;
-  const html = `<figure class="sonder-long-image" style="--long-image-height:${height}"><div class="sonder-long-image__viewport" role="region" aria-label="${caption ?? 'Scrollable image'}" tabindex="0">${toHtml(children)}</div>${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`;
-  return [wrapRaw('div', html)];
+  const caption = asString(node.attributes?.caption) ?? labelText(label);
+
+  return [
+    wrap(
+      'figure',
+      ['sonder-long-image'],
+      [
+        wrap('div', ['sonder-long-image__viewport'], children, {
+          role: 'region',
+          'aria-label': caption ?? 'Scrollable image',
+          tabindex: '0',
+        }),
+        ...(caption ? [wrap('figcaption', [], [{ type: 'text', value: caption }])] : []),
+      ],
+      { style: `--long-image-height:${height}` },
+    ),
+  ];
 }
 
-// ─── 容器：chat（聊天记录，client 脚本结构化） ───────────
+// ─── 容器：chat（聊天记录，构建期结构化） ─────────────────
+
+type ChatItem =
+  { kind: 'caption'; control: string; name: string } | { kind: 'body'; nodes: MdastNode[] };
+
+/**
+ * 把 :::chat 的 mdast 子节点结构化为 dt（署名）/ dd（消息）：
+ * - 整段（或整行）匹配 `{名字}` / `{.名字}` / `{:系统}` → 署名
+ * - 其余内容 → 消息体（保留行内 Markdown）
+ */
+function structureChat(children: MdastNode[]): ChatItem[] {
+  const items: ChatItem[] = [];
+
+  const captionOf = (nodes: MdastNode[]): { control: string; name: string } | undefined => {
+    if (!nodes.every((node) => node.type === 'text' && typeof node.value === 'string')) {
+      return undefined;
+    }
+    const match = /^\{(\.|:)?([^{}]*)\}$/.exec(
+      nodes
+        .map((node) => node.value)
+        .join('')
+        .trim(),
+    );
+    if (!match) return undefined;
+    return { control: match[1] ?? '', name: match[2].trim() };
+  };
+
+  for (const child of children) {
+    if (child.type !== 'paragraph') {
+      items.push({ kind: 'body', nodes: [child] });
+      continue;
+    }
+
+    // 段落内按软换行拆行（remark 把相邻行合并进同一 text 值）
+    const lines: MdastNode[][] = [];
+    let current: MdastNode[] = [];
+    for (const inline of child.children ?? []) {
+      if (
+        inline.type === 'text' &&
+        typeof inline.value === 'string' &&
+        inline.value.includes('\n')
+      ) {
+        const parts = inline.value.split('\n');
+        parts.forEach((part, index) => {
+          if (index > 0) {
+            lines.push(current);
+            current = [];
+          }
+          if (part) current.push({ type: 'text', value: part });
+        });
+      } else {
+        current.push(inline);
+      }
+    }
+    lines.push(current);
+
+    for (const line of lines) {
+      if (line.length === 0) continue;
+      const caption = captionOf(line);
+      if (caption) {
+        items.push({ kind: 'caption', ...caption });
+      } else {
+        items.push({ kind: 'body', nodes: line });
+      }
+    }
+  }
+
+  return items;
+}
 
 export function chatHandler({ children }: ContainerContext): MdastNode[] {
-  const toHtml = serializeChildren;
-  const html = `<dl class="chat" data-chat></dl><div class="chat-source" data-chat-source>${toHtml(children)}</div>`;
-  return [wrapRaw('div', html)];
+  const items = structureChat(children);
+  const nodes: MdastNode[] = [];
+
+  for (const item of items) {
+    if (item.kind === 'caption') {
+      const controlClass =
+        item.control === '.' ? 'chat-myself' : item.control === ':' ? 'chat-system' : '';
+      nodes.push(
+        wrap('dt', classNames('chat-caption', controlClass), [{ type: 'text', value: item.name }]),
+      );
+    } else {
+      nodes.push(wrap('dd', ['chat-body'], item.nodes));
+    }
+  }
+
+  return [wrap('dl', ['chat'], nodes)];
 }
 
 // ─── 容器：carousel（轮播） ─────────────────────────────
@@ -74,105 +191,217 @@ export function chatHandler({ children }: ContainerContext): MdastNode[] {
 export function carouselHandler({
   node,
   children,
-  labelText,
-  file,
+  labelText: labelValue,
 }: ContainerContext): MdastNode[] {
-  const toHtml = serializeChildren;
-  const label = asString(node.attributes?.label) ?? labelText ?? 'Carousel';
+  const label = asString(node.attributes?.label) ?? labelValue ?? 'Carousel';
   const aspect = asString(node.attributes?.aspect);
-  const id = `carousel-${Math.random().toString(36).slice(2, 10)}`;
-  const chevron = (path: string) =>
-    `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
-  const html = `<section id="${id}" class="sonder-carousel" aria-label="${label}"${aspect ? ` style="--carousel-aspect-ratio:${aspect}"` : ''}><div class="sonder-carousel__track" data-track>${toHtml(children)}</div><div class="sonder-carousel__controls"><button type="button" aria-label="Previous slide" data-prev>${chevron('<path d="m15 18-6-6 6-6"/>')}</button><button type="button" aria-label="Next slide" data-next>${chevron('<path d="m9 18 6-6-6-6"/>')}</button></div></section>`;
-  return [wrapRaw('div', html)];
+  const slides = flattenImageParagraphs(children).map((child) =>
+    wrap('figure', [], [child], { 'data-carousel-slide': '' }),
+  );
+
+  const track = wrap('div', ['sonder-carousel__track'], slides);
+  const controls = wrap('div', ['sonder-carousel__controls'], [], { 'data-carousel-controls': '' });
+  // 控制按钮是纯 hast（内联 SVG），走 hChildren 注入
+  controls.data = {
+    ...controls.data,
+    hChildren: [
+      h('button', { type: 'button', 'aria-label': 'Previous slide', 'data-prev': '' }, [
+        icon('chevron-left', 18),
+      ]),
+      h('button', { type: 'button', 'aria-label': 'Next slide', 'data-next': '' }, [
+        icon('chevron-right', 18),
+      ]),
+    ] as MdastNode[],
+  };
+
+  return [
+    wrap('section', ['sonder-carousel'], [track, controls], {
+      'aria-label': label,
+      ...(aspect ? { style: `--carousel-aspect-ratio:${aspect}` } : {}),
+    }),
+  ];
 }
 
 // ─── 容器：music-score（ABC 乐谱，client abcjs 渲染） ───
 
+/** 容器内纯文本提取：段落按行内文本拼接（保留软换行），块级之间以换行分隔 */
+function extractText(nodes: MdastNode[] | undefined): string {
+  return (nodes ?? [])
+    .map((node) => {
+      if (typeof node.value === 'string') return node.value;
+      if (node.type === 'paragraph' || node.type === 'code') {
+        const inline = (node.children ?? [])
+          .map((child) => (typeof child.value === 'string' ? child.value : ''))
+          .join('');
+        return inline || extractText(node.children);
+      }
+      return extractText(node.children);
+    })
+    .filter((text) => text.length > 0)
+    .join('\n');
+}
+
 export function musicScoreHandler({ children }: ContainerContext): MdastNode[] {
-  const abc = children
-    .map((child) => (typeof child.value === 'string' ? child.value : ''))
-    .join('\n')
-    .trim();
-
-  const html = `<div class="music-score" data-music-score data-soundfonts="https://paulrosen.github.io/midi-js-soundfonts/"><pre class="music-score-source" hidden>${abc}</pre><div class="music-score-score"></div><div class="music-score-synth"></div></div>`;
-  return [wrapRaw('div', html)];
+  const abc = extractText(children).trim();
+  const element = h('div', { class: 'music-score', 'data-music-score': '' }, [
+    h('pre', { class: 'music-score-source', hidden: true }, [abc]),
+    h('div', { class: 'music-score-score' }),
+    h('div', { class: 'music-score-synth' }),
+  ]);
+  return [wrapHast('div', element as never)];
 }
 
-// ─── 叶子：music-player（provider 嵌入模式） ────────────
+// ─── 容器：media-shelf（媒体架，子指令 :::media-item） ───
 
-function providerEmbedUrl(provider: string, url: string): string | undefined {
-  try {
-    const parsed = new URL(url);
-    if (provider === 'spotify' && parsed.hostname === 'open.spotify.com') {
-      return `https://open.spotify.com/embed${parsed.pathname}`;
-    }
-    if (provider === 'youtube' && parsed.hostname.includes('youtube.com')) {
-      return `https://www.youtube-nocookie.com/embed${parsed.pathname}`;
-    }
-    return undefined;
-  } catch {
-    return undefined;
-  }
+function isDirective(node: MdastNode, name: string): boolean {
+  return node.type === 'containerDirective' && node.name === name;
 }
 
-export function musicPlayerHandler({
-  attributes,
-  file,
-}: {
-  attributes: Record<string, AttributeValue>;
-  file: { message(v: string, p: unknown, s: string): void };
-}): MdastNode[] {
-  const provider = asString(attributes.provider);
-  const url = asString(attributes.url);
-  const title = asString(attributes.title) ?? '示例曲目';
+export function mediaShelfHandler({ node, children, file }: ContainerContext): MdastNode[] {
+  const columns = Number(asString(node.attributes?.columns) ?? '4') || 4;
+  const variant = asString(node.attributes?.variant) ?? 'shelf';
 
-  if (provider && url) {
-    const embedUrl = providerEmbedUrl(provider, url);
-    if (embedUrl) {
-      const height = provider === 'spotify' ? '152' : provider === 'youtube' ? '390' : '166';
-      const html = `<div class="music-player music-player--embed"><iframe src="${embedUrl}" width="100%" height="${height}" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="${title}"></iframe></div>`;
-      return [wrapRaw('div', html)];
-    }
+  const items = children
+    .filter((child) => isDirective(child, 'media-item'))
+    .map((child) => {
+      const attrs = child.attributes ?? {};
+      const paragraphs = (child.children ?? []).filter(
+        (inner) =>
+          inner.type === 'paragraph' &&
+          (inner.children ?? []).some((node) => node.type === 'image'),
+      );
+      const image = (paragraphs[0]?.children ?? []).find((node) => node.type === 'image') as
+        MdastNode | undefined;
+      return {
+        title: asString(attrs.title) ?? '',
+        creator: asString(attrs.creator) ?? '',
+        type: asString(attrs.type) ?? 'book',
+        image,
+        coverAspect: asString(attrs['cover-aspect']),
+        rating: Number(asString(attrs.rating) ?? '0') || 0,
+      };
+    });
+
+  if (items.length === 0) {
+    file.message(
+      ':::media-shelf 内没有 :::media-item，已按普通内容渲染。',
+      positionOfNode(node),
+      'sonder-directives',
+    );
+    return children;
   }
 
-  file.message(
-    '::music-player 指令目前仅支持 provider 嵌入模式（spotify / youtube），原生播放器请用 MDX import。',
-    undefined,
-    'sonder-directives',
-  );
-  return [];
+  const itemNodes = items.map((item) => {
+    // 封面保留为 mdast 图片节点：享受 Astro 图片处理与点击放大
+    const coverChildren: MdastNode[] = item.image
+      ? [item.image]
+      : [
+          {
+            type: 'blockquote',
+            children: [],
+            data: {
+              hName: 'span',
+              hProperties: { 'aria-hidden': 'true' },
+              hChildren: [h('span', [item.type])] as MdastNode[],
+            },
+          },
+        ];
+    const cover = wrap('figure', ['sonder-media-shelf__cover'], coverChildren, {
+      'data-media-type': item.type,
+      ...(item.coverAspect ? { 'data-cover-aspect': item.coverAspect } : {}),
+    });
+
+    const rating = item.rating
+      ? h('span', { class: 'sonder-media-shelf__rating' }, [
+          '★'.repeat(Math.max(1, Math.min(5, Math.round(item.rating)))),
+        ])
+      : undefined;
+    const content: MdastNode = {
+      type: 'blockquote',
+      children: [],
+      data: {
+        hName: 'div',
+        hProperties: { className: ['sonder-media-shelf__content'] },
+        hChildren: [
+          h('strong', [item.title]),
+          h('span', { class: 'sonder-media-shelf__meta' }, [
+            h('span', { class: 'sonder-media-shelf__creator' }, [item.creator]),
+            ...(rating ? [rating] : []),
+          ]),
+        ] as MdastNode[],
+      },
+    };
+
+    return wrap('article', ['sonder-media-shelf__item'], [cover, content]);
+  });
+
+  return [
+    wrap('section', ['sonder-media-shelf', `sonder-media-shelf--${variant}`], itemNodes, {
+      style: `--media-shelf-columns:${columns}`,
+      'aria-label': 'Media shelf',
+    }),
+  ];
 }
 
 // ─── 叶子：friend-link-card（友链卡片网格） ─────────────
 
-function friendLinkCardHtml(
-  items: Array<{ name?: string; url?: string; description?: string; avatar?: string }>,
-  columns: number,
-): string {
-  const cards = items
-    .map(
-      (item) =>
-        `<a class="friend-link-card" href="${item.url ?? '#'}" target="_blank" rel="noopener noreferrer">${
-          item.avatar
-            ? `<img class="friend-link-card__avatar" src="${item.avatar}" alt="" loading="lazy" decoding="async" />`
-            : `<span class="friend-link-card__avatar" aria-hidden="true">${(item.name ?? '?')[0]?.toUpperCase() ?? '?'}</span>`
-        }<span class="friend-link-card__heading">${item.name ?? ''}</span>${
-          item.description
-            ? `<span class="friend-link-card__description">${item.description}</span>`
-            : ''
-        }</a>`,
-    )
-    .join('');
-  return `<div class="friend-link-card-grid" style="--flink-columns:${columns}">${cards}</div>`;
+export interface FriendLinkEntry {
+  name?: string;
+  url?: string;
+  avatar?: string;
+  bio?: string;
+  description?: string;
+  backgroundImage?: string;
+  rss?: string;
 }
 
-export function friendLinkCardHandler(
-  dataSources: Record<
-    string,
-    { friends: Array<{ name: string; url: string; description?: string; avatar?: string }> }
-  >,
-) {
+function friendLinkCardElement(item: FriendLinkEntry, preview = false): HastLike {
+  const name = (item.name ?? '').trim();
+  const avatar = (item.avatar ?? '').trim();
+  const bio = (item.bio ?? item.description ?? '').trim();
+  const backgroundImage = (item.backgroundImage ?? '').trim() || avatar;
+  const displayName = name || (preview ? '你的站点' : '');
+
+  const avatarContent = avatar
+    ? h('img', { src: avatar, alt: '', loading: 'lazy', decoding: 'async' })
+    : h('span', [(displayName[0] || '?').toUpperCase()]);
+
+  return h(
+    'a',
+    {
+      class: ['friend-link-card', ...(backgroundImage ? ['friend-link-card--with-image'] : [])],
+      ...(preview ? {} : { href: item.url ?? '#', target: '_blank', rel: 'noopener noreferrer' }),
+      title: displayName,
+    },
+    [
+      backgroundImage
+        ? h('img', {
+            class: 'friend-link-card__background',
+            src: backgroundImage,
+            alt: '',
+            loading: 'lazy',
+            decoding: 'async',
+            'aria-hidden': 'true',
+          })
+        : undefined,
+      h('span', { class: 'friend-link-card__avatar', 'aria-hidden': 'true' }, [avatarContent]),
+      (item.rss ?? '').trim()
+        ? h('span', { class: 'friend-link-card__rss', title: `RSS: ${(item.rss ?? '').trim()}` }, [
+            icon('rss', 12),
+          ])
+        : undefined,
+      h('span', { class: 'friend-link-card__meta' }, [
+        h('span', { class: 'friend-link-card__heading' }, [
+          h('strong', [displayName]),
+          icon('link', 13),
+        ]),
+        bio ? h('span', { class: 'friend-link-card__description' }, [bio]) : undefined,
+      ]),
+    ].filter(Boolean),
+  );
+}
+
+export function friendLinkCardHandler(dataSources: Record<string, { friends: FriendLinkEntry[] }>) {
   return ({
     attributes,
     file,
@@ -181,9 +410,9 @@ export function friendLinkCardHandler(
     file: { message(v: string, p: unknown, s: string): void };
   }): MdastNode[] => {
     const src = asString(attributes.src);
-    const columns = Number(asString(attributes.columns) ?? '3') || 3;
+    const columns = Number(asString(attributes.columns) ?? '4') || 4;
 
-    let items: Array<{ name?: string; url?: string; description?: string; avatar?: string }> = [];
+    let items: FriendLinkEntry[] = [];
     if (src) {
       const dataSource = dataSources[src];
       if (dataSource) {
@@ -199,26 +428,98 @@ export function friendLinkCardHandler(
           {
             name,
             url,
-            description: asString(attributes.description),
             avatar: asString(attributes.avatar),
+            bio: asString(attributes.bio) ?? asString(attributes.description),
+            backgroundImage: asString(attributes['background-image']),
+            rss: asString(attributes.rss),
           },
         ];
       }
     }
 
     if (items.length === 0) {
-      file.message('::friend-link-card 缺少 items 或 src 属性。', undefined, 'sonder-directives');
+      file.message(
+        '::friend-link-card 缺少 src 或 name/url 属性。',
+        undefined,
+        'sonder-directives',
+      );
       return [];
     }
 
-    return [wrapRaw('div', friendLinkCardHtml(items, columns))];
+    const grid = h('div', { class: 'friend-link-region' }, [
+      h(
+        'div',
+        { class: 'friend-link-list', style: `--friend-link-columns:${columns}` },
+        items.map((item) => friendLinkCardElement(item)),
+      ),
+    ]);
+    return [wrapHast('div', grid as never)];
   };
 }
 
 // ─── 叶子：friend-circle（朋友圈，client 脚本洗牌） ─────
 
+export interface FriendCirclePost {
+  title?: string;
+  url?: string;
+  author?: string;
+  authorUrl?: string;
+  avatar?: string;
+  date?: string;
+  tags?: string[];
+}
+
+function friendCirclePostElement(post: FriendCirclePost): HastLike {
+  const author = (post.author ?? '?').trim();
+  const avatar = (post.avatar ?? '').trim();
+  const tags = (post.tags ?? []).slice(0, 3);
+  return h('article', { class: 'friend-circle__post' }, [
+    h(
+      'a',
+      {
+        class: 'friend-circle__author-link',
+        href: post.authorUrl || post.url || '#',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      },
+      [
+        h('span', { class: 'friend-circle__author-avatar', 'aria-hidden': 'true' }, [
+          avatar
+            ? h('img', { src: avatar, alt: '', loading: 'lazy', decoding: 'async' })
+            : h('span', [(author[0] || '?').toUpperCase()]),
+        ]),
+        h('span', { class: 'friend-circle__author' }, [author]),
+      ],
+    ),
+    h(
+      'a',
+      {
+        class: 'friend-circle__post-title',
+        href: post.url || '#',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      },
+      [post.title ?? ''],
+    ),
+    h(
+      'span',
+      { class: 'friend-circle__post-meta' },
+      [
+        tags.length
+          ? h(
+              'span',
+              { class: 'friend-circle__tags' },
+              tags.map((tag) => h('span', [tag])),
+            )
+          : undefined,
+        post.date ? h('time', { datetime: post.date }, [post.date]) : undefined,
+      ].filter(Boolean),
+    ),
+  ]);
+}
+
 export function friendCircleHandler(
-  dataSources: Record<string, { friends: unknown[]; posts: Array<Record<string, string>> }>,
+  dataSources: Record<string, { friends: FriendLinkEntry[]; posts: FriendCirclePost[] }>,
 ) {
   return ({
     attributes,
@@ -237,118 +538,53 @@ export function friendCircleHandler(
       return [];
     }
 
-    const postsHtml = dataSource.posts
-      .slice(0, limit)
-      .map(
-        (post) =>
-          `<article class="friend-circle__post"><a class="friend-circle__author-link" href="${post.authorUrl ?? post.url}" target="_blank" rel="noopener noreferrer"><span class="friend-circle__author-avatar" aria-hidden="true">${(post.author ?? '?')[0]?.toUpperCase() ?? '?'}</span><span class="friend-circle__author">${post.author ?? ''}</span></a><a class="friend-circle__post-title" href="${post.url}" target="_blank" rel="noopener noreferrer">${post.title ?? ''}</a><span class="friend-circle__post-meta">${post.date ? `<time>${post.date}</time>` : ''}</span></article>`,
-      )
-      .join('');
+    const normalizeDate = (value?: string) => {
+      if (!value) return '';
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.valueOf()) ? value : parsed.toISOString().slice(0, 10);
+    };
+    const posts = dataSource.posts.map((post) => ({ ...post, date: normalizeDate(post.date) }));
+    const initialPosts = posts.slice(0, limit);
+    const activeFriends = new Set(posts.map((post) => post.authorUrl || post.author)).size;
 
-    const config = JSON.stringify({
-      posts: dataSource.posts,
-      initialPosts: dataSource.posts.slice(0, limit),
-    }).replace(/</g, '\\u003c');
-    const html = `<section class="friend-circle" data-friend-circle data-limit="${limit}" title="${title}"><div class="friend-circle__posts" data-friend-circle-posts>${postsHtml}</div><script type="application/json" data-friend-circle-data>${config}</script></section>`;
-    return [wrapRaw('section', html)];
-  };
-}
+    const header = h('header', { class: 'friend-circle__header' }, [
+      h('div', [
+        h('p', { class: 'friend-circle__eyebrow' }, [icon('rss', 14, 1.8), title]),
+        h('p', { class: 'friend-circle__stats' }, [
+          `${dataSource.friends.length} friends`,
+          h('span', { 'aria-hidden': 'true' }, ['/']),
+          `${activeFriends} active`,
+          h('span', { 'aria-hidden': 'true' }, ['/']),
+          `${posts.length} posts`,
+        ]),
+      ]),
+      h(
+        'button',
+        {
+          class: 'friend-circle__refresh',
+          type: 'button',
+          'aria-label': '换一批',
+          title: '换一批',
+          'data-friend-circle-refresh': '',
+        },
+        [icon('refresh-cw', 17, 1.8)],
+      ),
+    ]);
 
-// ─── 叶子：friend-link-application（友链申请表单） ──────
-
-export function friendLinkApplicationHandler({
-  attributes,
-  file,
-}: {
-  attributes: Record<string, AttributeValue>;
-  file: { message(v: string, p: unknown, s: string): void };
-}): MdastNode[] {
-  const repository = asString(attributes.repository);
-  if (!repository) {
-    file.message(
-      '::friend-link-application 需要 {repository} 属性。',
-      undefined,
-      'sonder-directives',
+    const payload = JSON.stringify({ posts, initialPosts }).replace(/</g, '\\u003c');
+    const section = h(
+      'section',
+      { class: 'friend-circle', 'data-friend-circle': '', 'data-limit': String(limit) },
+      [
+        header,
+        h(
+          'div',
+          { class: 'friend-circle__posts', 'data-friend-circle-posts': '' },
+          initialPosts.map(friendCirclePostElement),
+        ),
+        h('script', { type: 'application/json', 'data-friend-circle-data': '' }, [payload]),
+      ],
     );
-    return [];
-  }
-
-  const title = asString(attributes.title) ?? '申请友链';
-  const description = asString(attributes.description) ?? '';
-  const appearance = asString(attributes.appearance) ?? 'bordered';
-
-  const html = `<div data-friend-link-application-placeholder data-fla-repository="${repository}" data-fla-title="${title}" data-fla-appearance="${appearance}">${description ? `<p class="friend-link-application__description">${description}</p>` : ''}</div>`;
-  return [wrapRaw('div', html)];
-}
-
-// ─── raw 包装 ──────────────────────────────────────────
-
-function wrapRaw(
-  tagName: string,
-  html: string,
-  properties: Record<string, unknown> = {},
-): MdastNode {
-  return {
-    type: 'blockquote',
-    children: [],
-    data: {
-      hName: tagName,
-      hProperties: properties,
-      hChildren: [{ type: 'raw', value: html }],
-    },
+    return [wrapHast('section', section as never)];
   };
-}
-
-// ─── 容器：media-shelf（媒体架，子指令 :::media-item） ───
-
-export function mediaShelfHandler({
-  node,
-  children,
-  transform,
-  file,
-}: ContainerContext): MdastNode[] {
-  const columns = Number(asString(node.attributes?.columns) ?? '4') || 4;
-  const variant = asString(node.attributes?.variant) ?? 'shelf';
-
-  const items = children
-    .filter((child) => isDirective(child, 'media-item'))
-    .map((child) => {
-      const attrs = child.attributes ?? {};
-      const imgChild = (child.children ?? []).find((inner) => inner.type === 'image') as
-        { url?: string; alt?: string } | undefined;
-      return {
-        title: asString(attrs.title) ?? '',
-        creator: asString(attrs.creator) ?? '',
-        type: asString(attrs.type) ?? 'book',
-        cover: imgChild?.url,
-        coverAspect: asString(attrs['cover-aspect']),
-        rating: Number(asString(attrs.rating) ?? '0') || undefined,
-      };
-    });
-
-  if (items.length === 0) {
-    file.message(
-      ':::media-shelf 内没有 :::media-item，已按普通内容渲染。',
-      positionOf(node),
-      'sonder-directives',
-    );
-    return children;
-  }
-
-  const covers = items
-    .map((item) => {
-      const meta = asString(item.type);
-      const rating = item.rating
-        ? '★'.repeat(Math.max(1, Math.min(5, Math.round(item.rating))))
-        : '';
-      return `<figure class="sonder-media-shelf__cover" data-media-type="${meta}">${
-        item.cover
-          ? `<img src="${item.cover}" alt="${item.title} cover" loading="lazy" decoding="async" />`
-          : `<span aria-hidden="true">${meta}</span>`
-      }</figure><div class="sonder-media-shelf__content"><strong>${item.title}</strong><span class="sonder-media-shelf__meta"><span class="sonder-media-shelf__creator">${item.creator}</span>${rating ? `<span class="sonder-media-shelf__rating">${rating}</span>` : ''}</span></div>`;
-    })
-    .join('');
-
-  const html = `<section class="sonder-media-shelf sonder-media-shelf--${variant}" style="--media-shelf-columns:${columns}" aria-label="Media shelf">${covers}</section>`;
-  return [wrapRaw('section', html)];
 }

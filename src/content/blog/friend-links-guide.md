@@ -1,12 +1,12 @@
 ---
 title: '朋友页与友链卡片'
-description: '维护友链分组、朋友圈聚合与友链申请：Sonder 的朋友页由数据文件和可组合的 MDX 卡片组成。'
+description: '维护友链分组、朋友圈聚合与友链申请：Sonder 的朋友页由数据文件和外挂标签卡片组成。'
 date: '2026-05-19T00:00:00+08:00'
 draft: false
 heroImage: '/src/assets/figure/covers/cover-14-apricot.png'
 showHeroImage: false
 tags:
-  - MDX
+  - 外挂标签
   - 友链
   - 组件
 categories:
@@ -40,7 +40,7 @@ export const friendLinkGroups = [
 
 每项支持 `name`、`url`、`bio`、`avatar`、`rss` 和 `sticky`。没有头像时，卡片会使用名称首字母作为占位。
 
-## 在 MDX 中使用卡片
+## 在文章中使用卡片
 
 `FriendLinkCard` 也可以在文章正文中直接使用：
 

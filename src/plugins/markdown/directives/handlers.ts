@@ -159,8 +159,25 @@ function detailsHandler({ node, children, label, labelText, file }: ContainerCon
 
 // ─── 容器：grid（图片网格） ─────────────────────────────
 
+/** 判断「只含图片（允许夹杂空白软换行）」的段落 */
+function isImageOnlyParagraph(node: MdastNode): boolean {
+  return (
+    node.type === 'paragraph' &&
+    (node.children ?? []).some((child) => child.type === 'image') &&
+    (node.children ?? []).every(
+      (child) => child.type === 'image' || (child.type === 'text' && !child.value?.trim()),
+    )
+  );
+}
+
 function gridHandler({ children }: ContainerContext): MdastNode[] {
-  return [wrap('div', ['sd-grid'], children)];
+  // 相邻图片行在 Markdown 里会合并成同一段落（中间是空白软换行），拆开让每张图独立成网格项
+  const items = children.flatMap((child) =>
+    isImageOnlyParagraph(child)
+      ? (child.children ?? []).filter((node) => node.type === 'image')
+      : [child],
+  );
+  return [wrap('div', ['sd-grid'], items)];
 }
 
 // ─── 容器：tabs（标签页，消费 :::tab 子指令） ────────────
@@ -341,19 +358,16 @@ function embedHandler(
   };
 }
 
-function linkHandler({ attributes, file }: LeafContext): MdastNode[] {
-  const href = asString(attributes.href);
-  if (!href) {
-    file.message('::link 需要 {href} 属性，已跳过。', undefined, 'sonder-directives');
-    return [];
-  }
-
-  const title = asString(attributes.title) ?? href;
-  const description = asString(attributes.description);
-  const icon = asString(attributes.icon);
+/** 链接卡片（::link 与播放器降级共用） */
+export function buildLinkCard(
+  href: string,
+  title: string,
+  description?: string,
+  iconSrc?: string,
+): HastElement {
   const domain = href.startsWith('http') ? new URL(href).hostname.replace(/^www\./, '') : undefined;
 
-  const card = h(
+  return h(
     'a',
     {
       class: 'sd-link-card',
@@ -368,11 +382,23 @@ function linkHandler({ attributes, file }: LeafContext): MdastNode[] {
           { type: 'text', value: description ?? domain ?? href },
         ]),
       ]),
-      icon ? h('img', { class: 'sd-link-card-icon', src: icon, alt: '' }) : undefined,
+      iconSrc ? h('img', { class: 'sd-link-card-icon', src: iconSrc, alt: '' }) : undefined,
     ].filter(Boolean) as HastChild[],
   );
+}
 
-  return [wrapHast('a', card as unknown as HastElement)];
+function linkHandler({ attributes, file }: LeafContext): MdastNode[] {
+  const href = asString(attributes.href);
+  if (!href) {
+    file.message('::link 需要 {href} 属性，已跳过。', undefined, 'sonder-directives');
+    return [];
+  }
+
+  const title = asString(attributes.title) ?? href;
+  const description = asString(attributes.description);
+  const icon = asString(attributes.icon);
+
+  return [wrapHast('a', buildLinkCard(href, title, description, icon) as unknown as HastElement)];
 }
 
 // ─── 行内：badge / key / blur / span / btn ───────────────
@@ -439,7 +465,13 @@ function badgeHandler({ label, labelText, attributes }: InlineContext): MdastNod
   ];
 }
 
-function keyHandler({ label, attributes }: InlineContext): MdastNode[] {
+function keyHandler({ label, labelText, attributes }: InlineContext): MdastNode[] {
+  const mods = (['ctrl', 'shift', 'alt', 'meta', 'win', 'cmd'] as const).filter(
+    (mod) => attributes[mod] === true,
+  );
+  if (attributes.icon === true) mods.push('icon');
+  if (attributes.icon === false) mods.push('no-icon');
+
   return [
     {
       type: 'emphasis',
@@ -447,6 +479,9 @@ function keyHandler({ label, attributes }: InlineContext): MdastNode[] {
         hName: 'kbd',
         hProperties: {
           className: classNames('sd-key', attributes.active === true && 'is-active'),
+          // 供 widget 脚本点亮真实按键；文本保留作者写法
+          'data-key': asString(attributes.code) ?? labelText ?? '',
+          ...(mods.length > 0 ? { 'data-mods': mods.join(' ') } : {}),
         },
       },
     },

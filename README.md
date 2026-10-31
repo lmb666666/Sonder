@@ -45,7 +45,7 @@ Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底�
 
 - **评论** —— giscus / utterances / Waline / Twikoo，可关闭
 - **数学公式与图表** —— KaTeX / MathJax、Mermaid、ABC 乐谱
-- **外挂语法与 MDX 组件** —— `:::note` / `:badge` / `::github` 等指令零 import 直写，另有 20 个 MDX 组件
+- **外挂标签** —— `:::note` / `:badge` / `::github` 等指令零 import 直写，覆盖提醒块、标签页、媒体、音乐、友链等 20+ 组件
 - **静态输出** —— RSS、Atom、sitemap、llms.txt；构建生成按需字体子集
 
 ## 🚀 快速开始
@@ -87,7 +87,7 @@ heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 | [快速开始](https://sonder.liang.one/blog/get-start/)                 | 替换站点信息、写文章、构建与部署 |
 | [站点配置](https://sonder.liang.one/blog/site-config-guide/)         | `site.toml` 全部字段说明         |
 | [主题与色盘](https://sonder.liang.one/blog/theme-palettes/)          | 8 套色盘与深色模式               |
-| [组件速览](https://sonder.liang.one/blog/components-showcase/)       | 20 个 MDX 组件的真实演示         |
+| [组件速览](https://sonder.liang.one/blog/components-showcase/)       | 全部外挂标签的语法与真实演示     |
 | [Markdown 风格](https://sonder.liang.one/blog/markdown-style-guide/) | 排版规范与扩展语法               |
 | [站内搜索](https://sonder.liang.one/blog/site-search-guide/)         | Pagefind 配置                    |
 | [书影音页面](https://sonder.liang.one/blog/media-page-guide/)        | 条目格式与媒体架                 |

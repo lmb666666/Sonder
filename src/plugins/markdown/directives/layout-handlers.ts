@@ -15,6 +15,15 @@ function isDirective(node: MdastNode, name: string): boolean {
   return node.type === 'containerDirective' && node.name === name;
 }
 
+function inlineTextOf(node: MdastNode): string {
+  const first = node.children?.[0];
+  if (!first?.data?.directiveLabel) return '';
+  return (first.children ?? [])
+    .map((child) => (typeof child.value === 'string' ? child.value : ''))
+    .join('')
+    .trim();
+}
+
 function positiveInteger(value: AttributeValue | undefined): number | undefined {
   if (typeof value !== 'string' || !/^\d+$/.test(value)) return undefined;
   const parsed = Number(value);
@@ -139,15 +148,15 @@ export function timelineHandler({
 
   for (const child of children) {
     if (isDirective(child, 'event')) {
-      const date = asString(child.attributes?.date);
-      current = wrap(
-        'li',
-        ['markdown-timeline-event'],
-        transform(child.children ?? [], 'event', file),
-        {
-          ...(date ? { dataTimelineDate: date } : {}),
-        },
-      );
+      // 日期：优先 {date} 属性，回退到 [日期] 标签（标签不进正文）
+      const labelText = inlineTextOf(child);
+      const date = asString(child.attributes?.date) ?? (labelText || undefined);
+      const body = child.children?.[0]?.data?.directiveLabel
+        ? (child.children ?? []).slice(1)
+        : (child.children ?? []);
+      current = wrap('li', ['markdown-timeline-event'], transform(body, 'event', file), {
+        ...(date ? { dataTimelineDate: date } : {}),
+      });
       events.push(current);
       continue;
     }

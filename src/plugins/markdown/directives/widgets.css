@@ -1,0 +1,1856 @@
+/* Sonder 外挂指令·重型组件的全局样式。
+ * 由 src/components/mdx/*.astro 的 scoped 样式移植而来（类名保持一致），
+ * 仅文章页（MarkdownWidgets）加载。 */
+
+/* ═══ 聊天记录（chat） — 移植自 src/components/mdx/Chat.astro ═══ */
+
+/* 原始内容默认隐藏（结构化由脚本完成）；无 JS 环境下回退为可见的原始文本 */
+.chat-source {
+  display: none;
+}
+
+@media (scripting: none) {
+  .chat-source {
+    display: block;
+  }
+}
+
+.chat {
+  margin: 1.5em 2vw;
+  font-family: var(--font-meta);
+  font-size: 0.9em;
+}
+
+.chat .chat-caption {
+  margin-bottom: 0.25em;
+  color: var(--paper-ink-faint);
+  font-size: 0.9em;
+}
+
+.chat .chat-caption.chat-system {
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.chat .chat-caption.chat-myself {
+  text-align: end;
+}
+
+.chat .chat-body {
+  overflow: hidden;
+  width: fit-content;
+  max-width: 90%;
+  margin-bottom: 1em;
+  padding: 0.4em 1em;
+  border: 1px solid var(--paper-line);
+  border-radius: 1em;
+  border-start-start-radius: 0.2em;
+  background: var(--paper-surface-muted);
+}
+
+.chat .chat-caption.chat-myself + .chat-body {
+  margin-inline-start: auto;
+  border-color: var(--paper-accent-soft);
+  border-radius: 1em;
+  border-start-end-radius: 0.2em;
+  background: var(--paper-accent-soft);
+}
+
+.chat .chat-body p {
+  margin: 0;
+}
+
+/* ═══ 诗歌排版（poetry） — 移植自 src/components/mdx/Poetry.astro ═══ */
+
+.poetry {
+  width: fit-content;
+  max-width: 100%;
+  margin: 2em auto;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+.poetry-title {
+  margin: 0 0 0.25em;
+  font-family: var(--font-heading);
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.poetry-meta {
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.875em;
+}
+
+.poetry-content {
+  margin-top: 0.75em;
+}
+
+.poetry-content p {
+  width: fit-content;
+  margin: 0.5em auto;
+  text-align: center;
+}
+
+/* ═══ 卡片列表（card-list） — 移植自 src/components/mdx/CardList.astro ═══ */
+
+.card-list > :where(ol, ul):not([class]) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75em;
+  margin: 1.5em 0;
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+.card-list > :where(ol, ul):not([class]) > li {
+  margin: 0;
+  padding: 0.6em 0.9em;
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 0.5em;
+  background: var(--paper-surface);
+  box-shadow: var(--paper-shadow);
+  font-family: var(--font-meta);
+}
+
+/* ═══ 长图（sonder-long-image） — 移植自 src/components/mdx/LongImage.astro ═══ */
+
+.sonder-long-image {
+  margin: 28px 0 30px;
+}
+.sonder-long-image__viewport {
+  max-height: var(--long-image-height);
+  overflow: auto;
+  border: 1px solid var(--paper-line);
+  border-radius: 8px;
+  background: var(--paper-surface-muted);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.sonder-long-image__viewport:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--paper-accent) 40%, transparent);
+  outline-offset: 3px;
+}
+.sonder-long-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.sonder-long-image figcaption {
+  margin-top: 9px;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .sonder-long-image__viewport {
+    max-height: min(var(--long-image-height), 62vh);
+  }
+}
+
+/* ═══ 轮播（sonder-carousel） — 移植自 src/components/mdx/Carousel.astro ═══ */
+
+.sonder-carousel {
+  display: block;
+  margin: 30px 0;
+}
+.sonder-carousel__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  border: 1px solid var(--paper-line);
+  border-radius: 8px;
+  background: var(--paper-surface-muted);
+}
+.sonder-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+.sonder-carousel [data-carousel-slide] {
+  margin: 0;
+  padding: 14px;
+  scroll-snap-align: center;
+}
+.sonder-carousel__controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sonder-carousel button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--paper-line);
+  border-radius: 8px;
+  background: var(--paper-control);
+  color: var(--paper-ink-soft);
+  cursor: pointer;
+}
+.sonder-carousel button:hover {
+  background: var(--paper-control-hover);
+  color: var(--paper-ink);
+}
+
+/* ═══ 媒体架（sonder-media-shelf） — 移植自 src/components/mdx/MediaShelf.astro ═══ */
+
+.sonder-media-shelf {
+  container-type: inline-size;
+  width: 100%;
+  margin: 24px 0 28px;
+  color: var(--paper-ink);
+}
+.sonder-media-shelf__item {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.sonder-media-shelf__cover {
+  display: grid;
+  margin: 0;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid var(--paper-line);
+  border-radius: 7px;
+  background: var(--paper-surface-muted);
+  color: var(--paper-ink-faint);
+}
+.sonder-media-shelf__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sonder-media-shelf__cover span {
+  font-family: var(--font-meta);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sonder-media-shelf__content {
+  min-width: 0;
+}
+.sonder-media-shelf__content strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sonder-media-shelf__content strong {
+  color: var(--paper-ink);
+  font-family: var(--font-ui-label);
+  font-size: 0.87rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.sonder-media-shelf__meta {
+  display: flex;
+  min-width: 0;
+  gap: 0.45em;
+  margin-top: 3px;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.64rem;
+  line-height: 1.5;
+}
+.sonder-media-shelf__creator {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sonder-media-shelf__rating {
+  flex: none;
+  white-space: nowrap;
+}
+.sonder-media-shelf__review {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  margin-top: 7px;
+  color: var(--paper-accent);
+  font-family: var(--font-meta);
+  font-size: 0.64rem;
+  line-height: 1.25;
+}
+.sonder-media-shelf__content p {
+  margin: 8px 0 0;
+  color: var(--paper-ink-soft);
+  font-family: var(--font-serif-cn);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+.sonder-media-shelf__item:hover strong {
+  color: var(--paper-accent);
+}
+
+.sonder-media-shelf--shelf {
+  display: grid;
+  grid-template-columns: repeat(var(--media-shelf-columns), minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 22px) 14px;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__item {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  width: 100%;
+  text-align: center;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__cover {
+  width: min(100%, 176px);
+  aspect-ratio: 2 / 3;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-media-type='film'],
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-media-type='series'] {
+  aspect-ratio: 16 / 10;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-media-type='album'],
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-media-type='podcast'] {
+  aspect-ratio: 1;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-cover-aspect='portrait'] {
+  aspect-ratio: 2 / 3;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-cover-aspect='landscape'] {
+  aspect-ratio: 16 / 10;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-cover-aspect='square'] {
+  aspect-ratio: 1;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__cover[data-cover-aspect='wide'] {
+  aspect-ratio: 16 / 9;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__content {
+  width: 100%;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__review {
+  justify-content: center;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__content p {
+  display: none;
+}
+.sonder-media-shelf--shelf .sonder-media-shelf__item:only-child {
+  grid-column: 1 / -1;
+  width: min(100%, 176px);
+  justify-self: center;
+}
+
+.sonder-media-shelf--inline {
+  display: grid;
+  gap: 22px;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__item {
+  display: grid;
+  grid-template-columns: clamp(92px, 18cqi, 142px) minmax(0, 1fr);
+  gap: clamp(14px, 3cqi, 24px);
+  align-items: start;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__cover {
+  aspect-ratio: 2 / 3;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-media-type='film'],
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-media-type='series'] {
+  aspect-ratio: 16 / 10;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-media-type='album'],
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-media-type='podcast'] {
+  aspect-ratio: 1;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-cover-aspect='portrait'] {
+  aspect-ratio: 2 / 3;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-cover-aspect='landscape'] {
+  aspect-ratio: 16 / 10;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-cover-aspect='square'] {
+  aspect-ratio: 1;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__cover[data-cover-aspect='wide'] {
+  aspect-ratio: 16 / 9;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__content {
+  padding-top: 2px;
+}
+.sonder-media-shelf--inline .sonder-media-shelf__content strong {
+  font-size: 1rem;
+  white-space: normal;
+}
+
+@container (max-width: 620px) {
+  .sonder-media-shelf--shelf {
+    grid-template-columns: repeat(min(3, var(--media-shelf-columns)), minmax(0, 1fr));
+  }
+}
+@container (max-width: 420px) {
+  .sonder-media-shelf--shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sonder-media-shelf--inline .sonder-media-shelf__item {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+@media (max-width: 720px) {
+  .sonder-media-shelf--shelf {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 430px) {
+  .sonder-media-shelf--shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sonder-media-shelf--shelf .sonder-media-shelf__meta {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+/* ═══ 友链卡片（friend-link-card） — 移植自 src/components/mdx/FriendLinkCard.astro ═══ */
+
+.friend-link-card__rss {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 999px;
+  background: var(--paper-surface);
+  color: var(--paper-ink-faint);
+  pointer-events: none;
+}
+
+.friend-link-region {
+  container-type: inline-size;
+  margin: 18px 0;
+}
+.friend-link-list {
+  display: grid;
+  grid-template-columns: repeat(var(--friend-link-columns), minmax(0, 1fr));
+  gap: 12px;
+}
+.friend-link-card {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  min-height: 90px;
+  padding: 13px;
+  overflow: hidden;
+  border: 1px solid var(--paper-line);
+  border-radius: 8px;
+  background: var(--paper-surface);
+  color: var(--paper-ink);
+  text-decoration: none;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper-surface) 82%, transparent);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+.friend-link-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--paper-accent) 54%, var(--paper-line));
+}
+.friend-link-card--preview {
+  cursor: default;
+}
+.friend-link-card--preview:hover {
+  transform: none;
+  border-color: var(--paper-line);
+}
+.friend-link-card--random {
+  background: color-mix(in srgb, var(--friend-link-random), var(--paper-surface) 76%);
+}
+.friend-link-card--random:hover {
+  background: color-mix(in srgb, var(--friend-link-random-strong), var(--paper-surface) 68%);
+}
+.friend-link-card__background {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -8%;
+  z-index: -1;
+  width: 72%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.16;
+  -webkit-mask-image: linear-gradient(to left, transparent, #000);
+  mask-image: linear-gradient(to left, transparent, #000);
+  pointer-events: none;
+}
+.friend-link-card__avatar {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper-surface) 72%, var(--paper-ink));
+  font-weight: 700;
+}
+.friend-link-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.friend-link-card__meta {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+.friend-link-card__heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.friend-link-card__heading strong {
+  overflow: hidden;
+  font-size: 0.96rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.friend-link-card__heading svg {
+  flex: 0 0 auto;
+  color: var(--paper-ink-faint);
+}
+.friend-link-card__bio {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--paper-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+@container (max-width: 920px) {
+  .friend-link-list {
+    grid-template-columns: repeat(min(3, var(--friend-link-columns)), minmax(0, 1fr));
+  }
+}
+@container (max-width: 620px) {
+  .friend-link-list {
+    grid-template-columns: repeat(min(2, var(--friend-link-columns)), minmax(0, 1fr));
+  }
+}
+@container (max-width: 390px) {
+  .friend-link-list {
+    grid-template-columns: 1fr;
+  }
+}
+/* A narrow viewport needs readable cards even when a desktop column count is explicit. */
+@media (max-width: 720px) {
+  .friend-link-list {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .friend-link-card {
+    transition: none;
+  }
+  .friend-link-card:hover {
+    transform: none;
+  }
+}
+
+/* ═══ 朋友圈（friend-circle） — 移植自 src/components/mdx/FriendCircle.astro ═══ */
+
+.friend-circle {
+  margin: 34px 0;
+  border-top: 1px solid var(--paper-line);
+  border-bottom: 1px solid var(--paper-line);
+}
+.friend-circle__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px 0;
+}
+.friend-circle__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--paper-ink);
+  font-family: var(--font-meta);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.friend-circle__eyebrow svg {
+  color: var(--paper-accent);
+}
+.friend-circle__stats {
+  margin: 4px 0 0;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.72rem;
+}
+.friend-circle__stats span {
+  margin: 0 5px;
+  color: var(--paper-line-strong);
+}
+.friend-circle__refresh {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--paper-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--paper-ink-soft);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+.friend-circle__refresh:hover {
+  border-color: var(--paper-line-strong);
+  background: var(--paper-control-hover);
+  color: var(--paper-ink);
+}
+.friend-circle__refresh.is-refreshing svg {
+  animation: friend-circle-spin 260ms ease;
+}
+.friend-circle__posts {
+  border-top: 1px solid var(--paper-line);
+}
+.friend-circle__post {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--paper-line);
+}
+.friend-circle__post:last-child {
+  border-bottom: 0;
+}
+.friend-circle__author-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: inherit;
+  text-decoration: none;
+}
+.friend-circle__author-link:hover .friend-circle__author,
+.friend-circle__post-title:hover {
+  color: var(--paper-ink);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--paper-accent) 56%, transparent);
+  text-underline-offset: 4px;
+}
+.friend-circle__author-avatar {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--paper-line);
+  border-radius: 999px;
+  background: var(--paper-surface-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.friend-circle__author-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.friend-circle__author {
+  color: var(--paper-ink-soft);
+  font-family: var(--font-meta);
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+.friend-circle__post-title {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.friend-circle__post-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.friend-circle__tags {
+  display: flex;
+  gap: 4px;
+  max-width: 14rem;
+  overflow: hidden;
+}
+.friend-circle__tags span {
+  overflow: hidden;
+  color: color-mix(in srgb, var(--paper-accent) 72%, var(--paper-ink-soft));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.friend-circle__tags span::before {
+  content: '#';
+}
+@keyframes friend-circle-spin {
+  to {
+    transform: rotate(180deg);
+  }
+}
+@media (max-width: 700px) {
+  .friend-circle__post {
+    grid-template-columns: max-content minmax(0, 1fr) auto;
+    gap: 7px;
+    padding: 7px 0;
+  }
+  .friend-circle__author-link {
+    gap: 6px;
+  }
+  .friend-circle__tags {
+    display: none;
+  }
+}
+@media (max-width: 440px) {
+  .friend-circle__post-meta time {
+    font-size: 0.65rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .friend-circle__refresh {
+    transition: none;
+  }
+  .friend-circle__refresh.is-refreshing svg {
+    animation: none;
+  }
+}
+
+/* ═══ ABC 乐谱（music-score） — 移植自 src/components/mdx/MusicScore.astro ═══ */
+
+.music-score {
+  margin: 1.5em 0;
+  line-height: 1.4;
+  color: var(--paper-ink);
+}
+
+.music-score .abcjs-inline-audio {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.5em;
+  padding: 0.2em 0.5em;
+  border: 1px solid var(--paper-line);
+  border-radius: 4px;
+  background: var(--paper-surface-muted);
+  font-family: var(--font-meta);
+  font-size: 0.8em;
+  font-variant-numeric: tabular-nums;
+}
+
+.music-score .abcjs-inline-audio.abcjs-disabled {
+  opacity: 0.5;
+}
+
+.music-score .abcjs-inline-audio > .abcjs-btn {
+  width: 1em;
+  padding: 0.2em;
+  box-sizing: content-box;
+  background: none;
+  border: 0;
+  color: var(--paper-ink-soft);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.music-score .abcjs-inline-audio > .abcjs-btn svg {
+  display: block;
+}
+
+.music-score .abcjs-inline-audio > .abcjs-btn:hover,
+.music-score .abcjs-inline-audio > .abcjs-btn.abcjs-pushed {
+  color: var(--paper-accent);
+}
+
+.music-score .abcjs-inline-audio > .abcjs-btn g {
+  fill: currentcolor;
+  stroke: currentcolor;
+}
+
+.music-score .abcjs-inline-audio .abcjs-midi-start .abcjs-pause-svg,
+.music-score .abcjs-inline-audio .abcjs-midi-start .abcjs-loading-svg {
+  display: none;
+}
+
+.music-score .abcjs-inline-audio .abcjs-midi-start.abcjs-pushed .abcjs-play-svg,
+.music-score .abcjs-inline-audio .abcjs-midi-start.abcjs-loading .abcjs-play-svg {
+  display: none;
+}
+
+.music-score .abcjs-inline-audio .abcjs-midi-start.abcjs-pushed .abcjs-pause-svg {
+  display: block;
+}
+
+.music-score .abcjs-midi-progress-background,
+.music-score .abcjs-midi-progress-indicator {
+  border: 8px solid transparent;
+  border-radius: 12px;
+  box-sizing: content-box;
+  background-clip: padding-box;
+}
+
+.music-score .abcjs-midi-progress-background {
+  flex-grow: 1;
+  position: relative;
+  height: 4px;
+  background-color: var(--paper-fog, var(--paper-surface-muted));
+}
+
+.music-score .abcjs-midi-progress-indicator {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  margin-left: -10px;
+  background-color: var(--paper-ink-soft);
+}
+
+.music-score .abcjs-midi-clock {
+  display: inline-block;
+}
+
+.music-score .abcjs-tempo-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.music-score input.abcjs-midi-tempo {
+  position: relative;
+  width: 3em;
+  text-align: end;
+}
+
+.music-score .abcjs-loading {
+  outline: none;
+  animation: music-score-spin 1s linear infinite;
+}
+
+.music-score .abcjs-css-warning {
+  display: none;
+}
+
+@keyframes music-score-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ═══ 音乐播放器（sonder-music-player） — 移植自 src/components/mdx/MusicPlayer.astro ═══ */
+
+.sonder-music-player {
+  --music-surface: var(--music-surface-light);
+  --music-surface-muted: var(--music-surface-muted-light);
+  --music-text: var(--music-text-light);
+  --music-text-muted: var(--music-text-muted-light);
+  --music-accent: var(--music-accent-light);
+  --music-accent-contrast: var(--music-accent-contrast-light);
+  --music-line: var(--music-line-light);
+  margin: 22px 0 24px;
+  color: var(--music-text);
+  font-family: var(--font-meta, ui-monospace, monospace);
+}
+:root[data-theme='dark'] .sonder-music-player {
+  --music-surface: var(--music-surface-dark);
+  --music-surface-muted: var(--music-surface-muted-dark);
+  --music-text: var(--music-text-dark);
+  --music-text-muted: var(--music-text-muted-dark);
+  --music-accent: var(--music-accent-dark);
+  --music-accent-contrast: var(--music-accent-contrast-dark);
+  --music-line: var(--music-line-dark);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .sonder-music-player {
+    --music-surface: var(--music-surface-dark);
+    --music-surface-muted: var(--music-surface-muted-dark);
+    --music-text: var(--music-text-dark);
+    --music-text-muted: var(--music-text-muted-dark);
+    --music-accent: var(--music-accent-dark);
+    --music-accent-contrast: var(--music-accent-contrast-dark);
+    --music-line: var(--music-line-dark);
+  }
+}
+.sonder-music-player--card {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--music-line) 86%, transparent);
+  border-radius: 10px;
+  background: var(--music-surface);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--music-text) 5%, transparent);
+}
+.sonder-music-player--inline {
+  padding: 8px 0;
+  background: transparent;
+}
+.sonder-music-player__body {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px 12px;
+}
+.sonder-music-player--inline .sonder-music-player__body {
+  padding: 0;
+}
+.sonder-music-player__artwork {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 7px;
+  object-fit: cover;
+  background: var(--music-surface-muted);
+}
+.sonder-music-player__artwork--placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--music-accent);
+  font-size: 1.25rem;
+}
+.sonder-music-player__content {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+.sonder-music-player__meta {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.sonder-music-player__meta strong,
+.sonder-music-player__meta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sonder-music-player__meta strong {
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+.sonder-music-player__meta span,
+.sonder-music-player__provider,
+.sonder-music-player__unavailable {
+  color: var(--music-text-muted);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+.sonder-music-player__controls {
+  display: grid;
+  grid-template-columns: auto minmax(64px, 1fr) auto auto;
+  align-items: center;
+  gap: 7px;
+}
+.sonder-music-player button {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border: 1px solid var(--music-line);
+  border-radius: 999px;
+  background: var(--music-surface-muted);
+  color: var(--music-accent);
+  cursor: pointer;
+}
+.sonder-music-player__play {
+  border-color: var(--music-accent) !important;
+  background: var(--music-accent) !important;
+  color: var(--music-accent-contrast) !important;
+}
+.sonder-music-player [data-pause-icon],
+.sonder-music-player[data-playing] [data-play-icon],
+.sonder-music-player [data-muted-icon] {
+  display: none;
+}
+.sonder-music-player[data-playing] [data-pause-icon],
+.sonder-music-player[data-muted] [data-muted-icon] {
+  display: block;
+}
+.sonder-music-player[data-muted] [data-volume-icon] {
+  display: none;
+}
+.sonder-music-player__progress {
+  width: 100%;
+  accent-color: var(--music-accent);
+}
+.sonder-music-player__time {
+  color: var(--music-text-muted);
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sonder-music-player__provider {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+.sonder-music-player__provider a {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  color: var(--music-accent);
+  text-decoration: none;
+}
+.sonder-music-player__embed {
+  display: block;
+  width: 100%;
+  height: 152px;
+  border: 0;
+  border-top: 1px solid var(--music-line);
+  background: var(--music-surface-muted);
+}
+.sonder-music-player--inline .sonder-music-player__embed {
+  margin-top: 8px;
+  border-top: 0;
+  border-radius: 7px;
+}
+.sonder-music-player figcaption {
+  padding: 0 12px 10px;
+  color: var(--music-text-muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+.sonder-music-player--inline figcaption {
+  padding: 8px 0 0;
+}
+@media (max-width: 540px) {
+  .sonder-music-player__artwork {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+  }
+  .sonder-music-player__controls {
+    grid-template-columns: auto minmax(40px, 1fr) auto;
+  }
+  .sonder-music-player__mute {
+    display: none !important;
+  }
+}
+.sonder-music-player {
+  width: 100%;
+  max-width: 620px;
+  margin-inline: auto;
+}
+.sonder-music-player--narrow {
+  max-width: 400px;
+}
+.sonder-music-player--compact {
+  max-width: 500px;
+}
+.sonder-music-player--wide {
+  max-width: 720px;
+}
+.sonder-music-player--full {
+  max-width: none;
+}
+.sonder-music-player__controls {
+  grid-template-columns: 28px minmax(0, 1fr) auto 28px;
+}
+.sonder-music-player button {
+  line-height: 0;
+}
+.sonder-music-player button svg {
+  display: block;
+  margin: auto;
+}
+.sonder-music-player__progress {
+  appearance: none;
+  height: 4px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--music-accent) 0 var(--music-progress, 0%),
+    color-mix(in srgb, var(--music-line) 88%, transparent) var(--music-progress, 0%) 100%
+  );
+  cursor: pointer;
+}
+.sonder-music-player__progress::-webkit-slider-runnable-track {
+  height: 4px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+}
+.sonder-music-player__progress::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -3px;
+  appearance: none;
+  border: 0;
+  border-radius: 50%;
+  background: var(--music-accent);
+  box-shadow: 0 0 0 2px var(--music-surface);
+}
+.sonder-music-player__progress::-moz-range-track {
+  height: 4px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--music-line) 88%, transparent);
+}
+.sonder-music-player__progress::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--music-accent);
+}
+.sonder-music-player__progress::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--music-surface);
+  border-radius: 50%;
+  background: var(--music-accent);
+}
+.sonder-music-player [data-marquee] {
+  overflow: hidden;
+}
+.sonder-music-player [data-marquee] > span {
+  display: inline-block;
+  min-width: 100%;
+  white-space: nowrap;
+}
+.sonder-music-player [data-marquee][data-overflow] > span {
+  padding-right: 2rem;
+  animation: sonder-music-marquee 9s linear infinite alternate;
+}
+.sonder-music-player [data-marquee]:hover > span {
+  animation-play-state: paused;
+}
+.sonder-music-player figcaption {
+  opacity: 0.68;
+  font-size: 0.63rem;
+}
+.sonder-music-player__playlist {
+  border-top: 1px solid color-mix(in srgb, var(--music-line) 75%, transparent);
+}
+.sonder-music-player__playlist summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  color: var(--music-text-muted);
+  cursor: pointer;
+  font-size: 0.68rem;
+  list-style: none;
+}
+.sonder-music-player__playlist summary::-webkit-details-marker {
+  display: none;
+}
+.sonder-music-player__playlist > div {
+  max-height: 168px;
+  overflow: auto;
+  padding: 0 6px 7px;
+}
+.sonder-music-player__playlist button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  width: 100%;
+  height: auto;
+  padding: 6px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--music-text);
+  text-align: left;
+  line-height: 1.25;
+}
+.sonder-music-player__playlist button:hover,
+.sonder-music-player__playlist button[data-current-track] {
+  background: var(--music-surface-muted);
+}
+.sonder-music-player__playlist button span,
+.sonder-music-player__playlist button small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sonder-music-player__playlist button small {
+  color: var(--music-text-muted);
+  font-size: 0.62rem;
+}
+@keyframes sonder-music-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-1 * var(--marquee-distance, 0px)));
+  }
+}
+
+/* ═══ 友链申请表单（friend-link-application） — 移植自 src/components/mdx/FriendLinkApplication.astro ═══ */
+
+.friend-link-application {
+  container-type: inline-size;
+  margin: 28px 0 34px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper-ink);
+  font-size: 1rem;
+  box-shadow: none;
+}
+
+.friend-link-application[data-appearance='bordered'] {
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 12px;
+  background: var(--paper-surface);
+}
+
+.friend-link-application__viewport {
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.friend-link-application__track {
+  display: grid;
+  width: 200%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  transform: translateX(0);
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.friend-link-application[data-view='preview'] .friend-link-application__track {
+  transform: translateX(-50%);
+}
+
+.friend-link-application__slide {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.friend-link-application__form-page,
+.friend-link-application__preview {
+  padding: clamp(22px, 3.7vw, 38px);
+}
+
+.friend-link-application__form-page {
+  background: transparent;
+}
+
+.friend-link-application__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 0 28px;
+}
+
+.friend-link-application__header--with-live-preview {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(220px, 280px) auto;
+  align-items: center;
+}
+
+.friend-link-application__intro {
+  min-width: 0;
+}
+
+.friend-link-application__card-preview {
+  width: 100%;
+  min-width: 0;
+  max-width: 280px;
+  justify-self: center;
+}
+
+.friend-link-application__card-preview .friend-link-region {
+  margin: 0;
+}
+
+.friend-link-application__card-preview .friend-link-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.friend-link-application__header h2,
+.friend-link-application__header p {
+  margin: 0;
+}
+
+.friend-link-application__header h2 {
+  color: var(--paper-ink);
+  font-family: var(--font-heading);
+  font-size: 1.34rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+}
+
+.friend-link-application__header p {
+  margin-top: 5px;
+  color: var(--paper-ink-soft);
+  font-family: var(--font-meta);
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.friend-link-application__switch {
+  position: relative;
+  display: inline-flex;
+  min-height: 38px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 7px;
+  background: var(--paper-control);
+  color: var(--paper-ink-soft);
+  font-family: var(--font-meta);
+  font-size: 0.84rem;
+  font-weight: 650;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.friend-link-application__switch:hover,
+.friend-link-application__switch:focus-visible {
+  border-color: color-mix(in srgb, var(--paper-accent) 50%, var(--paper-line-strong));
+  background: var(--paper-control-hover);
+  color: var(--paper-accent);
+}
+
+.friend-link-application__switch:hover svg {
+  transform: translateX(2px);
+}
+
+.friend-link-application__switch--back:hover svg {
+  transform: translateX(-2px);
+}
+
+.friend-link-application__switch svg {
+  transition: transform 160ms ease;
+}
+
+.friend-link-application__form,
+.friend-link-application__preview {
+  min-width: 0;
+  margin: 0;
+}
+
+.friend-link-application__form {
+  width: 100%;
+}
+
+.friend-link-application__preview {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  contain: size;
+  background: color-mix(in srgb, var(--paper-surface-muted) 66%, transparent);
+}
+
+.friend-link-application__preview-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.friend-link-application__preview-header h3 {
+  margin: 0;
+  color: var(--paper-ink);
+  font-family: var(--font-heading);
+  font-size: 1.08rem;
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.friend-link-application__preview-header .friend-link-application__copy {
+  justify-self: end;
+}
+
+.friend-link-application__preview-header .friend-link-application__switch {
+  justify-self: start;
+}
+
+.friend-link-application__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+}
+
+.friend-link-application__field {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.friend-link-application__field--wide {
+  grid-column: 1 / -1;
+  align-items: start;
+}
+
+.friend-link-application__field--wide > span {
+  padding-top: 9px;
+}
+
+.friend-link-application__field > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  color: var(--paper-ink-soft);
+  font-family: var(--font-article);
+  font-size: 0.84rem;
+  font-weight: 650;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.friend-link-application__field em {
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.friend-link-application__field input,
+.friend-link-application__field textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--paper-line-strong);
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: var(--paper-ink);
+  font-family: var(--font-article);
+  font-size: 1rem;
+  line-height: 1.6;
+  box-shadow: none;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.friend-link-application__field input {
+  height: 42px;
+  padding: 5px 2px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.friend-link-application__field textarea {
+  min-height: 72px;
+  padding: 8px 2px 10px;
+  resize: vertical;
+}
+
+.friend-link-application__field input::placeholder,
+.friend-link-application__field textarea::placeholder {
+  color: var(--paper-ink-faint);
+  opacity: 0.72;
+}
+
+.friend-link-application__field input:hover,
+.friend-link-application__field textarea:hover {
+  border-color: color-mix(in srgb, var(--paper-accent) 30%, var(--paper-line-strong));
+}
+
+.friend-link-application__field input:focus,
+.friend-link-application__field textarea:focus {
+  border-color: var(--paper-accent);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--paper-accent) 5%, transparent),
+    transparent 70%
+  );
+}
+
+.friend-link-application__field input:user-invalid,
+.friend-link-application__field textarea:user-invalid {
+  border-color: color-mix(in srgb, #b94c3f 66%, var(--paper-line-strong));
+}
+
+.friend-link-application__copy {
+  position: relative;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  margin: -4px -3px -4px 0;
+  padding: 0;
+  border: 1px solid var(--paper-line);
+  border-radius: 6px;
+  background: var(--paper-control);
+  color: var(--paper-ink-soft);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.friend-link-application__copy:hover,
+.friend-link-application__copy:focus-visible {
+  border-color: var(--paper-line-strong);
+  background: var(--paper-control-hover);
+  color: var(--paper-accent);
+}
+
+.friend-link-application__copy:active {
+  transform: translateY(1px);
+}
+
+.friend-link-application__check-icon {
+  display: none;
+}
+
+.friend-link-application__copy[data-copied] {
+  border-color: color-mix(in srgb, #4f8a62 54%, var(--paper-line));
+  color: #4f8a62;
+}
+
+.friend-link-application__copy[data-copied] .friend-link-application__copy-icon {
+  display: none;
+}
+
+.friend-link-application__copy[data-copied] .friend-link-application__check-icon {
+  display: block;
+}
+
+.friend-link-application__code {
+  position: relative;
+  flex: 1;
+  min-height: 300px;
+  padding: 48px clamp(18px, 3vw, 30px) 24px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--paper-line);
+  border-radius: 9px;
+  background: var(--paper-surface);
+  scrollbar-gutter: stable;
+}
+
+.friend-link-application__code > svg {
+  position: absolute;
+  top: 17px;
+  left: clamp(18px, 3vw, 30px);
+  color: var(--paper-accent);
+  opacity: 0.72;
+}
+
+.friend-link-application__code pre {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.friend-link-application__code code {
+  background: transparent;
+  color: var(--paper-ink-soft);
+  font-family: var(--font-code);
+  font-size: 1.04rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.friend-link-application__actions {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.friend-link-application__apply {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-left: 0;
+  padding: 11px 15px;
+  border: 1px solid color-mix(in srgb, var(--paper-accent) 38%, var(--paper-line));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--paper-accent) 8%, var(--paper-control));
+  color: var(--paper-accent);
+  font-family: var(--font-meta);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.friend-link-application__apply:hover,
+.friend-link-application__apply:focus-visible {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--paper-accent) 62%, var(--paper-line));
+  background: color-mix(in srgb, var(--paper-accent) 13%, var(--paper-control-hover));
+  color: var(--paper-accent);
+}
+
+.friend-link-application__apply[aria-disabled='true'],
+.friend-link-application__copy[aria-disabled='true'] {
+  opacity: 0.52;
+}
+
+.friend-link-application__actions p {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+[data-tooltip]::before,
+[data-tooltip]::after {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 5px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+[data-tooltip]::before {
+  content: '';
+  bottom: calc(100% + 3px);
+  border: 5px solid transparent;
+  border-top-color: var(--paper-ink);
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  bottom: calc(100% + 13px);
+  width: max-content;
+  max-width: min(240px, 72vw);
+  padding: 6px 8px;
+  border-radius: 5px;
+  background: var(--paper-ink);
+  color: var(--paper-surface);
+  font-family: var(--font-meta);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.4;
+  text-align: center;
+  white-space: normal;
+  box-shadow: var(--paper-shadow-lift);
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::before,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.friend-link-application__copy[data-tooltip]::before,
+.friend-link-application__copy[data-tooltip]::after {
+  right: -4px;
+  left: auto;
+  transform: translateY(-5px);
+}
+
+.friend-link-application__copy[data-tooltip]::before {
+  top: calc(100% + 3px);
+  right: 7px;
+  bottom: auto;
+  border-top-color: transparent;
+  border-bottom-color: var(--paper-ink);
+}
+
+.friend-link-application__copy[data-tooltip]::after {
+  top: calc(100% + 13px);
+  bottom: auto;
+}
+
+.friend-link-application__copy[data-tooltip]:hover::before,
+.friend-link-application__copy[data-tooltip]:hover::after,
+.friend-link-application__copy[data-tooltip]:focus-visible::before,
+.friend-link-application__copy[data-tooltip]:focus-visible::after {
+  transform: translateY(0);
+}
+
+.friend-link-application__copy:focus-visible,
+.friend-link-application__apply:focus-visible,
+.friend-link-application__switch:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--paper-accent) 48%, transparent);
+  outline-offset: 2px;
+}
+
+@container (max-width: 760px) {
+  .friend-link-application__header--with-live-preview {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .friend-link-application__header--with-live-preview .friend-link-application__intro {
+    grid-column: 1 / -1;
+  }
+
+  .friend-link-application__header--with-live-preview .friend-link-application__card-preview {
+    max-width: none;
+    justify-self: stretch;
+  }
+}
+
+@container (max-width: 620px) {
+  .friend-link-application__header {
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 24px;
+  }
+
+  .friend-link-application__switch--next {
+    align-self: stretch;
+  }
+
+  .friend-link-application__header--with-live-preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .friend-link-application__header--with-live-preview .friend-link-application__intro,
+  .friend-link-application__header--with-live-preview .friend-link-application__card-preview {
+    grid-column: auto;
+  }
+
+  .friend-link-application__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .friend-link-application__field--wide {
+    grid-column: auto;
+  }
+
+  .friend-link-application__actions {
+    min-height: 64px;
+  }
+}
+
+@container (max-width: 420px) {
+  .friend-link-application__form-page,
+  .friend-link-application__preview {
+    padding: 18px 16px 22px;
+  }
+
+  .friend-link-application__field {
+    grid-template-columns: 70px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .friend-link-application__preview-header {
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+  }
+
+  .friend-link-application__preview-header h3 {
+    font-size: 0.98rem;
+  }
+
+  .friend-link-application__switch--back span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .friend-link-application__switch--back {
+    width: 34px;
+    min-height: 34px;
+    padding: 0;
+  }
+
+  .friend-link-application__code {
+    min-height: 280px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .friend-link-application__code > svg {
+    left: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friend-link-application__field input,
+  .friend-link-application__field textarea,
+  .friend-link-application__copy,
+  .friend-link-application__apply,
+  .friend-link-application__switch,
+  .friend-link-application__switch svg,
+  .friend-link-application__track,
+  [data-tooltip]::before,
+  [data-tooltip]::after {
+    transition: none;
+  }
+}

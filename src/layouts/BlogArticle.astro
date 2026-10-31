@@ -12,6 +12,7 @@ import CommentSection from '../components/comments/CommentSection.astro';
 import Footer from '../components/Footer.astro';
 import MermaidRenderer from '@sonder/mdx-components/MermaidRenderer.astro';
 import ZoomableImage from '@sonder/mdx-components/ZoomableImage.astro';
+import MarkdownWidgets from '../components/markdown/MarkdownWidgets.astro';
 import { getThemePalette, getSiteConfig } from '../data/site';
 import { resolveCommentsConfig, supportsCommentSection } from '../utils/comments';
 import { sortByDateDesc } from '../utils/content-dates';
@@ -249,6 +250,7 @@ const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : her
     <ScrollToTopButton />
     <ZoomableImage />
     <MermaidRenderer />
+    <MarkdownWidgets />
     <Footer />
   </body><style>
     .article-references {

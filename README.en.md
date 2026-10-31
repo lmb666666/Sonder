@@ -45,7 +45,7 @@ Sonder is a personal publishing template built around a paper-like reading exper
 
 - **Comments** — giscus / utterances / Waline / Twikoo, or none
 - **Math & diagrams** — KaTeX / MathJax, Mermaid, ABC music scores
-- **Directives & MDX components** — `:::note` / `:badge` / `::github` directives with zero imports, plus 20 MDX components
+- **Directives (outer tags)** — `:::note` / `:badge` / `::github` directives with zero imports, covering callouts, tabs, media, music, friend links and 20+ components
 - **Static output** — RSS, Atom, sitemap, llms.txt; on-demand font subsets at build
 
 ## 🚀 Quick start
@@ -87,7 +87,7 @@ The full documentation ships with the demo site and stays in sync with the templ
 | [Quick start](https://sonder.liang.one/blog/get-start/)               | Site info, writing, build & deploy       |
 | [Site config](https://sonder.liang.one/blog/site-config-guide/)       | Every field in `site.toml`               |
 | [Palettes](https://sonder.liang.one/blog/theme-palettes/)             | 8 palettes and dark mode                 |
-| [Components](https://sonder.liang.one/blog/components-showcase/)      | All 20 MDX components, live              |
+| [Components](https://sonder.liang.one/blog/components-showcase/)      | Every directive, live                    |
 | [Markdown style](https://sonder.liang.one/blog/markdown-style-guide/) | Typographic rules and extensions         |
 | [Search](https://sonder.liang.one/blog/site-search-guide/)            | Pagefind configuration                   |
 | [Media page](https://sonder.liang.one/blog/media-page-guide/)         | Entry format and media shelf             |
