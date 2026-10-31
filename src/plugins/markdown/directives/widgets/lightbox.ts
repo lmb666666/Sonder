@@ -86,8 +86,15 @@ export function initLightbox() {
     gallery,
     children: 'a[data-sonder-lightbox]',
     pswpModule: () => import('photoswipe'),
-    // 保持 PhotoSwipe 原版默认观感（与官网 demo 一致）：纯黑遮罩、
-    // 图片按视口居中、原生控件与过渡动画。不覆盖任何视觉选项。
+    // 其余保持 PhotoSwipe 原版观感（纯黑遮罩、原生控件、默认动画），
+    // 只把图片默认尺寸收小：原生 paddingFn 四周留白，图片约占视口 86%。
+    // 注意必须用 paddingFn——它参与 PS5 的居中计算；getViewportSizeFn
+    // 只缩可用区不改偏移，会把图锚死在左上角。
+    paddingFn: (viewportSize) => {
+      const x = Math.min(120, Math.max(16, Math.round(viewportSize.x * 0.07)));
+      const y = Math.min(120, Math.max(16, Math.round(viewportSize.y * 0.07)));
+      return { top: y, bottom: y, left: x, right: x };
+    },
   });
   lightbox.init();
 }
