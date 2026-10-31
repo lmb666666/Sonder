@@ -198,16 +198,18 @@ table {
   background: var(--paper-surface);
 }
 
-/* 滚动条：桌面端细条、默认隐入纸面、悬停浮现；触屏保留原生覆盖条 */
+/* 滚动条：桌面端常驻细条（不依赖 hover —— Chrome 对 scrollbar-color 的
+ * 悬停变化重绘不稳定，曾出现「鼠标放上去也看不到滚动条」）；悬停/聚焦加深。
+ * 触屏不套用，保留系统原生覆盖条。 */
 @media (hover: hover) and (pointer: fine) {
   .markdown-table-scroll {
     scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
+    scrollbar-color: color-mix(in srgb, var(--paper-ink) 22%, transparent) transparent;
   }
 
   .markdown-table-scroll:hover,
   .markdown-table-scroll:focus-within {
-    scrollbar-color: color-mix(in srgb, var(--paper-ink) 24%, transparent) transparent;
+    scrollbar-color: color-mix(in srgb, var(--paper-ink) 42%, transparent) transparent;
   }
 }
 
