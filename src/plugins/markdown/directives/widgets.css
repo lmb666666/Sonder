@@ -1934,6 +1934,18 @@
   left: 14px;
 }
 
+/* 小屏（触屏）：箭头圆钮会压住图片边缘，隐藏后由滑动手势翻页 */
+@media (max-width: 640px) {
+  .pswp .pswp__button--arrow--prev,
+  .pswp .pswp__button--arrow--next {
+    display: none;
+  }
+
+  .pswp__img {
+    border-radius: 10px;
+  }
+}
+
 /* 图片=悬浮纸面卡片：圆角 + 深投影，不再平铺贴边 */
 .pswp__img {
   border-radius: 14px;
