@@ -107,14 +107,17 @@ const { items, level = 1, path = '', idPrefix = 'toc', navLink = false } = Astro
 
   .toc-row {
     display: grid;
-    grid-template-columns: 18px minmax(0, 1fr);
+    /* 第一列须容得下折叠按钮的 28px 触控区，否则按钮被链接遮挡
+       （Lighthouse target-size：被遮挡后有效点击区只剩 20px） */
+    grid-template-columns: 28px minmax(0, 1fr);
     gap: 2px;
     align-items: start;
   }
 
   .toc-branch-toggle,
   .toc-branch-spacer {
-    width: 18px;
+    /* 触控目标 ≥24px（WCAG 2.2 target-size）；相邻链接会压住 4px，故取 28px */
+    width: 28px;
     height: 36px;
   }
 

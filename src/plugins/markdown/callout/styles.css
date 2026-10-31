@@ -19,7 +19,8 @@
   align-items: center;
   gap: 0.55rem;
   margin: 0 0 0.65rem;
-  color: rgb(var(--callout-color));
+  /* 混入墨色提升对比度：纯 --callout-color 在浅底上低于 WCAG AA */
+  color: color-mix(in srgb, rgb(var(--callout-color)) 42%, var(--paper-ink));
   font-weight: 700;
   line-height: 1.35;
 }

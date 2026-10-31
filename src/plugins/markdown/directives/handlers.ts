@@ -445,9 +445,18 @@ function embedHandler(
       return [];
     }
 
+    const providerName: Record<string, string> = {
+      bilibili: '哔哩哔哩',
+      youtube: 'YouTube',
+      netease: '网易云音乐',
+    };
+    const identifier =
+      asString(attributes.bvid) ?? asString(attributes.id) ?? asString(attributes.type) ?? '';
     const iframe = h('iframe', {
       class: 'sd-embed-frame',
       src,
+      // 屏幕阅读器需要 iframe 标题（WCAG 4.1.2 / Lighthouse frame-title）
+      title: `${providerName[provider] ?? provider} 嵌入播放器${identifier ? ` ${identifier}` : ''}`,
       loading: 'lazy',
       scrolling: 'no',
       frameborder: 'no',

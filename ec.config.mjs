@@ -48,7 +48,12 @@ export default defineEcConfig({
     codePaddingBlock: '1rem',
     codePaddingInline: '1.15rem',
     codeBackground: 'var(--paper-surface-muted)',
+    // 行号对比度：EC 默认主题色在纸面上不足 WCAG AA（40% 灰）
+    lineNumbers: {
+      foreground: 'var(--paper-ink-faint)',
+    },
     frames: {
+      gutterForeground: 'var(--paper-ink-faint)',
       editorActiveTabBackground: 'var(--paper-surface-muted)',
       editorActiveTabIndicatorTopColor: 'var(--paper-accent)',
       editorTabBarBackground: 'var(--paper-control)',
