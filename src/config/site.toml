@@ -53,8 +53,9 @@ en = "Maple Mono"
 code = "Monaco"
 # 中文阅读字体名称；模板内置 ChillRoundM，也可换成 LXGW WenKai
 zh = "ChillRoundM"
-# 中文完整字体文件；构建时会按需生成 UI / 内容子集，并为 Maple Mono 生成拉丁子集
-file = "/fonts/ChillRoundM.woff2"
+# 中文源字体：仅构建期读取，用于生成 UI / 内容子集（子集输出到 public/fonts）。
+# 源文件不会部署到站点，可放在 public 之外的任意项目路径。
+file = "assets/fonts/ChillRoundM.woff2"
 
 [config.code]
 # Expressive Code 主题名称

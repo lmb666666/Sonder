@@ -115,7 +115,7 @@ const defaultFontConfig = {
   en: 'Maple Mono',
   code: 'Monaco',
   zh: 'ChillRoundM',
-  file: '/fonts/ChillRoundM.woff2',
+  file: 'assets/fonts/ChillRoundM.woff2',
 };
 
 const nonEmptyStringSchema = (fallback: string) =>

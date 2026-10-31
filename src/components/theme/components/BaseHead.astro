@@ -71,14 +71,13 @@ function getFontFormat(url: string) {
   return 'truetype';
 }
 
-function getSubsetFontUrl(fontUrl: string) {
-  const queryIndex = fontUrl.search(/[?#]/);
-  const suffix = queryIndex === -1 ? '' : fontUrl.slice(queryIndex);
-  const path = queryIndex === -1 ? fontUrl : fontUrl.slice(0, queryIndex);
-  const extensionIndex = path.lastIndexOf('.');
-  const basePath = extensionIndex === -1 ? path : path.slice(0, extensionIndex);
+function getFontBaseName(fontPath: string) {
+  const queryIndex = fontPath.search(/[?#]/);
+  const path = queryIndex === -1 ? fontPath : fontPath.slice(0, queryIndex);
+  const fileName = path.replace(/\\/g, '/').split('/').pop() ?? 'font';
+  const extensionIndex = fileName.lastIndexOf('.');
 
-  return `${basePath}-ui-subset.woff2${suffix}`;
+  return extensionIndex === -1 ? fileName : fileName.slice(0, extensionIndex);
 }
 
 function createFontCss(fonts: { en: string; code: string; zh: string; file: string }) {
@@ -89,8 +88,7 @@ function createFontCss(fonts: { en: string; code: string; zh: string; file: stri
   const enFamily = toCssFontFamily(fonts.en);
   const codeFontName = normalizeFontFamilyName(fonts.code);
   const codeFamily = toCssFontFamily(fonts.code);
-  const fontFile = toCssString(resolveAssetUrl(fonts.file));
-  const subsetUrl = getSubsetFontUrl(fonts.file);
+  const subsetUrl = `/fonts/${getFontBaseName(fonts.file)}-ui-subset.woff2`;
   const subsetFile = toCssString(resolveAssetUrl(subsetUrl));
   const contentSubsetUrl = subsetUrl.replace('-ui-subset.woff2', '-content-subset.woff2');
   const contentSubsetFile = toCssString(resolveAssetUrl(contentSubsetUrl));
@@ -106,7 +104,6 @@ function createFontCss(fonts: { en: string; code: string; zh: string; file: stri
   return `${mapleSubsetFontFace}
 @font-face{font-family:${zhSubsetFamily};src:url(${subsetFile}) format("${getFontFormat(subsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
 @font-face{font-family:${zhContentSubsetFamily};src:url(${contentSubsetFile}) format("${getFontFormat(contentSubsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
-@font-face{font-family:${zhFamily};src:url(${fontFile}) format("${getFontFormat(fonts.file)}");font-style:normal;font-weight:400;font-display:swap;}
 ${monacoFontFace}
 html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-config-zh:${zhFamily};--font-config-zh-subset:${zhSubsetFamily};--font-config-zh-content:${zhContentSubsetFamily};}
 `;

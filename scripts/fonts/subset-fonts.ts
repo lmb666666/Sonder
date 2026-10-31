@@ -16,12 +16,14 @@ const projectRoot = process.cwd();
 const uiCharsPath = join(projectRoot, 'scripts/fonts/ui-chars.txt');
 const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
 const fontConfig = readFontConfig();
-const subsetFontUrl = getSubsetFontUrl(fontConfig.file);
+// 源字体只是构建期输入（可放在 public 之外）；子集产物固定写到 public/fonts 供站点引用。
+const fontBaseName = getFontBaseName(fontConfig.file);
+const subsetFontUrl = `/fonts/${fontBaseName}-ui-subset.woff2`;
+const contentSubsetFontUrl = `/fonts/${fontBaseName}-content-subset.woff2`;
 const outputFontPath = resolveProjectPath(subsetFontUrl);
 const contentCharsPath = join(projectRoot, 'scripts/fonts/content-chars.txt');
-const contentSubsetFontUrl = subsetFontUrl.replace('-ui-subset.woff2', '-content-subset.woff2');
 const contentOutputFontPath = resolveProjectPath(contentSubsetFontUrl);
-const sourceFontPath = resolveProjectPath(fontConfig.file);
+const sourceFontPath = resolveSourceFontPath(fontConfig.file);
 const subsetFontName = `${fontConfig.zh} UI Subset`;
 const contentSubsetFontName = `${fontConfig.zh} Content Subset`;
 const isWindows = process.platform === 'win32';
@@ -77,7 +79,7 @@ function readFontConfig(): FontConfig {
   const defaults: FontConfig = {
     en: 'Maple Mono',
     zh: 'ChillRoundM',
-    file: '/fonts/ChillRoundM.ttf',
+    file: 'assets/fonts/ChillRoundM.woff2',
   };
   const siteConfigPath = join(projectRoot, 'src/config/site.toml');
 
@@ -97,14 +99,13 @@ function readFontConfig(): FontConfig {
   };
 }
 
-function getSubsetFontUrl(fontUrl: string) {
-  const queryIndex = fontUrl.search(/[?#]/);
-  const suffix = queryIndex === -1 ? '' : fontUrl.slice(queryIndex);
-  const path = queryIndex === -1 ? fontUrl : fontUrl.slice(0, queryIndex);
-  const extensionIndex = path.lastIndexOf('.');
-  const basePath = extensionIndex === -1 ? path : path.slice(0, extensionIndex);
+function getFontBaseName(fontPath: string) {
+  const queryIndex = fontPath.search(/[?#]/);
+  const path = queryIndex === -1 ? fontPath : fontPath.slice(0, queryIndex);
+  const fileName = path.replace(/\\/g, '/').split('/').pop() ?? 'font';
+  const extensionIndex = fileName.lastIndexOf('.');
 
-  return `${basePath}-ui-subset.woff2${suffix}`;
+  return extensionIndex === -1 ? fileName : fileName.slice(0, extensionIndex);
 }
 
 function normalizeConfigString(value: unknown, fallback: string) {
@@ -114,12 +115,32 @@ function normalizeConfigString(value: unknown, fallback: string) {
 function resolveProjectPath(value: string) {
   if (/^https?:\/\//i.test(value)) {
     throw new Error(
+      `Font subsetting outputs must be local paths, but received a remote URL: ${value}`,
+    );
+  }
+
+  // 以 / 开头的是站点 URL，落到 public/ 下；显式相对路径按项目根解析。
+  const normalized = value.replace(/\\/g, '/');
+
+  if (normalized.startsWith('/')) {
+    return join(projectRoot, 'public', normalized.replace(/^\/+/, ''));
+  }
+
+  return join(projectRoot, normalized);
+}
+
+function resolveSourceFontPath(value: string) {
+  if (/^https?:\/\//i.test(value)) {
+    throw new Error(
       `Font subsetting needs a local font file, but config.fonts.file received a remote URL: ${value}`,
     );
   }
 
   const normalized = value.replace(/\\/g, '/').replace(/^\/+/, '');
-  const relativePath = normalized.startsWith('public/') ? normalized : `public/${normalized}`;
+  // 构建源字体可放在 public 之外；不带目录的旧式路径回退到 public/ 保持兼容。
+  const relativePath = /^(?:public|assets|src)\//.test(normalized)
+    ? normalized
+    : `public/${normalized}`;
 
   return join(projectRoot, relativePath);
 }
