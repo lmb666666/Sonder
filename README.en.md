@@ -1,34 +1,56 @@
 <p align="center">
-  <img src="./public/images/logo-with-name.png" width="420" alt="Sonder" />
+  <img src="./docs/logo-with-name.png" width="420" alt="Sonder" />
 </p>
 
-<p align="center">Every life is a book.</p>
+<p align="center">
+  A paper-like personal publishing template · Static build with Astro
+</p>
 
 <p align="center">
   <a href="https://sonder.liang.one">Live site</a> ·
-  <a href="https://github.com/lmb666666/Sonder">GitHub</a>
+  <a href="https://sonder.liang.one/blog/get-start/">Guide</a> ·
+  <a href="./CONTRIBUTING.md">Contributing</a> ·
+  <a href="./README.md">简体中文</a>
 </p>
 
-![Sonder homepage](./public/images/sonder-preview.png)
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.3.0-8a5a32" alt="version" />
+  <img src="https://img.shields.io/badge/Astro-7.1-ff5d01" alt="Astro" />
+  <img src="https://img.shields.io/badge/Node-%E2%89%A522.12-339933" alt="Node" />
+  <img src="https://img.shields.io/badge/Bun-%E2%89%A51.1-f472b6" alt="Bun" />
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT" />
+</p>
 
-Sonder is a paper-like personal publishing template built with Astro and Bun. It brings articles, media, moments, friends, and profile information into one calm layout for long-term writing and independent publishing.
+![Sonder homepage](./docs/sonder-preview.png)
 
-## Features
+Sonder is a personal publishing template built around a paper-like reading experience: warm paper, ink text and hairline rules, bringing articles, media, moments and a friends page into one calm layout. Built statically with Astro; content lives in Markdown / MDX with no backend.
 
-- Paper-inspired visual language: warm paper, ink text, hairlines, muted palettes
-- Article cards with 16:9 covers, frosted meta bands, categories, tags, TOC, previous/next links, and more posts
-- Dark mode: cover-tinted glass bands and matching dark rings
-- Homepage: profile, stats, writing heatmap, site info, latest posts
-- Pages: media shelf, moments timeline, friends and friend circle
-- Navigation: pill, bar, or legacy header layout, selectable in `site.toml`
-- Search: Pagefind static full-text index with `Ctrl+K` / `Cmd+K`
-- Comments: giscus, utterances, Waline, Twikoo, or disabled
-- Sharing: copy a URL-bearing share message or generate a QR-coded share poster
-- Static output: RSS, Atom, and sitemap; deploy the build to any static host
+## ✨ Features
 
-## Quick start
+**Content & layout**
 
-Requires Node.js 22.12+ and Bun.
+- **Two list layouts** — `media` covers or `rows` list, switchable in config
+- **Media / moments / friends** — media shelf, timeline and friend circle out of the box
+- **8 palettes + dark mode** — warm orange by default, recolor the whole site
+- **Three navigations** — `pill`, `bar`, or `legacy` header
+
+**Reading experience**
+
+- **TOC & mobile floating TOC** — for long reads, floats from the bottom corner
+- **Prev / next & more posts** — generated automatically at the end of articles
+- **Share poster** — generate a QR-coded poster or copy a share message
+- **Full-text search** — Pagefind static index, `Ctrl+K` / `Cmd+K`
+
+**Site capabilities**
+
+- **Comments** — giscus / utterances / Waline / Twikoo, or none
+- **Math & diagrams** — KaTeX / MathJax, Mermaid, ABC music scores
+- **20 MDX components** — badges, cards, scores and more, see the showcase
+- **Static output** — RSS, Atom, sitemap, llms.txt; on-demand font subsets at build
+
+## 🚀 Quick start
+
+Requirements: Node.js 22.12+, Bun; the first build also needs Python 3 with fonttools / brotli (font subsets).
 
 ```bash
 git clone https://github.com/lmb666666/Sonder.git
@@ -37,84 +59,64 @@ bun install
 bun run dev
 ```
 
-The dev server runs at `http://localhost:4321`.
-
-The build generates content-based CJK font subsets. Before the first build, install Python 3 with fonttools and brotli:
+The dev server runs at `http://localhost:4321`. Before a production build:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install fonttools brotli
+bun run build
 ```
 
-## Configuration
+Create a post with `bun run post:new my-post`. Common frontmatter:
 
-Site-level settings live in `src/config/site.toml`:
-
-- `[config.site]`: title, description, URL, repository, footer note
-- `[config.profile]`: author name, role, avatar, email, website, GitHub
-- `[config.siteInfo]`: site info card; `program` also drives the footer credit
-- `[[config.topNav.links]]`: top navigation
-- `[config.theme]`: default palette, language, and `navStyle` (`pill` / `bar` / `legacy`)
-- `[config.pages]`: page titles, kickers, and subtitles
-- `[config.article]`: article share, previous/next navigation, and more-posts switches
-- `[config.home]`: quote, intro, latest post count, contact links
-- `[config.search]`, `[config.comments]`, `[config.friendCircle]`: search, comments, friend circle
-
-The config shape is validated by the Zod schema in `src/content.config.ts`. Page modules are registered in `sonder.config.ts`; the media module is enabled by default.
-
-## Content
-
-```text
-src/content/
-  about.mdx        About page
-  blog/            Articles and guides
-  media/           Books, films, music
-  projects/        Project cards on the About page
+```yaml
+title: My first post
+description: A one-line summary for lists and share cards.
+date: 2026-10-31
+tags: [essay]
+categories: [life]
+heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 ```
 
-Demo articles, media entries, and project cards can be edited or removed. Article covers live in `src/assets/figure/covers/` and can be replaced with your own images.
+## 📖 Guide
 
-## Commands
+The full documentation ships with the demo site and stays in sync with the template:
 
-```bash
-bun run dev          # local dev server
-bun run build        # static build (font subsets) + Pagefind index
-bun run preview      # preview the build
-bun run post:new     # new article
-bun run media:new    # new media entry
-bun run format:check # formatting check
-bun run lint         # ESLint
-bun test             # unit tests
-```
+| Guide                                                                 | Covers                                   |
+| --------------------------------------------------------------------- | ---------------------------------------- |
+| [Quick start](https://sonder.liang.one/blog/get-start/)               | Site info, writing, build & deploy       |
+| [Site config](https://sonder.liang.one/blog/site-config-guide/)       | Every field in `site.toml`               |
+| [Palettes](https://sonder.liang.one/blog/theme-palettes/)             | 8 palettes and dark mode                 |
+| [Components](https://sonder.liang.one/blog/components-showcase/)      | All 20 MDX components, live              |
+| [Markdown style](https://sonder.liang.one/blog/markdown-style-guide/) | Typographic rules and extensions         |
+| [Search](https://sonder.liang.one/blog/site-search-guide/)            | Pagefind configuration                   |
+| [Media page](https://sonder.liang.one/blog/media-page-guide/)         | Entry format and media shelf             |
+| [Friends](https://sonder.liang.one/blog/friend-links-guide/)          | Friends, friend circle, application form |
 
-## Deployment
+## ☁️ Deploy
 
-The build output is in `dist/` and can be deployed manually to GitHub Pages, Vercel, Netlify, Cloudflare Pages, or any static host. No deployment workflow or platform config is included.
-
-For a subpath deployment:
+The build output in `dist/` deploys to GitHub Pages, Vercel, Netlify, Cloudflare Pages or any static host. For a subpath:
 
 ```bash
 SITE_URL=https://example.com SITE_BASE=/my-site bun run build
 ```
 
-## Project layout
+## 🛠 Commands
 
-```text
-src/
-  components/       page components, cards, blog tools, home widgets
-  config/site.toml  site configuration
-  content/          about, blog, media, projects
-  layouts/          base and article layouts
-  pages/            Astro routes
-  i18n/             English, Simplified Chinese, Traditional Chinese UI text
-  data/             friends, moments, config helpers
-sonder.config.ts    page module and plugin registration
+```bash
+bun run dev           # local dev server
+bun run build         # build (font subsets) + Pagefind index
+bun run preview       # preview the build
+bun run post:new      # new article
+bun run media:new     # new media entry
+bun run format:check  # formatting check (ESLint + Prettier)
+bun test              # unit tests
 ```
 
-## Credits & License
+## 🤝 Contributing
 
-Sonder is an independent template developed and maintained by Liang, derived from Navfolio under the MIT license. The Navfolio and Sonder copyright notices are preserved in the root `LICENSE`.
+Issues and PRs are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) first: make `format:check`, `bun test` and `bun run build` pass, and keep the existing visual language.
 
-The article share poster layout and QR generation logic reference [Firefly](https://github.com/CuteLeaf/Firefly); its copyright notice is included in the root `LICENSE`.
+## 🙏 Credits & license
 
-Sonder is released under the MIT license.
+Sonder is derived from [Navfolio](https://github.com/dodolalorc/astro-navfolio) and maintained by Liang; the share poster references [Firefly](https://github.com/CuteLeaf/Firefly). Copyright notices are preserved in [LICENSE](./LICENSE); released under the MIT license.

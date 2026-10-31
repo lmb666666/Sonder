@@ -1,45 +1,39 @@
 # 参与 Sonder
 
-Sonder 是一份 Astro 个人发布模板。贡献时请保持页面可读、配置集中、内容可替换，并维持现有的纸面视觉语言。
+Sonder 是一份以纸面阅读感为核心的个人发布模板。贡献时请保持页面可读、配置集中、内容可替换，并维持现有的纸面视觉语言。
 
-## 项目结构
-
-- `src/config/site.toml`：站点、作者、导航、页面文案、首页和功能开关
-- `src/content.config.ts`：站点配置与内容集合的 Zod schema
-- `src/content/`：about、blog、media、projects 内容
-- `src/components/`：页面组件、卡片、博客工具和首页 widget
-- `src/components/theme/`：主题组件与样式
-- `src/modules/`、`src/plugins/`、`src/framework/`：页面模块与 Markdown 能力
-- `sonder.config.ts`：页面模块和插件注册
-
-## 内容
-
-- 文章、书影音和项目内容使用 Markdown / MDX。
-- 友链、朋友圈演示数据和动态演示数据在 `src/data/`。
-- 新增文章前，先确认 frontmatter 字段符合 `src/content.config.ts` 中的 schema。
-- 示例内容应解释 Sonder 本身或展示某项能力，避免加入与模板无关的长篇素材。
-
-## 开发
+## 开发环境
 
 ```bash
 bun install
+python3 -m venv .venv
+.venv/bin/python -m pip install fonttools brotli   # 构建字体子集需要
 bun run dev
-bun run lint
-bun run format:check
-bun test
-bun run build
 ```
 
-提交前至少运行 `bun run lint`、`bun run format:check` 和 `bun test`。修改构建、schema 或页面路由后还要运行 `bun run build`。
+## 提交前检查
 
-## 视觉与交互
+每次提交前至少通过以下三项；改动构建、schema 或路由后必须再跑 `bun run build`：
 
-- 使用 `src/config/site.toml` 的主题色盘和 CSS 变量，不要在各页面重复写死颜色。
-- 新增交互时优先使用原生 HTML 和轻量脚本；需要客户端状态时，保持无框架依赖。
-- 深色模式、移动端断点和键盘焦点状态需要一起检查。
+```bash
+bun run format:check   # ESLint + Prettier
+bun test               # 单元测试
+bun run build          # 完整构建 + Pagefind
+```
 
-## 提交
+## 提交规范
 
-- 提交信息保持简短、具体。
-- 不提交构建产物、缓存或本地环境文件。
-- 涉及依赖、配置 schema 或公开 API 的改动，请同时更新 README 和相关文档。
+- 提交信息简短、具体，使用 `feat:` / `fix:` / `docs:` / `chore:` 前缀
+- 不提交构建产物、缓存与本地环境文件（`.gitignore` 已覆盖）
+- 一次 PR 聚焦一件事；UI 改动请附浅色与深色两种环境的说明或截图
+
+## 代码与样式约定
+
+- 站点级配置集中在 `src/config/site.toml`，字段结构由 `src/content.config.ts` 的 Zod schema 校验；新增字段需要同步 schema 默认值与[站点配置指南](https://sonder.liang.one/blog/site-config-guide/)
+- 颜色使用主题 token（`--paper-*`、`--accent`），不要在页面里写死色值
+- 新增交互优先使用原生 HTML 与轻量脚本，保持无框架依赖；深色模式、移动端断点与键盘焦点状态需要一起检查
+- 修改导航、文章底部等界面文案时，同步 `src/i18n/` 的 en / zh-CN / zh-TW 三份文案
+
+## 文档
+
+面向使用者的配置与写作文档以指南文章的形式随模板发布在演示站（`src/content/blog/` 下的 `*-guide` 文章）。改动配置项、命令或行为后，请同步更新对应指南与 README 的指南表格。

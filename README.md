@@ -1,34 +1,56 @@
 <p align="center">
-  <img src="./public/images/logo-with-name.png" width="420" alt="Sonder" />
+  <img src="./docs/logo-with-name.png" width="420" alt="Sonder" />
 </p>
 
-<p align="center">万千人生，各自成书。</p>
+<p align="center">
+  以纸面阅读感为核心的个人发布模板 · Astro 静态构建
+</p>
 
 <p align="center">
   <a href="https://sonder.liang.one">在线预览</a> ·
-  <a href="https://github.com/lmb666666/Sonder">GitHub</a>
+  <a href="https://sonder.liang.one/blog/get-start/">使用指南</a> ·
+  <a href="./CONTRIBUTING.md">参与贡献</a> ·
+  <a href="./README.en.md">English</a>
 </p>
 
-![Sonder 首页](./public/images/sonder-preview.png)
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.3.0-8a5a32" alt="version" />
+  <img src="https://img.shields.io/badge/Astro-7.1-ff5d01" alt="Astro" />
+  <img src="https://img.shields.io/badge/Node-%E2%89%A522.12-339933" alt="Node" />
+  <img src="https://img.shields.io/badge/Bun-%E2%89%A51.1-f472b6" alt="Bun" />
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT" />
+</p>
 
-Sonder 是一份以纸面阅读感为核心的个人发布模板，使用 Astro 静态构建、Bun 运行脚本。它把文章、书影音、动态、朋友页和个人资料放在同一套版式里，适合长期写作与个人出版。
+![Sonder 首页](./docs/sonder-preview.png)
 
-## 特性
+Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底、墨色文字、发丝分隔线，把文章、书影音、动态和朋友页收进同一套版式。基于 Astro 静态构建，内容用 Markdown / MDX 管理，没有后端依赖。
 
-- 纸面视觉：暖白底色、墨色文字、发丝线与低饱和色盘
-- 文章：16:9 封面、磨砂信息条、分类、标签、目录、上下篇与更多文章
-- 深色模式：按封面主色生成深色玻璃信息条与同色系外框
-- 首页：身份、统计、写作热力图、站点信息与最新文章
-- 页面：书影音媒体架、动态时间线、朋友页与朋友圈
-- 导航：`pill` 胶囊导航、`bar` 通栏工具条与 `legacy` 旧版通栏 Header 三种样式
-- 搜索：Pagefind 静态全文索引，支持 `Ctrl+K` / `Cmd+K`
-- 评论：giscus、utterances、Waline、Twikoo，可关闭
-- 分享：文章底部复制带链接的分享文案，或生成带二维码的分享海报
-- 静态输出：RSS、Atom、sitemap；构建后部署到任意静态托管
+## ✨ 特性
 
-## 快速开始
+**内容与版式**
 
-需要 Node.js 22.12+ 和 Bun。
+- **双布局文章列表** —— `media` 媒体大图与 `rows` 行式列表，配置切换
+- **书影音 / 动态 / 朋友页** —— 媒体架、时间线、友链朋友圈开箱即用
+- **8 套色盘 + 深色模式** —— 默认暖橙，可整体换色
+- **三档导航** —— `pill` 胶囊 / `bar` 通栏 / `legacy` 旧版通栏
+
+**阅读体验**
+
+- **目录与移动端浮层目录** —— 长文导航，移动端右下角悬浮展开
+- **上下篇与更多文章** —— 文章底部自动生成导航卡片
+- **分享海报** —— 一键生成带二维码的分享图，或复制带链接的文案
+- **全文搜索** —— Pagefind 静态索引，`Ctrl+K` / `Cmd+K` 唤起
+
+**站点能力**
+
+- **评论** —— giscus / utterances / Waline / Twikoo，可关闭
+- **数学公式与图表** —— KaTeX / MathJax、Mermaid、ABC 乐谱
+- **20 个 MDX 组件** —— 徽标、卡片、乐谱、看板等，见组件速览
+- **静态输出** —— RSS、Atom、sitemap、llms.txt；构建生成按需字体子集
+
+## 🚀 快速开始
+
+环境要求：Node.js 22.12+、Bun；首次构建另需 Python 3 与 fonttools / brotli（用于字体子集）。
 
 ```bash
 git clone https://github.com/lmb666666/Sonder.git
@@ -37,84 +59,64 @@ bun install
 bun run dev
 ```
 
-开发服务器默认运行在 `http://localhost:4321`。
-
-构建会按内容生成中文字体子集，首次构建前需要 Python 3 + fonttools/brotli：
+开发服务器默认运行在 `http://localhost:4321`。正式构建前补齐字体工具链：
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install fonttools brotli
+bun run build
 ```
 
-## 配置
+写第一篇文章用 `bun run post:new my-post`，frontmatter 常用字段：
 
-站点级信息集中在 `src/config/site.toml`：
-
-- `[config.site]`：站点标题、描述、线上地址、仓库地址和页脚说明
-- `[config.profile]`：作者名、身份、头像、邮箱、网站与 GitHub
-- `[config.siteInfo]`：站点信息卡；`program` 同时用于页脚 Powered by
-- `[[config.topNav.links]]`：顶部导航
-- `[config.theme]`：默认色盘、界面语言和 `navStyle`（`pill` / `bar` / `legacy`）
-- `[config.pages]`：文章、书影音、动态、朋友页的标题、kicker 与说明
-- `[config.article]`：文章底部分享、上一篇/下一篇、更多文章开关
-- `[config.home]`：首页引语、介绍、最新文章数量、联系方式
-- `[config.search]`、`[config.comments]`、`[config.friendCircle]`：搜索、评论和朋友圈
-
-配置结构由 `src/content.config.ts` 中的 Zod schema 校验；字段缺失或类型不对时构建会直接报错。页面模块在 `sonder.config.ts` 中注册，当前启用书影音模块。
-
-## 内容
-
-```text
-src/content/
-  about.mdx        关于页
-  blog/            长文与教程
-  media/           书、影、音条目
-  projects/        关于页项目卡片
+```yaml
+title: 我的第一篇文章
+description: 一句话摘要，会出现在列表与分享卡上。
+date: 2026-10-31
+tags: [随笔]
+categories: [生活]
+heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 ```
 
-示例文章、书影音条目和项目卡片都可以直接编辑或删除。文章封面放在 `src/assets/figure/covers/`，也可以换成自己的图片。
+## 📖 使用指南
 
-## 常用命令
+完整的配置与写作文档直接读演示站上的指南，与模板一同发布、始终同步：
 
-```bash
-bun run dev          # 本地开发
-bun run build        # 构建静态站点（含字体子集）+ Pagefind 索引
-bun run preview      # 预览构建产物
-bun run post:new     # 新建文章
-bun run media:new    # 新建书影音条目
-bun run format:check # 格式检查
-bun run lint         # ESLint
-bun test             # 单元测试
-```
+| 指南                                                                 | 内容                             |
+| -------------------------------------------------------------------- | -------------------------------- |
+| [快速开始](https://sonder.liang.one/blog/get-start/)                 | 替换站点信息、写文章、构建与部署 |
+| [站点配置](https://sonder.liang.one/blog/site-config-guide/)         | `site.toml` 全部字段说明         |
+| [主题与色盘](https://sonder.liang.one/blog/theme-palettes/)          | 8 套色盘与深色模式               |
+| [组件速览](https://sonder.liang.one/blog/components-showcase/)       | 20 个 MDX 组件的真实演示         |
+| [Markdown 风格](https://sonder.liang.one/blog/markdown-style-guide/) | 排版规范与扩展语法               |
+| [站内搜索](https://sonder.liang.one/blog/site-search-guide/)         | Pagefind 配置                    |
+| [书影音页面](https://sonder.liang.one/blog/media-page-guide/)        | 条目格式与媒体架                 |
+| [友链与朋友圈](https://sonder.liang.one/blog/friend-links-guide/)    | 友链、朋友圈与申请表单           |
 
-## 部署
+## ☁️ 部署
 
-构建产物在 `dist/`，可以手动部署到 GitHub Pages、Vercel、Netlify 或 Cloudflare Pages。仓库不内置部署工作流或平台配置文件。
-
-部署到子路径时：
+构建产物在 `dist/`，可部署到 GitHub Pages、Vercel、Netlify、Cloudflare Pages 等任意静态托管。子路径部署：
 
 ```bash
 SITE_URL=https://example.com SITE_BASE=/my-site bun run build
 ```
 
-## 目录
+## 🛠 常用命令
 
-```text
-src/
-  components/       页面组件、卡片、博客工具和首页 widget
-  config/site.toml  站点配置
-  content/          about、blog、media、projects
-  layouts/           基础布局与文章布局
-  pages/             Astro 路由
-  i18n/              中文、繁体中文和英文界面文案
-  data/              友链、动态、站点配置 helper
-sonder.config.ts     页面模块与插件注册
+```bash
+bun run dev           # 本地开发
+bun run build         # 构建（含字体子集）+ Pagefind 索引
+bun run preview       # 预览构建产物
+bun run post:new      # 新建文章
+bun run media:new     # 新建书影音条目
+bun run format:check  # 格式检查（ESLint + Prettier）
+bun test              # 单元测试
 ```
 
-## Credits & License
+## 🤝 参与贡献
 
-Sonder 是基于 Navfolio 二次开发的独立模板，由 Liang 开发维护。上游项目采用 MIT 许可。Navfolio 与 Sonder 的版权声明统一保留在根目录 `LICENSE` 中。
+欢迎 Issue 与 PR。提交前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)：跑通 `format:check`、`bun test` 与 `bun run build`，并保持现有视觉语言。
 
-文章分享海报的布局和二维码生成逻辑参考了 [Firefly](https://github.com/CuteLeaf/Firefly)，其版权声明也已并入根目录 `LICENSE`。
+## 🙏 致谢与许可
 
-本项目同样以 MIT 许可发布。
+Sonder 基于 [Navfolio](https://github.com/dodolalorc/astro-navfolio) 二次开发，由 Liang 维护；分享海报参考了 [Firefly](https://github.com/CuteLeaf/Firefly)。相关版权声明统一保留在 [LICENSE](./LICENSE) 中，本项目以 MIT 许可发布。
