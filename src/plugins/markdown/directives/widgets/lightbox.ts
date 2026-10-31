@@ -86,17 +86,8 @@ export function initLightbox() {
     gallery,
     children: 'a[data-sonder-lightbox]',
     pswpModule: () => import('photoswipe'),
-    // 纸面主题：墨色磨砂遮罩 + 缩放过渡；图片以浮动卡片呈现，不贴屏幕边缘。
-    // 注意：留白必须用原生 paddingFn（居中数学自带 padding 偏移）——
-    // 不能用 getViewportSizeFn 缩视口（只缩可用区、不偏移，图片会锚死左上角）
-    bgOpacity: 0.8, // 最终遮罩浓度；底色在 --pswp-bg（实心），磨砂由 widgets.css 的 backdrop-filter 提供
-    showHideAnimationType: 'zoom',
-    zoom: false,
-    paddingFn: (viewportSize) => {
-      const x = Math.min(56, Math.round(viewportSize.x * 0.045));
-      const y = Math.min(56, Math.round(viewportSize.y * 0.06));
-      return { top: y, bottom: y, left: x, right: x };
-    },
+    // 保持 PhotoSwipe 原版默认观感（与官网 demo 一致）：纯黑遮罩、
+    // 图片按视口居中、原生控件与过渡动画。不覆盖任何视觉选项。
   });
   lightbox.init();
 }
