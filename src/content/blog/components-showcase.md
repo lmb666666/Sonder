@@ -58,7 +58,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 | --- | --- |
 | `badge` | 行内徽标；`{href="…"}` 可点击，`{img="…"}` 带图标 |
 | `key` | 键帽；支持 `{ctrl}` `{shift}` `{cmd}` 等修饰键，真实按键时点亮 |
-| `blur` | 剧透模糊，悬停或聚焦显形 |
+| `blur` | 剧透模糊，悬停或聚焦显形；点击/回车切换（适配触屏） |
 | `span` | 行内样式；`{color="#…"}` |
 | `btn` | 行内按钮；`{href="…"}` |
 
@@ -100,7 +100,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 剧透警告：:blur[他是凶手]
 ```
 
-默认模糊，悬停、聚焦或按住时显形——剧透警告：:blur[他是凶手]。
+默认模糊，悬停或聚焦显形；点击、回车可切换显隐（触屏没有 hover 也能用）——剧透警告：:blur[他是凶手]。
 
 ### Span 彩色文字
 
@@ -110,13 +110,40 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 
 把重点写成 :span[一抹赭石色]{color="#8a5a32"}，或 :span[主题色强调]{color="var(--paper-accent)"}。
 
-### Btn 按钮
+### Btn 按钮与 Btns 按钮组
 
 ```md
 :btn[查看仓库]{href="https://github.com/lmb666666/Sonder"}
 ```
 
 :btn[查看仓库]{href="https://github.com/lmb666666/Sonder"}
+
+多个 `:btn` 放进 `:::btns` 即成按钮组；`{layout}` 控制排版：
+
+| layout | 效果 |
+| --- | --- |
+| `flex`（默认） | 流式横排，自动换行 |
+| `wide` | 整行竖排、撑满宽度 |
+| `fill` | 等宽填满一行 |
+| `grid-2` / `grid-3` / `grid-4` | 网格排列，窄屏自动降为两列 |
+
+```md
+::::btns{layout="grid-2"}
+:btn[GitHub 仓库]{href="https://github.com/lmb666666/Sonder"}
+:btn[组件速览]{href="/blog/components-showcase/"}
+:btn[Astro]{href="https://astro.build"}
+:btn[Pagefind]{href="https://pagefind.app"}
+::::
+```
+
+::::btns{layout="grid-2"}
+:btn[GitHub 仓库]{href="https://github.com/lmb666666/Sonder"}
+:btn[组件速览]{href="/blog/components-showcase/"}
+:btn[Astro]{href="https://astro.build"}
+:btn[Pagefind]{href="https://pagefind.app"}
+::::
+
+> 注意：按钮组里每行写一个 `:btn`；网格布局在窄屏自动降为两列，无需写响应式样式。
 
 ## 提醒块与结构
 
@@ -319,7 +346,7 @@ Sonder 收编完成，组件和内容都对齐了。
 
 ### Carousel 轮播
 
-容器里的每个顶层元素是一张幻灯片，左右按钮切换；`{aspect}` 控制画幅。
+容器里的每个顶层元素是一张幻灯片，左右按钮切换；`{aspect}` 控制画幅（如 `16 / 9`、`4 / 3`）。
 
 ```md
 :::carousel{label="封面轮播" aspect="16 / 9"}
@@ -336,7 +363,7 @@ Sonder 收编完成，组件和内容都对齐了。
 
 ### LongImage 长图
 
-长图放在固定高度的可滚动视口中，适合截图、长表格或纵向信息图。
+长图放在固定高度的可滚动视口中，适合截图、长表格或纵向信息图；`{height}` 控制视口高度，`{caption}` 为底部说明。
 
 ```md
 :::long-image{height="240px" caption="在视口内滚动查看完整图片。"}
@@ -357,6 +384,8 @@ Sonder 收编完成，组件和内容都对齐了。
 ### MediaShelf 媒体架
 
 书、电影、剧集、专辑和播客共用一套货架；封面跟随图片处理管线。
+
+> 注意：封面写在 `:::media-item` 内的图片段落（本地相对路径或外链均可），标题、作者与评分用子指令属性书写；`{columns}` 支持 2~5。
 
 ```md
 ::::media-shelf{columns="4"}
@@ -462,15 +491,24 @@ flowchart LR
 
 ## 音乐与乐谱
 
-### MusicPlayer 官方播放器
+### MusicPlayer 播放器
 
-支持 Spotify、SoundCloud、YouTube、Apple Music、Bandcamp 等平台的官方 embed：
+两种用法：**官方 embed**（`provider` + `url`）与**本地/直链音频**（`src`，走原生播放器）：
+
+| 属性 | 适用 | 说明 |
+| --- | --- | --- |
+| `src` | 原生 | 音频文件直链（播客、录音、自制曲目），配合 `title` / `artist` / `artwork` |
+| `provider` + `url` | embed | spotify / soundcloud / youtube / apple-music / bandcamp |
+| `caption` | 两者 | 播放器底部说明文字 |
 
 ```md
 ::music-player{title="示例曲目" provider="spotify" url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"}
+::music-player{title="示例音频" artist="SoundHelix" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
 ```
 
 ::music-player{title="示例曲目" provider="spotify" url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"}
+
+::music-player{title="示例音频" artist="SoundHelix" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
 
 ### NeteasePlaylist 网易云音乐
 
@@ -485,7 +523,7 @@ flowchart LR
 
 ::netease{url="https://music.163.com/song?id=28560087"}
 
-也可以用属性写法 `{type="song|playlist|album|radio" id="…"}`；电台（radio）与该 Meting 实例不支持的类型会直接使用官方外链播放器。
+也可以用属性写法 `{type="song|playlist|album|radio" id="…"}`；电台（radio）没有 Meting 解析，直接使用官方外链播放器；专辑（album）能否走原生播放器取决于你所配 Meting 实例的能力。
 
 ### MusicScore ABC 乐谱
 

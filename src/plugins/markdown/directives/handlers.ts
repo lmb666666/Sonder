@@ -180,6 +180,23 @@ function gridHandler({ children }: ContainerContext): MdastNode[] {
   return [wrap('div', ['sd-grid'], items)];
 }
 
+// ─── 容器：btns（按钮组） ────────────────────────────────
+
+const BTNS_LAYOUTS = new Set(['wide', 'fill', 'grid-2', 'grid-3', 'grid-4']);
+
+function btnsHandler({ node, children }: ContainerContext): MdastNode[] {
+  const layout = asString(node.attributes?.layout) ?? 'flex';
+  // 每行一个 :btn 在 Markdown 里会合并成同一段落，拆开让每个按钮独立成项
+  const items = children.flatMap((child) =>
+    child.type === 'paragraph' ? (child.children ?? []) : [child],
+  );
+  return [
+    wrap('div', classNames('sd-btns', BTNS_LAYOUTS.has(layout) && `sd-btns--${layout}`), items, {
+      'data-sd-btns': layout,
+    }),
+  ];
+}
+
 // ─── 容器：tabs（标签页，消费 :::tab 子指令） ────────────
 
 function tabsHandler({ children, transform, file }: ContainerContext): MdastNode[] {
@@ -494,7 +511,13 @@ function blurHandler({ label }: InlineContext): MdastNode[] {
       type: 'emphasis',
       data: {
         hName: 'span',
-        hProperties: { className: ['sd-blur'], tabindex: '0' },
+        // 悬停显形 + 点击/回车切换（widgets/blur.ts），移动端无 hover 也可用
+        hProperties: {
+          className: ['sd-blur'],
+          tabindex: '0',
+          role: 'button',
+          'aria-pressed': 'false',
+        },
       },
     },
   ];
@@ -558,6 +581,7 @@ export {
   badgeHandler,
   blurHandler,
   btnHandler,
+  btnsHandler,
   calloutContainerHandler,
   detailsHandler,
   embedHandler,

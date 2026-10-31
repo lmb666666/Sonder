@@ -453,6 +453,59 @@ describe('行内指令', () => {
   });
 });
 
+describe('P1 扩展：按钮组 / 本地音频 / 剧透点击', () => {
+  test(':::btns 输出按钮组容器与布局类', async () => {
+    const [node] = await run([
+      container('btns', { layout: 'grid-3' }, [paragraph(':btn[A]{href="https://a.example"}')]),
+    ]);
+
+    expect(node.data?.hName).toBe('div');
+    expect(node.data?.hProperties?.className).toContain('sd-btns');
+    expect(node.data?.hProperties?.className).toContain('sd-btns--grid-3');
+  });
+
+  test(':::btns 未知布局回退为 flex 流式', async () => {
+    const [node] = await run([container('btns', { layout: 'masonry' }, [paragraph('x')])]);
+    expect(node.data?.hProperties?.className).toContain('sd-btns');
+    expect(node.data?.hProperties?.className).not.toContain('sd-btns--masonry');
+  });
+
+  test('::music-player {src} 走原生音频播放器', async () => {
+    const [node] = await run([
+      leaf('music-player', { src: '/media/podcast.mp3', title: '播客', artist: '主播' }),
+    ]);
+
+    expect(node.data?.hName).toBe('figure');
+    expect(node.data?.hProperties?.className).toContain('sonder-music-player');
+    const body = JSON.stringify(node.data?.hChildren?.[0]);
+    // hastscript 会把 data-* 属性转为驼峰（序列化时还原为 data-audio）
+    expect(body).toContain('dataAudio');
+    expect(body).toContain('/media/podcast.mp3');
+    // 单曲不出现歌单折叠区
+    expect(body).not.toContain('sonder-music-player__playlist');
+  });
+
+  test('::music-player {provider+url} 仍走官方 embed', async () => {
+    const [node] = await run([
+      leaf('music-player', {
+        provider: 'spotify',
+        url: 'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT',
+      }),
+    ]);
+    expect(node.data?.hName).toBe('figure');
+    const embed = node.data?.hChildren?.[1];
+    expect((embed as { properties: { src: string } }).properties.src).toContain(
+      'open.spotify.com/embed',
+    );
+  });
+
+  test(':blur 输出可切换按钮语义', async () => {
+    const [node] = await run([inline('blur', [text('剧透')])]);
+    expect(node.data?.hProperties?.role).toBe('button');
+    expect(node.data?.hProperties?.['aria-pressed']).toBe('false');
+  });
+});
+
 describe('未知指令与嵌套', () => {
   test('未知行内指令保留原文', async () => {
     const [node] = await run([inline('foo', [text('bar')])]);

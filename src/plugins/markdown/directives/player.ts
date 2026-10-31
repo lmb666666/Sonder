@@ -542,9 +542,23 @@ export function musicPlayerEmbedHandler({
   const url = asString(attributes.url) ?? asString(attributes.href);
   const title = asString(attributes.title) ?? '正在播放';
 
+  // 本地/直链音频：{src="…"} 走原生播放器（复用 MusicPlayer 的 audio 模式）
+  const src = asString(attributes.src);
+  if (src) {
+    return [
+      buildMusicPlayerNode({
+        title: asString(attributes.title) ?? '音频',
+        artist: asString(attributes.artist),
+        artwork: asString(attributes.artwork),
+        caption: asString(attributes.caption),
+        playlist: [{ title: asString(attributes.title) ?? '音频', src }],
+      }),
+    ];
+  }
+
   if (!provider || !url) {
     file.message(
-      '::music-player 需要 {provider="spotify|soundcloud|youtube|…"} 与 {url} 属性。',
+      '::music-player 需要 {provider="spotify|soundcloud|youtube|…"} 与 {url}，或 {src="音频直链"}。',
       undefined,
       'sonder-directives',
     );

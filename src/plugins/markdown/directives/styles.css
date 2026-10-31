@@ -81,11 +81,74 @@ kbd.sd-key.is-active {
 
 .sd-blur:hover,
 .sd-blur:focus-visible,
-.sd-blur:active {
+.sd-blur:active,
+.sd-blur.is-revealed {
   filter: blur(0);
 }
 
-/* ─── 行内：span / btn ─── */
+/* ─── 容器：btns（按钮组） ─── */
+.sd-btns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em;
+  margin: 1.2rem 0;
+}
+
+.sd-btns .sd-btn {
+  margin: 0;
+}
+
+.sd-btns--wide {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.sd-btns--wide .sd-btn {
+  text-align: center;
+}
+
+.sd-btns--fill .sd-btn {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.sd-btns--grid-2,
+.sd-btns--grid-3,
+.sd-btns--grid-4 {
+  display: grid;
+  align-items: stretch;
+}
+
+.sd-btns--grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sd-btns--grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sd-btns--grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sd-btns--grid-2 .sd-btn,
+.sd-btns--grid-3 .sd-btn,
+.sd-btns--grid-4 .sd-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .sd-btns--grid-3,
+  .sd-btns--grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ─── 行内：span ─── */
 .sd-span {
   font-family: inherit;
 }

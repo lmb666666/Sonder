@@ -20,9 +20,11 @@ import '../../plugins/markdown/directives/widgets.css';
     pauseMusicScores,
   } from '../../plugins/markdown/directives/widgets/music-score.js';
   import { initFriendLinkApplications } from '../../plugins/markdown/directives/widgets/friend-link-application.js';
+  import { bindBlurs } from '../../plugins/markdown/directives/widgets/blur.js';
 
   const boot = () => {
     bindKeys();
+    bindBlurs();
     initCarousels();
     initFriendCircles();
     initMusicPlayers();
