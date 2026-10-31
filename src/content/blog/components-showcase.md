@@ -48,7 +48,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 | `github` | GitHub 仓库卡片；`{repo="owner/repo"}`，stars 构建期预取 |
 | `bilibili` | B 站视频；`{bvid="BV…"}` |
 | `youtube` | YouTube 视频；`{id="…"}` |
-| `netease` | 网易云音乐；`{id="歌单ID"}` 走原生播放器，`{type="song\|album\|radio" id="…"}` 走官方外链 |
+| `netease` | 网易云音乐；`{url="歌曲/歌单链接"}` 或 `{type="song\|playlist\|album\|radio" id="…"}`，默认经 Meting 解析为原生播放器，未配置或失败时降级官方外链 |
 | `music-player` | 官方播放器；`{provider="spotify\|soundcloud\|youtube\|…" url="…"}` |
 | `friend-link-card` | 友链卡片网格；`{src="数据源" columns="3"}` |
 | `friend-circle` | 朋友圈动态；`{src="数据源" limit="10" title="…"}` |
@@ -472,23 +472,20 @@ flowchart LR
 
 ::music-player{title="示例曲目" provider="spotify" url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"}
 
-### NeteasePlaylist 网易云歌单
+### NeteasePlaylist 网易云音乐
 
-歌单在构建期经 Meting API 解析为曲目清单，交给模板自带的原生播放器（实例地址见 `site.toml` 的 `[config.music].meting_api`）；解析失败时自动降级为链接卡片。
-
-```md
-::netease{id="7294439968"}
-```
-
-::netease{id="7294439968"}
-
-单曲、专辑与电台走官方外链播放器：
+歌曲与歌单默认在构建期经 Meting API 解析为曲目清单，交给模板自带的原生播放器（实例地址见 `site.toml` 的 `[config.music].meting_api`）；未配置 Meting 或解析失败时，自动降级为网易官方外链播放器。支持直接贴音乐链接，类型与 ID 自动识别：
 
 ```md
-::netease{type="song" id="28560087"}
+::netease{url="https://music.163.com/#/playlist?id=7294439968"}
+::netease{url="https://music.163.com/song?id=28560087"}
 ```
 
-::netease{type="song" id="28560087"}
+::netease{url="https://music.163.com/#/playlist?id=7294439968"}
+
+::netease{url="https://music.163.com/song?id=28560087"}
+
+也可以用属性写法 `{type="song|playlist|album|radio" id="…"}`；电台（radio）与该 Meting 实例不支持的类型会直接使用官方外链播放器。
 
 ### MusicScore ABC 乐谱
 

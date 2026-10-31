@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { h } from 'hastscript';
 import { musicThemeStyle, type MusicThemeName } from '../../../components/mdx/lib/music-theme.js';
 import type { AttributeValue, MdastNode } from './handlers.js';
-import { buildLinkCard, wrapHast } from './handlers.js';
+import { wrapHast } from './handlers.js';
 import { icon } from './icons.js';
 
 /**
@@ -198,7 +198,8 @@ export function buildMusicPlayerNode(options: MusicPlayerOptions): MdastNode {
     );
   }
 
-  if (playlist.length > 0 && isNative) {
+  // 单曲不显示歌单折叠区，仅多曲目时展开
+  if (playlist.length > 1 && isNative) {
     children.push(
       h('details', { class: 'sonder-music-player__playlist' }, [
         h('summary', [icon('list-music', 14), ` 歌单 · ${playlist.length}`]),
@@ -299,12 +300,16 @@ function parseMetingTracks(data: unknown): MetingTrack[] {
     .filter((track): track is MetingTrack => Boolean(track));
 }
 
-/** 构建期解析网易云歌单（带模块级缓存，构建从不失败）。 */
-export function fetchMetingTracks(id: string): Promise<MetingTrack[]> {
-  const cached = metingCache.get(id);
+/** 构建期解析网易云曲目/歌单（带模块级缓存，构建从不失败）。 */
+export function fetchMetingTracks(
+  id: string,
+  type: NeteaseMetingType = 'playlist',
+): Promise<MetingTrack[]> {
+  const cacheKey = `${type}:${id}`;
+  const cached = metingCache.get(cacheKey);
   if (cached) return Promise.resolve(cached);
 
-  const pending = metingPending.get(id);
+  const pending = metingPending.get(cacheKey);
   if (pending) return pending;
 
   const template = metingApiTemplate();
@@ -312,7 +317,7 @@ export function fetchMetingTracks(id: string): Promise<MetingTrack[]> {
     if (!template) return [];
     const endpoint = template
       .replace(/:server/g, 'netease')
-      .replace(/:type/g, 'playlist')
+      .replace(/:type/g, type)
       .replace(/:id/g, id)
       .replace(/:r/g, String(Math.random()));
     try {
@@ -323,23 +328,96 @@ export function fetchMetingTracks(id: string): Promise<MetingTrack[]> {
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
       const tracks = parseMetingTracks(JSON.parse(await response.text()));
       if (!tracks.length) throw new Error('empty playlist');
-      metingCache.set(id, tracks);
+      metingCache.set(cacheKey, tracks);
       return tracks;
     } catch (error) {
       console.warn(
-        `[sonder-directives] Meting 歌单 ${id} 解析失败：${error instanceof Error ? error.message : error}`,
+        `[sonder-directives] Meting ${type} ${id} 解析失败：${error instanceof Error ? error.message : error}`,
       );
-      metingCache.set(id, []);
+      metingCache.set(cacheKey, []);
       return [];
     } finally {
-      metingPending.delete(id);
+      metingPending.delete(cacheKey);
     }
   })();
-  metingPending.set(id, task);
+  metingPending.set(cacheKey, task);
   return task;
 }
 
-// ─── ::netease（歌单走原生播放器，其余类型走 outchain） ──
+// ─── ::netease（默认 Meting → 原生播放器，失败降级官方外链） ──
+
+export type NeteaseType = 'song' | 'playlist' | 'album' | 'radio';
+/** Meting 支持的类型（radio 无对应解析，直接走官方外链） */
+export type NeteaseMetingType = 'song' | 'playlist' | 'album';
+
+const NETEASE_PATH_TYPES: Record<string, NeteaseType> = {
+  song: 'song',
+  playlist: 'playlist',
+  album: 'album',
+  program: 'radio',
+};
+
+const NETEASE_OUTCHAIN: Record<NeteaseType, { type: string; height: string }> = {
+  song: { type: '2', height: '86' },
+  playlist: { type: '0', height: '450' },
+  album: { type: '10', height: '430' },
+  radio: { type: '19', height: '330' },
+};
+
+/** 从 music.163.com 链接识别类型与 ID（兼容 /#/song?id=… 旧式 hash 路由） */
+export function parseNeteaseUrl(value: string): { type: NeteaseType; id: string } | undefined {
+  try {
+    const parsed = new URL(value);
+    if (!/(^|\.)music\.163\.com$/i.test(parsed.hostname)) return undefined;
+    const source = parsed.hash.startsWith('#/')
+      ? parsed.hash.slice(1)
+      : `${parsed.pathname}${parsed.search}`;
+    const [path, query = ''] = source.split('?');
+    const id = new URLSearchParams(query).get('id') ?? '';
+    const segment = path.split('/').filter(Boolean)[0] ?? '';
+    const type = NETEASE_PATH_TYPES[segment];
+    if (!type || !/^\d+$/.test(id)) return undefined;
+    return { type, id };
+  } catch {
+    return undefined;
+  }
+}
+
+export function resolveNeteaseTarget(
+  attributes: Record<string, AttributeValue>,
+): { type: NeteaseType; id: string; url?: string } | undefined {
+  const url = asString(attributes.url) ?? asString(attributes.href);
+  const id = asString(attributes.id);
+  const typeAttr = asString(attributes.type);
+
+  if (url) {
+    const fromUrl = parseNeteaseUrl(url);
+    if (!fromUrl) return undefined;
+    const type =
+      typeAttr && typeAttr in NETEASE_OUTCHAIN ? (typeAttr as NeteaseType) : fromUrl.type;
+    return { type, id: id ?? fromUrl.id, url };
+  }
+  if (!id) return undefined;
+  return { type: (typeAttr as NeteaseType) ?? 'playlist', id };
+}
+
+/** 网易云官方外链播放器（outchain iframe），Meting 不可用时的降级路径 */
+export function neteaseOutchainNode(type: NeteaseType, id: string): MdastNode {
+  const outchain = NETEASE_OUTCHAIN[type];
+  const iframe = h('iframe', {
+    class: 'sd-embed-frame',
+    src: `https://music.163.com/outchain/player?type=${outchain.type}&id=${id}&auto=0&height=${outchain.height}`,
+    loading: 'lazy',
+    scrolling: 'no',
+    frameborder: 'no',
+    allowfullscreen: true,
+    allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture',
+  });
+  return wrapHast('div', iframe as never, {
+    className: ['sd-embed'],
+    'data-sd-provider': 'netease',
+  });
+}
 
 export function neteasePlaylistHandler(preloaded: Map<string, MetingTrack[]>) {
   return ({
@@ -349,48 +427,43 @@ export function neteasePlaylistHandler(preloaded: Map<string, MetingTrack[]>) {
     attributes: Record<string, AttributeValue>;
     file: { message(v: string, p: unknown, s: string): void };
   }): MdastNode[] => {
-    const type = asString(attributes.type) ?? 'playlist';
-    const id = asString(attributes.id) ?? '';
-    if (!/^\d+$/.test(id)) {
+    const target = resolveNeteaseTarget(attributes);
+    if (!target || !/^\d+$/.test(target.id)) {
       file.message(
-        '::netease 需要 {id="歌单/曲目 ID"} 属性，已跳过。',
+        '::netease 需要 {id="…"} 或 {url="music.163.com 歌曲或歌单链接"}，已跳过。',
         undefined,
         'sonder-directives',
       );
       return [];
     }
 
-    // song / album / radio 保留 outchain iframe（index.ts 的 embedHandler 处理）
-    if (type !== 'playlist') return [];
-
-    const tracks = preloaded.get(id) ?? [];
-    const fallbackUrl = `https://music.163.com/#/playlist?id=${id}`;
-    const fallbackTitle = asString(attributes.title) ?? '网易云歌单';
-
-    if (tracks.length === 0) {
-      file.message(
-        `::netease 歌单 ${id} 解析失败，已降级为链接卡片。`,
-        undefined,
-        'sonder-directives',
-      );
-      const card = buildLinkCard(
-        fallbackUrl,
-        fallbackTitle,
-        '歌单解析失败，点击在网易云音乐打开',
-        'https://p1.music.126.net/q7J5VsX8XmvwNq4a-OgKfA==/109951168192611458.jpg',
-      );
-      return [wrapHast('a', card as never)];
+    // 电台无 Meting 解析：直接走官方外链
+    if (target.type === 'radio') {
+      return [neteaseOutchainNode('radio', target.id)];
     }
 
-    return [
-      buildMusicPlayerNode({
-        title: fallbackTitle,
-        playlist: tracks,
-        size: asString(attributes.size),
-        theme: asString(attributes.theme) as MusicThemeName | undefined,
-        url: fallbackUrl,
-      }),
-    ];
+    const tracks = preloaded.get(`${target.type}:${target.id}`) ?? [];
+    const fallbackUrl = target.url ?? `https://music.163.com/${target.type}?id=${target.id}`;
+
+    if (tracks.length > 0) {
+      return [
+        buildMusicPlayerNode({
+          title: asString(attributes.title) ?? '网易云音乐',
+          playlist: tracks,
+          size: asString(attributes.size),
+          theme: asString(attributes.theme) as MusicThemeName | undefined,
+          url: fallbackUrl,
+        }),
+      ];
+    }
+
+    // Meting 未配置或解析失败：降级为官方外链播放器
+    file.message(
+      `::netease ${target.type} ${target.id} Meting 未配置或解析失败，已降级为官方外链播放器。`,
+      undefined,
+      'sonder-directives',
+    );
+    return [neteaseOutchainNode(target.type, target.id)];
   };
 }
 

@@ -34,7 +34,9 @@ import {
   fetchMetingTracks,
   musicPlayerEmbedHandler,
   neteasePlaylistHandler,
+  resolveNeteaseTarget,
   type MetingTrack,
+  type NeteaseMetingType,
 } from './player.js';
 import friendCircleDemo from '../../../data/friend-circle-demo.json';
 import { githubCardData } from './github-cards.js';
@@ -113,7 +115,6 @@ const LEAF_HANDLERS: Record<
       ? `https://www.youtube-nocookie.com/embed/${id}`
       : undefined;
   }),
-  netease: neteaseLeafHandler,
   link: linkHandler,
   'music-player': musicPlayerEmbedHandler,
   'friend-link-card': friendLinkCardHandler(dataSources),
@@ -136,32 +137,6 @@ const INLINE_HANDLERS: Record<
   span: spanHandler,
   btn: btnHandler,
 };
-
-/** ::netease：playlist（或缺省）走 Meting 原生播放器，song/album/radio 走 outchain iframe */
-function neteaseLeafHandler(extras: { netease: NeteasePrefetch }) {
-  const playlistHandler = neteasePlaylistHandler(extras.netease);
-  const outchainHandler = embedHandler('netease', (attributes) => {
-    const type = typeof attributes.type === 'string' ? attributes.type : '';
-    const id = typeof attributes.id === 'string' ? attributes.id : '';
-    const outchainType: Record<string, string> = { song: '2', album: '10', radio: '19' };
-    const heights: Record<string, string> = { song: '86', album: '430', radio: '330' };
-    if (!outchainType[type] || !/^\d+$/.test(id)) return undefined;
-    return `https://music.163.com/outchain/player?type=${outchainType[type]}&id=${id}&auto=0&height=${heights[type]}`;
-  });
-
-  return ({
-    attributes,
-    file,
-  }: {
-    attributes: Record<string, string | true>;
-    file: DirectiveFile;
-  }) => {
-    const type = typeof attributes.type === 'string' ? attributes.type : 'playlist';
-    return type === 'playlist'
-      ? playlistHandler({ attributes, file })
-      : outchainHandler({ attributes, file });
-  };
-}
 
 function inlineText(node: TreeNode): string {
   return (node.children ?? [])
@@ -189,15 +164,16 @@ function takeLabel(node: TreeNode) {
   return labelInfo;
 }
 
-/** 预取文档内全部 ::netease 歌单（构建期 fetch，带缓存，从不失败） */
-async function prefetchNeteasePlaylists(tree: TreeNode): Promise<NeteasePrefetch> {
-  const ids = new Set<string>();
+/** 预取文档内全部 ::netease 目标（song/playlist/album；radio 无 Meting 解析不预取） */
+async function prefetchNeteaseTracks(tree: TreeNode): Promise<NeteasePrefetch> {
+  const targets = new Set<string>();
   const visit = (nodes: TreeNode[] | undefined) => {
     for (const node of nodes ?? []) {
       if (node.type === 'leafDirective' && node.name === 'netease') {
-        const type = typeof node.attributes?.type === 'string' ? node.attributes.type : 'playlist';
-        const id = typeof node.attributes?.id === 'string' ? node.attributes.id : '';
-        if (type === 'playlist' && /^\d+$/.test(id)) ids.add(id);
+        const target = resolveNeteaseTarget(node.attributes ?? {});
+        if (target && target.type !== 'radio' && /^\d+$/.test(target.id)) {
+          targets.add(`${target.type}:${target.id}`);
+        }
       }
       visit(node.children);
     }
@@ -206,8 +182,9 @@ async function prefetchNeteasePlaylists(tree: TreeNode): Promise<NeteasePrefetch
 
   const map: NeteasePrefetch = new Map();
   await Promise.all(
-    [...ids].map(async (id) => {
-      map.set(id, await fetchMetingTracks(id));
+    [...targets].map(async (key) => {
+      const [type, id] = key.split(':') as [NeteaseMetingType, string];
+      map.set(key, await fetchMetingTracks(id, type));
     }),
   );
   return map;
@@ -247,7 +224,7 @@ function transformNodes(
     const leafHandler =
       node.type === 'leafDirective'
         ? name === 'netease'
-          ? neteaseLeafHandler(extras)
+          ? neteasePlaylistHandler(extras.netease)
           : LEAF_HANDLERS[name]
         : undefined;
     const inlineHandler = node.type === 'textDirective' ? INLINE_HANDLERS[name] : undefined;
@@ -340,7 +317,7 @@ export default function remarkSonderDirectives() {
   return async (tree: MdastNode, file: DirectiveFile & { path?: string }) => {
     if (!tree.children) return;
     try {
-      const extras = { netease: await prefetchNeteasePlaylists(tree) };
+      const extras = { netease: await prefetchNeteaseTracks(tree) };
       tree.children = transformNodes(tree.children, undefined, file, extras);
     } catch (error) {
       // 转换失败时保留原始内容，确保文章不至于空白

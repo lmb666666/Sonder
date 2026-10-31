@@ -1,7 +1,16 @@
-import { describe, expect, test } from 'bun:test';
+import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 
 import type { MdastNode } from './handlers.js';
 import remarkSonderDirectives from './index.js';
+
+// 断网桩：::netease 的 Meting 预取在测试里必须走降级路径，保证断言确定性
+const realFetch = globalThis.fetch;
+beforeAll(() => {
+  globalThis.fetch = (() => Promise.reject(new Error('offline test'))) as typeof fetch;
+});
+afterAll(() => {
+  globalThis.fetch = realFetch;
+});
 
 const transformer = remarkSonderDirectives();
 const fakeFile = { message() {} } as unknown as Parameters<
@@ -289,24 +298,58 @@ describe('叶子指令', () => {
     expect(await run([leaf('bilibili', { bvid: 'invalid' })])).toEqual([]);
   });
 
-  test('::netease 单曲映射 outchain 参数', async () => {
+  test('::netease 单曲：Meting 失败降级为官方外链播放器', async () => {
+    // 测试环境 stub 掉 fetch（见文件底部 beforeAll）：Meting 不可用 → outchain iframe
     const [node] = await run([leaf('netease', { type: 'song', id: '28560087' })]);
+    expect(node.data?.hName).toBe('div');
+    expect(node.data?.hProperties?.className).toContain('sd-embed');
     const iframe = node.data?.hChildren?.[0];
     expect((iframe as { properties: { src: string } }).properties.src).toContain(
       'type=2&id=28560087',
     );
   });
 
-  test('::netease 歌单输出原生播放器（有网）或链接卡片（降级）', async () => {
+  test('::netease 歌单：Meting 失败降级为官方外链播放器', async () => {
     const [node] = await run([leaf('netease', { id: '7294439968' })]);
-    // Meting 可达 → figure 原生播放器；不可达 → a 链接卡片。两者都不能是空内容。
-    expect(['figure', 'a']).toContain(node.data?.hName);
-    if (node.data?.hName === 'a') {
-      expect(node.data?.hProperties?.className).toContain('sd-link-card');
-      expect(node.data?.hProperties?.href).toBe('https://music.163.com/#/playlist?id=7294439968');
-    } else {
-      expect(node.data?.hProperties?.className).toContain('sonder-music-player');
-    }
+    expect(node.data?.hName).toBe('div');
+    expect(node.data?.hProperties?.className).toContain('sd-embed');
+    const iframe = node.data?.hChildren?.[0];
+    expect((iframe as { properties: { src: string } }).properties.src).toContain(
+      'type=0&id=7294439968',
+    );
+  });
+
+  test('::netease 电台直接走官方外链（无 Meting 解析）', async () => {
+    const [node] = await run([leaf('netease', { type: 'radio', id: '797632409' })]);
+    const iframe = node.data?.hChildren?.[0];
+    expect((iframe as { properties: { src: string } }).properties.src).toContain(
+      'type=19&id=797632409',
+    );
+  });
+
+  test('::netease{url} 直贴链接：hash 路由与查询参数均可识别', async () => {
+    const [hashStyle] = await run([
+      leaf('netease', { url: 'https://music.163.com/#/song?id=28560087' }),
+    ]);
+    expect(hashStyle.data?.hName).toBe('div');
+    const iframe = hashStyle.data?.hChildren?.[0];
+    expect((iframe as { properties: { src: string } }).properties.src).toContain(
+      'type=2&id=28560087',
+    );
+
+    const [queryStyle] = await run([
+      leaf('netease', { url: 'https://music.163.com/playlist?id=7294439968' }),
+    ]);
+    expect(queryStyle.data?.hName).toBe('div');
+    const playlistFrame = queryStyle.data?.hChildren?.[0];
+    expect((playlistFrame as { properties: { src: string } }).properties.src).toContain(
+      'type=0&id=7294439968',
+    );
+  });
+
+  test('::netease 非网易链接与缺属性时跳过', async () => {
+    expect(await run([leaf('netease', { url: 'https://example.com/song?id=1' })])).toEqual([]);
+    expect(await run([leaf('netease', {})])).toEqual([]);
   });
 
   test('::music-player 生成 Spotify 官方 embed 播放器', async () => {
