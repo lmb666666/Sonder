@@ -1,7 +1,7 @@
 {
   "name": "Sonder",
   "short_name": "Sonder",
-  "description": "万千人生，各自成书。",
+  "description": "记录长文、碎片与书影音。",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#f7f3ed",

@@ -483,9 +483,12 @@ const siteConfig = defineCollection({
       .optional()
       .default(defaultPagesConfig),
     home: z.object({
-      quote: z.object({
-        text: z.array(z.string()).min(1),
-      }),
+      // 首页引语可整段省略；不配置时 IntroCard 不渲染引语区
+      quote: z
+        .object({
+          text: z.array(z.string()).min(1),
+        })
+        .optional(),
       intro: z.object({
         title: z.string(),
         name: z.string(),

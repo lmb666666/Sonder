@@ -19,7 +19,6 @@ export async function GET(context) {
 > ${site.description}
 
 - 站点：${origin}
-- 标语：万千人生，各自成书
 - 博主：${profile.name}（${profile.role}）
 - 订阅：${new URL('atom.xml', origin)}（Atom）、${new URL('rss.xml', origin)}（RSS 2.0）
 - 友链订阅（OPML）：${new URL('opml.xml', origin)}

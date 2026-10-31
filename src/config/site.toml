@@ -3,10 +3,10 @@
 # 站点标题：导航、页脚和页面标题的公共名称
 title = "Sonder"
 # 通用描述：feed 和默认 meta description
-description = "Sonder 的个人博客。万千人生，各自成书。"
+description = "Sonder 的个人博客。"
 # 首页专用标题与描述；其他页面会自动拼接站点标题
-pageTitle = "Sonder | 万千人生，各自成书"
-pageDescription = "每个人都有自己的故事。"
+pageTitle = "Sonder"
+pageDescription = "记录长文、碎片与书影音。"
 # 线上地址：canonical、sitemap 和订阅链接的基准
 url = "https://sonder.liang.one"
 # 仓库地址：页脚 Powered by 与友链申请默认使用
@@ -121,7 +121,7 @@ maxResults = 6
 [config.pages.blog]
 title = "文章"
 kicker = "归档"
-subtitle = "每个人都有自己的故事。"
+subtitle = "长文与随想的归档。"
 note = ""
 # 每页文章数
 postsPerPage = 6
@@ -196,7 +196,7 @@ comment = true
 [config.profile]
 name = "Sonder"
 handle = "@sonder"
-role = "每个人都有自己的故事"
+role = "写博客的人"
 email = "hello@sonder.liang.one"
 website = "https://sonder.liang.one"
 github = "https://github.com/lmb666666/Sonder"
@@ -232,19 +232,19 @@ href = "/about"
 # 首页内容
 [config.home]
 
-# 首页引语（数组每一项是一行）
-[config.home.quote]
-text = [
-  "万千人生，",
-  "各自成书。",
-]
+# 首页引语（可选）：数组每一项是一行；整段删除后首页不显示引语
+# [config.home.quote]
+# text = [
+#   "慢慢写，",
+#   "慢慢读。",
+# ]
 
 # 首页介绍标题、名字和正文段落
 [config.home.intro]
 title = "here is Sonder"
 name = "Sonder"
 body = [
-  "每个人都是自己故事的主角，这里存放我的那一本。",
+  "一个安静写字的地方。",
   "长文进博客，碎片进随记，书影音各归其位。",
 ]
 

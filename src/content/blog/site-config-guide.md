@@ -25,7 +25,7 @@ Sonder 把站点级信息集中在 `src/config/site.toml`，而不是散落在�
 [config.site]
 title = "Sonder"
 description = "Sonder 的个人博客。"
-pageTitle = "Sonder | 万千人生，各自成书"
+pageTitle = "Sonder"
 url = "https://sonder.liang.one"
 repository = "https://github.com/lmb666666/Sonder"
 timeEstablished = "2026-10-04"
@@ -33,7 +33,7 @@ timeEstablished = "2026-10-04"
 [config.profile]
 name = "Sonder"
 handle = "@sonder"
-role = "每个人都有自己的故事"
+role = "写博客的人"
 email = "hello@sonder.liang.one"
 website = "https://sonder.liang.one"
 github = "https://github.com/lmb666666/Sonder"
@@ -78,7 +78,7 @@ navStyle = "pill"
 [config.pages.blog]
 title = "文章"
 kicker = "归档"
-subtitle = "每个人都有自己的故事。"
+subtitle = "长文与随想的归档。"
 listLayout = "media"
 
 [config.pages.links]

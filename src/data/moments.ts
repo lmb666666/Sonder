@@ -28,7 +28,7 @@ export const demoMoments: MomentItem[] = [
     extension: {
       type: 'github',
       title: 'Sonder',
-      description: '万千人生，各自成书',
+      description: '以纸面阅读感为核心的个人发布模板',
       url: 'https://github.com/lmb666666/Sonder',
     },
   },
