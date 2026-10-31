@@ -187,21 +187,51 @@ table {
   width: 100%;
 }
 
+/* 文章表格（Firefly 风格重构）：圆角卡片、主题色表头、斑马纹、发丝分隔线 */
 .markdown-table-scroll {
   max-width: 100%;
-  margin: 28px 0 30px;
+  margin: 30px 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.75rem;
+  background: var(--paper-surface);
 }
 
 .markdown-table-scroll table {
   width: max-content;
   min-width: 100%;
-  border-collapse: collapse;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95em;
 }
 
-.markdown-table-scroll th {
+.markdown-table-scroll th,
+.markdown-table-scroll td {
+  padding: 0.65em 1em;
+  text-align: left;
+  min-width: 7.5rem;
+  word-break: break-word;
+  border: none;
+  background: var(--paper-surface);
+}
+
+.markdown-table-scroll th:not(:last-child),
+.markdown-table-scroll td:not(:last-child) {
+  border-right: 1px solid var(--paper-line);
+}
+
+.markdown-table-scroll thead th {
   white-space: nowrap;
+  background: var(--paper-accent-soft);
+  color: var(--paper-ink);
+  font-weight: 600;
+  border-bottom: 1px solid var(--paper-line-strong);
+}
+
+.markdown-table-scroll tbody tr:nth-child(even) td {
+  background: var(--paper-surface-muted);
 }
 
 img {
