@@ -40,7 +40,8 @@ export function poetryHandler({
   const parts: MdastNode[] = [];
   if (title) {
     // 标题取 `|` 切分后的部分，不能整段放行（否则把「|作者」一起带进标题与目录）
-    parts.push(wrap('h2', ['poetry-title'], [{ type: 'text', value: title }]));
+    // 用 p 而不是 h2：组件内部标题不应进入页面目录
+    parts.push(wrap('p', ['poetry-title'], [{ type: 'text', value: title }]));
   }
   if (author) parts.push(wrap('div', ['poetry-meta'], [{ type: 'text', value: author }]));
   parts.push(wrap('div', ['poetry-content'], children));
@@ -199,7 +200,8 @@ export function carouselHandler({
     wrap('figure', [], [child], { 'data-carousel-slide': '' }),
   );
 
-  const track = wrap('div', ['sonder-carousel__track'], slides);
+  // data-track 是 wheel 脚本的钩子（按视口宽度滚动），缺了按钮就哑了
+  const track = wrap('div', ['sonder-carousel__track'], slides, { 'data-track': '' });
   const controls = wrap('div', ['sonder-carousel__controls'], [], { 'data-carousel-controls': '' });
   // 控制按钮是纯 hast（内联 SVG），走 hChildren 注入
   controls.data = {
@@ -241,8 +243,24 @@ function extractText(nodes: MdastNode[] | undefined): string {
     .join('\n');
 }
 
-export function musicScoreHandler({ children }: ContainerContext): MdastNode[] {
-  const abc = extractText(children).trim();
+export function musicScoreHandler({ node, children, file }: ContainerContext): MdastNode[] {
+  // ABC 记谱法含 `X:` `T:` `M:` 这类冒号，裸写在容器里会被 remark-directive
+  // 当成行内指令解析（`X:1` → 文本 X + 指令 :1），音源必然被撕碎。
+  // 因此约定：ABC 必须写在容器内的围栏代码块里，与 mermaid 一致。
+  const codeBlock = children.find((child) => child.type === 'code');
+  const hasLooseText = children.some(
+    (child) => child.type === 'paragraph' || child.type === 'textDirective',
+  );
+
+  if (!codeBlock && hasLooseText) {
+    file.message(
+      ':::music-score 内的 ABC 需写在围栏代码块里（```abc … ```），否则 `X:` `T:` 会被当成行内指令解析。已按纯文本尽力渲染。',
+      positionOfNode(node),
+      'sonder-directives',
+    );
+  }
+
+  const abc = (codeBlock ? String(codeBlock.value ?? '') : extractText(children)).trim();
   const element = h('div', { class: 'music-score', 'data-music-score': '' }, [
     h('pre', { class: 'music-score-source', hidden: true }, [abc]),
     h('div', { class: 'music-score-score' }),
@@ -395,7 +413,7 @@ function friendLinkCardElement(item: FriendLinkEntry, preview = false): HastLike
           h('strong', [displayName]),
           icon('link', 13),
         ]),
-        bio ? h('span', { class: 'friend-link-card__description' }, [bio]) : undefined,
+        bio ? h('span', { class: 'friend-link-card__bio' }, [bio]) : undefined,
       ]),
     ].filter(Boolean),
   );

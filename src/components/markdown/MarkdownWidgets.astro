@@ -5,6 +5,10 @@
  * 重依赖（abcjs）按需动态加载。
  */
 import '../../plugins/markdown/directives/widgets.css';
+// 指令与提醒块样式：作为真实样式表加载（此前经 head-inline 由 JS 注入，
+// 首屏会有无样式闪烁，且禁用 JS 时全部丢失）
+import '../../plugins/markdown/callout/styles.css';
+import '../../plugins/markdown/directives/styles.css';
 ---
 
 <script>

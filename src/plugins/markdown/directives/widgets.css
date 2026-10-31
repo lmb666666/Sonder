@@ -1296,12 +1296,12 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-.friend-link-application__header h2,
+.friend-link-application__header .friend-link-application__title,
 .friend-link-application__header p {
   margin: 0;
 }
 
-.friend-link-application__header h2 {
+.friend-link-application__header .friend-link-application__title {
   color: var(--paper-ink);
   font-family: var(--font-heading);
   font-size: 1.34rem;
@@ -1388,7 +1388,7 @@
   margin-bottom: 18px;
 }
 
-.friend-link-application__preview-header h3 {
+.friend-link-application__preview-header .friend-link-application__preview-title {
   margin: 0;
   color: var(--paper-ink);
   font-family: var(--font-heading);
@@ -1809,7 +1809,7 @@
     gap: 8px;
   }
 
-  .friend-link-application__preview-header h3 {
+  .friend-link-application__preview-header .friend-link-application__preview-title {
     font-size: 0.98rem;
   }
 
@@ -1855,61 +1855,26 @@
   }
 }
 
-/* ═══ 图片灯箱（PhotoSwipe 5，rehype-lightbox 包装） ═══ */
+/* ═══ 图片灯箱（PhotoSwipe 5，运行时包装） ═══
+ * 锚点必须是布局透明的：不得引入 margin/border/圆角/尺寸，
+ * 否则会给文章配图凭空加边框、双倍间距（曾把媒体架封面图压扁）。
+ */
 .sd-lightbox-item {
   display: block;
-  width: fit-content;
   max-width: 100%;
-  margin: 30px auto;
-  overflow: hidden;
-  border: 1px solid var(--paper-line);
-  border-radius: 8px;
   cursor: zoom-in;
 }
 
 .sd-lightbox-item img {
-  display: block;
-  max-width: 100%;
-  height: auto;
   transition: opacity 160ms ease;
 }
 
 .sd-lightbox-item:hover img {
-  opacity: 0.88;
+  opacity: 0.9;
 }
 
-/* 容器内的灯箱锚点：去掉自身卡片样式，布局交由容器规则驱动 */
-.sd-grid a.sd-lightbox-item,
-.sonder-media-shelf a.sd-lightbox-item,
-.sonder-long-image__viewport a.sd-lightbox-item,
-.sonder-carousel a.sd-lightbox-item {
-  display: block;
-  width: auto;
-  max-width: none;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-}
-
-.sd-grid a.sd-lightbox-item {
-  width: 100%;
-}
-
+/* 媒体架封面：封面框是 grid + 固定比例，锚点撑满后 img 的 100% 才生效 */
 .sonder-media-shelf__cover a.sd-lightbox-item {
   width: 100%;
   height: 100%;
-}
-
-.sonder-long-image__viewport a.sd-lightbox-item,
-.sonder-carousel a.sd-lightbox-item {
-  width: 100%;
-}
-
-.sonder-long-image__viewport a.sd-lightbox-item img {
-  width: 100%;
-}
-
-/* 灯箱：站点全局 img 圆角会漏进 PhotoSwipe，原版为直角 */
-.pswp__img {
-  border-radius: 0;
 }

@@ -596,6 +596,56 @@ describe('真实 Markdown 解析（裸旗标归一化）', () => {
   });
 });
 
+describe('回归：近期修复的结构契约', () => {
+  test(':::carousel 输出 data-track（wheel 脚本依赖，缺失则按钮失效）', async () => {
+    const [node] = await run([container('carousel', {}, [paragraph('x')])]);
+    const track = node.children?.[0];
+    expect(track?.data?.hProperties?.['data-track']).toBe('');
+  });
+
+  test(':::media-shelf 封面图不被锚点/样式压扁（图节点保留在 figure 内）', async () => {
+    const [node] = await run([
+      container('media-shelf', {}, [
+        container('media-item', { type: 'book', title: 't', creator: 'c' }, [
+          { type: 'paragraph', children: [{ type: 'image', url: '/a.png', alt: 'a' }] },
+        ]),
+      ]),
+    ]);
+    const item = node.children?.[0];
+    const cover = item?.children?.[0];
+    expect(cover?.data?.hProperties?.className).toContain('sonder-media-shelf__cover');
+    expect(cover?.children?.[0]?.type).toBe('image');
+  });
+
+  test(':::music-score 优先读取围栏代码块内的 ABC（裸文本会被冒号解析撕碎）', async () => {
+    const abc = 'X:1\nT:测试\nK:C\n"1"C D E F|';
+    const [node] = await run([container('music-score', {}, [{ type: 'code', value: abc }])]);
+    // hast 属性名在 mdast/hast 里是 camelCase，序列化时还原为 data-*
+    const pre = (node.data?.hChildren ?? []).find(
+      (child) => (child as { tagName?: string }).tagName === 'pre',
+    ) as { children?: Array<{ value: string }> } | undefined;
+    expect(pre?.children?.[0]?.value).toBe(abc);
+    expect(JSON.stringify(node.data?.hChildren)).toContain('music-score-source');
+  });
+
+  test('::friend-link-card 简介用 CSS 定义的 __bio 类名', async () => {
+    const [node] = await run([
+      leaf('friend-link-card', { name: 'N', url: 'https://e.com', bio: '简介' }),
+    ]);
+    const html = JSON.stringify(node.data?.hChildren?.[0]);
+    expect(html).toContain('friend-link-card__bio');
+    expect(html).not.toContain('friend-link-card__description');
+  });
+
+  test('::friend-link-application 预览块不带 <code>（避免被 Expressive Code 劫持）', async () => {
+    const [node] = await run([leaf('friend-link-application', { repository: 'a/b' })]);
+    const html = JSON.stringify(node.data?.hChildren?.[0]);
+    // 预览块必须是 <pre data-application-preview>，且不能含 <code>（否则被 Expressive Code 劫持）
+    expect(html).toContain('dataApplicationPreview');
+    expect(html).not.toContain('"tagName":"code"');
+  });
+});
+
 describe('未知指令与嵌套', () => {
   test('未知行内指令保留原文', async () => {
     const [node] = await run([inline('foo', [text('bar')])]);

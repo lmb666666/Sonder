@@ -166,7 +166,8 @@ export function friendLinkApplicationHandler({
     [
       h('header', { class: 'friend-link-application__header' }, [
         h('div', { class: 'friend-link-application__intro' }, [
-          h('h2', [title]),
+          // 组件内部标题用 p，避免污染文章目录
+          h('p', { class: 'friend-link-application__title' }, [title]),
           h('p', [description]),
         ]),
         h(
@@ -225,7 +226,7 @@ export function friendLinkApplicationHandler({
           },
           [icon('arrow-left', 17, 1.8), h('span', ['返回填写'])],
         ),
-        h('h3', ['友链数据']),
+        h('p', { class: 'friend-link-application__preview-title' }, ['友链数据']),
         h(
           'button',
           {
@@ -256,10 +257,10 @@ export function friendLinkApplicationHandler({
       ]),
       h('div', { class: 'friend-link-application__code' }, [
         icon('file-json-2', 19, 1.6),
-        h('pre', [
-          h('code', { 'data-application-preview': '' }, [
-            formatPreview(JSON.stringify(initialData, null, 2)),
-          ]),
+        // 不能再包 <code>：Astro 的 Expressive Code 会把 pre>code 换成代码卡片，
+        // data-application-preview 会随之丢失，表单初始化守卫失败 → 整个表单失效
+        h('pre', { 'data-application-preview': '' }, [
+          formatPreview(JSON.stringify(initialData, null, 2)),
         ]),
       ]),
     ],

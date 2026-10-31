@@ -1,6 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-
 import remarkDirective from 'remark-directive';
 import remarkCallouts from './callout/index.js';
 import remarkSonderDirectives from './directives/index.js';
@@ -15,56 +12,20 @@ import rehypeResponsiveTables from './rehype-responsive-tables.js';
 import remarkMermaid from './remark-mermaid.js';
 import type { SonderPlugin } from './types.js';
 
-function loadMarkdownStyles(options: { callouts: boolean; directives: boolean }): string {
-  const stylePaths = [
-    ...(options.callouts ? [fileURLToPath(new URL('./callout/styles.css', import.meta.url))] : []),
-    ...(options.directives
-      ? [fileURLToPath(new URL('./directives/styles.css', import.meta.url))]
-      : []),
-  ];
-
-  return stylePaths.map((stylePath) => readFileSync(stylePath, 'utf8')).join('\n');
-}
-
-function markdownStylesIntegration(options: {
-  callouts: boolean;
-  directives: boolean;
-}): AstroIntegration {
+/**
+ * 标签页切换脚本。
+ * 提醒块与指令的样式不再由这里注入——改由 MarkdownWidgets 以真实样式表加载，
+ * 避免首屏无样式闪烁，也保证禁用 JS 时样式依然存在。
+ */
+function markdownTabsIntegration(): AstroIntegration {
   return {
-    name: '@sonder/plugin-markdown/styles',
+    name: '@sonder/plugin-markdown/tabs',
     hooks: {
       'astro:config:setup': ({ injectScript }) => {
-        const styles = loadMarkdownStyles(options);
-
+        // 事件委托，文档级单次绑定即可覆盖全部实例
         injectScript(
           'head-inline',
           `
-const styleId = 'sonder-markdown-styles';
-const persistId = 'sonder-markdown-styles';
-const styles = ${JSON.stringify(styles)};
-
-function ensureMarkdownStyles() {
-  if (document.getElementById(styleId)) {
-    return;
-  }
-
-  const style = document.createElement('style');
-  style.id = styleId;
-  style.setAttribute('data-astro-transition-persist', persistId);
-  style.textContent = styles;
-  document.head.append(style);
-}
-
-ensureMarkdownStyles();
-document.addEventListener('astro:after-swap', ensureMarkdownStyles);
-`,
-        );
-
-        if (options.directives) {
-          // 标签页切换：事件委托，文档级单次绑定即可覆盖全部实例
-          injectScript(
-            'head-inline',
-            `
 (function () {
   if (window.__sonderTabsBound) return;
   window.__sonderTabsBound = true;
@@ -87,8 +48,7 @@ document.addEventListener('astro:after-swap', ensureMarkdownStyles);
   });
 })();
 `,
-          );
-        }
+        );
       },
     },
   };
@@ -105,9 +65,7 @@ export function markdownPlugin(options: MarkdownPluginOptions = {}): SonderPlugi
 
       return {
         integrations: [
-          ...(resolvedOptions.callouts || resolvedOptions.directives
-            ? [markdownStylesIntegration(resolvedOptions)]
-            : []),
+          ...(resolvedOptions.directives ? [markdownTabsIntegration()] : []),
           ...(resolvedOptions.expressiveCode ? [expressiveCode()] : []),
         ],
         remarkPlugins: [

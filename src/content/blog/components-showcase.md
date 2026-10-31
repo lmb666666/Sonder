@@ -40,7 +40,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 | `carousel` | 轮播；`{aspect="16 / 9"}` |
 | `long-image` | 长图滚动视口；`{height="320px" caption="…"}` |
 | `media-shelf` + `media-item` | 媒体架；`{columns="4"}`，子项 `{type="book" title="…" creator="…" rating="4"}` |
-| `music-score` | ABC 记谱法乐谱 |
+| `music-score` | ABC 记谱法乐谱；乐谱源码写在围栏代码块内 |
 
 | 叶子指令 | 说明 |
 | --- | --- |
@@ -616,8 +616,9 @@ flowchart LR
 
 ABC 记谱法乐谱；soundfonts 音源可达时可试听（不可达时仅显示乐谱）。
 
-````md
-:::music-score
+`````md
+::::music-score
+```abc
 X:1
 T:小星星
 M:4/4
@@ -625,10 +626,12 @@ L:1/4
 K:C
 "1"C C G G|A A G2|"5"F F E E|D D C2|
 w: Twink-le twink-le lit-tle star, how I won-der what you are.
-:::
-````
+```
+::::
+`````
 
-:::music-score
+::::music-score
+```abc
 X:1
 T:小星星
 M:4/4
@@ -636,7 +639,10 @@ L:1/4
 K:C
 "1"C C G G|A A G2|"5"F F E E|D D C2|
 w: Twink-le twink-le lit-tle star, how I won-der what you are.
-:::
+```
+::::
+
+> 注意：ABC 必须写在围栏代码块里——记谱法的 `X:` `T:` `M:` 含冒号，裸写会被当成行内指令解析。
 
 ---
 
