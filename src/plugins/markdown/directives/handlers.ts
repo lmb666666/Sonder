@@ -345,6 +345,95 @@ function githubHandler(cards: Record<string, GithubCardData | undefined>) {
 
 // ─── 叶子：视频 / 音乐嵌入 ──────────────────────────────
 
+const VIDEO_IFRAME_ALLOW =
+  'accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture';
+
+/** 纸面卡片化的视频容器（raw video 元素或 iframe 嵌入通用） */
+export function videoCardNode(
+  child: HastElement,
+  options: { ratio?: string; zoomFactor?: number } = {},
+): MdastNode[] {
+  const ratio = options.ratio ?? '16 / 9';
+  return [
+    wrapHast('div', child as unknown as HastElement, {
+      className: ['sd-video'],
+      style: `aspect-ratio:${ratio}`,
+      ...(options.zoomFactor ? { 'data-sd-video-zoom': String(options.zoomFactor) } : {}),
+    }),
+  ];
+}
+
+/** 本地/直链视频文件（::video） */
+export function videoHandler({ attributes, file }: LeafContext): MdastNode[] {
+  const src = asString(attributes.src);
+  if (!src) {
+    file.message(
+      '::video 需要 {src="视频文件地址"} 属性，已跳过。',
+      undefined,
+      'sonder-directives',
+    );
+    return [];
+  }
+  const poster = asString(attributes.poster);
+  const video = h(
+    'video',
+    {
+      controls: true,
+      preload: 'metadata',
+      src,
+      ...(poster ? { poster } : {}),
+    },
+    ['你的浏览器不支持视频播放。'],
+  );
+  return videoCardNode(video as unknown as HastElement, { ratio: asString(attributes.ratio) });
+}
+
+/** 抖音播放器（::douyin）：竖屏默认，{wide} 切横屏；zoom 补偿由 widget 按容器宽度计算 */
+export function douyinHandler({ attributes, file }: LeafContext): MdastNode[] {
+  const vid = asString(attributes.vid) ?? asString(attributes.id);
+  if (!vid || !/^\d+$/.test(vid)) {
+    file.message(
+      '::douyin 需要 {vid="抖音视频 ID"} 属性，已跳过。',
+      undefined,
+      'sonder-directives',
+    );
+    return [];
+  }
+  const wide = attributes.wide === true;
+  return videoCardNode(
+    h('iframe', {
+      src: `https://open.douyin.com/player/video?vid=${vid}`,
+      scrolling: 'no',
+      loading: 'lazy',
+      allow: VIDEO_IFRAME_ALLOW,
+      title: `抖音视频 ${vid}`,
+    }) as unknown as HastElement,
+    wide ? { ratio: '1198 / 731', zoomFactor: 0.00134 } : { ratio: '27 / 56', zoomFactor: 0.0031 },
+  );
+}
+
+/** TikTok 播放器（::tiktok） */
+export function tiktokHandler({ attributes, file }: LeafContext): MdastNode[] {
+  const id = asString(attributes.id);
+  if (!id || !/^\d+$/.test(id)) {
+    file.message(
+      '::tiktok 需要 {id="TikTok 视频 ID"} 属性，已跳过。',
+      undefined,
+      'sonder-directives',
+    );
+    return [];
+  }
+  return videoCardNode(
+    h('iframe', {
+      src: `https://www.tiktok.com/embed/v3/${id}`,
+      scrolling: 'no',
+      loading: 'lazy',
+      allow: VIDEO_IFRAME_ALLOW,
+      title: `TikTok video ${id}`,
+    }) as unknown as HastElement,
+  );
+}
+
 function embedHandler(
   provider: string,
   buildSrc: (attributes: Record<string, AttributeValue>) => string | undefined,

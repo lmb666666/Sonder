@@ -319,6 +319,60 @@ describe('叶子指令', () => {
     );
   });
 
+  test('::bilibili {nano} 切换小窗播放器', async () => {
+    const [node] = await run([leaf('bilibili', { bvid: 'BV1xx411c7mD', nano: true })]);
+    const iframe = node.data?.hChildren?.[0];
+    expect((iframe as { properties: { src: string } }).properties.src).toBe(
+      'https://www.bilibili.com/blackboard/newplayer.html?bvid=BV1xx411c7mD',
+    );
+  });
+
+  test('::video 直链视频输出 video 元素', async () => {
+    const [node] = await run([
+      leaf('video', { src: '/media/demo.mp4', poster: '/media/demo.jpg' }),
+    ]);
+    expect(node.data?.hName).toBe('div');
+    expect(node.data?.hProperties?.className).toContain('sd-video');
+    const video = node.data?.hChildren?.[0] as {
+      tagName: string;
+      properties: Record<string, unknown>;
+    };
+    expect(video.tagName).toBe('video');
+    expect(video.properties.src).toBe('/media/demo.mp4');
+    expect(video.properties.poster).toBe('/media/demo.jpg');
+  });
+
+  test('::video 缺 src 时跳过', async () => {
+    expect(await run([leaf('video', {})])).toEqual([]);
+  });
+
+  test('::douyin 竖屏默认、{wide} 切横屏并带 zoom 因子', async () => {
+    const [portrait] = await run([leaf('douyin', { vid: '7301234567890123456' })]);
+    expect(portrait.data?.hProperties?.style).toBe('aspect-ratio:27 / 56');
+    expect(portrait.data?.hProperties?.['data-sd-video-zoom']).toBe('0.0031');
+    const iframe = portrait.data?.hChildren?.[0];
+    expect((iframe as { properties: { src: string } }).properties.src).toBe(
+      'https://open.douyin.com/player/video?vid=7301234567890123456',
+    );
+
+    const [landscape] = await run([leaf('douyin', { vid: '7301234567890123456', wide: true })]);
+    expect(landscape.data?.hProperties?.style).toBe('aspect-ratio:1198 / 731');
+    expect(landscape.data?.hProperties?.['data-sd-video-zoom']).toBe('0.00134');
+  });
+
+  test('::tiktok 输出 embed v3 播放器', async () => {
+    const [node] = await run([leaf('tiktok', { id: '7367543893026422146' })]);
+    const iframe = node.data?.hChildren?.[0];
+    expect((iframe as { properties: { src: string } }).properties.src).toBe(
+      'https://www.tiktok.com/embed/v3/7367543893026422146',
+    );
+  });
+
+  test('::douyin / ::tiktok 缺属性时跳过', async () => {
+    expect(await run([leaf('douyin', {})])).toEqual([]);
+    expect(await run([leaf('tiktok', { id: 'abc' })])).toEqual([]);
+  });
+
   test('::netease 电台直接走官方外链（无 Meting 解析）', async () => {
     const [node] = await run([leaf('netease', { type: 'radio', id: '797632409' })]);
     const iframe = node.data?.hChildren?.[0];
@@ -503,6 +557,42 @@ describe('P1 扩展：按钮组 / 本地音频 / 剧透点击', () => {
     const [node] = await run([inline('blur', [text('剧透')])]);
     expect(node.data?.hProperties?.role).toBe('button');
     expect(node.data?.hProperties?.['aria-pressed']).toBe('false');
+  });
+});
+
+describe('真实 Markdown 解析（裸旗标归一化）', () => {
+  /** 走完整 remark 管线：程序化构造节点会掩盖裸属性解析差异 */
+  async function runMd(md: string): Promise<MdastNode[]> {
+    const { unified } = await import('unified');
+    const { default: remarkParse } = await import('remark-parse');
+    const { default: remarkDirective } = await import('remark-directive');
+    const proc = unified().use(remarkParse).use(remarkDirective).use(remarkSonderDirectives);
+    const tree = proc.parse(md) as MdastNode;
+    await transformer(tree, fakeFile);
+    return tree.children ?? [];
+  }
+
+  test('{open} 裸旗标让折叠面板默认展开', async () => {
+    const [node] = await runMd(':::details[点我展开]{open}\n内容\n:::\n');
+    expect(node.data?.hName).toBe('details');
+    expect(node.data?.hProperties?.open).toBe(true);
+  });
+
+  test('{square} 裸旗标取消徽标圆角', async () => {
+    const [paragraph] = await runMd(':badge[方形]{img="https://x/y.png" square}\n');
+    const node = paragraph.children?.[0];
+    expect(node?.data?.hProperties?.className).not.toContain('is-round');
+  });
+
+  test('{foldable} 裸旗标折叠提醒块', async () => {
+    const [node] = await runMd(':::note[可折叠]{foldable}\n内容\n:::\n');
+    expect(node.data?.hName).toBe('details');
+  });
+
+  test('{media} 裸旗标标记媒体栏', async () => {
+    const [node] = await runMd('::::columns\n:::column{media}\n![图](/images/a.png)\n:::\n::::\n');
+    const column = node.children?.[0];
+    expect(column?.data?.hProperties?.className).toContain('is-media');
   });
 });
 

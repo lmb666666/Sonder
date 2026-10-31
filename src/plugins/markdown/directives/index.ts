@@ -8,6 +8,7 @@ import {
   btnsHandler,
   calloutContainerHandler,
   detailsHandler,
+  douyinHandler,
   embedHandler,
   githubHandler,
   gridHandler,
@@ -16,6 +17,8 @@ import {
   positionOf,
   spanHandler,
   tabsHandler,
+  tiktokHandler,
+  videoHandler,
 } from './handlers.js';
 import { columnsHandler, timelineHandler } from './layout-handlers.js';
 import {
@@ -107,10 +110,15 @@ const LEAF_HANDLERS: Record<
   github: githubHandler(githubCardData),
   bilibili: embedHandler('bilibili', (attributes) => {
     const bvid = typeof attributes.bvid === 'string' ? attributes.bvid : undefined;
-    return bvid && /^BV[1-9A-HJ-NP-Za-km-z]{8,12}$/.test(bvid)
-      ? `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=0&danmaku=0`
-      : undefined;
+    if (!bvid || !/^BV[1-9A-HJ-NP-Za-km-z]{8,12}$/.test(bvid)) return undefined;
+    // {nano} 小窗模式：无弹幕/推荐模块的极简播放器
+    return attributes.nano === true
+      ? `https://www.bilibili.com/blackboard/newplayer.html?bvid=${bvid}`
+      : `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=0&danmaku=0`;
   }),
+  video: videoHandler,
+  douyin: douyinHandler,
+  tiktok: tiktokHandler,
   youtube: embedHandler('youtube', (attributes) => {
     const id = typeof attributes.id === 'string' ? attributes.id : undefined;
     return id && /^[\w-]{6,20}$/.test(id)
@@ -217,8 +225,20 @@ function transformNodes(
 
     // 父指令消费的子指令（column/tab/event/media-item），交给父指令的 handler 处理
     if (parentDirective && CONSUMED_CHILDREN[parentDirective]?.includes(name)) {
+      if (node.attributes) {
+        for (const key of Object.keys(node.attributes)) {
+          if (node.attributes[key] === '') node.attributes[key] = true;
+        }
+      }
       result.push(node);
       continue;
+    }
+
+    // 裸旗标（{open} {square}）经 remark-directive 解析为空串，统一归一为布尔 true
+    if (node.attributes) {
+      for (const key of Object.keys(node.attributes)) {
+        if (node.attributes[key] === '') node.attributes[key] = true;
+      }
     }
 
     const containerHandler =

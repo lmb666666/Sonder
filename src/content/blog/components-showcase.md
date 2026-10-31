@@ -46,20 +46,23 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 | --- | --- |
 | `link` | 链接卡片；`{href="…" title="…" description="…" icon="…"}` |
 | `github` | GitHub 仓库卡片；`{repo="owner/repo"}`，stars 构建期预取 |
-| `bilibili` | B 站视频；`{bvid="BV…"}` |
+| `bilibili` | B 站视频；`{bvid="BV…"}`，`{nano}` 小窗播放器 |
 | `youtube` | YouTube 视频；`{id="…"}` |
 | `netease` | 网易云音乐；`{url="歌曲/歌单链接"}` 或 `{type="song\|playlist\|album\|radio" id="…"}`，默认经 Meting 解析为原生播放器，未配置或失败时降级官方外链 |
-| `music-player` | 官方播放器；`{provider="spotify\|soundcloud\|youtube\|…" url="…"}` |
+| `music-player` | 播放器；官方 embed `{provider="…" url="…"}` 或本地音频 `{src="…"}` |
+| `video` | 本地/直链视频；`{src="…" poster="…" ratio="…"}` |
+| `douyin` | 抖音视频；`{vid="…"}`，`{wide}` 横屏 |
+| `tiktok` | TikTok 视频；`{id="…"}` |
 | `friend-link-card` | 友链卡片网格；`{src="数据源" columns="3"}` |
 | `friend-circle` | 朋友圈动态；`{src="数据源" limit="10" title="…"}` |
 | `friend-link-application` | 友链申请表单；`{repository="owner/repo"}` |
 
 | 行内指令 | 说明 |
 | --- | --- |
-| `badge` | 行内徽标；`{href="…"}` 可点击，`{img="…"}` 带图标 |
+| `badge` | 行内徽标；`{href="…"}` 可点击，`{img="…"}` 带图标，`{square}` 取消圆角 |
 | `key` | 键帽；支持 `{ctrl}` `{shift}` `{cmd}` 等修饰键，真实按键时点亮 |
 | `blur` | 剧透模糊，悬停或聚焦显形；点击/回车切换（适配触屏） |
-| `span` | 行内样式；`{color="#…"}` |
+| `span` | 行内样式；`{color="#…"}`，`.类名` 可挂自定义 class |
 | `btn` | 行内按钮；`{href="…"}` |
 
 规则：**嵌套**时外层围栏冒号数必须多于内层（`::::tabs` 包 `:::tab`）；`{a=b}` 与 `{a="b"}` 等价，`#id`、`.class` 简写可用；未知指令展开为普通内容并在构建时警告；演示语法本身时放进代码围栏即可。
@@ -76,12 +79,14 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 :badge[Astro]{href="https://astro.build"}
 :badge[纯文字徽标]
 :badge[带图圆形]{img="https://github.com/lmb666666.png?size=64" href="https://github.com/lmb666666"}
+:badge[带图方形]{img="https://github.com/lmb666666.png?size=64" square}
 ```
 
 :badge[Astro]{href="https://astro.build"}
 :badge[GitHub]{href="https://github.com/lmb666666/Sonder"}
 :badge[纯文字徽标]
 :badge[带图圆形]{img="https://github.com/lmb666666.png?size=64" href="https://github.com/lmb666666"}
+:badge[带图方形]{img="https://github.com/lmb666666.png?size=64" square}
 
 ### Key 按键
 
@@ -109,6 +114,8 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 ```
 
 把重点写成 :span[一抹赭石色]{color="#8a5a32"}，或 :span[主题色强调]{color="var(--paper-accent)"}。
+
+也可以用 `.类名` 挂站点自定义 CSS 中的类名，实现自定义配色与样式。
 
 ### Btn 按钮与 Btns 按钮组
 
@@ -143,21 +150,39 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 :btn[Pagefind]{href="https://pagefind.app"}
 ::::
 
+`wide` 布局适合下载区/行动号召：
+
+```md
+::::btns{layout="wide"}
+:btn[下载最新版]{href="https://github.com/lmb666666/Sonder/releases"}
+:btn[查看源码]{href="https://github.com/lmb666666/Sonder"}
+::::
+```
+
+::::btns{layout="wide"}
+:btn[下载最新版]{href="https://github.com/lmb666666/Sonder/releases"}
+:btn[查看源码]{href="https://github.com/lmb666666/Sonder"}
+::::
+
 > 注意：按钮组里每行写一个 `:btn`；网格布局在窄屏自动降为两列，无需写响应式样式。
 
 ## 提醒块与结构
 
 ### Callout 提醒块
 
-`:::note` 家族与标准引用块写法相近，30+ 类型别名通用；`{foldable}` 可折叠。
+`:::note` 家族与标准引用块写法相近；`{foldable}` 可折叠，`{open}` 默认展开。共 27 个类型别名，全部同义换肤：
+
+- **信息类**：`note`、`info`、`abstract`、`summary`、`tldr`、`tip`、`hint`、`important`、`check`、`success`、`done`、`question`、`faq`、`help`
+- **警示类**：`warning`、`caution`、`attention`、`danger`、`error`、`fail`、`failure`、`missing`、`bug`
+- **引用类**：`quote`、`cite`
 
 ```md
 :::note[自定义标题]
-支持 foldable 属性折叠。
+在围栏后加 `{foldable}` 即可折叠。
 :::
 
-:::warning
-注意写法。
+:::danger
+部署前记得备份。
 :::
 ```
 
@@ -165,12 +190,20 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 在围栏后加 `{foldable}` 即可折叠。
 :::
 
-:::tip
-小贴士一类的内容。
+:::danger
+部署前记得备份。
 :::
 
-:::warning
-注意写法。
+:::info
+这里是补充信息。
+:::
+
+:::success
+操作已成功完成。
+:::
+
+:::quote
+引用类提醒块保留引用语义。
 :::
 
 ### Details 折叠面板
@@ -237,12 +270,12 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 ::::
 ```
 
-::::columns{cols="2"}
+::::columns{cols="2" ratio="1:2"}
 :::column
-左栏内容：适合图文并排、对照说明。
+左栏（1/3）：`{ratio="1:2"}` 控制各栏宽度比。
 :::
 :::column
-右栏内容：分栏在窄屏自动折叠为单列。
+右栏（2/3）：分栏在窄屏自动折叠为单列；含图栏可配 `{mobile="media-first"}` 在窄屏排最前。
 :::
 ::::
 
@@ -265,6 +298,31 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 :::
 :::event[2026-10-31]
 全部组件指令化，文章回归纯 Markdown。
+:::
+::::
+
+`{direction="horizontal"}` 切换横向时间线（可横向滑动）：
+
+```md
+::::timeline{direction="horizontal"}
+:::event[第一季度]
+设计与重构。
+:::
+:::event[第二季度]
+外挂标签体系。
+:::
+::::
+```
+
+::::timeline{direction="horizontal"}
+:::event[第一季度]
+设计与重构。
+:::
+:::event[第二季度]
+外挂标签体系。
+:::
+:::event[第三季度]
+内容与文档。
 :::
 ::::
 
@@ -454,10 +512,30 @@ flowchart LR
 
 ```md
 ::bilibili{bvid="BV1GJ411x7h7"}
+::bilibili{bvid="BV1GJ411x7h7" nano}
 ::youtube{id="dQw4w9WgXcQ"}
 ```
 
+`{nano}` 切换 B 站小窗播放器（无弹幕与推荐模块）。YouTube 在部分网络环境无法加载，属预期行为。
+
 ::bilibili{bvid="BV1GJ411x7h7"}
+
+::youtube{id="dQw4w9WgXcQ"}
+
+### Video / Douyin / TikTok 视频
+
+本地或直链视频文件用 `::video`（支持 `poster` 封面与 `ratio` 画幅）；抖音用 `::douyin`（`{wide}` 切横屏播放器，竖屏默认 `27/56` 画幅并自动做宽度补偿）；TikTok 用 `::tiktok`：
+
+```md
+::video{src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" poster="…"}
+::douyin{vid="抖音视频ID"}
+::douyin{vid="…" wide}
+::tiktok{id="TikTok视频ID"}
+```
+
+::video{src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"}
+
+> 注意：抖音与 TikTok 的视频 ID 各自独立、互不通用；示例从略——没有有效 ID 时播放器会显示平台错误，反而干扰阅读。
 
 ### FriendLinkCard 友链卡片
 
@@ -468,6 +546,14 @@ flowchart LR
 ```
 
 ::friend-link-card{src="demo" columns="3"}
+
+不建数据源、只想在文章里放一两个站点时，直接写属性即可：
+
+```md
+::friend-link-card{name="Sonder" url="https://sonder.liang.one" avatar="https://github.com/lmb666666.png?size=64" bio="以纸面阅读感为核心的个人发布模板"}
+```
+
+::friend-link-card{name="Sonder" url="https://sonder.liang.one" avatar="https://github.com/lmb666666.png?size=64" bio="以纸面阅读感为核心的个人发布模板"}
 
 ### FriendCircle 朋友圈
 

@@ -21,10 +21,12 @@ import '../../plugins/markdown/directives/widgets.css';
   } from '../../plugins/markdown/directives/widgets/music-score.js';
   import { initFriendLinkApplications } from '../../plugins/markdown/directives/widgets/friend-link-application.js';
   import { bindBlurs } from '../../plugins/markdown/directives/widgets/blur.js';
+  import { applyVideoZoom } from '../../plugins/markdown/directives/widgets/video.js';
 
   const boot = () => {
     bindKeys();
     bindBlurs();
+    applyVideoZoom();
     initCarousels();
     initFriendCircles();
     initMusicPlayers();
