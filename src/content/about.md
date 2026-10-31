@@ -13,7 +13,6 @@ sidebar:
   toc: false
 ---
 
-import FriendLinkCard from '@sonder/mdx-components/FriendLinkCard.astro';
 
 Sonder 是一份安静的个人发布模板。它不把首页做成营销落地页，而是把身份、近况、写作和阅读痕迹放在同一张纸面上：左侧是正文与最新文章，右侧是身份、统计、热力图和站点信息。
 
@@ -38,36 +37,4 @@ Sonder 是一份安静的个人发布模板。它不把首页做成营销落地�
 
 ## 相关链接
 
-<FriendLinkCard
-  items={[
-    {
-      name: 'Sonder 仓库',
-      url: 'https://github.com/lmb666666/Sonder',
-      bio: '模板源码与更新记录',
-      avatar: 'https://github.com/lmb666666.png?size=64',
-    },
-    {
-      name: 'Sonder 站点',
-      url: 'https://sonder.liang.one',
-      bio: '这份模板的线上版本',
-      avatar: 'https://github.com/lmb666666.png?size=64',
-    },
-    {
-      name: 'Astro',
-      url: 'https://astro.build/',
-      bio: '静态站点框架',
-      avatar: 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
-    },
-    {
-      name: 'Bun',
-      url: 'https://bun.com/',
-      bio: '运行时与包管理工具',
-      avatar: 'https://bun.com/favicon.ico',
-    },
-    {
-      name: 'Pagefind',
-      url: 'https://pagefind.app/',
-      bio: '静态全文搜索索引',
-    },
-  ]}
-/>
+::friend-link-card{src="demo" columns="3"}

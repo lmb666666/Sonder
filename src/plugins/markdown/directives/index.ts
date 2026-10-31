@@ -17,6 +17,20 @@ import {
   tabsHandler,
 } from './handlers.js';
 import { columnsHandler, timelineHandler } from './layout-handlers.js';
+import {
+  cardsHandler,
+  carouselHandler,
+  chatHandler,
+  friendCircleHandler,
+  friendLinkApplicationHandler,
+  friendLinkCardHandler,
+  longImageHandler,
+  musicPlayerHandler,
+  mediaShelfHandler,
+  musicScoreHandler,
+  poetryHandler,
+} from './heavy-handlers.js';
+import friendCircleDemo from '../../../data/friend-circle-demo.json';
 import { githubCardData } from './github-cards.js';
 
 /**
@@ -26,6 +40,10 @@ import { githubCardData } from './github-cards.js';
  */
 
 type TreeNode = MdastNode;
+
+const dataSources: Record<string, { friends: unknown[]; posts: Array<Record<string, string>> }> = {
+  demo: friendCircleDemo as never,
+};
 
 const calloutTypeNames = new Set<string>(
   calloutTypes.flatMap((definition) => [definition.type, ...(definition.aliases ?? [])]),
@@ -56,6 +74,13 @@ const CONTAINER_HANDLERS: Record<
   tabs: tabsHandler,
   columns: columnsHandler,
   timeline: timelineHandler,
+  poetry: poetryHandler,
+  cards: cardsHandler,
+  'long-image': longImageHandler,
+  chat: chatHandler,
+  carousel: carouselHandler,
+  'music-score': musicScoreHandler,
+  'media-shelf': mediaShelfHandler,
 };
 
 const LEAF_HANDLERS: Record<
@@ -94,6 +119,10 @@ const LEAF_HANDLERS: Record<
     return `https://music.163.com/outchain/player?type=${outchainType[type]}&id=${id}&auto=0&height=${heights[type]}`;
   }),
   link: linkHandler,
+  'music-player': musicPlayerHandler,
+  'friend-link-card': friendLinkCardHandler(dataSources),
+  'friend-circle': friendCircleHandler(dataSources),
+  'friend-link-application': friendLinkApplicationHandler,
 };
 
 const INLINE_HANDLERS: Record<

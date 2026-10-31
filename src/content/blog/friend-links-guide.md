@@ -17,7 +17,6 @@ sidebar:
   toc: true
 ---
 
-import FriendLinkCard from '@sonder/mdx-components/FriendLinkCard.astro';
 
 朋友页由三部分组成：友链分组、朋友圈聚合和友链申请。友链数据在 `src/data/friends.ts` 中维护，卡片视觉由主题组件统一渲染。
 
@@ -45,22 +44,7 @@ export const friendLinkGroups = [
 
 `FriendLinkCard` 也可以在文章正文中直接使用：
 
-<FriendLinkCard
-  items={[
-    {
-      name: 'Sonder',
-      url: 'https://sonder.liang.one',
-      bio: '这份模板的线上版本',
-      avatar: 'https://github.com/lmb666666.png?size=64',
-    },
-    {
-      name: 'Astro',
-      url: 'https://astro.build/',
-      bio: '静态站点框架',
-      avatar: 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
-    },
-  ]}
-/>
+::friend-link-card{src="demo" columns="3"}
 
 ## 朋友圈
 
