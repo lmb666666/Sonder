@@ -198,6 +198,19 @@ table {
   background: var(--paper-surface);
 }
 
+/* 滚动条：桌面端细条、默认隐入纸面、悬停浮现；触屏保留原生覆盖条 */
+@media (hover: hover) and (pointer: fine) {
+  .markdown-table-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .markdown-table-scroll:hover,
+  .markdown-table-scroll:focus-within {
+    scrollbar-color: color-mix(in srgb, var(--paper-ink) 24%, transparent) transparent;
+  }
+}
+
 .markdown-table-scroll table {
   width: max-content;
   min-width: 100%;

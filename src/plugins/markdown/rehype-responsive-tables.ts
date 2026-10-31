@@ -15,6 +15,8 @@ function wrapTables(node?: HastNode) {
         tagName: 'div',
         properties: {
           className: ['markdown-table-scroll'],
+          // 键盘用户可聚焦后用方向键横向滚动；聚焦时滚动条经 :focus-within 浮现
+          tabindex: 0,
         },
         children: [child],
       };
