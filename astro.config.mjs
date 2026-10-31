@@ -7,8 +7,6 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import { parse } from 'smol-toml';
 
-import tailwindcss from '@tailwindcss/vite';
-
 import sonderConfig from './sonder.config';
 import { getAstroPluginConfig } from './src/plugins/config';
 
@@ -76,7 +74,6 @@ export default defineConfig({
   integrations: [...astroPluginConfig.integrations, mdx(), sitemap()],
 
   vite: {
-    plugins: [tailwindcss()],
     resolve: {
       alias: [
         // Vendored @sonder/* packages — specifiers stay
