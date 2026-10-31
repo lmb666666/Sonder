@@ -190,27 +190,48 @@ table {
 /* 文章表格（Firefly 风格重构）：圆角卡片、主题色表头、斑马纹、发丝分隔线 */
 .markdown-table-scroll {
   max-width: 100%;
+  /* 高度封顶：长表格的横向滚动条才不会落到页面很下方，
+    造成「鼠标在表格上却看不到滚动条」的错觉 */
+  max-height: min(72vh, 680px);
   margin: 30px 0;
-  overflow-x: auto;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--paper-line);
   border-radius: 0.75rem;
   background: var(--paper-surface);
+  overscroll-behavior: contain;
 }
 
-/* 滚动条：桌面端常驻细条（不依赖 hover —— Chrome 对 scrollbar-color 的
- * 悬停变化重绘不稳定，曾出现「鼠标放上去也看不到滚动条」）；悬停/聚焦加深。
- * 触屏不套用，保留系统原生覆盖条。 */
-@media (hover: hover) and (pointer: fine) {
-  .markdown-table-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--paper-ink) 22%, transparent) transparent;
-  }
+/* 表格滚动条：用原生滚动条 + 外观定制。
+ * 不用自绘（会与原生重复、且触摸/手势语义要自己实现），也不靠 hover 显隐；
+ * 表格高度已封顶，横向条始终落在可视框底部。
+ * 只给 Blink/WebKit 用 ::-webkit-scrollbar 调外观；Firefox 用默认可视滚动条
+ * （不设 scrollbar-color —— 否则 Chrome 会忽略伪元素规则）。 */
+.markdown-table-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
 
-  .markdown-table-scroll:hover,
-  .markdown-table-scroll:focus-within {
-    scrollbar-color: color-mix(in srgb, var(--paper-ink) 42%, transparent) transparent;
-  }
+.markdown-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.markdown-table-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  /* 回退：不支持 color-mix 时用中性线色（仍可见） */
+  background-color: var(--paper-line-strong);
+  /* 主题色半透明滑块：随调色板（orange-soft 等）自动变化 */
+  background-color: color-mix(in srgb, var(--paper-accent) 45%, transparent);
+}
+
+.markdown-table-scroll:hover::-webkit-scrollbar-thumb,
+.markdown-table-scroll:focus-within::-webkit-scrollbar-thumb {
+  background-color: var(--paper-ink-soft);
+  background-color: color-mix(in srgb, var(--paper-accent) 78%, transparent);
+}
+
+.markdown-table-scroll::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .markdown-table-scroll table {
