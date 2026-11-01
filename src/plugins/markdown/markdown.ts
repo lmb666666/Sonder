@@ -1,20 +1,33 @@
-import remarkDirective from 'remark-directive';
-import remarkCallouts from './callout/index.js';
-import remarkSonderDirectives from './directives/index.js';
 import type { AstroIntegration } from 'astro';
-import expressiveCode from 'astro-expressive-code';
+import type { defineConfig } from 'astro/config';
 import rehypeKatex from 'rehype-katex';
 import rehypeMathjax from 'rehype-mathjax';
+import remarkDirective from 'remark-directive';
 import remarkMath from 'remark-math';
-
-import { resolveMarkdownOptions, type MarkdownPluginOptions } from './markdown-options.js';
+import remarkCallouts from './callout/index.js';
+import remarkSonderDirectives from './directives/index.js';
 import rehypeResponsiveTables from './rehype-responsive-tables.js';
 import remarkMermaid from './remark-mermaid.js';
-import type { SonderPlugin } from './types.js';
+import type { MathRenderer } from './types.js';
+
+type AstroUserConfig = Parameters<typeof defineConfig>[0];
+type AstroMarkdownConfig = NonNullable<AstroUserConfig['markdown']>;
+
+export interface MarkdownConfigOptions {
+  math: boolean;
+  mathRenderer: MathRenderer;
+  mermaid: boolean;
+}
+
+export interface MarkdownConfig {
+  integrations: AstroIntegration[];
+  remarkPlugins: NonNullable<AstroMarkdownConfig['remarkPlugins']>;
+  rehypePlugins: NonNullable<AstroMarkdownConfig['rehypePlugins']>;
+}
 
 /**
  * 标签页切换脚本。
- * 提醒块与指令的样式不再由这里注入——改由 MarkdownWidgets 以真实样式表加载，
+ * 提醒块与指令的样式由 MarkdownWidgets 以真实样式表加载，
  * 避免首屏无样式闪烁，也保证禁用 JS 时样式依然存在。
  */
 function markdownTabsIntegration(): AstroIntegration {
@@ -54,35 +67,28 @@ function markdownTabsIntegration(): AstroIntegration {
   };
 }
 
-export function markdownPlugin(options: MarkdownPluginOptions = {}): SonderPlugin {
-  const initialOptions = resolveMarkdownOptions(options);
-
+/**
+ * 文章 Markdown 管线。
+ * 提醒块、外挂指令、响应式表格始终开启（文章内容依赖它们）；
+ * 数学与 Mermaid 由 site.config.toml 的 [config.markdown] 控制。
+ */
+export function getMarkdownConfig({
+  math,
+  mathRenderer,
+  mermaid,
+}: MarkdownConfigOptions): MarkdownConfig {
   return {
-    name: '@sonder/plugin-markdown',
-    enabled: initialOptions.enabled,
-    astro: ({ mathRenderer }) => {
-      const resolvedOptions = resolveMarkdownOptions(options, { mathRenderer });
-
-      return {
-        integrations: [
-          ...(resolvedOptions.directives ? [markdownTabsIntegration()] : []),
-          ...(resolvedOptions.expressiveCode ? [expressiveCode()] : []),
-        ],
-        remarkPlugins: [
-          ...(resolvedOptions.callouts ? [remarkCallouts] : []),
-          ...(resolvedOptions.directives
-            ? [remarkDirective, () => remarkSonderDirectives({ layouts: resolvedOptions.layouts })]
-            : []),
-          ...(resolvedOptions.math.enabled ? [remarkMath] : []),
-          ...(resolvedOptions.mermaid ? [remarkMermaid] : []),
-        ],
-        rehypePlugins: [
-          ...(resolvedOptions.math.enabled
-            ? [resolvedOptions.math.renderer === 'mathjax' ? rehypeMathjax : rehypeKatex]
-            : []),
-          ...(resolvedOptions.responsiveTables ? [rehypeResponsiveTables] : []),
-        ],
-      };
-    },
+    integrations: [markdownTabsIntegration()],
+    remarkPlugins: [
+      remarkCallouts,
+      remarkDirective,
+      () => remarkSonderDirectives({ layouts: true }),
+      ...(math ? [remarkMath] : []),
+      ...(mermaid ? [remarkMermaid] : []),
+    ],
+    rehypePlugins: [
+      ...(math ? [mathRenderer === 'mathjax' ? rehypeMathjax : rehypeKatex] : []),
+      rehypeResponsiveTables,
+    ],
   };
 }

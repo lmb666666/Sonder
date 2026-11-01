@@ -21,7 +21,7 @@ import { sortByDateDesc } from '../utils/content-dates';
 const [about] = await getCollection('about');
 
 if (!about) {
-  throw new Error('Missing src/content/about.mdx content entry.');
+  throw new Error('Missing src/content/about.md content entry.');
 }
 
 const { Content, headings } = await render(about);

@@ -21,7 +21,7 @@ interface GithubCardData {
 
 function collectRepos(): string[] {
   const repos = new Set<string>();
-  const files = glob.sync(`${contentRoot}/**/*.{md,mdx}`);
+  const files = glob.sync(`${contentRoot}/**/*.md`);
 
   for (const file of files) {
     const source = readFileSync(file, 'utf8');

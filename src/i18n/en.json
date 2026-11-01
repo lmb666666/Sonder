@@ -154,5 +154,36 @@
       "page": "Page"
     },
     "matchedPassage": "Matched passage"
+  },
+  "media": {
+    "shelf": "Media shelf",
+    "browse": "Browse",
+    "sectionsLabel": "Media sections",
+    "empty": "Nothing collected here yet.",
+    "readReview": "Read review",
+    "backToShelf": "← Back to media shelf",
+    "ratingLabel": "Rating",
+    "sections": {
+      "books": "Books",
+      "booksNote": "Read and reread",
+      "films": "Films",
+      "filmsNote": "Films and series",
+      "music": "Music",
+      "musicNote": "Albums and podcasts"
+    },
+    "types": {
+      "book": "Book",
+      "film": "Film",
+      "series": "Series",
+      "album": "Album",
+      "podcast": "Podcast"
+    },
+    "reviewKinds": {
+      "book": "Book review",
+      "film": "Film review",
+      "series": "Series review",
+      "album": "Album review",
+      "podcast": "Podcast review"
+    }
   }
 }

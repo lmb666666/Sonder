@@ -1,15 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
-import {
-  BaseHead,
-  SiteHeader,
-  Footer,
-  getHtmlLang,
-  getSiteConfig,
-  getI18n,
-} from 'virtual:sonder/page-runtime';
-import PageHero from '../../../components/PageHero.astro';
-import MediaShelf from '@sonder/mdx-components/MediaShelf.astro';
+import BaseHead from '../../components/BaseHead.astro';
+import SiteHeader from '../../components/blog/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import PageHero from '../../components/PageHero.astro';
+import MediaShelf from '../../components/mdx/MediaShelf.astro';
+import { getSiteConfig } from '../../data/site';
+import { getHtmlLang, getI18n } from '../../utils/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
 type CoverAspect = 'portrait' | 'landscape' | 'square' | 'wide';

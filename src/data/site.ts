@@ -1,12 +1,4 @@
 import { getEntry } from 'astro:content';
-import sonderConfig from '../../sonder.config';
-import {
-  getConfiguredPageModules,
-  getResolvedPageModule,
-  getResolvedPageModules,
-  normalizeModuleRoute,
-} from '../plugins/config';
-import type { SonderConfig } from '../plugins/types';
 
 export async function getSiteConfig() {
   const entry = await getEntry('siteConfig', 'config');
@@ -36,85 +28,25 @@ export interface ResolvedTopNavLink {
   href: string;
 }
 
-function linkMatchesModule(href: string, moduleRoute: string) {
-  if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
-    return false;
-  }
-
-  const normalizedHref = normalizeModuleRoute(href);
-
-  return normalizedHref === moduleRoute;
-}
-
 export async function getTopNavLinks() {
   const { topNav } = await getSiteConfig();
-  return resolveTopNavLinks(topNav.links, sonderConfig);
+  return resolveTopNavLinks(topNav.links);
 }
 
-export function resolveTopNavLinks(
-  links: TopNavLinkConfig[],
-  config: SonderConfig,
-): ResolvedTopNavLink[] {
-  const configuredModules = getConfiguredPageModules(config);
-
+export function resolveTopNavLinks(links: TopNavLinkConfig[]): ResolvedTopNavLink[] {
   return links.flatMap((link) => {
-    if (link.disabled) return [];
+    if (link.disabled || !link.href) return [];
 
-    if (link.module) {
-      const resolvedModule = getResolvedPageModule(config, link.module);
-
-      if (!resolvedModule) return [];
-
-      return [
-        {
-          label: link.label || resolvedModule.nav.label,
-          href: resolvedModule.route,
-        },
-      ];
-    }
-
-    const href = link.href;
-
-    if (!href) return [];
-
-    const matchedModule = configuredModules.find((module) =>
-      linkMatchesModule(href, normalizeModuleRoute(module.route)),
-    );
-
-    if (!matchedModule) {
-      return [
-        {
-          label: link.label,
-          href,
-        },
-      ];
-    }
-
-    const resolvedModule = getResolvedPageModule(config, matchedModule.id);
-
-    if (!resolvedModule) return [];
-
-    return [
-      {
-        label: link.label,
-        href: resolvedModule.route,
-      },
-    ];
+    return [{ label: link.label, href: link.href }];
   });
 }
 
 export function getRouteLabels(): Record<string, string> {
-  const routeLabels: Record<string, string> = {
+  return {
     '/blog': 'blog',
     '/archive': 'archive',
     '/about': 'about',
   };
-
-  for (const module of getResolvedPageModules(sonderConfig)) {
-    routeLabels[module.route] = module.id;
-  }
-
-  return routeLabels;
 }
 
 export type SiteConfig = Awaited<ReturnType<typeof getSiteConfig>>;
@@ -123,7 +55,7 @@ export type SiteProfile = SiteConfig['profile'];
 export type SiteTheme = SiteConfig['theme'];
 export type SiteLink = SiteConfig['topNav']['links'][number];
 export type SiteSearch = SiteConfig['search'];
-export type SiteMath = SiteConfig['math'];
+export type SiteMath = SiteConfig['markdown'];
 export type SiteFonts = SiteConfig['fonts'];
 export type SitePages = SiteConfig['pages'];
 export type HomeLinkItem = SiteConfig['home']['links'][number];

@@ -136,5 +136,36 @@
       "page": "页面"
     },
     "matchedPassage": "匹配段落"
+  },
+  "media": {
+    "shelf": "书影音",
+    "browse": "浏览",
+    "sectionsLabel": "书影音分区",
+    "empty": "这里还没有收录内容。",
+    "readReview": "阅读长评",
+    "backToShelf": "← 返回书影音",
+    "ratingLabel": "评分",
+    "sections": {
+      "books": "书",
+      "booksNote": "已读与重读",
+      "films": "影",
+      "filmsNote": "电影与剧集",
+      "music": "音",
+      "musicNote": "专辑与播客"
+    },
+    "types": {
+      "book": "书籍",
+      "film": "电影",
+      "series": "剧集",
+      "album": "专辑",
+      "podcast": "播客"
+    },
+    "reviewKinds": {
+      "book": "书评",
+      "film": "影评",
+      "series": "剧评",
+      "album": "乐评",
+      "podcast": "播客评论"
+    }
   }
 }

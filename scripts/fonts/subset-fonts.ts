@@ -1,10 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, extname, isAbsolute, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { parse } from 'smol-toml';
-import sonderConfig from '../../sonder.config';
-import { getResolvedPageModule, getResolvedPageModuleI18n } from '../../src/plugins/config';
 
 type FontConfig = {
   en: string;
@@ -39,10 +36,6 @@ const pythonCommands = [
     (index === 0 ? existsSync(command) : true) && commands.indexOf(command) === index,
 );
 const contentRoot = 'src/content';
-const resolvedMediaModule = getResolvedPageModule(sonderConfig, 'media');
-const mediaModuleEnabled = Boolean(resolvedMediaModule);
-const mediaRouteEntrypoint = resolvedMediaModule?.routes?.[0]?.entrypoint;
-const mediaRouteSourceFile = mediaRouteEntrypoint ? fileURLToPath(mediaRouteEntrypoint) : undefined;
 
 const sourceDirs = [
   'src/pages',
@@ -53,16 +46,15 @@ const sourceDirs = [
   'src/i18n',
   'src/data',
 ];
-const sourceFiles = [...(mediaRouteSourceFile ? [mediaRouteSourceFile] : [])];
 const contentFrontmatterDirs = [
   `${contentRoot}/blog`,
   `${contentRoot}/projects`,
-  ...(mediaModuleEnabled ? [`${contentRoot}/media`] : []),
+  `${contentRoot}/media`,
 ];
-const lightweightContentDirs = [...(mediaModuleEnabled ? [`${contentRoot}/media`] : [])];
-const lightweightContentFiles = [`${contentRoot}/about.mdx`, `${contentRoot}/about.md`];
+const lightweightContentDirs = [`${contentRoot}/media`];
+const lightweightContentFiles = [`${contentRoot}/about.md`];
 const sourceExtensions = new Set(['.astro', '.ts', '.js', '.mjs', '.cjs', '.json', '.toml']);
-const frontmatterExtensions = new Set(['.md', '.mdx']);
+const frontmatterExtensions = new Set(['.md']);
 const frontmatterKeys = new Set([
   'title',
   'description',
@@ -324,19 +316,10 @@ font.save(path)
 
 const chars = new Set<string>();
 
-for (const contribution of getResolvedPageModuleI18n(sonderConfig)) {
-  collectCjk(chars, JSON.stringify(contribution.messages));
-}
-
 for (const dir of sourceDirs) {
   for (const file of walkFiles(join(projectRoot, dir), sourceExtensions)) {
     collectCjk(chars, readFileSync(file, 'utf8'));
   }
-}
-
-for (const file of sourceFiles) {
-  const path = isAbsolute(file) ? file : join(projectRoot, file);
-  if (existsSync(path)) collectCjk(chars, readFileSync(path, 'utf8'));
 }
 
 for (const dir of contentFrontmatterDirs) {

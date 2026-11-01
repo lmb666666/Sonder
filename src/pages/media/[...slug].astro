@@ -1,14 +1,11 @@
 ---
 import { getCollection, render } from 'astro:content';
 import type { ImageMetadata } from 'astro';
-import {
-  BaseHead,
-  SiteHeader,
-  Footer,
-  getHtmlLang,
-  getSiteConfig,
-  getI18n,
-} from 'virtual:sonder/page-runtime';
+import BaseHead from '../../components/BaseHead.astro';
+import SiteHeader from '../../components/blog/SiteHeader.astro';
+import Footer from '../../components/Footer.astro';
+import { getSiteConfig } from '../../data/site';
+import { getHtmlLang, getI18n } from '../../utils/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
 type CoverAspect = 'portrait' | 'landscape' | 'square' | 'wide';

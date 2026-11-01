@@ -1,7 +1,5 @@
 import type { SiteConfig } from '../data/site';
 import { createI18n, normalizeLocale, type I18nMessages } from '@sonder/core';
-import { getResolvedPageModuleI18n } from '@sonder/pages';
-import sonderConfig from '../../sonder.config';
 import en from '../i18n/en.json';
 import zhCN from '../i18n/zh-CN.json';
 import zhTW from '../i18n/zh-TW.json';
@@ -284,10 +282,7 @@ export function getUiText(config: SiteConfig): UiText {
 export function getI18n(config: SiteConfig) {
   return createI18n({
     locale: getUiLanguage(config),
-    catalogs: [
-      rawUiText as unknown as Record<string, I18nMessages>,
-      ...getResolvedPageModuleI18n(sonderConfig).map((contribution) => contribution.messages),
-    ],
+    catalogs: [rawUiText as unknown as Record<string, I18nMessages>],
   });
 }
 

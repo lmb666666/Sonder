@@ -136,5 +136,36 @@
       "page": "頁面"
     },
     "matchedPassage": "匹配段落"
+  },
+  "media": {
+    "shelf": "書影音",
+    "browse": "瀏覽",
+    "sectionsLabel": "書影音分區",
+    "empty": "這裡還沒有收錄內容。",
+    "readReview": "閱讀長評",
+    "backToShelf": "← 返回書影音",
+    "ratingLabel": "評分",
+    "sections": {
+      "books": "書",
+      "booksNote": "已讀與重讀",
+      "films": "影",
+      "filmsNote": "電影與劇集",
+      "music": "音",
+      "musicNote": "專輯與播客"
+    },
+    "types": {
+      "book": "書籍",
+      "film": "電影",
+      "series": "劇集",
+      "album": "專輯",
+      "podcast": "播客"
+    },
+    "reviewKinds": {
+      "book": "書評",
+      "film": "影評",
+      "series": "劇評",
+      "album": "樂評",
+      "podcast": "播客評論"
+    }
   }
 }

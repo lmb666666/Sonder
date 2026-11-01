@@ -1,17 +1,17 @@
 import { describe, expect, test } from 'bun:test';
 
-import { markdownPlugin } from './markdown';
+import { getMarkdownConfig } from './markdown';
+
+const baseOptions = { math: true, mathRenderer: 'katex' as const, mermaid: true };
 
 /**
- * 样式不再由本插件注入（改由 MarkdownWidgets 以真实样式表加载，避免 FOUC），
- * 这里只验证：tabs 脚本仍然注入、且只在启用指令时注入。
+ * 样式由 MarkdownWidgets 以真实样式表加载（避免 FOUC），
+ * 这里只验证：tabs 脚本仍然注入、指令始终装配、数学与 Mermaid 可关闭。
  */
-describe('markdownPlugin', () => {
+describe('getMarkdownConfig', () => {
   test('注入标签页切换脚本', () => {
-    const plugin = markdownPlugin();
-    const astroConfig =
-      typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
-    const tabsIntegration = astroConfig?.integrations?.find(
+    const { integrations } = getMarkdownConfig(baseOptions);
+    const tabsIntegration = integrations.find(
       (integration) => integration.name === '@sonder/plugin-markdown/tabs',
     );
     const injectedScripts: Array<{ stage: string; content: string }> = [];
@@ -31,39 +31,31 @@ describe('markdownPlugin', () => {
   });
 
   test('不再注入样式脚本（避免首屏无样式闪烁）', () => {
-    const plugin = markdownPlugin();
-    const astroConfig =
-      typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
+    const { integrations } = getMarkdownConfig(baseOptions);
 
     expect(
-      astroConfig?.integrations?.some(
-        (integration) => integration.name === '@sonder/plugin-markdown/styles',
-      ),
+      integrations.some((integration) => integration.name === '@sonder/plugin-markdown/styles'),
     ).toBe(false);
   });
 
-  test('禁用指令时不注入标签页脚本', () => {
-    const plugin = markdownPlugin({ callouts: false, directives: false });
-    const astroConfig =
-      typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
+  test('提醒块、指令与响应式表格始终装配', () => {
+    const { remarkPlugins, rehypePlugins } = getMarkdownConfig({
+      math: false,
+      mathRenderer: 'katex',
+      mermaid: false,
+    });
 
-    expect(
-      astroConfig?.integrations?.some(
-        (integration) => integration.name === '@sonder/plugin-markdown/tabs',
-      ),
-    ).toBe(false);
+    expect(remarkPlugins).toHaveLength(3);
+    expect(rehypePlugins).toHaveLength(1);
   });
 
-  test('markdown 插件链按配置装配', () => {
-    const plugin = markdownPlugin({ math: false, mermaid: false });
-    const astroConfig =
-      typeof plugin.astro === 'function' ? plugin.astro({ mathRenderer: 'katex' }) : plugin.astro;
+  test('数学与 Mermaid 开关按配置装配', () => {
+    const on = getMarkdownConfig(baseOptions);
+    const off = getMarkdownConfig({ ...baseOptions, math: false, mermaid: false });
 
-    const remarkNames = (astroConfig?.remarkPlugins ?? []).map(
-      (entry) => (Array.isArray(entry) ? entry[0] : entry)?.name ?? String(entry?.name),
-    );
-    // remark-directive 与 Sonder 指令工厂始终存在
-    expect(remarkNames.length).toBeGreaterThanOrEqual(2);
-    expect(astroConfig?.rehypePlugins?.some((entry) => entry === undefined)).toBe(false);
+    expect(on.remarkPlugins).toHaveLength(5);
+    expect(on.rehypePlugins).toHaveLength(2);
+    expect(off.remarkPlugins).toHaveLength(3);
+    expect(off.rehypePlugins).toHaveLength(1);
   });
 });

@@ -1,8 +1,6 @@
 import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import sonderConfig from '../sonder.config';
-import { isPageModuleEnabled } from './plugins/config';
 import { siteConfigSchema } from './config/schema';
 
 type CollectionSchemaFactory = Extract<
@@ -74,7 +72,6 @@ const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
   });
 
 const contentBase = './src/content';
-const mediaModuleEnabled = isPageModuleEnabled(sonderConfig, 'media');
 
 const siteConfig = defineCollection({
   loader: file('./site.config.toml'),
@@ -82,18 +79,18 @@ const siteConfig = defineCollection({
 });
 
 const blog = defineCollection({
-  loader: glob({ base: `${contentBase}/blog`, pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: `${contentBase}/blog`, pattern: '**/*.md' }),
   // Type-check frontmatter using a schema
   schema: blogArticleSchema,
 });
 
 const about = defineCollection({
-  loader: glob({ base: contentBase, pattern: 'about.{md,mdx}' }),
+  loader: glob({ base: contentBase, pattern: 'about.md' }),
   schema: articleSchema,
 });
 
 const projects = defineCollection({
-  loader: glob({ base: `${contentBase}/projects`, pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: `${contentBase}/projects`, pattern: '**/*.md' }),
   schema: (context) =>
     articleSchema(context).extend({
       sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
@@ -147,7 +144,7 @@ const projects = defineCollection({
 });
 
 const media = defineCollection({
-  loader: glob({ base: `${contentBase}/media`, pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: `${contentBase}/media`, pattern: '**/*.md' }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
@@ -171,5 +168,5 @@ export const collections = {
   siteConfig,
   // projects 集合与页面模块解耦：项目卡片现由关于页展示
   projects,
-  ...(mediaModuleEnabled ? { media } : {}),
+  media,
 };

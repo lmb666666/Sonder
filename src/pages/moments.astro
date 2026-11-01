@@ -1,12 +1,10 @@
 ---
 import { format } from 'date-fns';
-import {
-  BaseHead,
-  SiteHeader,
-  Footer,
-  getHtmlLang,
-  getSiteConfig,
-} from 'virtual:sonder/page-runtime';
+import BaseHead from '../components/BaseHead.astro';
+import SiteHeader from '../components/blog/SiteHeader.astro';
+import Footer from '../components/Footer.astro';
+import { getSiteConfig } from '../data/site';
+import { getHtmlLang } from '../utils/ui-text';
 import PageHero from '../components/PageHero.astro';
 import { demoMoments } from '../data/moments';
 

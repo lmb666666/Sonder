@@ -1,53 +1,55 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { renderScaffoldTemplate } from '@sonder/pages';
-import type { SonderContentExtension, SonderScaffoldTemplateContext } from '@sonder/pages';
-import sonderConfig from '../sonder.config';
-import { getConfiguredPageModules, getResolvedPageModuleScaffolds } from '../src/plugins/config';
+
+type ScaffoldTemplateVariable = 'title' | 'slug' | 'isoDate' | 'date';
+
+interface ScaffoldTemplateContext {
+  title: string;
+  slug: string;
+  isoDate: string;
+  date: string;
+}
 
 interface ContentScaffold {
   command: string;
   collection: string;
   directory: string;
-  defaultExtension: SonderContentExtension;
   template: URL;
 }
 
-const coreScaffolds = [
+const templateVariablePattern = /<%=\s*(title|slug|isoDate|date)(?:\s*\|\s*(yaml))?\s*%>/g;
+const unresolvedTemplateExpressionPattern = /<%=[\s\S]*?%>/;
+
+const scaffolds: ContentScaffold[] = [
   {
     command: 'post',
     collection: 'blog',
     directory: 'src/content/blog',
-    defaultExtension: 'md',
     template: new URL('./templates/post.md', import.meta.url),
   },
-] satisfies ContentScaffold[];
+  {
+    command: 'media',
+    collection: 'media',
+    directory: 'src/content/media',
+    template: new URL('./templates/media.md', import.meta.url),
+  },
+];
 
 const args = process.argv.slice(2);
-const supportedOptions = new Set(['--', '--md', '--mdx']);
-const unknownOption = args.find((arg) => arg.startsWith('--') && !supportedOptions.has(arg));
+const unknownOption = args.find((arg) => arg.startsWith('--') && arg !== '--');
 
 if (unknownOption) {
   console.error(`Unsupported option: ${unknownOption}`);
   process.exit(1);
 }
 
-const positionalArgs = args.filter((arg) => !supportedOptions.has(arg));
+const positionalArgs = args.filter((arg) => arg !== '--');
 const [rawCommandArg, filenameArg, outputDirectoryArg, ...extraArgs] = positionalArgs;
 const commandArg = rawCommandArg === 'blog' ? 'post' : rawCommandArg;
-
-const scaffolds = getContentScaffolds();
 const scaffold = scaffolds.find((item) => item.command === commandArg);
 
 if (!scaffold) {
-  const disabledScaffold = getDisabledModuleScaffold(commandArg);
-
-  if (disabledScaffold) {
-    printDisabledContentType(disabledScaffold.command);
-  } else {
-    printUnsupportedContentType(commandArg, scaffolds);
-  }
-
+  printUnsupportedContentType(commandArg);
   process.exit(1);
 }
 
@@ -57,7 +59,7 @@ if (extraArgs.length > 0) {
 }
 
 if (filenameArg === undefined) {
-  printMissingFilename(scaffolds);
+  printMissingFilename();
   process.exit(1);
 }
 
@@ -70,16 +72,15 @@ if (!slug) {
 
 const now = new Date();
 const isoDate = now.toISOString();
-const extension = resolveExtension(args, filenameArg, scaffold.defaultExtension);
 const title = slug;
-const templateContext = {
+const templateContext: ScaffoldTemplateContext = {
   title,
   slug,
   isoDate,
   date: isoDate.slice(0, 10),
-} satisfies SonderScaffoldTemplateContext;
+};
 const outputDirectory = outputDirectoryArg ?? scaffold.directory;
-const relativePath = path.join(outputDirectory, `${slug}.${extension}`);
+const relativePath = path.join(outputDirectory, `${slug}.md`);
 const targetPath = path.resolve(relativePath);
 
 if (existsSync(targetPath)) {
@@ -96,62 +97,32 @@ writeFileSync(targetPath, `${content.trimEnd()}\n`, 'utf8');
 console.log(`Created new ${scaffold.collection} file:`);
 console.log(relativePath);
 
-function getContentScaffolds(): ContentScaffold[] {
-  const moduleScaffolds = getResolvedPageModuleScaffolds(sonderConfig).map((scaffold) => ({
-    command: scaffold.command,
-    collection: scaffold.collection,
-    directory: scaffold.directory,
-    defaultExtension: scaffold.defaultExtension,
-    template: scaffold.template,
-  }));
+function renderScaffoldTemplate(template: string, context: ScaffoldTemplateContext): string {
+  const rendered = template.replace(
+    templateVariablePattern,
+    (_placeholder, variable: ScaffoldTemplateVariable, filter: 'yaml' | undefined) => {
+      const value = context[variable];
 
-  return rejectDuplicateCommands([...coreScaffolds, ...moduleScaffolds]);
-}
+      return filter === 'yaml' ? JSON.stringify(value) : value;
+    },
+  );
 
-function rejectDuplicateCommands(scaffolds: ContentScaffold[]): ContentScaffold[] {
-  const commandOwners = new Set<string>();
+  const unresolvedExpression = rendered.match(unresolvedTemplateExpressionPattern)?.[0];
 
-  for (const scaffold of scaffolds) {
-    if (commandOwners.has(scaffold.command)) {
-      throw new Error(`Duplicate content scaffold command "${scaffold.command}".`);
-    }
-
-    commandOwners.add(scaffold.command);
+  if (unresolvedExpression) {
+    throw new Error(
+      `Unsupported scaffold template expression ${JSON.stringify(unresolvedExpression)}. ` +
+        'Supported variables are title, slug, isoDate, and date; the only supported filter is yaml.',
+    );
   }
 
-  return scaffolds;
-}
-
-function getDisabledModuleScaffold(command: string | undefined) {
-  if (!command) return undefined;
-
-  return getConfiguredPageModules(sonderConfig).find(
-    (module) => module.enabled === false && module.scaffold?.command === command,
-  )?.scaffold;
-}
-
-function resolveExtension(
-  args: string[],
-  filename: string,
-  defaultExtension: SonderContentExtension,
-): SonderContentExtension {
-  if (args.includes('--md') && args.includes('--mdx')) {
-    console.error('Choose only one extension option: --md or --mdx.');
-    process.exit(1);
-  }
-
-  if (args.includes('--mdx')) return 'mdx';
-  if (args.includes('--md')) return 'md';
-  if (/\.mdx$/i.test(filename)) return 'mdx';
-  if (/\.md$/i.test(filename)) return 'md';
-
-  return defaultExtension;
+  return rendered;
 }
 
 function normalizeFilename(value: string): string {
   return value
     .trim()
-    .replace(/\.(mdx?|MDX?)$/, '')
+    .replace(/\.md$/i, '')
     .replace(/\s+/g, '-')
     .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '')
     .replace(/\.+/g, '.')
@@ -173,7 +144,7 @@ function readScaffoldTemplate(scaffold: ContentScaffold): string {
 function renderContentTemplate(
   scaffold: ContentScaffold,
   template: string,
-  context: SonderScaffoldTemplateContext,
+  context: ScaffoldTemplateContext,
 ): string {
   try {
     return renderScaffoldTemplate(template, context);
@@ -185,30 +156,23 @@ function renderContentTemplate(
   }
 }
 
-function printMissingFilename(scaffolds: ContentScaffold[]): void {
+function printMissingFilename(): void {
   console.error(`Please provide a filename.
 
 Examples:
 ${scaffolds.map((scaffold) => `bun run ${scaffold.command}:new my-slug`).join('\n')}`);
 }
 
-function printUnsupportedContentType(
-  command: string | undefined,
-  scaffolds: ContentScaffold[],
-): void {
+function printUnsupportedContentType(command: string | undefined): void {
   console.error(`Unsupported content scaffold command: ${command ?? ''}
 
 Supported commands:
 ${scaffolds.map((scaffold) => `- bun run ${scaffold.command}:new <filename> [output-directory]`).join('\n')}`);
 }
 
-function printDisabledContentType(command: string): void {
-  console.error(`The ${command} content module is disabled in sonder.config.ts.`);
-}
-
 function printTooManyArguments(command: string): void {
   console.error(`Too many arguments.
 
 Usage:
-bun run ${command}:new <filename> [output-directory] [--md|--mdx]`);
+bun run ${command}:new <filename> [output-directory]`);
 }
