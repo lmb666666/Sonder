@@ -234,6 +234,39 @@ table {
   background: transparent;
 }
 
+/* 代码块：窄屏兼容。
+ * 部分移动 WebView 无法正确排布 EC 的「行号槽 + 代码」双列（表现为
+ * 行号与代码上下错位），且长命令不换行被裁切。窄屏隐藏行号、强制换行，
+ * 并给不支持 grid 的老引擎补 flex 排布。 */
+@media (max-width: 640px) {
+  .expressive-code .gutter {
+    display: none;
+  }
+
+  .expressive-code pre,
+  .expressive-code .ec-line .code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+@supports not (display: grid) {
+  .expressive-code .ec-line {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .expressive-code .ec-line .gutter {
+    flex: 0 0 auto;
+  }
+
+  .expressive-code .ec-line .code {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
 .markdown-table-scroll table {
   width: max-content;
   min-width: 100%;
