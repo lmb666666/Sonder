@@ -4,7 +4,7 @@ import MarkdownWidgets from '../../components/markdown/MarkdownWidgets.astro';
 import MermaidRenderer from '../../components/markdown/MermaidRenderer.astro';
 import { getCollection, render } from 'astro:content';
 import type { ImageMetadata } from 'astro';
-import { getSiteConfig } from '../../data/site';
+import { getSiteConfig } from '../../config';
 import { getI18n } from '../../lib/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';

@@ -18,7 +18,7 @@ const EXCLUDED_CLASSES = new Set([
   'sd-github-icon',
   'sd-link-card-icon',
   'friend-link-card__background',
-  'sonder-music-player__artwork',
+  'sonder-audio-player__artwork',
 ]);
 
 const BLOCK_PARENTS = new Set(['p', 'figure', 'div', 'section', 'li']);

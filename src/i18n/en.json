@@ -185,5 +185,11 @@
       "album": "Album review",
       "podcast": "Podcast review"
     }
+  },
+  "codeBlock": {
+    "showMore": "Show all",
+    "showLess": "Collapse",
+    "expanded": "Expanded",
+    "collapsed": "Collapsed"
   }
 }

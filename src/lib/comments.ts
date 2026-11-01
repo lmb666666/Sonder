@@ -1,4 +1,4 @@
-import type { SiteConfig } from '../data/site';
+import type { SiteConfig } from '../config';
 
 export type CommentProvider = SiteConfig['comments']['provider'];
 export type CommentsConfig = SiteConfig['comments'];

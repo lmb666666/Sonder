@@ -548,3 +548,89 @@ a.sd-btn:hover {
   height: 100%;
   border: 0;
 }
+
+/* ─── 音乐平台曲目卡片（Meting 有元数据但音频不可用，例如 QQ 音乐） ─── */
+.sd-music-card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin: 30px 0;
+  padding: 14px;
+  border: 1px solid var(--paper-line);
+  border-radius: 10px;
+  background: var(--paper-surface);
+  font-family: var(--font-meta);
+}
+
+.sd-music-card__cover {
+  width: 96px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 7px;
+  background: var(--paper-surface-muted);
+}
+
+.sd-music-card__body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sd-music-card__title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--paper-ink);
+}
+
+.sd-music-card__artist {
+  font-size: 0.84rem;
+  color: var(--paper-ink-faint);
+}
+
+.sd-music-card__tracks {
+  margin: 4px 0 0;
+  padding-inline-start: 1.2rem;
+  display: grid;
+  gap: 3px;
+  font-size: 0.82rem;
+  color: var(--paper-ink-soft);
+}
+
+.sd-music-card__track {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.sd-music-card__track-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sd-music-card__track-artist {
+  flex: 0 0 auto;
+  color: var(--paper-ink-faint);
+}
+
+.sd-music-card__link {
+  justify-self: start;
+  margin-top: 2px;
+  color: var(--paper-accent);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .sd-music-card {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .sd-music-card__cover {
+    width: 72px;
+  }
+}

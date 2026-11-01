@@ -44,12 +44,12 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 
 | 叶子指令 | 说明 |
 | --- | --- |
-| `link` | 链接卡片；`{href="…" title="…" description="…" icon="…"}` |
-| `github` | GitHub 仓库卡片；`{repo="owner/repo"}`，stars 构建期预取 |
+| `link-card` | 链接卡片；`{href="…" title="…" description="…" icon="…"}` |
+| `github-card` | GitHub 仓库卡片；`{repo="owner/repo"}`，stars 构建期预取 |
 | `bilibili` | B 站视频；`{bvid="BV…"}`，`{nano}` 小窗播放器 |
 | `youtube` | YouTube 视频；`{id="…"}` |
-| `netease` | 网易云音乐；`{url="歌曲/歌单链接"}` 或 `{type="song\|playlist\|album\|radio" id="…"}`，默认经 Meting 解析为原生播放器，未配置或失败时降级官方外链 |
-| `music-player` | 播放器；官方 embed `{provider="…" url="…"}` 或本地音频 `{src="…"}` |
+| `music` | 音乐平台曲目；`{url="…"}` 自动识别网易云/QQ/Spotify 等，或 `{provider="…" url="…"}`、`{server="netease\|tencent" type="…" id="…"}`；Meting 优先，官方 embed 兜底 |
+| `audio` | 本地/直链音频；`{src="…" title="…" artist="…" artwork="…"}` |
 | `video` | 本地/直链视频；`{src="…" poster="…" ratio="…"}` |
 | `douyin` | 抖音视频；`{vid="…"}`，`{wide}` 横屏 |
 | `tiktok` | TikTok 视频；`{id="…"}` |
@@ -61,7 +61,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 | --- | --- |
 | `badge` | 行内徽标；`{href="…"}` 可点击，`{img="…"}` 带图标，`{square}` 取消圆角 |
 | `key` | 键帽；支持 `{ctrl}` `{shift}` `{cmd}` 等修饰键，真实按键时点亮 |
-| `blur` | 剧透模糊，悬停或聚焦显形；点击/回车切换（适配触屏） |
+| `spoiler` | 剧透模糊，悬停或聚焦显形；点击/回车切换（适配触屏） |
 | `span` | 行内样式；`{color="#…"}`，`.类名` 可挂自定义 class |
 | `btn` | 行内按钮；`{href="…"}` |
 
@@ -99,13 +99,13 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 
 复制 :key[Ctrl] + :key[C]；搜索 :key[Cmd] + :key[K]{cmd}；全选 :key[Ctrl] + :key[Shift] + :key[A]
 
-### Blur 剧透模糊
+### 剧透 spoiler
 
 ```md
-剧透警告：:blur[他是凶手]
+剧透警告：:spoiler[他是凶手]
 ```
 
-默认模糊，悬停或聚焦显形；点击、回车可切换显隐（触屏没有 hover 也能用）——剧透警告：:blur[他是凶手]。
+默认模糊，悬停或聚焦显形；点击、回车可切换显隐（触屏没有 hover 也能用）——剧透警告：:spoiler[他是凶手]。
 
 ### Span 彩色文字
 
@@ -491,23 +491,23 @@ flowchart LR
 
 ## 链接与社群
 
-### Link 链接卡片
+### 链接卡片 link-card
 
 ```md
-::link{href="https://github.com/lmb666666/Sonder" title="Sonder" description="以纸面阅读感为核心的个人发布模板" icon="https://github.com/lmb666666.png?size=64"}
+::link-card{href="https://github.com/lmb666666/Sonder" title="Sonder" description="以纸面阅读感为核心的个人发布模板" icon="https://github.com/lmb666666.png?size=64"}
 ```
 
-::link{href="https://github.com/lmb666666/Sonder" title="Sonder" description="以纸面阅读感为核心的个人发布模板" icon="https://github.com/lmb666666.png?size=64"}
+::link-card{href="https://github.com/lmb666666/Sonder" title="Sonder" description="以纸面阅读感为核心的个人发布模板" icon="https://github.com/lmb666666.png?size=64"}
 
-### GitHub 仓库卡片
+### GitHub 仓库卡片 github-card
 
 仓库描述与 stars 在构建期预取（脚本 `bun run github-cards`），离线时降级为普通链接卡。
 
 ```md
-::github{repo="CuteLeaf/Firefly"}
+::github-card{repo="CuteLeaf/Firefly"}
 ```
 
-::github{repo="CuteLeaf/Firefly"}
+::github-card{repo="CuteLeaf/Firefly"}
 
 ### Bilibili / YouTube 视频
 
@@ -578,39 +578,39 @@ flowchart LR
 
 ## 音乐与乐谱
 
-### MusicPlayer 播放器
+### 本地音频 `audio`
 
-两种用法：**官方 embed**（`provider` + `url`）与**本地/直链音频**（`src`，走原生播放器）：
+本地文件或直链音频走原生 `<audio>` 播放器；音频放在 `public/` 下，用 `/...` 路径引用：
 
-| 属性 | 适用 | 说明 |
-| --- | --- | --- |
-| `src` | 原生 | 音频文件直链（播客、录音、自制曲目），配合 `title` / `artist` / `artwork` |
-| `provider` + `url` | embed | spotify / soundcloud / youtube / apple-music / bandcamp |
-| `caption` | 两者 | 播放器底部说明文字 |
-
-```md
-::music-player{title="示例曲目" provider="spotify" url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"}
-::music-player{title="示例音频" artist="SoundHelix" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
-```
-
-::music-player{title="示例曲目" provider="spotify" url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"}
-
-::music-player{title="示例音频" artist="SoundHelix" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
-
-### NeteasePlaylist 网易云音乐
-
-歌曲与歌单默认在构建期经 Meting API 解析为曲目清单，交给模板自带的原生播放器（实例地址见 `site.config.toml` 的 `[config.music].meting_api`）；未配置 Meting 或解析失败时，自动降级为网易官方外链播放器。支持直接贴音乐链接，类型与 ID 自动识别：
+| 属性 | 说明 |
+| --- | --- |
+| `src` | 音频直链（播客、录音、自制曲目） |
+| `title` / `artist` / `artwork` | 播放器标题、作者、封面 |
+| `caption` | 播放器底部说明 |
 
 ```md
-::netease{url="https://music.163.com/#/playlist?id=7294439968"}
-::netease{url="https://music.163.com/song?id=28560087"}
+::audio{title="示例音频" artist="SoundHelix" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
 ```
 
-::netease{url="https://music.163.com/#/playlist?id=7294439968"}
+::audio{title="示例音频" artist="SoundHelix" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
 
-::netease{url="https://music.163.com/song?id=28560087"}
+### 音乐平台 `music`
 
-也可以用属性写法 `{type="song|playlist|album|radio" id="…"}`；电台（radio）没有 Meting 解析，直接使用官方外链播放器；专辑（album）能否走原生播放器取决于你所配 Meting 实例的能力。
+`music` 统一处理音乐平台链接：网易云与 QQ 走 Meting，Spotify / SoundCloud / Apple Music / Bandcamp 走官方 embed。网易云音频可用时渲染原生播放器；QQ 在当前公共 Meting 实例上只有元数据，渲染曲目卡片；解析失败时降级为链接卡片。
+
+```md
+::music{url="https://music.163.com/#/playlist?id=7294439968"}
+::music{url="https://music.163.com/song?id=28560087"}
+::music{url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"}
+```
+
+::music{url="https://music.163.com/#/playlist?id=7294439968"}
+
+::music{url="https://music.163.com/song?id=28560087"}
+
+::music{title="示例曲目" provider="spotify" url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"}
+
+也可显式写 `{server="netease|tencent" type="song|playlist|album" id="…"}`；YouTube 视频请使用 `::youtube`。
 
 ### MusicScore ABC 乐谱
 

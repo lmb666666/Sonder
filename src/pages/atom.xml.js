@@ -1,5 +1,5 @@
 import { getCollection } from 'astro:content';
-import { getSiteConfig } from '../data/site';
+import { getSiteConfig } from '../config';
 import { sortByDateDesc } from '../lib/content-dates';
 import { escapeXml } from '../lib/xml';
 import { withBase } from '../lib/url';

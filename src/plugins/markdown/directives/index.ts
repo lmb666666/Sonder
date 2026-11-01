@@ -3,17 +3,17 @@ import { friendLinkApplicationHandler } from './application.js';
 import type { DirectiveFile, MdastNode } from './handlers.js';
 import {
   badgeHandler,
-  blurHandler,
+  spoilerHandler,
   btnHandler,
   btnsHandler,
   calloutContainerHandler,
   detailsHandler,
   douyinHandler,
   embedHandler,
-  githubHandler,
+  githubCardHandler,
   gridHandler,
   keyHandler,
-  linkHandler,
+  linkCardHandler,
   positionOf,
   spanHandler,
   tabsHandler,
@@ -34,14 +34,7 @@ import {
   type FriendCirclePost,
   type FriendLinkEntry,
 } from './heavy-handlers.js';
-import {
-  fetchMetingTracks,
-  musicPlayerEmbedHandler,
-  neteasePlaylistHandler,
-  resolveNeteaseTarget,
-  type MetingTrack,
-  type NeteaseMetingType,
-} from './player.js';
+import { audioHandler, musicHandler, prefetchMusic, type MusicPrefetch } from './player.js';
 import friendCircleDemo from '../../../data/friend-circle-demo.json';
 import { githubCardData } from './github-cards.js';
 
@@ -59,9 +52,6 @@ type FriendDataSource = { friends: FriendLinkEntry[]; posts: FriendCirclePost[] 
 const dataSources: Record<string, FriendDataSource> = {
   demo: friendCircleDemo as unknown as FriendDataSource,
 };
-
-/** ::netease 歌单预取结果（id → tracks），转换前由异步预填 */
-type NeteasePrefetch = Map<string, MetingTrack[]>;
 
 const calloutTypeNames = new Set<string>(
   calloutTypes.flatMap((definition) => [definition.type, ...(definition.aliases ?? [])]),
@@ -107,7 +97,7 @@ const LEAF_HANDLERS: Record<
   string,
   (context: { attributes: Record<string, string | true>; file: DirectiveFile }) => TreeNode[]
 > = {
-  github: githubHandler(githubCardData),
+  'github-card': githubCardHandler(githubCardData),
   bilibili: embedHandler('bilibili', (attributes) => {
     const bvid = typeof attributes.bvid === 'string' ? attributes.bvid : undefined;
     if (!bvid || !/^BV[1-9A-HJ-NP-Za-km-z]{8,12}$/.test(bvid)) return undefined;
@@ -125,8 +115,7 @@ const LEAF_HANDLERS: Record<
       ? `https://www.youtube-nocookie.com/embed/${id}`
       : undefined;
   }),
-  link: linkHandler,
-  'music-player': musicPlayerEmbedHandler,
+  'link-card': linkCardHandler,
   'friend-link-card': friendLinkCardHandler(dataSources),
   'friend-circle': friendCircleHandler(dataSources),
   'friend-link-application': friendLinkApplicationHandler,
@@ -143,7 +132,7 @@ const INLINE_HANDLERS: Record<
 > = {
   badge: badgeHandler,
   key: keyHandler,
-  blur: blurHandler,
+  spoiler: spoilerHandler,
   span: spanHandler,
   btn: btnHandler,
 };
@@ -174,37 +163,11 @@ function takeLabel(node: TreeNode) {
   return labelInfo;
 }
 
-/** 预取文档内全部 ::netease 目标（song/playlist/album；radio 无 Meting 解析不预取） */
-async function prefetchNeteaseTracks(tree: TreeNode, metingApi: string): Promise<NeteasePrefetch> {
-  const targets = new Set<string>();
-  const visit = (nodes: TreeNode[] | undefined) => {
-    for (const node of nodes ?? []) {
-      if (node.type === 'leafDirective' && node.name === 'netease') {
-        const target = resolveNeteaseTarget(node.attributes ?? {});
-        if (target && target.type !== 'radio' && /^\d+$/.test(target.id)) {
-          targets.add(`${target.type}:${target.id}`);
-        }
-      }
-      visit(node.children);
-    }
-  };
-  visit(tree.children);
-
-  const map: NeteasePrefetch = new Map();
-  await Promise.all(
-    [...targets].map(async (key) => {
-      const [type, id] = key.split(':') as [NeteaseMetingType, string];
-      map.set(key, await fetchMetingTracks(id, type, metingApi));
-    }),
-  );
-  return map;
-}
-
 function transformNodes(
   nodes: TreeNode[],
   parentDirective: string | undefined,
   file: DirectiveFile,
-  extras: { netease: NeteasePrefetch },
+  extras: { music: MusicPrefetch },
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
@@ -245,9 +208,11 @@ function transformNodes(
       node.type === 'containerDirective' ? CONTAINER_HANDLERS[name] : undefined;
     const leafHandler =
       node.type === 'leafDirective'
-        ? name === 'netease'
-          ? neteasePlaylistHandler(extras.netease)
-          : LEAF_HANDLERS[name]
+        ? name === 'music'
+          ? musicHandler(extras.music)
+          : name === 'audio'
+            ? audioHandler
+            : LEAF_HANDLERS[name]
         : undefined;
     const inlineHandler = node.type === 'textDirective' ? INLINE_HANDLERS[name] : undefined;
 
@@ -346,7 +311,7 @@ export default function remarkSonderDirectives(options: SonderDirectivesOptions 
   return async (tree: MdastNode, file: DirectiveFile & { path?: string }) => {
     if (!tree.children) return;
     try {
-      const extras = { netease: await prefetchNeteaseTracks(tree, metingApi) };
+      const extras = { music: await prefetchMusic(tree, metingApi) };
       tree.children = transformNodes(tree.children, undefined, file, extras);
     } catch (error) {
       // 转换失败时保留原始内容，确保文章不至于空白

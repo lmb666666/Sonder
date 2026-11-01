@@ -1,4 +1,4 @@
-import { getSiteConfig } from '../data/site';
+import { getSiteConfig } from '../config';
 import { allFriendLinks } from '../data/friends';
 import { escapeXml } from '../lib/xml';
 import { withBase } from '../lib/url';

@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import PageHero from '../../components/PageHero.astro';
 import MediaShelf from '../../components/markdown/MediaShelf.astro';
-import { getSiteConfig } from '../../data/site';
+import { getSiteConfig } from '../../config';
 import { getI18n } from '../../lib/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';

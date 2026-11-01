@@ -2,7 +2,7 @@
 import { format } from 'date-fns';
 import { name as ciName, isCI } from 'ci-info';
 import Colophon from '../Colophon.astro';
-import { getSiteConfig } from '../../data/site';
+import { getSiteConfig } from '../../config';
 import { timeElapse } from '../../lib/time';
 
 const siteConfig = await getSiteConfig();

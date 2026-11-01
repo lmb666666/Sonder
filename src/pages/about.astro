@@ -15,7 +15,7 @@ import {
   WandSparkles,
 } from 'lucide-astro';
 import { getCollection, render } from 'astro:content';
-import BlogArticle from '../layouts/BlogArticle.astro';
+import Article from '../layouts/Article.astro';
 import { sortByDateDesc } from '../lib/content-dates';
 
 const [about] = await getCollection('about');
@@ -48,7 +48,7 @@ const projectIcons = {
 };
 ---
 
-<BlogArticle
+<Article
   post={about}
   headings={headings}
   sidebar={{ enable: false, ...about.data.sidebar }}
@@ -112,7 +112,7 @@ const projectIcons = {
       </section>
     )
   }
-</BlogArticle>
+</Article>
 
 <style>
   .about-projects {

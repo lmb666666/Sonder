@@ -1,5 +1,5 @@
-/* Local Markdown layout blocks. The plugin exposes equivalent structural rules
-   for custom themes; these defaults work without an extra stylesheet import. */
+/* Markdown 分栏/时间线布局块。指令引擎输出与这些类名对应的结构，
+   样式保持独立，便于主题层统一覆盖。 */
 
 :is(.article-content, .prose) .markdown-layout {
   margin: 38px 0 42px;

@@ -295,12 +295,12 @@ function calloutContainerHandler(remarkCallouts: () => (tree: MdastNode) => void
 
 // ─── 叶子：github（构建期读取预取数据） ──────────────────
 
-function githubHandler(cards: Record<string, GithubCardData | undefined>) {
+function githubCardHandler(cards: Record<string, GithubCardData | undefined>) {
   return ({ attributes, file }: LeafContext): MdastNode[] => {
     const repo = asString(attributes.repo);
     if (!repo || !/^[\w.-]+\/[\w.-]+$/.test(repo)) {
       file.message(
-        '::github 需要 {repo="owner/repo"} 属性，已跳过。',
+        '::github-card 需要 {repo="owner/repo"} 属性，已跳过。',
         undefined,
         'sonder-directives',
       );
@@ -448,7 +448,6 @@ function embedHandler(
     const providerName: Record<string, string> = {
       bilibili: '哔哩哔哩',
       youtube: 'YouTube',
-      netease: '网易云音乐',
     };
     const identifier =
       asString(attributes.bvid) ?? asString(attributes.id) ?? asString(attributes.type) ?? '';
@@ -473,7 +472,7 @@ function embedHandler(
   };
 }
 
-/** 链接卡片（::link 与播放器降级共用） */
+/** 链接卡片（::link-card 与播放器降级共用） */
 export function buildLinkCard(
   href: string,
   title: string,
@@ -502,10 +501,10 @@ export function buildLinkCard(
   );
 }
 
-function linkHandler({ attributes, file }: LeafContext): MdastNode[] {
+function linkCardHandler({ attributes, file }: LeafContext): MdastNode[] {
   const href = asString(attributes.href);
   if (!href) {
-    file.message('::link 需要 {href} 属性，已跳过。', undefined, 'sonder-directives');
+    file.message('::link-card 需要 {href} 属性，已跳过。', undefined, 'sonder-directives');
     return [];
   }
 
@@ -516,7 +515,7 @@ function linkHandler({ attributes, file }: LeafContext): MdastNode[] {
   return [wrapHast('a', buildLinkCard(href, title, description, icon) as unknown as HastElement)];
 }
 
-// ─── 行内：badge / key / blur / span / btn ───────────────
+// ─── 行内：badge / key / spoiler / span / btn ───────────
 
 function getDomain(url: string): string {
   try {
@@ -603,7 +602,7 @@ function keyHandler({ label, labelText, attributes }: InlineContext): MdastNode[
   ];
 }
 
-function blurHandler({ label }: InlineContext): MdastNode[] {
+function spoilerHandler({ label }: InlineContext): MdastNode[] {
   return [
     {
       type: 'emphasis',
@@ -677,16 +676,16 @@ export interface GithubCardData {
 
 export {
   badgeHandler,
-  blurHandler,
+  spoilerHandler,
   btnHandler,
   btnsHandler,
   calloutContainerHandler,
   detailsHandler,
   embedHandler,
-  githubHandler,
+  githubCardHandler,
   gridHandler,
   keyHandler,
-  linkHandler,
+  linkCardHandler,
   spanHandler,
   tabsHandler,
 };

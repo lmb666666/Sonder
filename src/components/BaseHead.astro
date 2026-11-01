@@ -4,7 +4,8 @@
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import { ClientRouter } from 'astro:transitions';
-import { getSiteConfig } from '../data/site';
+import katexCssUrl from 'katex/dist/katex.min.css?url';
+import { getSiteConfig } from '../config';
 import { absoluteUrl, withBase } from '../lib/url';
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { title, description, image, fallbackImage = '/og-default.png' } = Astro.props;
-const { site, fonts } = await getSiteConfig();
+const { site, fonts, markdown } = await getSiteConfig();
 const resolvedImage = image ?? fallbackImage;
 const imagePath = typeof resolvedImage === 'string' ? resolvedImage : resolvedImage.src;
 const imageUrl =
@@ -107,6 +108,7 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style is:inline set:html={fontVariablesCss}></style>
+{markdown.math && <link rel="stylesheet" href={withBase(katexCssUrl)} />}
 <ClientRouter />
 <script
   is:inline

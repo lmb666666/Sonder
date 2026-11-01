@@ -1,4 +1,4 @@
-import type { SiteConfig } from '../data/site';
+import type { SiteConfig } from '../config';
 import { createI18n, normalizeLocale, type I18nMessages } from '../i18n';
 import en from '../i18n/en.json';
 import zhCN from '../i18n/zh-CN.json';

@@ -873,9 +873,9 @@
   }
 }
 
-/* ═══ 音乐播放器（sonder-music-player） — 移植自已移除的 MDX 组件 ═══ */
+/* ═══ 音乐播放器（sonder-audio-player） — 移植自已移除的 MDX 组件 ═══ */
 
-.sonder-music-player {
+.sonder-audio-player {
   --music-surface: var(--music-surface-light);
   --music-surface-muted: var(--music-surface-muted-light);
   --music-text: var(--music-text-light);
@@ -887,7 +887,7 @@
   color: var(--music-text);
   font-family: var(--font-meta, ui-monospace, monospace);
 }
-:root[data-theme='dark'] .sonder-music-player {
+:root[data-theme='dark'] .sonder-audio-player {
   --music-surface: var(--music-surface-dark);
   --music-surface-muted: var(--music-surface-muted-dark);
   --music-text: var(--music-text-dark);
@@ -897,7 +897,7 @@
   --music-line: var(--music-line-dark);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .sonder-music-player {
+  :root:not([data-theme]) .sonder-audio-player {
     --music-surface: var(--music-surface-dark);
     --music-surface-muted: var(--music-surface-muted-dark);
     --music-text: var(--music-text-dark);
@@ -907,28 +907,28 @@
     --music-line: var(--music-line-dark);
   }
 }
-.sonder-music-player--card {
+.sonder-audio-player--card {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--music-line) 86%, transparent);
   border-radius: 10px;
   background: var(--music-surface);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--music-text) 5%, transparent);
 }
-.sonder-music-player--inline {
+.sonder-audio-player--inline {
   padding: 8px 0;
   background: transparent;
 }
-.sonder-music-player__body {
+.sonder-audio-player__body {
   display: flex;
   gap: 11px;
   align-items: center;
   min-width: 0;
   padding: 10px 12px;
 }
-.sonder-music-player--inline .sonder-music-player__body {
+.sonder-audio-player--inline .sonder-audio-player__body {
   padding: 0;
 }
-.sonder-music-player__artwork {
+.sonder-audio-player__artwork {
   flex: 0 0 48px;
   width: 48px;
   height: 48px;
@@ -936,47 +936,47 @@
   object-fit: cover;
   background: var(--music-surface-muted);
 }
-.sonder-music-player__artwork--placeholder {
+.sonder-audio-player__artwork--placeholder {
   display: grid;
   place-items: center;
   color: var(--music-accent);
   font-size: 1.25rem;
 }
-.sonder-music-player__content {
+.sonder-audio-player__content {
   display: grid;
   gap: 7px;
   min-width: 0;
   flex: 1;
 }
-.sonder-music-player__meta {
+.sonder-audio-player__meta {
   display: grid;
   gap: 1px;
   min-width: 0;
 }
-.sonder-music-player__meta strong,
-.sonder-music-player__meta span {
+.sonder-audio-player__meta strong,
+.sonder-audio-player__meta span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.sonder-music-player__meta strong {
+.sonder-audio-player__meta strong {
   font-size: 0.82rem;
   line-height: 1.25;
 }
-.sonder-music-player__meta span,
-.sonder-music-player__provider,
-.sonder-music-player__unavailable {
+.sonder-audio-player__meta span,
+.sonder-audio-player__provider,
+.sonder-audio-player__unavailable {
   color: var(--music-text-muted);
   font-size: 0.7rem;
   line-height: 1.35;
 }
-.sonder-music-player__controls {
+.sonder-audio-player__controls {
   display: grid;
   grid-template-columns: auto minmax(64px, 1fr) auto auto;
   align-items: center;
   gap: 7px;
 }
-.sonder-music-player button {
+.sonder-audio-player button {
   display: grid;
   width: 27px;
   height: 27px;
@@ -987,47 +987,47 @@
   color: var(--music-accent);
   cursor: pointer;
 }
-.sonder-music-player__play {
+.sonder-audio-player__play {
   border-color: var(--music-accent) !important;
   background: var(--music-accent) !important;
   color: var(--music-accent-contrast) !important;
 }
-.sonder-music-player [data-pause-icon],
-.sonder-music-player[data-playing] [data-play-icon],
-.sonder-music-player [data-muted-icon] {
+.sonder-audio-player [data-pause-icon],
+.sonder-audio-player[data-playing] [data-play-icon],
+.sonder-audio-player [data-muted-icon] {
   display: none;
 }
-.sonder-music-player[data-playing] [data-pause-icon],
-.sonder-music-player[data-muted] [data-muted-icon] {
+.sonder-audio-player[data-playing] [data-pause-icon],
+.sonder-audio-player[data-muted] [data-muted-icon] {
   display: block;
 }
-.sonder-music-player[data-muted] [data-volume-icon] {
+.sonder-audio-player[data-muted] [data-volume-icon] {
   display: none;
 }
-.sonder-music-player__progress {
+.sonder-audio-player__progress {
   width: 100%;
   accent-color: var(--music-accent);
 }
-.sonder-music-player__time {
+.sonder-audio-player__time {
   color: var(--music-text-muted);
   font-size: 0.66rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.sonder-music-player__provider {
+.sonder-audio-player__provider {
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
 }
-.sonder-music-player__provider a {
+.sonder-audio-player__provider a {
   display: inline-flex;
   gap: 3px;
   align-items: center;
   color: var(--music-accent);
   text-decoration: none;
 }
-.sonder-music-player__embed {
+.sonder-audio-player__embed {
   display: block;
   width: 100%;
   height: 152px;
@@ -1035,61 +1035,61 @@
   border-top: 1px solid var(--music-line);
   background: var(--music-surface-muted);
 }
-.sonder-music-player--inline .sonder-music-player__embed {
+.sonder-audio-player--inline .sonder-audio-player__embed {
   margin-top: 8px;
   border-top: 0;
   border-radius: 7px;
 }
-.sonder-music-player figcaption {
+.sonder-audio-player figcaption {
   padding: 0 12px 10px;
   color: var(--music-text-muted);
   font-size: 0.7rem;
   line-height: 1.45;
 }
-.sonder-music-player--inline figcaption {
+.sonder-audio-player--inline figcaption {
   padding: 8px 0 0;
 }
 @media (max-width: 540px) {
-  .sonder-music-player__artwork {
+  .sonder-audio-player__artwork {
     flex-basis: 44px;
     width: 44px;
     height: 44px;
   }
-  .sonder-music-player__controls {
+  .sonder-audio-player__controls {
     grid-template-columns: auto minmax(40px, 1fr) auto;
   }
-  .sonder-music-player__mute {
+  .sonder-audio-player__mute {
     display: none !important;
   }
 }
-.sonder-music-player {
+.sonder-audio-player {
   width: 100%;
   max-width: 620px;
   margin-inline: auto;
 }
-.sonder-music-player--narrow {
+.sonder-audio-player--narrow {
   max-width: 400px;
 }
-.sonder-music-player--compact {
+.sonder-audio-player--compact {
   max-width: 500px;
 }
-.sonder-music-player--wide {
+.sonder-audio-player--wide {
   max-width: 720px;
 }
-.sonder-music-player--full {
+.sonder-audio-player--full {
   max-width: none;
 }
-.sonder-music-player__controls {
+.sonder-audio-player__controls {
   grid-template-columns: 28px minmax(0, 1fr) auto 28px;
 }
-.sonder-music-player button {
+.sonder-audio-player button {
   line-height: 0;
 }
-.sonder-music-player button svg {
+.sonder-audio-player button svg {
   display: block;
   margin: auto;
 }
-.sonder-music-player__progress {
+.sonder-audio-player__progress {
   appearance: none;
   height: 4px;
   border: 0;
@@ -1101,13 +1101,13 @@
   );
   cursor: pointer;
 }
-.sonder-music-player__progress::-webkit-slider-runnable-track {
+.sonder-audio-player__progress::-webkit-slider-runnable-track {
   height: 4px;
   border: 0;
   border-radius: 999px;
   background: transparent;
 }
-.sonder-music-player__progress::-webkit-slider-thumb {
+.sonder-audio-player__progress::-webkit-slider-thumb {
   width: 10px;
   height: 10px;
   margin-top: -3px;
@@ -1117,47 +1117,47 @@
   background: var(--music-accent);
   box-shadow: 0 0 0 2px var(--music-surface);
 }
-.sonder-music-player__progress::-moz-range-track {
+.sonder-audio-player__progress::-moz-range-track {
   height: 4px;
   border: 0;
   border-radius: 999px;
   background: color-mix(in srgb, var(--music-line) 88%, transparent);
 }
-.sonder-music-player__progress::-moz-range-progress {
+.sonder-audio-player__progress::-moz-range-progress {
   height: 4px;
   border-radius: 999px;
   background: var(--music-accent);
 }
-.sonder-music-player__progress::-moz-range-thumb {
+.sonder-audio-player__progress::-moz-range-thumb {
   width: 8px;
   height: 8px;
   border: 2px solid var(--music-surface);
   border-radius: 50%;
   background: var(--music-accent);
 }
-.sonder-music-player [data-marquee] {
+.sonder-audio-player [data-marquee] {
   overflow: hidden;
 }
-.sonder-music-player [data-marquee] > span {
+.sonder-audio-player [data-marquee] > span {
   display: inline-block;
   min-width: 100%;
   white-space: nowrap;
 }
-.sonder-music-player [data-marquee][data-overflow] > span {
+.sonder-audio-player [data-marquee][data-overflow] > span {
   padding-right: 2rem;
   animation: sonder-music-marquee 9s linear infinite alternate;
 }
-.sonder-music-player [data-marquee]:hover > span {
+.sonder-audio-player [data-marquee]:hover > span {
   animation-play-state: paused;
 }
-.sonder-music-player figcaption {
+.sonder-audio-player figcaption {
   opacity: 0.68;
   font-size: 0.63rem;
 }
-.sonder-music-player__playlist {
+.sonder-audio-player__playlist {
   border-top: 1px solid color-mix(in srgb, var(--music-line) 75%, transparent);
 }
-.sonder-music-player__playlist summary {
+.sonder-audio-player__playlist summary {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1167,15 +1167,15 @@
   font-size: 0.68rem;
   list-style: none;
 }
-.sonder-music-player__playlist summary::-webkit-details-marker {
+.sonder-audio-player__playlist summary::-webkit-details-marker {
   display: none;
 }
-.sonder-music-player__playlist > div {
+.sonder-audio-player__playlist > div {
   max-height: 168px;
   overflow: auto;
   padding: 0 6px 7px;
 }
-.sonder-music-player__playlist button {
+.sonder-audio-player__playlist button {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   width: 100%;
@@ -1188,17 +1188,17 @@
   text-align: left;
   line-height: 1.25;
 }
-.sonder-music-player__playlist button:hover,
-.sonder-music-player__playlist button[data-current-track] {
+.sonder-audio-player__playlist button:hover,
+.sonder-audio-player__playlist button[data-current-track] {
   background: var(--music-surface-muted);
 }
-.sonder-music-player__playlist button span,
-.sonder-music-player__playlist button small {
+.sonder-audio-player__playlist button span,
+.sonder-audio-player__playlist button small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.sonder-music-player__playlist button small {
+.sonder-audio-player__playlist button small {
   color: var(--music-text-muted);
   font-size: 0.62rem;
 }

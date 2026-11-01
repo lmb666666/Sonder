@@ -6,9 +6,12 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
-import expressiveCode, { setAlpha } from 'astro-expressive-code';
+import expressiveCode, { defineEcConfig, setAlpha } from 'astro-expressive-code';
+import { pluginCollapsible } from 'expressive-code-collapsible';
+import { pluginLanguageBadge } from 'expressive-code-language-badge';
 import { parse } from 'smol-toml';
 
+import { getCodeCollapseLabels, paperCodeThemes } from './src/config/code-theme';
 import { siteConfigSchema } from './src/config/schema';
 import { getMarkdownConfig } from './src/plugins/markdown';
 
@@ -67,20 +70,32 @@ const resolvedBase =
   customBase || (isGitHubActions && isProjectPage && repositoryName ? `/${repositoryName}` : '/');
 
 const code = siteConfig.code;
-const isDarkCodeTheme = ({ theme }) => theme.name === code.darkTheme;
-
 const markdown = getMarkdownConfig({
   ...siteConfig.markdown,
   metingApi: siteConfig.music.meting_api,
 });
 
-const expressiveCodeConfig = {
-  plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
-  defaultLocale: 'zh-CN',
-  themes: [code.lightTheme, code.darkTheme],
+const expressiveCodeConfig = defineEcConfig({
+  plugins: [
+    pluginLineNumbers(),
+    pluginCollapsibleSections(),
+    ...(code.languageBadge ? [pluginLanguageBadge()] : []),
+    ...(code.collapseLines > 0
+      ? [
+          pluginCollapsible({
+            lineThreshold: code.collapseLines,
+            previewLines: code.previewLines,
+            defaultCollapsed: true,
+            ...getCodeCollapseLabels(siteConfig.theme.lang),
+          }),
+        ]
+      : []),
+  ],
+  defaultLocale: siteConfig.theme.lang,
+  themes: [paperCodeThemes.dark, paperCodeThemes.light],
   themeCssRoot: ':root',
   themeCssSelector: (theme) =>
-    theme.name === code.darkTheme ? '[data-theme="dark"]' : '[data-theme="light"]',
+    theme.type === 'dark' ? '[data-theme="dark"]' : '[data-theme="light"]',
   useDarkModeMediaQuery: false,
   removeUnusedThemes: true,
   defaultProps: {
@@ -88,19 +103,23 @@ const expressiveCodeConfig = {
     preserveIndent: code.preserveIndent,
     showLineNumbers: code.lineNumbers,
     collapseStyle: code.collapseStyle,
+    overridesByLang: {
+      shellsession: { showLineNumbers: false },
+    },
   },
   frames: {
     extractFileNameFromCode: true,
   },
   styleOverrides: {
-    borderRadius: '1px',
+    borderRadius: '0.75rem',
     borderWidth: '1px',
     borderColor: 'var(--paper-line-strong)',
     uiFontFamily: 'var(--font-meta)',
-    uiFontSize: '0.88rem',
+    uiFontSize: '0.8rem',
     codeFontFamily: 'var(--font-code)',
-    codeFontSize: '0.9rem',
-    codeLineHeight: '1.65',
+    codeFontSize: '0.875rem',
+    codeLineHeight: '1.5rem',
+    codeForeground: 'var(--paper-ink)',
     codePaddingBlock: '1rem',
     codePaddingInline: '1.15rem',
     codeBackground: 'var(--paper-surface-muted)',
@@ -109,12 +128,11 @@ const expressiveCodeConfig = {
       foreground: 'var(--paper-ink-faint)',
     },
     frames: {
-      gutterForeground: 'var(--paper-ink-faint)',
       editorActiveTabBackground: 'var(--paper-surface-muted)',
       editorActiveTabIndicatorTopColor: 'var(--paper-accent)',
       editorTabBarBackground: 'var(--paper-control)',
       editorBackground: 'var(--paper-surface-muted)',
-      frameBoxShadowCssValue: 'var(--paper-shadow)',
+      frameBoxShadowCssValue: 'none',
       inlineButtonBackgroundActiveOpacity: '0.16',
       inlineButtonBackgroundHoverOrFocusOpacity: '0.1',
       terminalTitlebarBackground: 'var(--paper-control)',
@@ -127,23 +145,31 @@ const expressiveCodeConfig = {
       backgroundOpacity: '0.24',
       borderOpacity: '0.62',
       markBackground: (context) =>
-        isDarkCodeTheme(context) ? 'rgba(120, 151, 255, 0.26)' : 'rgba(82, 111, 190, 0.14)',
+        context.theme.type === 'dark' ? 'rgba(120, 151, 255, 0.26)' : 'rgba(82, 111, 190, 0.14)',
       markBorderColor: (context) =>
-        isDarkCodeTheme(context) ? 'rgba(168, 188, 255, 0.74)' : 'rgba(82, 111, 190, 0.38)',
+        context.theme.type === 'dark' ? 'rgba(168, 188, 255, 0.74)' : 'rgba(82, 111, 190, 0.38)',
       insBackground: (context) =>
-        isDarkCodeTheme(context) ? 'rgba(82, 164, 112, 0.24)' : 'rgba(62, 138, 86, 0.13)',
+        context.theme.type === 'dark' ? 'rgba(82, 164, 112, 0.24)' : 'rgba(62, 138, 86, 0.13)',
       insBorderColor: (context) =>
-        isDarkCodeTheme(context) ? 'rgba(133, 205, 156, 0.68)' : 'rgba(62, 138, 86, 0.36)',
+        context.theme.type === 'dark' ? 'rgba(133, 205, 156, 0.68)' : 'rgba(62, 138, 86, 0.36)',
       delBackground: (context) =>
-        isDarkCodeTheme(context) ? 'rgba(207, 96, 86, 0.22)' : 'rgba(184, 74, 65, 0.12)',
+        context.theme.type === 'dark' ? 'rgba(207, 96, 86, 0.22)' : 'rgba(184, 74, 65, 0.12)',
       delBorderColor: (context) =>
-        isDarkCodeTheme(context) ? 'rgba(238, 147, 137, 0.64)' : 'rgba(184, 74, 65, 0.34)',
+        context.theme.type === 'dark' ? 'rgba(238, 147, 137, 0.64)' : 'rgba(184, 74, 65, 0.34)',
     },
     collapsibleSections: {
       closedBackgroundColor: 'var(--paper-control)',
     },
+    languageBadge: {
+      fontSize: '0.72rem',
+      fontWeight: 'bold',
+      borderRadius: '0.25rem',
+      opacity: '1',
+      borderWidth: '0px',
+      borderColor: 'transparent',
+    },
   },
-};
+});
 
 // https://astro.build/config
 export default defineConfig({

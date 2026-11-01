@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import BlogArchive from '../../components/blog/BlogArchive.astro';
 import GroupNav from '../../components/blog/GroupNav.astro';
-import { getSiteConfig } from '../../data/site';
+import { getSiteConfig } from '../../config';
 import { sortBlogPostsForArchive } from '../../lib/content-dates';
 
 const siteConfig = await getSiteConfig();

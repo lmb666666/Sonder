@@ -1,6 +1,6 @@
 import { getCollection } from 'astro:content';
 import rss from '@astrojs/rss';
-import { getSiteConfig } from '../data/site';
+import { getSiteConfig } from '../config';
 import { sortByDateDesc } from '../lib/content-dates';
 import { withBase } from '../lib/url';
 

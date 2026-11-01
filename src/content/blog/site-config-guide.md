@@ -70,6 +70,31 @@ navStyle = "pill"
 
 顶部导航由 `[[config.topNav.links]]` 控制，每项填写 `label` 与 `href`。
 
+## 字体与代码块
+
+```toml
+[config.fonts]
+en = "Maple Mono"
+code = "Monaco"
+zh = "ChillRoundM"
+file = "assets/fonts/ChillRoundM.woff2"
+
+[config.code]
+lineNumbers = true
+wrap = false
+preserveIndent = true
+collapseStyle = "collapsible-auto"
+languageBadge = true
+collapseLines = 15
+previewLines = 8
+```
+
+- `fonts.file`：构建期源字体，仅用于生成 `public/fonts` 下的 UI / 内容子集，本身不会部署。
+- `code.wrap`：桌面端是否自动换行；`false` 时横向滚动，窄屏仍由样式强制换行。
+- `code.languageBadge`：是否在代码块右上角显示语言徽章。
+- `code.collapseLines` / `previewLines`：超过指定行数自动折叠，以及折叠时预览的行数。
+- 代码块主题固定为纸面主题，token 颜色跟随色盘与深浅色，无需配置主题名。
+
 ## 页面文案
 
 页面标题、kicker 和说明都在 `[config.pages]` 下：

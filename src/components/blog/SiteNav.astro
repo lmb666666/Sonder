@@ -2,7 +2,7 @@
 import { ChevronDown, ListTree, Moon, Palette, Sun } from 'lucide-astro';
 import SiteSearch from './SiteSearch.astro';
 import TocTree from './TocTree.astro';
-import { getRouteLabels, getSiteConfig, getTopNavLinks } from '../../data/site';
+import { getSiteConfig, getTopNavLinks } from '../../config';
 import { getUiText } from '../../lib/ui-text';
 import type { TocItem } from '../../lib/toc-tree';
 
@@ -48,8 +48,12 @@ function isActive(href: string) {
   return currentPath === normalizedHref || currentPath.startsWith(`${normalizedHref}/`);
 }
 
-const routeLabels = getRouteLabels();
-const activeRoute = Object.entries(routeLabels).find(
+const routeLabels = Object.entries(
+  Object.fromEntries(
+    links.map((link) => [link.href.replace(/\/$/, '') || '/', link.label] as const),
+  ),
+).sort(([left], [right]) => right.length - left.length);
+const activeRoute = routeLabels.find(
   ([route]) => currentPath === route || currentPath.startsWith(`${route}/`),
 );
 const brandRouteLabel = activeRoute?.[1];

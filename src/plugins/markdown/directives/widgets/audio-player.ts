@@ -7,8 +7,8 @@ const formatTime = (seconds: number) => {
     .padStart(2, '0')}`;
 };
 
-export function initMusicPlayers() {
-  document.querySelectorAll<HTMLElement>('[data-sonder-music-player]').forEach((root) => {
+export function initAudioPlayers() {
+  document.querySelectorAll<HTMLElement>('[data-sonder-audio-player]').forEach((root) => {
     if (root.dataset.ready) return;
     root.dataset.ready = 'true';
 
@@ -109,8 +109,8 @@ export function initMusicPlayers() {
 }
 
 /** 页面切换前暂停全部播放，避免音频残留。 */
-export function pauseMusicPlayers() {
-  document.querySelectorAll('[data-sonder-music-player] [data-audio]').forEach((audio) => {
+export function pauseAudioPlayers() {
+  document.querySelectorAll('[data-sonder-audio-player] [data-audio]').forEach((audio) => {
     (audio as HTMLAudioElement).pause();
   });
 }

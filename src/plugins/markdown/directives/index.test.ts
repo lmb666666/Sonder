@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import type { MdastNode } from './handlers.js';
 import remarkSonderDirectives from './index.js';
 
-// 断网桩：::netease 的 Meting 预取在测试里必须走降级路径，保证断言确定性
+// 断网桩：::music 的 Meting 预取在测试里必须走降级路径，保证断言确定性
 const realFetch = globalThis.fetch;
 beforeAll(() => {
   globalThis.fetch = (() => Promise.reject(new Error('offline test'))) as typeof fetch;
@@ -260,8 +260,8 @@ describe('排版容器（构建期结构化）', () => {
 });
 
 describe('叶子指令', () => {
-  test('::github 渲染预取数据卡片', async () => {
-    const [node] = await run([leaf('github', { repo: 'CuteLeaf/Firefly' })]);
+  test('::github-card 渲染预取数据卡片', async () => {
+    const [node] = await run([leaf('github-card', { repo: 'CuteLeaf/Firefly' })]);
 
     expect(node.data?.hName).toBe('a');
     expect(node.data?.hProperties?.className).toContain('sd-github-card');
@@ -272,15 +272,15 @@ describe('叶子指令', () => {
     );
   });
 
-  test('::github 未知仓库降级', async () => {
-    const [node] = await run([leaf('github', { repo: 'unknown/unknown' })]);
+  test('::github-card 未知仓库降级', async () => {
+    const [node] = await run([leaf('github-card', { repo: 'unknown/unknown' })]);
     expect(node.data?.hProperties?.className).toContain('sd-github-card');
     const desc = node.data?.hChildren?.[1]?.children?.[1];
     expect((desc as { children: Array<{ value: string }> }).children[0].value).toBe('GitHub 仓库');
   });
 
-  test('::github 缺 repo 属性时跳过', async () => {
-    expect(await run([leaf('github', {})])).toEqual([]);
+  test('::github-card 缺 repo 属性时跳过', async () => {
+    expect(await run([leaf('github-card', {})])).toEqual([]);
   });
 
   test('::bilibili 渲染 iframe', async () => {
@@ -298,9 +298,9 @@ describe('叶子指令', () => {
     expect(await run([leaf('bilibili', { bvid: 'invalid' })])).toEqual([]);
   });
 
-  test('::netease 单曲：Meting 失败降级为官方外链播放器', async () => {
+  test('::music 单曲：Meting 失败降级为官方外链播放器', async () => {
     // 测试环境 stub 掉 fetch（见文件底部 beforeAll）：Meting 不可用 → outchain iframe
-    const [node] = await run([leaf('netease', { type: 'song', id: '28560087' })]);
+    const [node] = await run([leaf('music', { type: 'song', id: '28560087' })]);
     expect(node.data?.hName).toBe('div');
     expect(node.data?.hProperties?.className).toContain('sd-embed');
     const iframe = node.data?.hChildren?.[0];
@@ -309,8 +309,8 @@ describe('叶子指令', () => {
     );
   });
 
-  test('::netease 歌单：Meting 失败降级为官方外链播放器', async () => {
-    const [node] = await run([leaf('netease', { id: '7294439968' })]);
+  test('::music 歌单：Meting 失败降级为官方外链播放器', async () => {
+    const [node] = await run([leaf('music', { id: '7294439968' })]);
     expect(node.data?.hName).toBe('div');
     expect(node.data?.hProperties?.className).toContain('sd-embed');
     const iframe = node.data?.hChildren?.[0];
@@ -373,17 +373,17 @@ describe('叶子指令', () => {
     expect(await run([leaf('tiktok', { id: 'abc' })])).toEqual([]);
   });
 
-  test('::netease 电台直接走官方外链（无 Meting 解析）', async () => {
-    const [node] = await run([leaf('netease', { type: 'radio', id: '797632409' })]);
+  test('::music 电台直接走官方外链（无 Meting 解析）', async () => {
+    const [node] = await run([leaf('music', { type: 'radio', id: '797632409' })]);
     const iframe = node.data?.hChildren?.[0];
     expect((iframe as { properties: { src: string } }).properties.src).toContain(
       'type=19&id=797632409',
     );
   });
 
-  test('::netease{url} 直贴链接：hash 路由与查询参数均可识别', async () => {
+  test('::music{url} 直贴链接：hash 路由与查询参数均可识别', async () => {
     const [hashStyle] = await run([
-      leaf('netease', { url: 'https://music.163.com/#/song?id=28560087' }),
+      leaf('music', { url: 'https://music.163.com/#/song?id=28560087' }),
     ]);
     expect(hashStyle.data?.hName).toBe('div');
     const iframe = hashStyle.data?.hChildren?.[0];
@@ -392,7 +392,7 @@ describe('叶子指令', () => {
     );
 
     const [queryStyle] = await run([
-      leaf('netease', { url: 'https://music.163.com/playlist?id=7294439968' }),
+      leaf('music', { url: 'https://music.163.com/playlist?id=7294439968' }),
     ]);
     expect(queryStyle.data?.hName).toBe('div');
     const playlistFrame = queryStyle.data?.hChildren?.[0];
@@ -401,31 +401,31 @@ describe('叶子指令', () => {
     );
   });
 
-  test('::netease 非网易链接与缺属性时跳过', async () => {
-    expect(await run([leaf('netease', { url: 'https://example.com/song?id=1' })])).toEqual([]);
-    expect(await run([leaf('netease', {})])).toEqual([]);
+  test('::music 非网易链接与缺属性时跳过', async () => {
+    expect(await run([leaf('music', { url: 'https://example.com/song?id=1' })])).toEqual([]);
+    expect(await run([leaf('music', {})])).toEqual([]);
   });
 
-  test('::music-player 生成 Spotify 官方 embed 播放器', async () => {
+  test('::music 生成 Spotify 官方 embed 播放器', async () => {
     const [node] = await run([
-      leaf('music-player', {
+      leaf('music', {
         provider: 'spotify',
         url: 'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT',
       }),
     ]);
 
     expect(node.data?.hName).toBe('figure');
-    expect(node.data?.hProperties?.className).toContain('sonder-music-player');
+    expect(node.data?.hProperties?.className).toContain('sonder-audio-player');
     const embed = node.data?.hChildren?.[1];
     expect((embed as { properties: { src: string } }).properties.src).toBe(
       'https://open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT',
     );
   });
 
-  test('::music-player 非法 provider 跳过', async () => {
-    expect(
-      await run([leaf('music-player', { provider: 'example', url: 'https://example.com' })]),
-    ).toEqual([]);
+  test('::music 非法 provider 跳过', async () => {
+    expect(await run([leaf('music', { provider: 'example', url: 'https://example.com' })])).toEqual(
+      [],
+    );
   });
 
   test('::friend-circle 输出头部、初始动态与数据脚本', async () => {
@@ -462,9 +462,9 @@ describe('叶子指令', () => {
     expect(await run([leaf('friend-link-application', {})])).toEqual([]);
   });
 
-  test('::link 渲染链接卡', async () => {
+  test('::link-card 渲染链接卡', async () => {
     const [node] = await run([
-      leaf('link', { href: 'https://example.com', title: '示例', description: '说明' }),
+      leaf('link-card', { href: 'https://example.com', title: '示例', description: '说明' }),
     ]);
 
     expect(node.data?.hName).toBe('a');
@@ -473,7 +473,7 @@ describe('叶子指令', () => {
   });
 
   test('::link 缺 href 时跳过', async () => {
-    expect(await run([leaf('link', { title: '示例' })])).toEqual([]);
+    expect(await run([leaf('link-card', { title: '示例' })])).toEqual([]);
   });
 });
 
@@ -491,7 +491,7 @@ describe('行内指令', () => {
     expect(node.data?.hName).toBe('a');
   });
 
-  test(':key / :blur / :span', async () => {
+  test(':key / :spoiler / :span', async () => {
     const [kbd] = await run([inline('key', [text('Ctrl')])]);
     expect(kbd.data?.hName).toBe('kbd');
     expect(kbd.data?.hProperties?.['data-key']).toBe('Ctrl');
@@ -499,7 +499,7 @@ describe('行内指令', () => {
     const [combo] = await run([inline('key', [text('K')], { cmd: true })]);
     expect(combo.data?.hProperties?.['data-mods']).toBe('cmd');
 
-    const [blur] = await run([inline('blur', [text('剧透')])]);
+    const [blur] = await run([inline('spoiler', [text('剧透')])]);
     expect(blur.data?.hProperties?.className).toContain('sd-blur');
 
     const [span] = await run([inline('span', [text('红字')], { color: '#c0392b' })]);
@@ -524,24 +524,24 @@ describe('P1 扩展：按钮组 / 本地音频 / 剧透点击', () => {
     expect(node.data?.hProperties?.className).not.toContain('sd-btns--masonry');
   });
 
-  test('::music-player {src} 走原生音频播放器', async () => {
+  test('::audio {src} 走原生音频播放器', async () => {
     const [node] = await run([
-      leaf('music-player', { src: '/media/podcast.mp3', title: '播客', artist: '主播' }),
+      leaf('audio', { src: '/media/podcast.mp3', title: '播客', artist: '主播' }),
     ]);
 
     expect(node.data?.hName).toBe('figure');
-    expect(node.data?.hProperties?.className).toContain('sonder-music-player');
+    expect(node.data?.hProperties?.className).toContain('sonder-audio-player');
     const body = JSON.stringify(node.data?.hChildren?.[0]);
     // hastscript 会把 data-* 属性转为驼峰（序列化时还原为 data-audio）
     expect(body).toContain('dataAudio');
     expect(body).toContain('/media/podcast.mp3');
     // 单曲不出现歌单折叠区
-    expect(body).not.toContain('sonder-music-player__playlist');
+    expect(body).not.toContain('sonder-audio-player__playlist');
   });
 
-  test('::music-player {provider+url} 仍走官方 embed', async () => {
+  test('::music {provider+url} 仍走官方 embed', async () => {
     const [node] = await run([
-      leaf('music-player', {
+      leaf('music', {
         provider: 'spotify',
         url: 'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT',
       }),
@@ -553,8 +553,8 @@ describe('P1 扩展：按钮组 / 本地音频 / 剧透点击', () => {
     );
   });
 
-  test(':blur 输出可切换按钮语义', async () => {
-    const [node] = await run([inline('blur', [text('剧透')])]);
+  test(':spoiler 输出可切换按钮语义', async () => {
+    const [node] = await run([inline('spoiler', [text('剧透')])]);
     expect(node.data?.hProperties?.role).toBe('button');
     expect(node.data?.hProperties?.['aria-pressed']).toBe('false');
   });
@@ -679,5 +679,65 @@ describe('未知指令与嵌套', () => {
     const panel = node.children?.[1];
     const callout = panel?.children?.[0];
     expect(callout?.data?.hProperties?.className).toContain('callout-note');
+  });
+});
+
+describe('::music 统一分发', () => {
+  const metingApi = 'https://meting.test/?server=:server&type=:type&id=:id';
+
+  async function runMusic(children: MdastNode[], response: 'audio' | 'html'): Promise<MdastNode[]> {
+    const realFetch = globalThis.fetch;
+    const audioUrl =
+      response === 'audio' ? 'https://cdn.test/audio-ok.mp3' : 'https://cdn.test/audio-qq.mp3';
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.startsWith('https://meting.test/')) {
+        return new Response(
+          JSON.stringify([
+            {
+              name: '示例曲目',
+              artist: '示例歌手',
+              url: audioUrl,
+              pic: 'https://cdn.test/pic.jpg',
+            },
+          ]),
+          { status: 200, headers: { 'content-type': 'application/json' } },
+        );
+      }
+      if (url === audioUrl) {
+        return new Response('', {
+          status: 200,
+          headers: { 'content-type': response === 'audio' ? 'audio/mpeg' : 'text/html' },
+        });
+      }
+      return new Response('', { status: 404 });
+    }) as typeof fetch;
+
+    try {
+      const transformer = remarkSonderDirectives({ metingApi });
+      const tree = { type: 'root', children } as MdastNode;
+      await transformer(tree, fakeFile);
+      return tree.children ?? [];
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  }
+
+  test('网易云音频可用时渲染原生播放器', async () => {
+    const [node] = await runMusic(
+      [leaf('music', { url: 'https://music.163.com/song?id=28560087' })],
+      'audio',
+    );
+    expect(node.data?.hName).toBe('figure');
+    expect(node.data?.hProperties?.className).toContain('sonder-audio-player');
+  });
+
+  test('QQ 只有元数据时渲染曲目卡片', async () => {
+    const [node] = await runMusic(
+      [leaf('music', { url: 'https://y.qq.com/n/ryqq/songDetail/0039MnYb0qxYhV' })],
+      'html',
+    );
+    expect(node.data?.hName).toBe('div');
+    expect(node.data?.hProperties?.className).toContain('sd-music-card');
   });
 });

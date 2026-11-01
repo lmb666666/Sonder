@@ -1,7 +1,7 @@
 ---
 /**
  * 外挂指令的重型组件客户端：只包含交互脚本与全局样式。
- * 由文章布局（BlogArticle）渲染；脚本各自探测 DOM 标记，无标记时零行为；
+ * 由文章布局（Article）渲染；脚本各自探测 DOM 标记，无标记时零行为；
  * 重依赖（abcjs）按需动态加载。
  */
 import '../../plugins/markdown/directives/widgets.css';
@@ -16,9 +16,9 @@ import '../../plugins/markdown/directives/styles.css';
   import { initCarousels } from '../../plugins/markdown/directives/widgets/carousel.js';
   import { initFriendCircles } from '../../plugins/markdown/directives/widgets/friend-circle.js';
   import {
-    initMusicPlayers,
-    pauseMusicPlayers,
-  } from '../../plugins/markdown/directives/widgets/music-player.js';
+    initAudioPlayers,
+    pauseAudioPlayers,
+  } from '../../plugins/markdown/directives/widgets/audio-player.js';
   import {
     renderMusicScores,
     pauseMusicScores,
@@ -28,6 +28,12 @@ import '../../plugins/markdown/directives/styles.css';
   import { applyVideoZoom } from '../../plugins/markdown/directives/widgets/video.js';
   import { initLightbox } from '../../plugins/markdown/directives/widgets/lightbox.js';
 
+  document.addEventListener('click', (event) => {
+    const frame =
+      event.target instanceof Element ? event.target.closest('.expressive-code .frame') : null;
+    frame?.classList.add('ff-copy-revealed');
+  });
+
   const boot = () => {
     bindKeys();
     bindBlurs();
@@ -35,14 +41,14 @@ import '../../plugins/markdown/directives/styles.css';
     initLightbox();
     initCarousels();
     initFriendCircles();
-    initMusicPlayers();
+    initAudioPlayers();
     initFriendLinkApplications();
     void renderMusicScores();
   };
 
   document.addEventListener('astro:page-load', boot);
   document.addEventListener('astro:before-swap', () => {
-    pauseMusicPlayers();
+    pauseAudioPlayers();
     pauseMusicScores();
   });
   if (document.readyState === 'loading') {

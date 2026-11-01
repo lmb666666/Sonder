@@ -1,5 +1,5 @@
-@import 'katex/dist/katex.min.css';
 @import './markdown-layouts.css';
+@import './expressive-code.css';
 @import './palettes.css';
 
 /*
@@ -190,16 +190,16 @@ table {
 /* 文章表格（Firefly 风格重构）：圆角卡片、主题色表头、斑马纹、发丝分隔线 */
 .markdown-table-scroll {
   max-width: 100%;
-  /* 高度封顶：长表格的横向滚动条才不会落到页面很下方，
-    造成「鼠标在表格上却看不到滚动条」的错觉 */
-  max-height: min(72vh, 680px);
   margin: 30px 0;
-  overflow: auto;
+  /* 只做横向滚动容器；不设 max-height，否则会形成纵向滚动陷阱，
+     鼠标停在表格上时页面无法继续滚动。 */
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--paper-line);
   border-radius: 0.75rem;
   background: var(--paper-surface);
-  overscroll-behavior: contain;
+  /* 只限制横向链式滚动，纵向交还给页面 */
+  overscroll-behavior-x: contain;
 }
 
 /* 表格滚动条：用原生滚动条 + 外观定制。

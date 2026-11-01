@@ -1,0 +1,123 @@
+/* ─── 代码块：纸面皮肤（结构参考 Firefly，颜色全部走站点令牌） ─── */
+
+/* 语言徽章：右上角，跟随纸面控制色 */
+.expressive-code figure.frame [data-language]::before {
+  color: var(--paper-ink-soft);
+  background: var(--paper-control);
+  border: 0;
+  border-radius: 0.3rem;
+  font-family: var(--font-meta);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* 长块折叠的渐变遮罩始终等于代码块自身背景 */
+.expressive-code .ec-collapse__gradient {
+  --ec-collapse-bg-color: var(--ec-frm-edBg);
+}
+
+.expressive-code .ec-collapse__content:has(> .frame.is-terminal) .ec-collapse__gradient {
+  --ec-collapse-bg-color: var(--ec-frm-trmBg);
+}
+
+/* 折叠按钮：纸面胶囊 */
+.expressive-code .ec-collapse__toggle {
+  color: var(--paper-ink-soft);
+  background-color: var(--paper-control);
+  border-color: var(--paper-line-strong);
+}
+
+.expressive-code .ec-collapse__toggle:hover {
+  background-color: var(--paper-control-hover);
+}
+
+/* 复制按钮：玻璃胶囊，保留原生定位与无障碍属性 */
+.expressive-code .frame .copy {
+  --ff-copy-on-accent: var(--paper-surface);
+  --ff-copy-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2.5'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+  --ff-copy-done-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  gap: 0.25rem;
+}
+
+.expressive-code .frame .copy button {
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 0.5rem;
+  background: var(--paper-control);
+  backdrop-filter: blur(8px);
+  transition-property: opacity, background-color, border-color, transform;
+  transition-duration: 0.18s;
+}
+
+.expressive-code .frame .copy button > div,
+.expressive-code .frame .copy button::before {
+  display: none;
+}
+
+.expressive-code .frame .copy button::after {
+  background-color: var(--paper-ink-soft);
+  mask-image: var(--ff-copy-icon);
+  -webkit-mask-image: var(--ff-copy-icon);
+}
+
+.expressive-code .frame .copy button:hover {
+  background: var(--paper-control-hover);
+  transform: translateY(-1px);
+}
+
+.expressive-code .frame .copy button:focus-visible {
+  outline: 2px solid var(--paper-accent);
+  outline-offset: 2px;
+}
+
+/* 复制成功：主题色 + 对勾 */
+.expressive-code .frame .copy:has(.feedback.show) button {
+  border-color: transparent;
+  background: var(--paper-accent);
+}
+
+.expressive-code .frame .copy:has(.feedback.show) button::after {
+  background-color: var(--ff-copy-on-accent);
+  mask-image: var(--ff-copy-done-icon);
+  -webkit-mask-image: var(--ff-copy-done-icon);
+}
+
+.expressive-code .frame .copy .feedback {
+  --tooltip-bg: var(--paper-accent);
+  color: var(--ff-copy-on-accent);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+}
+
+/* 触屏：点击代码块才显形复制按钮，避免常驻遮挡 */
+@media (hover: none) {
+  .expressive-code .frame .copy button {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .expressive-code .frame.ff-copy-revealed .copy button,
+  .expressive-code .frame .copy:has(.feedback.show) button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .expressive-code figure.frame [data-language]::before {
+    margin-right: 0;
+  }
+
+  .expressive-code figure.frame.ff-copy-revealed [data-language]::before {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expressive-code .frame .copy button,
+  .expressive-code .frame .copy .feedback {
+    transition-duration: 1ms;
+  }
+
+  .expressive-code .frame .copy button:hover {
+    transform: none;
+  }
+}

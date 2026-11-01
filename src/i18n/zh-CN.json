@@ -167,5 +167,11 @@
       "album": "乐评",
       "podcast": "播客评论"
     }
+  },
+  "codeBlock": {
+    "showMore": "展开全部",
+    "showLess": "收起",
+    "expanded": "已展开",
+    "collapsed": "已折叠"
   }
 }

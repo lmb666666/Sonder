@@ -37,12 +37,13 @@ const collapseStyleSchema = z.enum([
 const blogCoverImageStyleSchema = z.enum(['card', 'mask']);
 
 const defaultCodeConfig = {
-  lightTheme: 'catppuccin-latte',
-  darkTheme: 'catppuccin-macchiato',
   lineNumbers: true,
-  wrap: true,
+  wrap: false,
   preserveIndent: true,
   collapseStyle: 'github',
+  languageBadge: true,
+  collapseLines: 15,
+  previewLines: 8,
 } as const;
 
 const defaultMarkdownConfig = {
@@ -273,12 +274,18 @@ export const siteConfigSchema = z.object({
     .default(defaultFontConfig),
   code: z
     .object({
-      lightTheme: z.string().optional().default(defaultCodeConfig.lightTheme),
-      darkTheme: z.string().optional().default(defaultCodeConfig.darkTheme),
       lineNumbers: z.boolean().optional().default(defaultCodeConfig.lineNumbers),
       wrap: z.boolean().optional().default(defaultCodeConfig.wrap),
       preserveIndent: z.boolean().optional().default(defaultCodeConfig.preserveIndent),
       collapseStyle: collapseStyleSchema.optional().default(defaultCodeConfig.collapseStyle),
+      languageBadge: z.boolean().optional().default(defaultCodeConfig.languageBadge),
+      collapseLines: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .default(defaultCodeConfig.collapseLines),
+      previewLines: z.number().int().positive().optional().default(defaultCodeConfig.previewLines),
     })
     .optional()
     .default(defaultCodeConfig),

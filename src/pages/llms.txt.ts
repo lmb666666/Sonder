@@ -1,6 +1,6 @@
 import { getCollection } from 'astro:content';
 import type { APIContext } from 'astro';
-import { getSiteConfig } from '../data/site';
+import { getSiteConfig } from '../config';
 import { withBase } from '../lib/url';
 import { sortByDateDesc } from '../lib/content-dates';
 
