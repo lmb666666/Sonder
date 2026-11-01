@@ -3,8 +3,8 @@ import { ChevronDown, ListTree, Moon, Palette, Sun } from 'lucide-astro';
 import SiteSearch from './SiteSearch.astro';
 import TocTree from './TocTree.astro';
 import { getRouteLabels, getSiteConfig, getTopNavLinks } from '../../data/site';
-import { getUiText } from '../../utils/ui-text';
-import type { TocItem } from '../../utils/toc-tree';
+import { getUiText } from '../../lib/ui-text';
+import type { TocItem } from '../../lib/toc-tree';
 
 interface Props {
   showTocIcon?: boolean;

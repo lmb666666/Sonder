@@ -42,9 +42,10 @@ const sourceDirs = [
   'src/components',
   'src/layouts',
   'src/config',
-  'src/utils',
+  'src/lib',
   'src/i18n',
   'src/data',
+  'src/plugins',
 ];
 const contentFrontmatterDirs = [
   `${contentRoot}/blog`,
@@ -318,6 +319,8 @@ const chars = new Set<string>();
 
 for (const dir of sourceDirs) {
   for (const file of walkFiles(join(projectRoot, dir), sourceExtensions)) {
+    // 测试文件里的中文只出现在注释与断言描述中，不参与渲染，不进字体子集。
+    if (/\.test\.[cm]?[jt]s$/.test(file)) continue;
     collectCjk(chars, readFileSync(file, 'utf8'));
   }
 }

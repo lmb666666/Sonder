@@ -21,7 +21,7 @@ sidebar:
 
 ## 页面配置
 
-页面标题、kicker 和说明在 `src/config/site.toml` 中：
+页面标题、kicker 和说明在 `site.config.toml` 中：
 
 ```toml
 [config.pages.media]
@@ -65,20 +65,11 @@ draft: false
 - `cover`：本地图片或远程图片地址
 - `review: true` 时，条目会生成阅读长评页面
 
-## 启用模块
+## 页面与集合
 
-书影音由页面模块提供，在 `sonder.config.ts` 中注册：
+书影音是普通页面与内容集合，开箱即用，不需要注册：`src/pages/media/` 提供路由，`src/content/media/` 存放条目。不需要书影音时，删除这两个目录即可，导航项同步从 `site.config.toml` 移除。
 
-```ts
-import { mediaModule, pages } from './src/modules';
-
-export default defineSonderConfig({
-  modules: [mediaModule()],
-  plugins: [pages()],
-});
-```
-
-模块注册后会提供 `/media` 路由、内容集合和脚手架命令。新增条目可以使用：
+新增条目可以使用：
 
 ```bash
 bun run media:new the-left-hand-of-darkness

@@ -3,8 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 import BlogArchiveHeader from './BlogArchiveHeader.astro';
 import BlogPostList from './BlogPostList.astro';
 import { getSiteConfig } from '../../data/site';
-import { getUiText } from '../../utils/ui-text';
-import { getPaginationItems } from '../../utils/pagination';
+import { getUiText } from '../../lib/ui-text';
+import { getPaginationItems } from '../../lib/pagination';
 import '../../styles/blog-archive.css';
 
 type BlogPost = CollectionEntry<'blog'>;

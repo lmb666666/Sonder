@@ -1,6 +1,6 @@
 import { getSiteConfig } from '../data/site';
 import { allFriendLinks } from '../data/friends';
-import { escapeXml } from '../utils/xml';
+import { escapeXml } from '../lib/xml';
 
 export async function GET(context) {
   const { site } = await getSiteConfig();

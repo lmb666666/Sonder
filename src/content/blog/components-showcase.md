@@ -16,7 +16,7 @@ sidebar:
   toc: true
 ---
 
-Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期渲染成组件，零 import，`.md` 与 `.mdx` 通用。标准 Markdown 语法见 [Markdown 语法](/blog/markdown-style-guide/)，本文只讲模板扩展的组件能力。
+Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期渲染成组件，零 import，直接写在 `.md` 里。标准 Markdown 语法见 [Markdown 语法](/blog/markdown-style-guide/)，本文只讲模板扩展的组件能力。
 
 ## 语法速查
 
@@ -599,7 +599,7 @@ flowchart LR
 
 ### NeteasePlaylist 网易云音乐
 
-歌曲与歌单默认在构建期经 Meting API 解析为曲目清单，交给模板自带的原生播放器（实例地址见 `site.toml` 的 `[config.music].meting_api`）；未配置 Meting 或解析失败时，自动降级为网易官方外链播放器。支持直接贴音乐链接，类型与 ID 自动识别：
+歌曲与歌单默认在构建期经 Meting API 解析为曲目清单，交给模板自带的原生播放器（实例地址见 `site.config.toml` 的 `[config.music].meting_api`）；未配置 Meting 或解析失败时，自动降级为网易官方外链播放器。支持直接贴音乐链接，类型与 ID 自动识别：
 
 ```md
 ::netease{url="https://music.163.com/#/playlist?id=7294439968"}

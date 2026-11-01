@@ -1,7 +1,7 @@
 ---
 import { Search, X } from 'lucide-astro';
 import { getSiteConfig, type SiteSearch as SiteSearchConfig } from '../../data/site';
-import { getUiText } from '../../utils/ui-text';
+import { getUiText } from '../../lib/ui-text';
 
 interface Props {
   search: SiteSearchConfig;
@@ -81,7 +81,7 @@ const shortcutLabel = search.shortcut === 'mod+k' ? 'Ctrl K / Cmd K' : search.sh
 </div>
 
 <script>
-  import { initSiteSearch } from '../../utils/site-search';
+  import { initSiteSearch } from '../../lib/site-search';
 
   initSiteSearch();
 </script>

@@ -18,8 +18,7 @@ export async function getThemePalette() {
 
 interface TopNavLinkConfig {
   label: string;
-  href?: string;
-  module?: string;
+  href: string;
   disabled?: boolean;
 }
 
@@ -34,11 +33,7 @@ export async function getTopNavLinks() {
 }
 
 export function resolveTopNavLinks(links: TopNavLinkConfig[]): ResolvedTopNavLink[] {
-  return links.flatMap((link) => {
-    if (link.disabled || !link.href) return [];
-
-    return [{ label: link.label, href: link.href }];
-  });
+  return links.flatMap((link) => (link.disabled ? [] : [{ label: link.label, href: link.href }]));
 }
 
 export function getRouteLabels(): Record<string, string> {

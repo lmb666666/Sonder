@@ -123,17 +123,11 @@ const defaultCommentsConfig = {
   twikoo: typeof defaultTwikooConfig;
 };
 
-const topNavLinkSchema = z
-  .object({
-    label: z.string(),
-    href: z.string().optional(),
-    // Sonder v1 兼容：module 指向已启用的页面模块；重构完成后仅支持 href。
-    module: z.string().optional(),
-    disabled: z.boolean().optional().default(false),
-  })
-  .refine((link) => Boolean(link.href || link.module), {
-    message: 'Top nav links must define either href or module.',
-  });
+const topNavLinkSchema = z.object({
+  label: z.string(),
+  href: z.string(),
+  disabled: z.boolean().optional().default(false),
+});
 
 const homeLinkSchema = z.object({
   label: z.string(),

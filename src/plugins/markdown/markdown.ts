@@ -32,7 +32,7 @@ export interface MarkdownConfig {
  */
 function markdownTabsIntegration(): AstroIntegration {
   return {
-    name: '@sonder/plugin-markdown/tabs',
+    name: 'sonder/markdown-tabs',
     hooks: {
       'astro:config:setup': ({ injectScript }) => {
         // 事件委托，文档级单次绑定即可覆盖全部实例

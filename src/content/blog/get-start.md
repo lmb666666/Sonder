@@ -37,7 +37,7 @@ bun run dev
 
 ## 先改站点信息
 
-打开 `src/config/site.toml`，优先替换这些值：
+打开根目录的 `site.config.toml`，优先替换这些值：
 
 - `[config.site]`：站点标题、描述、线上地址、仓库地址和页脚说明
 - `[config.profile]`：作者名、身份、头像、邮箱、网站和 GitHub
@@ -53,7 +53,7 @@ bun run dev
 
 ```text
 src/content/
-  about.mdx        关于页
+  about.md         关于页
   blog/            长文与教程
   media/           书、影、音条目
   projects/        关于页的项目卡片
@@ -70,7 +70,7 @@ bun run build
 bun run preview
 ```
 
-构建会把静态页面输出到 `dist/`。部署时只需要把 `dist/` 交给任意静态托管平台；仓库内置的 GitHub Pages 工作流也会在推送到 `main` 或 `sonder` 分支时自动构建。
+构建会把静态页面输出到 `dist/`。部署时只需要把 `dist/` 交给任意静态托管平台；仓库内置的 `vercel.json` 可以在推送到 `main` 时自动构建；其他平台直接发布 `dist/` 即可。
 
 如果站点部署在子路径，可以在构建时设置：
 
@@ -81,5 +81,5 @@ SITE_URL=https://example.com SITE_BASE=/my-site bun run build
 ## 接下来
 
 - 阅读 [主题色与深色模式](/blog/theme-palettes/)，调整默认色盘与导航样式。
-- 阅读 [内容组件速览](/blog/components-showcase/)，了解文章里可以使用的 MDX 组件。
+- 阅读 [内容组件速览](/blog/components-showcase/)，了解文章里可以使用的全部外挂指令。
 - 阅读 [书影音页面](/blog/media-page-guide/)、[站内搜索](/blog/site-search-guide/) 和 [朋友页与友链卡片](/blog/friend-links-guide/) 的配置方式。

@@ -32,7 +32,7 @@ Sonder 的颜色系统围绕纸面底色、墨色文字和低饱和强调色展�
 | `orange-soft` | 暖橙 | Sonder 默认色 |
 | `brown-soft` | 棕褐 | 旧书与木头 |
 
-在 `src/config/site.toml` 中选默认色盘：
+在 `site.config.toml` 中选默认色盘：
 
 ```toml
 [config.theme]
@@ -41,7 +41,7 @@ lang = "zh-CN"
 navStyle = "pill"
 ```
 
-`navStyle` 可以在 `pill` 胶囊导航、`bar` 通栏工具条和 `legacy` 旧版 Astro 通栏 Header 之间切换。`pill` 与 `bar` 模式顶部导航的主题色按钮会列出全部内置色盘；`legacy` 使用旧 Header，只保留站点导航和社交入口。色盘选择结果写入浏览器本地存储，刷新后保留。
+`navStyle` 可以在 `pill` 胶囊导航与 `bar` 通栏工具条之间切换。两种模式顶部导航的主题色按钮都会列出全部内置色盘。色盘选择结果写入浏览器本地存储，刷新后保留。
 
 ## 深色模式
 
@@ -58,4 +58,4 @@ navStyle = "pill"
 - 深色模式下封面信息条与外框的协调程度
 - 顶部导航、按钮和焦点状态的强调色
 
-如果只想改默认氛围，优先在 `site.toml` 里切换内置色盘；需要自定义品牌色时，再修改 CSS 变量。
+如果只想改默认氛围，优先在 `site.config.toml` 里切换内置色盘；需要自定义品牌色时，再修改 CSS 变量。

@@ -4,8 +4,8 @@ import Footer from '../components/Footer.astro';
 import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import SiteNav from '../components/blog/SiteNav.astro';
 import { getSiteConfig } from '../data/site';
-import { getHtmlLang } from '../utils/ui-text';
-import type { TocItem } from '../utils/toc-tree';
+import { getHtmlLang } from '../lib/ui-text';
+import type { TocItem } from '../lib/toc-tree';
 
 interface Props {
   title: string;

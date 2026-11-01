@@ -1,6 +1,6 @@
 import { getCollection } from 'astro:content';
 import { getSiteConfig } from '../data/site';
-import { sortByDateDesc } from '../utils/content-dates';
+import { sortByDateDesc } from '../lib/content-dates';
 
 export async function GET(context) {
   const { site, profile } = await getSiteConfig();

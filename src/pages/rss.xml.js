@@ -1,7 +1,7 @@
 import { getCollection } from 'astro:content';
 import rss from '@astrojs/rss';
 import { getSiteConfig } from '../data/site';
-import { sortByDateDesc } from '../utils/content-dates';
+import { sortByDateDesc } from '../lib/content-dates';
 
 export async function GET(context) {
   const { site } = await getSiteConfig();

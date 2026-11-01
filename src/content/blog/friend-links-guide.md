@@ -50,7 +50,7 @@ export const friendLinkGroups = [
 
 朋友圈默认按以下顺序取数据：
 
-1. `src/config/site.toml` 中 `[config.friendCircle].feed_src` 指向的订阅源
+1. `site.config.toml` 中 `[config.friendCircle].feed_src` 指向的订阅源
 2. `public/friend-circle.json`（自行同步或生成的聚合文件）
 3. 构建期抓取友链的 RSS / Atom
 4. 内置演示数据 `src/data/friend-circle-demo.json`
@@ -67,4 +67,4 @@ pageSize = 20
 
 友链申请表单由 `site.repository` 指向的 GitHub 仓库生成 Issue。仓库地址为空或不可解析时，申请区不会显示。提交的 Issue 通过 `friend-link` 标签归档，博主确认后把友链加入 `src/data/friends.ts`。
 
-朋友页的标题、kicker 和副标题在 `src/config/site.toml` 的 `[config.pages.links]` 中配置。
+朋友页的标题、kicker 和副标题在 `site.config.toml` 的 `[config.pages.links]` 中配置。

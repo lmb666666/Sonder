@@ -23,7 +23,7 @@
 
 ![Sonder 首页](./docs/sonder-preview.png)
 
-Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底、墨色文字、发丝分隔线，把文章、书影音、动态和朋友页收进同一套版式。基于 Astro 静态构建，内容用 Markdown / MDX 管理，没有后端依赖。
+Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底、墨色文字、发丝分隔线，把文章、书影音、动态和朋友页收进同一套版式。基于 Astro 静态构建，内容用 Markdown 管理，没有后端依赖。
 
 ## ✨ 特性
 
@@ -32,7 +32,7 @@ Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底�
 - **双布局文章列表** —— `media` 媒体大图与 `rows` 行式列表，配置切换
 - **书影音 / 动态 / 朋友页** —— 媒体架、时间线、友链朋友圈开箱即用
 - **8 套色盘 + 深色模式** —— 默认暖橙，可整体换色
-- **三档导航** —— `pill` 胶囊 / `bar` 通栏 / `legacy` 旧版通栏
+- **双导航** —— `pill` 胶囊 / `bar` 通栏
 
 **阅读体验**
 
@@ -85,7 +85,7 @@ heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 | 指南                                                                 | 内容                             |
 | -------------------------------------------------------------------- | -------------------------------- |
 | [快速开始](https://sonder.liang.one/blog/get-start/)                 | 替换站点信息、写文章、构建与部署 |
-| [站点配置](https://sonder.liang.one/blog/site-config-guide/)         | `site.toml` 全部字段说明         |
+| [站点配置](https://sonder.liang.one/blog/site-config-guide/)         | `site.config.toml` 全部字段说明  |
 | [主题与色盘](https://sonder.liang.one/blog/theme-palettes/)          | 8 套色盘与深色模式               |
 | [组件速览](https://sonder.liang.one/blog/components-showcase/)       | 全部外挂标签的语法与真实演示     |
 | [Markdown 风格](https://sonder.liang.one/blog/markdown-style-guide/) | 排版规范与扩展语法               |

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import { getSiteConfig } from '../../data/site';
-import { getAllCategories, getAllTags, uncategorizedCategory } from '../../utils/content-groups';
-import { getUiText } from '../../utils/ui-text';
+import { getAllCategories, getAllTags, uncategorizedCategory } from '../../lib/content-groups';
+import { getUiText } from '../../lib/ui-text';
 import Icon from '../Icon.astro';
 import '../../styles/blog-group-nav.css';
 
@@ -89,7 +89,7 @@ function getCategoryName(name: string, slug: string) {
 </nav>
 
 <script>
-  import { mountGroupNav } from '../../utils/group-nav';
+  import { mountGroupNav } from '../../lib/group-nav';
 
   mountGroupNav();
 </script>

@@ -1,6 +1,6 @@
 ---
 title: '站点配置指南'
-description: 'Sonder 的站点级信息集中在 src/config/site.toml：站点、作者、导航、页面文案、首页、外观、搜索、评论和朋友圈。'
+description: 'Sonder 的站点级信息集中在根目录的 site.config.toml：站点、作者、导航、页面文案、首页、外观、搜索、评论和朋友圈。'
 date: '2026-05-19T18:00:00+08:00'
 draft: false
 heroImage: '/src/assets/figure/covers/cover-07-teal.png'
@@ -17,7 +17,7 @@ sidebar:
   toc: true
 ---
 
-Sonder 把站点级信息集中在 `src/config/site.toml`，而不是散落在组件里。配置结构由 `src/content.config.ts` 中的 Zod schema 校验；字段缺失或类型不对时，`bun run build` 会直接报错。
+Sonder 把站点级信息集中在根目录的 `site.config.toml`，而不是散落在组件里。配置结构由 `src/config/schema.ts` 中的 Zod schema 校验；字段缺失或类型不对时，`bun run build` 会直接报错。
 
 ## 站点与作者
 
@@ -66,9 +66,9 @@ navStyle = "pill"
 
 - `palette`：默认色盘，可选 `green-soft`、`green-vivid`、`rose-soft`、`pink-soft`、`purple-soft`、`blue-soft`、`orange-soft`、`brown-soft`
 - `lang`：`zh-CN`、`zh-TW` 或 `en`
-- `navStyle`：`pill` 胶囊导航、`bar` 通栏工具条或 `legacy` 旧版 Astro 通栏 Header
+- `navStyle`：`pill` 胶囊导航或 `bar` 通栏工具条
 
-顶部导航由 `[[config.topNav.links]]` 控制，可以写普通 `href`，也可以引用已启用的页面模块。
+顶部导航由 `[[config.topNav.links]]` 控制，每项填写 `label` 与 `href`。
 
 ## 页面文案
 
@@ -132,17 +132,19 @@ pageSize = 20
 
 评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.comments.*]` 区块中填写。朋友页的 `feed_src` 可以指向 Friend-Circle-Lite 订阅源，也可以留空使用 `public/friend-circle.json` 或构建期 RSS 聚合。
 
-## 模块配置
+## Markdown 开关
 
-页面模块在 `sonder.config.ts` 中注册。当前启用的是书影音模块：
+`[config.markdown]` 控制数学公式与 Mermaid 图表：
 
-```ts
-import { mediaModule, pages } from './src/modules';
-
-export default defineSonderConfig({
-  modules: [mediaModule()],
-  plugins: [pages()],
-});
+```toml
+[config.markdown]
+math = true
+mathRenderer = "katex" # "katex" | "mathjax"
+mermaid = true
 ```
 
-项目卡片直接读取 `src/content/projects/`，由关于页展示；没有独立项目页。短记录统一使用 `/moments`。
+提醒块、外挂指令与响应式表格始终开启——文章内容依赖它们，因此不提供开关。
+
+## 页面与集合
+
+书影音、动态、朋友页都是普通页面加内容集合，不需要注册：删除 `src/pages/media/` 与 `src/content/media/` 即移除书影音，导航项同步从 `site.config.toml` 删除。项目卡片直接读取 `src/content/projects/`，由关于页展示；没有独立项目页。短记录统一使用 `/moments`。

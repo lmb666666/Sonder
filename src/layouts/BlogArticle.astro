@@ -10,11 +10,11 @@ import CommentSection from '../components/comments/CommentSection.astro';
 import MermaidRenderer from '../components/markdown/MermaidRenderer.astro';
 import MarkdownWidgets from '../components/markdown/MarkdownWidgets.astro';
 import { getSiteConfig } from '../data/site';
-import { resolveCommentsConfig, supportsCommentSection } from '../utils/comments';
-import { sortByDateDesc } from '../utils/content-dates';
-import { slugifyGroupName } from '../utils/content-groups';
-import { buildTocTree, countTocItems } from '../utils/toc-tree';
-import { getUiText } from '../utils/ui-text';
+import { resolveCommentsConfig, supportsCommentSection } from '../lib/comments';
+import { sortByDateDesc } from '../lib/content-dates';
+import { slugifyGroupName } from '../lib/content-groups';
+import { buildTocTree, countTocItems } from '../lib/toc-tree';
+import { getUiText } from '../lib/ui-text';
 import '../styles/blog-article.css';
 
 const siteConfig = await getSiteConfig();

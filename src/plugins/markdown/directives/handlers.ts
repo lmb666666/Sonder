@@ -3,7 +3,7 @@ import { h } from 'hastscript';
 /**
  * Sonder 外挂指令渲染层。
  * 三种层级：容器（:::name…:::）、叶子（::name{attr}）、行内（:name[文字]{attr}）。
- * 全部在构建期输出 HTML，作者零 import，.md / .mdx 通吃。
+ * 全部在构建期输出 HTML，作者零 import，直接写在 .md 里。
  */
 
 export type AttributeValue = string | true;

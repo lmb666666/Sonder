@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Layers3 } from 'lucide-astro';
 import FormattedDate from '../FormattedDate.astro';
 import { getSiteConfig } from '../../data/site';
-import { getUiText } from '../../utils/ui-text';
+import { getUiText } from '../../lib/ui-text';
 
 interface Props {
   previous?: CollectionEntry<'blog'>;

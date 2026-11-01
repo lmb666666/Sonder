@@ -4,9 +4,9 @@ import { getCollection } from 'astro:content';
 import BackLink from '../../../components/blog/BackLink.astro';
 import BlogArchive from '../../../components/blog/BlogArchive.astro';
 import { getSiteConfig } from '../../../data/site';
-import { sortBlogPostsForArchive } from '../../../utils/content-dates';
-import { getAllTags } from '../../../utils/content-groups';
-import { getUiText } from '../../../utils/ui-text';
+import { sortBlogPostsForArchive } from '../../../lib/content-dates';
+import { getAllTags } from '../../../lib/content-groups';
+import { getUiText } from '../../../lib/ui-text';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);

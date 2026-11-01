@@ -16,7 +16,7 @@ import {
 } from 'lucide-astro';
 import { getCollection, render } from 'astro:content';
 import BlogArticle from '../layouts/BlogArticle.astro';
-import { sortByDateDesc } from '../utils/content-dates';
+import { sortByDateDesc } from '../lib/content-dates';
 
 const [about] = await getCollection('about');
 

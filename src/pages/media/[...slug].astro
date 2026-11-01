@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import { getSiteConfig } from '../../data/site';
-import { getI18n } from '../../utils/ui-text';
+import { getI18n } from '../../lib/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
 type CoverAspect = 'portrait' | 'landscape' | 'square' | 'wide';

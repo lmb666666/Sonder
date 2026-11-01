@@ -23,7 +23,7 @@
 
 ![Sonder homepage](./docs/sonder-preview.png)
 
-Sonder is a personal publishing template built around a paper-like reading experience: warm paper, ink text and hairline rules, bringing articles, media, moments and a friends page into one calm layout. Built statically with Astro; content lives in Markdown / MDX with no backend.
+Sonder is a personal publishing template built around a paper-like reading experience: warm paper, ink text and hairline rules, bringing articles, media, moments and a friends page into one calm layout. Built statically with Astro; content lives in Markdown with no backend.
 
 ## ✨ Features
 
@@ -32,7 +32,7 @@ Sonder is a personal publishing template built around a paper-like reading exper
 - **Two list layouts** — `media` covers or `rows` list, switchable in config
 - **Media / moments / friends** — media shelf, timeline and friend circle out of the box
 - **8 palettes + dark mode** — warm orange by default, recolor the whole site
-- **Three navigations** — `pill`, `bar`, or `legacy` header
+- **Two navigations** — `pill` or `bar`
 
 **Reading experience**
 
@@ -85,7 +85,7 @@ The full documentation ships with the demo site and stays in sync with the templ
 | Guide                                                                 | Covers                                   |
 | --------------------------------------------------------------------- | ---------------------------------------- |
 | [Quick start](https://sonder.liang.one/blog/get-start/)               | Site info, writing, build & deploy       |
-| [Site config](https://sonder.liang.one/blog/site-config-guide/)       | Every field in `site.toml`               |
+| [Site config](https://sonder.liang.one/blog/site-config-guide/)       | Every field in `site.config.toml`        |
 | [Palettes](https://sonder.liang.one/blog/theme-palettes/)             | 8 palettes and dark mode                 |
 | [Components](https://sonder.liang.one/blog/components-showcase/)      | Every directive, live                    |
 | [Markdown style](https://sonder.liang.one/blog/markdown-style-guide/) | Typographic rules and extensions         |

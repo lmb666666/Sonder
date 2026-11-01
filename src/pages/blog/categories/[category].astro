@@ -8,9 +8,9 @@ import {
   getAllCategories,
   getPostsByCategory,
   uncategorizedCategory,
-} from '../../../utils/content-groups';
-import { sortBlogPostsForArchive } from '../../../utils/content-dates';
-import { getUiText } from '../../../utils/ui-text';
+} from '../../../lib/content-groups';
+import { sortBlogPostsForArchive } from '../../../lib/content-dates';
+import { getUiText } from '../../../lib/ui-text';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);

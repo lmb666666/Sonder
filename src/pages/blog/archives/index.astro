@@ -4,9 +4,9 @@ import { getCollection } from 'astro:content';
 import BlogArchiveHeader from '../../../components/blog/BlogArchiveHeader.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
-import { slugifyGroupName } from '../../../utils/content-groups';
-import { sortByDateDesc } from '../../../utils/content-dates';
-import { getUiText } from '../../../utils/ui-text';
+import { slugifyGroupName } from '../../../lib/content-groups';
+import { sortByDateDesc } from '../../../lib/content-dates';
+import { getUiText } from '../../../lib/ui-text';
 
 const siteConfig = await getSiteConfig();
 const { site, pages } = siteConfig;

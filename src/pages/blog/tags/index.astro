@@ -4,8 +4,8 @@ import { getCollection } from 'astro:content';
 import BlogArchiveHeader from '../../../components/blog/BlogArchiveHeader.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
-import { getAllTags } from '../../../utils/content-groups';
-import { getUiText } from '../../../utils/ui-text';
+import { getAllTags } from '../../../lib/content-groups';
+import { getUiText } from '../../../lib/ui-text';
 
 const tagColors = [
   '#2f8f5b',

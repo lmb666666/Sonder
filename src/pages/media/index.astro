@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content';
 import PageHero from '../../components/PageHero.astro';
 import MediaShelf from '../../components/markdown/MediaShelf.astro';
 import { getSiteConfig } from '../../data/site';
-import { getI18n } from '../../utils/ui-text';
+import { getI18n } from '../../lib/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
 type CoverAspect = 'portrait' | 'landscape' | 'square' | 'wide';

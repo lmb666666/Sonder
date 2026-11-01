@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import { getSiteConfig } from '../../data/site';
-import { createRecentBlogHeatmap, type HeatmapDay } from '../../utils/blog-heatmap';
-import { getUiText } from '../../utils/ui-text';
+import { createRecentBlogHeatmap, type HeatmapDay } from '../../lib/blog-heatmap';
+import { getUiText } from '../../lib/ui-text';
 
 interface Props {
   weeks?: number;

@@ -12,7 +12,7 @@ describe('getMarkdownConfig', () => {
   test('注入标签页切换脚本', () => {
     const { integrations } = getMarkdownConfig(baseOptions);
     const tabsIntegration = integrations.find(
-      (integration) => integration.name === '@sonder/plugin-markdown/tabs',
+      (integration) => integration.name === 'sonder/markdown-tabs',
     );
     const injectedScripts: Array<{ stage: string; content: string }> = [];
 
@@ -33,9 +33,9 @@ describe('getMarkdownConfig', () => {
   test('不再注入样式脚本（避免首屏无样式闪烁）', () => {
     const { integrations } = getMarkdownConfig(baseOptions);
 
-    expect(
-      integrations.some((integration) => integration.name === '@sonder/plugin-markdown/styles'),
-    ).toBe(false);
+    expect(integrations.some((integration) => integration.name === 'sonder/markdown-styles')).toBe(
+      false,
+    );
   });
 
   test('提醒块、指令与响应式表格始终装配', () => {
