@@ -18,6 +18,7 @@ type Message = string | { one?: string; other: string };
 type RawUiText = {
   locale: string;
   nav: {
+    home: string;
     menu: string;
     appearance: string;
     themeMode: string;
@@ -42,6 +43,78 @@ type RawUiText = {
     navLabel: string;
     home: string;
     random: string;
+  };
+  links: {
+    note: Message;
+    circleAria: string;
+    circleTitle: string;
+    circleSummary: Message;
+    expandMore: string;
+    feedError: Message;
+    feedUnavailable: string;
+    feedDemo: string;
+    feedDemoHint: string;
+    applyAria: string;
+    applyTitle: string;
+    applyDescription: string;
+  };
+  moments: {
+    loading: string;
+    count: Message;
+    sourcePrefix: string;
+    sourceSuffix: string;
+    imageAria: Message;
+    loadMore: string;
+    loadFailed: string;
+    loadFailedHint: string;
+    ownerFallback: string;
+    extension: {
+      github: string;
+      website: string;
+      music: string;
+      location: string;
+      video: string;
+      tweet: string;
+    };
+  };
+  friendApplication: {
+    title: string;
+    description: string;
+    applyLabel: string;
+    applyHint: string;
+    copyHint: string;
+    copySuccessText: string;
+    issueTitle: Message;
+    issueBody: Message;
+    fields: Record<string, string>;
+    placeholders: Record<string, string>;
+    invalidUrl: string;
+    invalidUrlProtocol: string;
+    statusReady: string;
+    statusIncomplete: string;
+    copyFailed: string;
+    previewName: string;
+    previewBio: string;
+    previewAria: Message;
+    previewAriaPrefix: string;
+    required: string;
+    previewCta: string;
+    backCta: string;
+    previewTitle: string;
+    previewAriaLabel: string;
+  };
+  siteInfo: {
+    uptime: string;
+    uptimeTip: Message;
+    lastUpdated: string;
+    lastUpdatedTip: string;
+    program: string;
+    imageBed: string;
+    buildPlatform: string;
+  };
+  comments: {
+    title: string;
+    note: string;
   };
   palette: {
     greenSoft: string;
@@ -170,7 +243,18 @@ type RawUiText = {
 
 export type UiLanguage = keyof typeof rawUiText;
 
-export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'share' | 'pagination'> & {
+export type UiText = Omit<
+  RawUiText,
+  | 'heatmap'
+  | 'groups'
+  | 'article'
+  | 'share'
+  | 'pagination'
+  | 'links'
+  | 'moments'
+  | 'friendApplication'
+  | 'siteInfo'
+> & {
   heatmap: Omit<
     RawUiText['heatmap'],
     'openLatestPost' | 'writingSince' | 'recentWeeks' | 'postCount'
@@ -209,6 +293,27 @@ export type UiText = Omit<RawUiText, 'heatmap' | 'groups' | 'article' | 'share' 
   share: Omit<RawUiText['share'], 'copyTitle'> & {
     copyTitle: (title: string) => string;
   };
+  links: Omit<RawUiText['links'], 'note' | 'circleSummary' | 'feedError'> & {
+    note: (total: number, rss: number) => string;
+    circleSummary: (friends: number, active: number, posts: number) => string;
+    feedError: (error: string) => string;
+  };
+  moments: Omit<RawUiText['moments'], 'count' | 'imageAria'> & {
+    count: (count: number) => string;
+    imageAria: (index: number) => string;
+  };
+  friendApplication: Omit<
+    RawUiText['friendApplication'],
+    'issueTitle' | 'issueBody' | 'previewAria'
+  > & {
+    issueTitle: (name: string) => string;
+    issueBody: (json: string) => string;
+    previewAria: (name: string) => string;
+  };
+  siteInfo: Omit<RawUiText['siteInfo'], 'uptimeTip'> & {
+    uptimeTip: (date: string) => string;
+  };
+  comments: RawUiText['comments'];
   nav: RawUiText['nav'];
   pagination: Omit<RawUiText['pagination'], 'page'> & {
     page: (current: number, total: number) => string;
@@ -236,6 +341,29 @@ function createUiText(raw: RawUiText): UiText {
     nav: raw.nav,
     homeStats: raw.homeStats,
     notFound: raw.notFound,
+    links: {
+      ...raw.links,
+      note: (total, rss) => formatMessage(raw.links.note, { total, rss }),
+      circleSummary: (friends, active, posts) =>
+        formatMessage(raw.links.circleSummary, { friends, active, posts }),
+      feedError: (error) => formatMessage(raw.links.feedError, { error }),
+    },
+    moments: {
+      ...raw.moments,
+      count: (count) => formatMessage(raw.moments.count, { count }),
+      imageAria: (index) => formatMessage(raw.moments.imageAria, { index }),
+    },
+    friendApplication: {
+      ...raw.friendApplication,
+      issueTitle: (name) => formatMessage(raw.friendApplication.issueTitle, { name }),
+      issueBody: (json) => formatMessage(raw.friendApplication.issueBody, { json }),
+      previewAria: (name) => formatMessage(raw.friendApplication.previewAria, { name }),
+    },
+    siteInfo: {
+      ...raw.siteInfo,
+      uptimeTip: (date) => formatMessage(raw.siteInfo.uptimeTip, { date }),
+    },
+    comments: raw.comments,
     palette: raw.palette,
     heatmap: {
       ...raw.heatmap,

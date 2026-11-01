@@ -7,6 +7,7 @@ import FriendLinkApplication from '../components/links/FriendLinkApplication.ast
 import FriendLinkCard from '../components/links/FriendLinkCard.astro';
 import { crawlFriendPosts, parseFriendCircleFeed, type FriendPost } from '../lib/friend-data';
 import { getSiteConfig } from '../config';
+import { getUiText } from '../lib/ui-text';
 import PageHero from '../components/PageHero.astro';
 import demoFeed from '../data/friend-circle-demo.json';
 import { allFriendLinks, friendLinkGroups } from '../data/friends';
@@ -14,6 +15,7 @@ import { allFriendLinks, friendLinkGroups } from '../data/friends';
 const siteConfig = await getSiteConfig();
 const { site, profile, pages } = siteConfig;
 const pageMeta = pages.links;
+const ui = getUiText(siteConfig);
 
 const totalLinks = friendLinkGroups.reduce((count, group) => count + group.items.length, 0);
 const rssCount = friendLinkGroups.reduce(
@@ -63,6 +65,7 @@ const demoPosts: FriendPost[] = (demoFeed.posts as Array<Record<string, unknown>
 let circlePosts: FriendPost[] = [];
 let circleFriendsCount = allFriendLinks.length;
 let feedNotice = '';
+let feedIsDemo = false;
 
 const isPlaceholderFeed = (value: string | null | undefined) =>
   /^https?:\/\/(?:www\.)?example\.(?:com|org|net|dev)(?:\/|$)/i.test(value ?? '');
@@ -75,7 +78,8 @@ if (feedSrc) {
     if (feed.friends.length) circleFriendsCount = feed.friends.length;
   } catch (error) {
     circlePosts = demoPosts;
-    feedNotice = `feed 解析失败（${error instanceof Error ? error.message : error}），回退演示数据。`;
+    feedNotice = ui.links.feedError(error instanceof Error ? error.message : String(error));
+    feedIsDemo = true;
   }
 } else if (feedFriends.length > 0) {
   // 正式友链有 RSS 时构建期抓取；示例域名跳过，避免无意义的网络请求
@@ -84,11 +88,13 @@ if (feedSrc) {
     circlePosts = crawled;
   } else {
     circlePosts = demoPosts;
-    feedNotice = '友链 RSS 暂不可用，当前展示内置演示数据。';
+    feedNotice = ui.links.feedUnavailable;
+    feedIsDemo = true;
   }
 } else {
   circlePosts = demoPosts;
-  feedNotice = '当前展示内置演示数据；配置 feed_src 或同步 public/friend-circle.json 后自动切换。';
+  feedNotice = ui.links.feedDemo;
+  feedIsDemo = true;
 }
 
 const pageSize = siteConfig.friendCircle.pageSize;
@@ -103,7 +109,7 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
       kicker={pageMeta.kicker}
       title={pageMeta.title}
       subtitle={pageMeta.subtitle}
-      note={`共 ${totalLinks} 位朋友，其中 ${rssCount} 位提供订阅源，动态会出现在下方朋友圈。`}
+      note={ui.links.note(totalLinks, rssCount)}
     />
 
     {
@@ -118,11 +124,11 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
       ))
     }
 
-    <section class="links-circle" aria-label="朋友圈">
+    <section class="links-circle" aria-label={ui.links.circleAria}>
       <div class="links-group-heading">
-        <h2>朋友圈</h2>
+        <h2>{ui.links.circleTitle}</h2>
         <p>
-          {circleFriendsCount} 位朋友 · {activeAuthors} 位活跃 · {circlePosts.length} 篇动态
+          {ui.links.circleSummary(circleFriendsCount, activeAuthors, circlePosts.length)}
         </p>
       </div>
 
@@ -175,7 +181,7 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
         circlePosts.length > pageSize && (
           <div class="circle-actions">
             <button class="circle-more" type="button" data-circle-more>
-              展开更多
+              {ui.links.expandMore}
             </button>
           </div>
         )
@@ -185,11 +191,10 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
         feedNotice && (
           <p class="links-circle-note">
             {feedNotice}
-            {feedNotice.includes('演示数据') && (
+            {feedIsDemo && (
               <>
                 {' '}
-                在 site.toml 配置 <code>[config.friendCircle].feed_src</code>
-                或由 FCL 工作流同步 <code>public/friend-circle.json</code>。
+                {ui.links.feedDemoHint} <code>[config.friendCircle].feed_src</code>
               </>
             )}
           </p>
@@ -199,11 +204,11 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
 
     {
       issueRepository && (
-        <section class="links-apply" aria-label="申请友链">
+        <section class="links-apply" aria-label={ui.links.applyAria}>
           <FriendLinkApplication
             repository={issueRepository}
-            title="申请友链"
-            description="填写站点信息并提交 Issue，博主确认后会在这里挂上你的链接。"
+            title={ui.links.applyTitle}
+            description={ui.links.applyDescription}
             labels={['friend-link']}
             initialValue={{
               name: profile.name,

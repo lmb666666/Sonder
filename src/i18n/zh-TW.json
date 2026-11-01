@@ -12,7 +12,8 @@
     "closeMenu": "關閉導覽選單",
     "openPalette": "開啟主題色面板",
     "closePalette": "關閉主題色面板",
-    "backToTop": "返回頂部"
+    "backToTop": "返回頂部",
+    "home": "首頁"
   },
   "palette": {
     "greenSoft": "苔綠",
@@ -185,5 +186,91 @@
     "navLabel": "404 頁面導覽",
     "home": "回到首頁",
     "random": "隨機文章"
+  },
+  "links": {
+    "note": "共 {total} 位朋友，其中 {rss} 位提供訂閱源，動態會出現在下方朋友圈。",
+    "circleAria": "朋友圈",
+    "circleTitle": "朋友圈",
+    "circleSummary": "{friends} 位朋友 · {active} 位活躍 · {posts} 篇動態",
+    "expandMore": "展開更多",
+    "feedError": "feed 解析失敗（{error}），回退展示資料。",
+    "feedUnavailable": "友鏈 RSS 暫時不可用，目前展示內建示範資料。",
+    "feedDemo": "目前展示內建示範資料；設定 feed_src 或同步 public/friend-circle.json 後自動切換。",
+    "feedDemoHint": "設定",
+    "applyAria": "申請友鏈",
+    "applyTitle": "申請友鏈",
+    "applyDescription": "填寫站點資訊並提交 Issue，博主確認後會在這裡掛上你的連結。"
+  },
+  "moments": {
+    "loading": "正在從 Ech0 取得動態…",
+    "count": "{count} 則動態",
+    "sourcePrefix": "本頁資料來自",
+    "sourceSuffix": "實例。",
+    "imageAria": "查看第 {index} 張圖片",
+    "loadMore": "載入更多",
+    "loadFailed": "動態載入失敗，請稍後重新整理；也可以檢查 Ech0 實例位址是否可用。",
+    "loadFailedHint": "動態載入失敗",
+    "ownerFallback": "動態",
+    "extension": {
+      "github": "GitHub 專案",
+      "website": "網站",
+      "music": "音樂",
+      "location": "位置",
+      "video": "影片",
+      "tweet": "推文"
+    }
+  },
+  "friendApplication": {
+    "title": "申請友鏈",
+    "description": "填寫站點資訊，隨後檢視、複製友鏈資料，或前往 GitHub 提交申請。",
+    "applyLabel": "一鍵申請",
+    "applyHint": "去開啟一個申請 Issue",
+    "copyHint": "可複製後填入留言申請友鏈！",
+    "copySuccessText": "成功複製！",
+    "issueTitle": "[友鏈申請] {name}",
+    "issueBody": "## 友鏈申請\n\n```json\n{json}\n```",
+    "fields": {
+      "name": "站點名稱",
+      "url": "站點網址",
+      "bio": "站點描述",
+      "avatar": "頭像網址",
+      "backgroundImage": "背景圖網址",
+      "rss": "RSS 網址"
+    },
+    "placeholders": {
+      "name": "必填，站點名稱。",
+      "url": "必填，站點首頁。",
+      "bio": "選填，站點描述或個人 bio，最多 160 字。",
+      "avatar": "選填，圓形頭像網址。",
+      "backgroundImage": "選填，卡片背景圖網址。",
+      "rss": "選填，供友鏈朋友圈同步器讀取的 RSS 或 Atom 網址。"
+    },
+    "invalidUrl": "請輸入完整、有效的網址。",
+    "invalidUrlProtocol": "僅支援 http:// 或 https:// 網址。",
+    "statusReady": "資料已就緒，可複製資料或前往 GitHub 確認提交。",
+    "statusIncomplete": "完成必填項後，將產生 GitHub Issue 申請連結。",
+    "copyFailed": "複製失敗，請手動選取目前資料。",
+    "previewName": "你的站點",
+    "previewBio": "站點簡介會顯示在這裡",
+    "previewAria": "友鏈卡片即時預覽：{name}",
+    "required": "必填",
+    "previewCta": "檢視友鏈資料",
+    "backCta": "返回填寫",
+    "previewTitle": "友鏈資料",
+    "previewAriaLabel": "友鏈資料預覽",
+    "previewAriaPrefix": "友鏈卡片即時預覽："
+  },
+  "siteInfo": {
+    "uptime": "運行時長",
+    "uptimeTip": "站點於 {date} 上線",
+    "lastUpdated": "上次更新",
+    "lastUpdatedTip": "建置於頁面產生時刻",
+    "program": "站點程式",
+    "imageBed": "圖片儲存",
+    "buildPlatform": "建置平台"
+  },
+  "comments": {
+    "title": "留言",
+    "note": "這篇文章的安靜留言。"
   }
 }

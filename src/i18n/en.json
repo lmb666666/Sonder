@@ -12,7 +12,8 @@
     "closeMenu": "Close navigation menu",
     "openPalette": "Open accent color panel",
     "closePalette": "Close accent color panel",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "home": "Home"
   },
   "palette": {
     "greenSoft": "Moss green",
@@ -203,5 +204,91 @@
     "navLabel": "404 page navigation",
     "home": "Back home",
     "random": "Random post"
+  },
+  "links": {
+    "note": "Friends: {total}, {rss} with feeds. Their posts appear in the circle below.",
+    "circleAria": "Friend circle",
+    "circleTitle": "Friend circle",
+    "circleSummary": "{friends} friends · {active} active · {posts} posts",
+    "expandMore": "Show more",
+    "feedError": "Feed parsing failed ({error}); showing demo data.",
+    "feedUnavailable": "Friend RSS is unavailable; showing built-in demo data.",
+    "feedDemo": "Showing built-in demo data; configure feed_src or sync public/friend-circle.json to switch.",
+    "feedDemoHint": "Configure",
+    "applyAria": "Apply for a friend link",
+    "applyTitle": "Apply for a friend link",
+    "applyDescription": "Fill in your site details and open an issue; the link appears here after review."
+  },
+  "moments": {
+    "loading": "Loading moments from Ech0…",
+    "count": "{count} moments",
+    "sourcePrefix": "This page is powered by",
+    "sourceSuffix": ".",
+    "imageAria": "View image {index}",
+    "loadMore": "Load more",
+    "loadFailed": "Failed to load moments. Refresh later or check the Ech0 endpoint.",
+    "loadFailedHint": "Failed to load moments.",
+    "ownerFallback": "Moment",
+    "extension": {
+      "github": "GitHub project",
+      "website": "Website",
+      "music": "Music",
+      "location": "Location",
+      "video": "Video",
+      "tweet": "Tweet"
+    }
+  },
+  "friendApplication": {
+    "title": "Apply for a friend link",
+    "description": "Fill in your site details, then copy the data or open a GitHub issue.",
+    "applyLabel": "Open an issue",
+    "applyHint": "Open a new application issue",
+    "copyHint": "Copy and paste it into the comments to apply.",
+    "copySuccessText": "Copied!",
+    "issueTitle": "[Friend link] {name}",
+    "issueBody": "## Friend link application\n\n```json\n{json}\n```",
+    "fields": {
+      "name": "Site name",
+      "url": "Site URL",
+      "bio": "Description",
+      "avatar": "Avatar URL",
+      "backgroundImage": "Background image URL",
+      "rss": "RSS URL"
+    },
+    "placeholders": {
+      "name": "Required, your site name.",
+      "url": "Required, your site homepage.",
+      "bio": "Optional, up to 160 characters.",
+      "avatar": "Optional, a square avatar URL.",
+      "backgroundImage": "Optional, a card background image URL.",
+      "rss": "Optional, an RSS or Atom feed URL."
+    },
+    "invalidUrl": "Enter a complete, valid URL.",
+    "invalidUrlProtocol": "Only http:// and https:// URLs are supported.",
+    "statusReady": "Ready to copy the data or open the GitHub issue.",
+    "statusIncomplete": "Complete the required fields to generate the issue link.",
+    "copyFailed": "Copy failed. Select the data manually.",
+    "previewName": "Your site",
+    "previewBio": "Your site description appears here.",
+    "previewAria": "Live friend link preview: {name}",
+    "required": "Required",
+    "previewCta": "View friend data",
+    "backCta": "Back",
+    "previewTitle": "Friend data",
+    "previewAriaLabel": "Friend link data preview",
+    "previewAriaPrefix": "Live friend link preview: "
+  },
+  "siteInfo": {
+    "uptime": "Uptime",
+    "uptimeTip": "Online since {date}",
+    "lastUpdated": "Last updated",
+    "lastUpdatedTip": "Built when this page was generated",
+    "program": "Site program",
+    "imageBed": "Image hosting",
+    "buildPlatform": "Build platform"
+  },
+  "comments": {
+    "title": "Comments",
+    "note": "Quiet notes for this article."
   }
 }

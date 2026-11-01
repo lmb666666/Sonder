@@ -2,6 +2,8 @@
 import { ArrowLeft, ArrowRight, Check, Copy, ExternalLink, FileJson2 } from 'lucide-astro';
 import FriendLinkCard from './FriendLinkCard.astro';
 import type { FriendLinkItem } from '../../lib/friend-data';
+import { getSiteConfig } from '../../config';
+import { getUiText } from '../../lib/ui-text';
 
 type ApplicationField = 'name' | 'url' | 'bio' | 'avatar' | 'backgroundImage' | 'rss';
 type ApplicationValue = FriendLinkItem;
@@ -33,13 +35,28 @@ interface Props {
   urlMaxLength?: number;
 }
 
+const siteConfig = await getSiteConfig();
+const ui = getUiText(siteConfig);
+const messages = ui.friendApplication;
+const fields = messages.fields;
+const clientMessages = {
+  previewName: messages.previewName,
+  previewBio: messages.previewBio,
+  statusReady: messages.statusReady,
+  statusIncomplete: messages.statusIncomplete,
+  copyFailed: messages.copyFailed,
+  invalidUrl: messages.invalidUrl,
+  invalidUrlProtocol: messages.invalidUrlProtocol,
+  previewAriaPrefix: messages.previewAriaPrefix,
+};
+
 const defaultPlaceholders: Record<ApplicationField, string> = {
-  name: '必填，站点名称。',
-  url: '必填，站点主页地址。',
-  bio: '可选，站点描述或个人 bio，最多 160 字。',
-  avatar: '可选，圆形头像地址。',
-  backgroundImage: '可选，卡片背景图地址。',
-  rss: '可选，供友链朋友圈同步器读取的 RSS 或 Atom 地址。',
+  name: messages.placeholders.name,
+  url: messages.placeholders.url,
+  bio: messages.placeholders.bio,
+  avatar: messages.placeholders.avatar,
+  backgroundImage: messages.placeholders.backgroundImage,
+  rss: messages.placeholders.rss,
 };
 
 const defaultIssueFieldMap: Record<ApplicationField, string> = {
@@ -56,20 +73,20 @@ const {
   appearance = 'seamless',
   labels = [],
   issueTemplate,
-  issueTitle = '[友链申请] {name}',
-  issueBody = '## 友链申请\n\n```json\n{json}\n```',
+  issueTitle = messages.issueTitle('{name}'),
+  issueBody = messages.issueBody('{json}'),
   issueFieldMap = {},
   assignees = [],
   milestone,
   projects = [],
   initialValue = {},
   placeholders: customPlaceholders = {},
-  title = '申请友链',
-  description = '填写站点信息，随后查看、复制友链数据，或前往 GitHub 提交申请。',
-  applyLabel = '一键申请',
-  applyHint = '去开启一个申请 Issue',
-  copyHint = '可复制后填入评论申请友链！',
-  copySuccessText = '成功复制！',
+  title = messages.title,
+  description = messages.description,
+  applyLabel = messages.applyLabel,
+  applyHint = messages.applyHint,
+  copyHint = messages.copyHint,
+  copySuccessText = messages.copySuccessText,
   showLivePreview = false,
   nameMaxLength = 80,
   bioMaxLength = 160,
@@ -141,6 +158,7 @@ const config = {
   projects: cleanList(projects),
   copyHint,
   copySuccessText,
+  messages: clientMessages,
 };
 const serializedConfig = JSON.stringify(config).replace(/</g, '\\u003c');
 const safeNameMaxLength = positiveInteger(nameMaxLength, 80);
@@ -190,7 +208,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             type="button"
             data-show-application-preview
           >
-            <span>查看友链数据</span>
+            <span>{messages.previewCta}</span>
             <ArrowRight size={17} strokeWidth={1.8} aria-hidden="true" />
           </button>
         </header>
@@ -198,7 +216,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
         <form class="friend-link-application__form" data-application-form>
           <div class="friend-link-application__fields">
             <label class="friend-link-application__field">
-              <span>站点名称 <em>必填</em></span>
+              <span>{fields.name} <em>{messages.required}</em></span>
               <input
                 name="name"
                 type="text"
@@ -211,7 +229,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             </label>
 
             <label class="friend-link-application__field">
-              <span>站点地址 <em>必填</em></span>
+              <span>{fields.url} <em>{messages.required}</em></span>
               <input
                 name="url"
                 type="url"
@@ -226,7 +244,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             </label>
 
             <label class="friend-link-application__field">
-              <span>头像地址</span>
+              <span>{fields.avatar}</span>
               <input
                 name="avatar"
                 type="url"
@@ -240,7 +258,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             </label>
 
             <label class="friend-link-application__field">
-              <span>背景图地址</span>
+              <span>{fields.backgroundImage}</span>
               <input
                 name="backgroundImage"
                 type="url"
@@ -254,7 +272,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             </label>
 
             <label class="friend-link-application__field friend-link-application__field--wide">
-              <span>站点描述</span>
+              <span>{fields.bio}</span>
               <textarea
                 name="bio"
                 rows="2"
@@ -264,7 +282,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             </label>
 
             <label class="friend-link-application__field">
-              <span>RSS 地址</span>
+              <span>{fields.rss}</span>
               <input
                 name="rss"
                 type="url"
@@ -291,7 +309,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
                 <ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" />
               </a>
               <p data-application-status aria-live="polite">
-                完成必填项后，将生成 GitHub Issue 申请链接。
+                {messages.statusIncomplete}
               </p>
             </div>
           </div>
@@ -301,7 +319,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
       <aside
         class="friend-link-application__slide friend-link-application__preview"
         aria-hidden="true"
-        aria-label="友链数据预览"
+        aria-label={messages.previewAriaLabel}
         data-application-preview-page
         inert
       >
@@ -312,9 +330,9 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             data-show-application-form
           >
             <ArrowLeft size={17} strokeWidth={1.8} aria-hidden="true" />
-            <span>返回填写</span>
+            <span>{messages.backCta}</span>
           </button>
-          <h3>友链数据</h3>
+          <h3>{messages.previewTitle}</h3>
           <button
             class="friend-link-application__copy"
             type="button"
@@ -368,6 +386,16 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
     projects: string[];
     copyHint: string;
     copySuccessText: string;
+    messages: {
+      previewName: string;
+      previewBio: string;
+      statusReady: string;
+      statusIncomplete: string;
+      copyFailed: string;
+      invalidUrl: string;
+      invalidUrlProtocol: string;
+      previewAriaPrefix: string;
+    };
   };
 
   const applicationFields: ApplicationField[] = [
@@ -421,10 +449,10 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
     try {
       const url = new URL(input.value);
       if (!['http:', 'https:'].includes(url.protocol)) {
-        input.setCustomValidity('仅支持 http:// 或 https:// 地址。');
+        input.setCustomValidity(messages.invalidUrlProtocol);
       }
     } catch {
-      input.setCustomValidity('请输入完整、有效的网址。');
+      input.setCustomValidity(messages.invalidUrl);
     }
   };
 
@@ -487,6 +515,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
         return;
 
       const config = JSON.parse(configElement.textContent) as ApplicationConfig;
+      const messages = config.messages;
       let copyResetTimer = 0;
       let imageUpdateTimer = 0;
       let currentPreview = '';
@@ -541,12 +570,12 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
         );
         if (!card || !name || !bio || !fallback) return;
 
-        const displayName = data.name || '你的站点';
+        const displayName = data.name || messages.previewName;
         name.textContent = displayName;
-        bio.textContent = data.bio || '站点简介会显示在这里';
+        bio.textContent = data.bio || messages.previewBio;
         fallback.textContent = (displayName[0] || '?').toUpperCase();
         card.title = displayName;
-        card.setAttribute('aria-label', `友链卡片实时预览：${displayName}`);
+        card.setAttribute('aria-label', `${messages.previewAriaPrefix}${displayName}`);
 
         window.clearTimeout(imageUpdateTimer);
         imageUpdateTimer = window.setTimeout(() => {
@@ -584,10 +613,10 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
         applyLink.setAttribute('aria-disabled', String(!isValid));
         if (isValid) {
           applyLink.href = createIssueUrl(config, data);
-          status.textContent = '资料已就绪，可复制数据或前往 GitHub 确认提交。';
+          status.textContent = messages.statusReady;
         } else {
           applyLink.href = config.issueBase;
-          status.textContent = '完成必填项后，将生成 GitHub Issue 申请链接。';
+          status.textContent = messages.statusIncomplete;
         }
       };
 
@@ -630,7 +659,7 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
             copyButton.setAttribute('aria-label', config.copyHint);
           }, 1800);
         } catch {
-          status.textContent = '复制失败，请手动选中当前数据。';
+          status.textContent = messages.copyFailed;
         }
       });
 

@@ -12,7 +12,8 @@
     "closeMenu": "关闭导航菜单",
     "openPalette": "打开主题色面板",
     "closePalette": "关闭主题色面板",
-    "backToTop": "返回顶部"
+    "backToTop": "返回顶部",
+    "home": "首页"
   },
   "palette": {
     "greenSoft": "苔绿",
@@ -185,5 +186,91 @@
     "navLabel": "404 页面导航",
     "home": "回到首页",
     "random": "随机文章"
+  },
+  "links": {
+    "note": "共 {total} 位朋友，其中 {rss} 位提供订阅源，动态会出现在下方朋友圈。",
+    "circleAria": "朋友圈",
+    "circleTitle": "朋友圈",
+    "circleSummary": "{friends} 位朋友 · {active} 位活跃 · {posts} 篇动态",
+    "expandMore": "展开更多",
+    "feedError": "feed 解析失败（{error}），回退演示数据。",
+    "feedUnavailable": "友链 RSS 暂不可用，当前展示内置演示数据。",
+    "feedDemo": "当前展示内置演示数据；配置 feed_src 或同步 public/friend-circle.json 后自动切换。",
+    "feedDemoHint": "配置",
+    "applyAria": "申请友链",
+    "applyTitle": "申请友链",
+    "applyDescription": "填写站点信息并提交 Issue，博主确认后会在这里挂上你的链接。"
+  },
+  "moments": {
+    "loading": "正在从 Ech0 拉取动态…",
+    "count": "{count} 条动态",
+    "sourcePrefix": "本页数据来自",
+    "sourceSuffix": "实例。",
+    "imageAria": "查看第 {index} 张图片",
+    "loadMore": "加载更多",
+    "loadFailed": "动态加载失败，请稍后刷新重试；也可以检查 Ech0 实例地址是否可用。",
+    "loadFailedHint": "动态加载失败",
+    "ownerFallback": "动态",
+    "extension": {
+      "github": "GitHub 项目",
+      "website": "网站",
+      "music": "音乐",
+      "location": "位置",
+      "video": "视频",
+      "tweet": "推文"
+    }
+  },
+  "friendApplication": {
+    "title": "申请友链",
+    "description": "填写站点信息，随后查看、复制友链数据，或前往 GitHub 提交申请。",
+    "applyLabel": "一键申请",
+    "applyHint": "去开启一个申请 Issue",
+    "copyHint": "可复制后填入评论申请友链！",
+    "copySuccessText": "成功复制！",
+    "issueTitle": "[友链申请] {name}",
+    "issueBody": "## 友链申请\n\n```json\n{json}\n```",
+    "fields": {
+      "name": "站点名称",
+      "url": "站点地址",
+      "bio": "站点描述",
+      "avatar": "头像地址",
+      "backgroundImage": "背景图地址",
+      "rss": "RSS 地址"
+    },
+    "placeholders": {
+      "name": "必填，站点名称。",
+      "url": "必填，站点主页地址。",
+      "bio": "可选，站点描述或个人 bio，最多 160 字。",
+      "avatar": "可选，圆形头像地址。",
+      "backgroundImage": "可选，卡片背景图地址。",
+      "rss": "可选，供友链朋友圈同步器读取的 RSS 或 Atom 地址。"
+    },
+    "invalidUrl": "请输入完整、有效的网址。",
+    "invalidUrlProtocol": "仅支持 http:// 或 https:// 地址。",
+    "statusReady": "资料已就绪，可复制数据或前往 GitHub 确认提交。",
+    "statusIncomplete": "完成必填项后，将生成 GitHub Issue 申请链接。",
+    "copyFailed": "复制失败，请手动选中当前数据。",
+    "previewName": "你的站点",
+    "previewBio": "站点简介会显示在这里",
+    "previewAria": "友链卡片实时预览：{name}",
+    "required": "必填",
+    "previewCta": "查看友链数据",
+    "backCta": "返回填写",
+    "previewTitle": "友链数据",
+    "previewAriaLabel": "友链数据预览",
+    "previewAriaPrefix": "友链卡片实时预览："
+  },
+  "siteInfo": {
+    "uptime": "运行时长",
+    "uptimeTip": "站点于 {date} 上线",
+    "lastUpdated": "上次更新",
+    "lastUpdatedTip": "构建于页面生成时刻",
+    "program": "站点程序",
+    "imageBed": "图片存储",
+    "buildPlatform": "构建平台"
+  },
+  "comments": {
+    "title": "评论",
+    "note": "这篇文章的安静留言。"
   }
 }

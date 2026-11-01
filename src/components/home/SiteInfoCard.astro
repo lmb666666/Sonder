@@ -4,9 +4,11 @@ import { name as ciName, isCI } from 'ci-info';
 import Colophon from '../Colophon.astro';
 import { getSiteConfig } from '../../config';
 import { timeElapse } from '../../lib/time';
+import { getUiText } from '../../lib/ui-text';
 
 const siteConfig = await getSiteConfig();
 const { site, siteInfo } = siteConfig;
+const ui = getUiText(siteConfig);
 
 interface Row {
   label: string;
@@ -26,27 +28,27 @@ const buildTime = new Date();
 const rows: Row[] = [];
 if (siteInfo.uptime && site.timeEstablished) {
   rows.push({
-    label: '运行时长',
+    label: ui.siteInfo.uptime,
     value: timeElapse(site.timeEstablished),
-    tip: `站点于 ${site.timeEstablished} 上线`,
+    tip: ui.siteInfo.uptimeTip(site.timeEstablished),
   });
 }
 if (siteInfo.lastUpdated) {
   rows.push({
-    label: '上次更新',
+    label: ui.siteInfo.lastUpdated,
     value: format(buildTime, 'yyyy-MM-dd HH:mm'),
-    tip: '构建于页面生成时刻',
+    tip: ui.siteInfo.lastUpdatedTip,
   });
 }
 if (siteInfo.program.trim()) {
-  rows.push({ label: '站点程序', value: siteInfo.program.trim() });
+  rows.push({ label: ui.siteInfo.program, value: siteInfo.program.trim() });
 }
 if (siteInfo.imageBed.enabled && siteInfo.imageBed.name) {
-  rows.push({ label: '图片存储', value: siteInfo.imageBed.name });
+  rows.push({ label: ui.siteInfo.imageBed, value: siteInfo.imageBed.name });
 }
 if (siteInfo.buildPlatform) {
   const platform = detectBuildPlatform();
-  if (platform) rows.push({ label: '构建平台', value: platform });
+  if (platform) rows.push({ label: ui.siteInfo.buildPlatform, value: platform });
 }
 ---
 

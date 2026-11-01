@@ -1,5 +1,6 @@
 ---
 import { getSiteConfig } from '../../config';
+import { getUiText } from '../../lib/ui-text';
 import { canRenderProvider, getCommentProvider, resolveCommentsConfig } from '../../lib/comments';
 import GiscusComment from './GiscusComment.astro';
 import UtterancesComment from './UtterancesComment.astro';
@@ -14,7 +15,9 @@ interface Props {
 }
 
 const { frontmatter, pathname } = Astro.props;
-const { comments: rawComments } = await getSiteConfig();
+const siteConfig = await getSiteConfig();
+const { comments: rawComments } = siteConfig;
+const ui = getUiText(siteConfig);
 const comments = resolveCommentsConfig(rawComments);
 const provider = frontmatter.comments === false ? null : getCommentProvider(comments);
 const shouldRender = provider ? canRenderProvider(comments, provider) : false;
@@ -22,10 +25,10 @@ const shouldRender = provider ? canRenderProvider(comments, provider) : false;
 
 {
   shouldRender && provider && (
-    <section class="comment-section" aria-label="Comments" data-comment-path={pathname}>
+    <section class="comment-section" aria-label={ui.comments.title} data-comment-path={pathname}>
       <div class="comment-section-heading">
-        <p>Comments</p>
-        <span>Quiet notes for this article.</span>
+        <p>{ui.comments.title}</p>
+        <span>{ui.comments.note}</span>
       </div>
 
       {provider === 'giscus' && <GiscusComment config={comments.giscus} />}

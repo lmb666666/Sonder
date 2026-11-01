@@ -2,11 +2,20 @@
 import Base from '../layouts/Base.astro';
 import { format } from 'date-fns';
 import { getSiteConfig } from '../config';
+import { getUiText } from '../lib/ui-text';
 import PageHero from '../components/PageHero.astro';
 import { demoMoments } from '../data/moments';
 
 const siteConfig = await getSiteConfig();
 const { site, profile } = siteConfig;
+const ui = getUiText(siteConfig);
+const momentClientMessages = {
+  extension: ui.moments.extension,
+  ownerFallback: ui.moments.ownerFallback,
+  loadFailed: ui.moments.loadFailed,
+  loadFailedHint: ui.moments.loadFailedHint,
+  countTemplate: ui.moments.count('{count}'),
+};
 const pageMeta = (siteConfig.pages as Record<string, unknown>).moments as {
   title: string;
   kicker: string;
@@ -35,28 +44,23 @@ const videoEmbedUrl = (video: { provider: string; id: string }) =>
     ? `https://www.youtube.com/embed/${video.id}`
     : `https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${video.id}&as_wide=1&high_quality=1&danmaku=0`;
 
-const extensionLabels: Record<string, string> = {
-  github: 'GitHub 项目',
-  website: '网站',
-  music: '音乐',
-  location: '位置',
-};
+const extensionLabels: Record<string, string> = ui.moments.extension;
 ---
 
 <Base title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle}>
   <main class="moments-page" data-pagefind-body>
     <PageHero kicker={pageMeta.kicker} title={pageMeta.title} subtitle={pageMeta.subtitle}>
       <p class="moments-stats" data-moments-stats>
-        {ech0Mode ? '正在从 Ech0 拉取动态…' : `${initialItems.length} 条动态`}
+        {ech0Mode ? ui.moments.loading : ui.moments.count(initialItems.length)}
       </p>
       {
         ech0Mode && (
           <p class="moments-note">
-            本页数据来自
+            {ui.moments.sourcePrefix}{' '}
             <a href="https://github.com/lin-snow/Ech0" target="_blank" rel="noopener noreferrer">
               Ech0
             </a>
-            实例。
+            {ui.moments.sourceSuffix}
           </p>
         )
       }
@@ -90,7 +94,7 @@ const extensionLabels: Record<string, string> = {
                       href={src}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={`查看第 ${imageIndex + 1} 张图片`}
+                      aria-label={ui.moments.imageAria(imageIndex + 1)}
                     >
                       <img src={src} alt="" loading="lazy" decoding="async" />
                     </a>
@@ -153,7 +157,9 @@ const extensionLabels: Record<string, string> = {
     </ol>
 
     <div class="moments-actions">
-      <button class="moments-more" type="button" data-moments-more hidden> 加载更多 </button>
+      <button class="moments-more" type="button" data-moments-more hidden
+        >{ui.moments.loadMore}</button
+      >
     </div>
 
     {
@@ -460,7 +466,10 @@ const extensionLabels: Record<string, string> = {
     }
   </style>
 
-  <script type="module" define:vars={{ ech0Mode, apiUrl: pageMeta.apiUrl.trim() }}>
+  <script
+    type="module"
+    define:vars={{ ech0Mode, apiUrl: pageMeta.apiUrl.trim(), messages: momentClientMessages }}
+  >
     const list = () => document.querySelector('[data-moments-list]');
     const moreButton = () => document.querySelector('[data-moments-more]');
     const statsEl = () => document.querySelector('[data-moments-stats]');
@@ -496,12 +505,12 @@ const extensionLabels: Record<string, string> = {
 
     // ---- Ech0 运行时模式 ----
     const extensionLabels = {
-      GITHUBPROJ: 'GitHub 项目',
-      MUSIC: '音乐',
-      WEBSITE: '网站',
-      LOCATION: '位置',
-      VIDEO: '视频',
-      TWEET: '推文',
+      GITHUBPROJ: messages.extension.github,
+      MUSIC: messages.extension.music,
+      WEBSITE: messages.extension.website,
+      LOCATION: messages.extension.location,
+      VIDEO: messages.extension.video,
+      TWEET: messages.extension.tweet,
     };
 
     const esc = (value) =>
@@ -542,12 +551,15 @@ const extensionLabels: Record<string, string> = {
 
     const extensionTitle = (extension) => {
       const payload = extension?.payload ?? {};
-      if (extension?.type === 'MUSIC') return String(payload.title || payload.name || '音乐');
-      if (extension?.type === 'WEBSITE') return String(payload.title || payload.url || '网站');
+      if (extension?.type === 'MUSIC')
+        return String(payload.title || payload.name || messages.extension.music);
+      if (extension?.type === 'WEBSITE')
+        return String(payload.title || payload.url || messages.extension.website);
       if (extension?.type === 'GITHUBPROJ')
-        return String(payload.full_name || payload.repo || 'GitHub 项目');
-      if (extension?.type === 'LOCATION') return String(payload.placeholder || '查看位置');
-      if (extension?.type === 'VIDEO') return String(payload.title || '视频');
+        return String(payload.full_name || payload.repo || messages.extension.github);
+      if (extension?.type === 'LOCATION')
+        return String(payload.placeholder || messages.extension.location);
+      if (extension?.type === 'VIDEO') return String(payload.title || messages.extension.video);
       return String(payload.title || extensionLabels[extension?.type] || extension?.type || '');
     };
 
@@ -581,7 +593,7 @@ const extensionLabels: Record<string, string> = {
             <div class="moment__rail" aria-hidden="true"><span class="moment__dot"></span></div>
             <article class="moment__card">
               <header class="moment__head">
-                <span class="moment__owner"><span>${esc(item.username || '动态')}</span></span>
+                <span class="moment__owner"><span>${esc(item.username || messages.ownerFallback)}</span></span>
                 <time class="moment__time">${formatTime(item.created_at)}</time>
               </header>
               ${item.content ? `<p class="moment__content">${esc(item.content).replace(/\n/g, '<br />')}</p>` : ''}
@@ -642,7 +654,8 @@ const extensionLabels: Record<string, string> = {
           'beforeend',
           (data.items || []).map((item) => renderMoment(item, apiUrl)).join(''),
         );
-        if (stats) stats.textContent = `${ech0State.total} 条动态`;
+        if (stats)
+          stats.textContent = messages.countTemplate.replace('{count}', String(ech0State.total));
         setVisibleCount(Number(container.dataset.pageSize ?? 20));
         if (button) {
           button.hidden = ech0State.total <= Number(container.dataset.pageSize ?? 20);
@@ -665,10 +678,10 @@ const extensionLabels: Record<string, string> = {
         }
       } catch (error) {
         console.error('[moments] Ech0 拉取失败：', error);
-        if (stats) stats.textContent = '动态加载失败';
+        if (stats) stats.textContent = messages.loadFailedHint;
         container.insertAdjacentHTML(
           'beforeend',
-          '<li><p class="moments-error">动态加载失败，请稍后刷新重试；也可以检查 Ech0 实例地址是否可用。</p></li>',
+          '<li><p class="moments-error">' + messages.loadFailed + '</p></li>',
         );
       }
     };
