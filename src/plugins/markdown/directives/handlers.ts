@@ -1,4 +1,5 @@
-import { h } from 'hastscript';
+import { h } from './h.js';
+import type { Element, ElementContent } from 'hast';
 
 /**
  * Sonder 外挂指令渲染层。
@@ -14,6 +15,9 @@ export interface MdastNode {
   value?: string;
   attributes?: Record<string, AttributeValue>;
   children?: MdastNode[];
+  position?: unknown;
+  url?: string;
+  alt?: string;
   data?: {
     directiveLabel?: boolean;
     hName?: string;
@@ -26,19 +30,15 @@ export interface DirectiveFile {
   message(value: string, position: unknown, source: string): void;
 }
 
-export type HastChild = Record<string, unknown>;
-export type HastElement = {
-  tagName: string;
-  properties: Record<string, unknown>;
-  children: HastChild[];
-};
+export type HastChild = ElementContent & { properties?: Element['properties'] };
+export type HastElement = Element;
 
 export interface ContainerContext {
   node: MdastNode;
   /** 已递归处理过的子节点 */
   children: MdastNode[];
   /** 对任意节点数组再跑一遍指令转换（供 handler 处理自身子指令） */
-  transform: (nodes: MdastNode[], parentDirective?: string) => MdastNode[];
+  transform: (nodes: MdastNode[], parentDirective?: string, file?: DirectiveFile) => MdastNode[];
   /** 指令方括号标题（`:::name[标题]` 的「标题」） */
   label?: MdastNode[];
   labelText?: string;
@@ -222,7 +222,7 @@ function tabsHandler({ children, transform, file }: ContainerContext): MdastNode
           'aria-selected': index === 0 ? 'true' : 'false',
           'data-sd-tab-btn': String(index),
         },
-        [{ type: 'text', value: directiveLabelText(tab) }],
+        { type: 'text', value: directiveLabelText(tab) },
       ) as HastChild,
   );
 
@@ -580,11 +580,10 @@ function badgeHandler({ label, labelText, attributes }: InlineContext): MdastNod
 }
 
 function keyHandler({ label, labelText, attributes }: InlineContext): MdastNode[] {
-  const mods = (['ctrl', 'shift', 'alt', 'meta', 'win', 'cmd'] as const).filter(
+  const mods: string[] = (['ctrl', 'shift', 'alt', 'meta', 'win', 'cmd'] as const).filter(
     (mod) => attributes[mod] === true,
   );
   if (attributes.icon === true) mods.push('icon');
-  if (attributes.icon === false) mods.push('no-icon');
 
   return [
     {
@@ -625,7 +624,6 @@ function spanHandler({ label, attributes }: InlineContext): MdastNode[] {
   const classes = classNames(
     'sd-span',
     typeof attributes.class === 'string' ? attributes.class : undefined,
-    Array.isArray(attributes.class) ? (attributes.class as string[]) : undefined,
   );
 
   return [

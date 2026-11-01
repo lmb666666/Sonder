@@ -173,5 +173,17 @@
     "showLess": "收合",
     "expanded": "已展開",
     "collapsed": "已收合"
+  },
+  "homeStats": {
+    "posts": "文章數",
+    "categories": "分類數",
+    "tags": "標籤數"
+  },
+  "notFound": {
+    "title": "找不到頁面",
+    "description": "請求的頁面不存在。",
+    "navLabel": "404 頁面導覽",
+    "home": "回到首頁",
+    "random": "隨機文章"
   }
 }

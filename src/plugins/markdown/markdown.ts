@@ -87,10 +87,10 @@ export function getMarkdownConfig({
       () => remarkSonderDirectives({ layouts: true, metingApi }),
       ...(math ? [remarkMath] : []),
       ...(mermaid ? [remarkMermaid] : []),
-    ],
+    ] as MarkdownConfig['remarkPlugins'],
     rehypePlugins: [
       ...(math ? [mathRenderer === 'mathjax' ? rehypeMathjax : rehypeKatex] : []),
       rehypeResponsiveTables,
-    ],
+    ] as MarkdownConfig['rehypePlugins'],
   };
 }

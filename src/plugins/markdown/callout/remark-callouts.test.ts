@@ -24,7 +24,7 @@ describe('parseCalloutMarker', () => {
 
 describe('remarkCallouts', () => {
   test('turns a callout blockquote into an aside', () => {
-    const tree = {
+    const tree: any = {
       type: 'root',
       children: [
         {
@@ -53,7 +53,7 @@ describe('remarkCallouts', () => {
   });
 
   test('keeps body text when the marker and body share a paragraph', () => {
-    const tree = {
+    const tree: any = {
       type: 'root',
       children: [
         {
@@ -77,7 +77,7 @@ describe('remarkCallouts', () => {
   });
 
   test('turns a foldable callout blockquote into details', () => {
-    const tree = {
+    const tree: any = {
       type: 'root',
       children: [
         {

@@ -1,4 +1,4 @@
-import { h } from 'hastscript';
+import { h } from './h.js';
 import type { HastChild } from './handlers.js';
 
 /**

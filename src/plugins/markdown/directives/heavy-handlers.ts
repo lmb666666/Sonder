@@ -1,5 +1,5 @@
-import { h } from 'hastscript';
-import type { AttributeValue, ContainerContext, MdastNode } from './handlers.js';
+import { h } from './h.js';
+import type { AttributeValue, ContainerContext, HastChild, MdastNode } from './handlers.js';
 import { classNames, labelText, wrap, wrapHast } from './handlers.js';
 import { icon } from './icons.js';
 
@@ -213,7 +213,7 @@ export function carouselHandler({
       h('button', { type: 'button', 'aria-label': 'Next slide', 'data-next': '' }, [
         icon('chevron-right', 18),
       ]),
-    ] as MdastNode[],
+    ] as HastChild[],
   };
 
   return [
@@ -320,7 +320,7 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
             data: {
               hName: 'span',
               hProperties: { 'aria-hidden': 'true' },
-              hChildren: [h('span', [item.type])] as MdastNode[],
+              hChildren: [h('span', [item.type])] as HastChild[],
             },
           },
         ];
@@ -346,7 +346,7 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
             h('span', { class: 'sonder-media-shelf__creator' }, [item.creator]),
             ...(rating ? [rating] : []),
           ]),
-        ] as MdastNode[],
+        ] as HastChild[],
       },
     };
 

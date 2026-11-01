@@ -31,6 +31,18 @@ type RawUiText = {
     closePalette: string;
     backToTop: string;
   };
+  homeStats: {
+    posts: string;
+    categories: string;
+    tags: string;
+  };
+  notFound: {
+    title: string;
+    description: string;
+    navLabel: string;
+    home: string;
+    random: string;
+  };
   palette: {
     greenSoft: string;
     greenVivid: string;
@@ -222,6 +234,8 @@ function createUiText(raw: RawUiText): UiText {
   return {
     locale: raw.locale,
     nav: raw.nav,
+    homeStats: raw.homeStats,
+    notFound: raw.notFound,
     palette: raw.palette,
     heatmap: {
       ...raw.heatmap,

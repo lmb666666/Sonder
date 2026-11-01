@@ -10,9 +10,12 @@ import LatestUpdates from '../components/home/LatestUpdates.astro';
 import SiteInfoCard from '../components/home/SiteInfoCard.astro';
 import { getSiteConfig } from '../config';
 import { formatCount } from '../lib/word-count';
+import { getUiText } from '../lib/ui-text';
 import Base from '../layouts/Base.astro';
 
-const { home, profile, site } = await getSiteConfig();
+const siteConfig = await getSiteConfig();
+const { home, profile, site } = siteConfig;
+const ui = getUiText(siteConfig);
 
 // 侧栏统计：文章数 / 分类数 / 标签数
 const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -20,9 +23,9 @@ const categoryCount = new Set(posts.flatMap((post) => post.data.categories)).siz
 const tagCount = new Set(posts.flatMap((post) => post.data.tags ?? [])).size;
 
 const stats = [
-  { label: '文章数', value: formatCount(posts.length) },
-  { label: '分类数', value: formatCount(categoryCount) },
-  { label: '标签数', value: formatCount(tagCount) },
+  { label: ui.homeStats.posts, value: formatCount(posts.length) },
+  { label: ui.homeStats.categories, value: formatCount(categoryCount) },
+  { label: ui.homeStats.tags, value: formatCount(tagCount) },
 ];
 ---
 

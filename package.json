@@ -17,9 +17,10 @@
     "media:new": "bun scripts/new-content.ts media",
     "lint": "eslint .",
     "format": "prettier --write --ignore-unknown .",
-    "format:check": "bun run lint && prettier --check --ignore-unknown .",
+    "format:check": "bun run lint && bun run typecheck && prettier --check --ignore-unknown .",
     "prepare": "husky",
-    "github-cards": "bun scripts/fetch-github-card-data.ts"
+    "github-cards": "bun scripts/fetch-github-card-data.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.2.1",

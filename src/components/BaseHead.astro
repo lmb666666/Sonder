@@ -79,6 +79,7 @@ function createFontCss(fonts: { en: string; code: string; zh: string; file: stri
   const zhFamily = toCssFontFamily(zhFontName);
   const zhSubsetFamily = toCssFontFamily(`${zhFontName} UI Subset`);
   const zhContentSubsetFamily = toCssFontFamily(`${zhFontName} Content Subset`);
+  const zhFallbackFamily = toCssFontFamily(`${zhFontName} Fallback`);
   const enFamily = toCssFontFamily(fonts.en);
   const codeFontName = normalizeFontFamilyName(fonts.code);
   const codeFamily = toCssFontFamily(fonts.code);
@@ -86,6 +87,8 @@ function createFontCss(fonts: { en: string; code: string; zh: string; file: stri
   const subsetFile = toCssString(resolveAssetUrl(subsetUrl));
   const contentSubsetUrl = subsetUrl.replace('-ui-subset.woff2', '-content-subset.woff2');
   const contentSubsetFile = toCssString(resolveAssetUrl(contentSubsetUrl));
+  const fallbackUrl = '/fonts/fallback-cjk.woff2';
+  const fallbackFile = toCssString(resolveAssetUrl(fallbackUrl));
   const monacoFontFace =
     codeFontName === 'Monaco'
       ? `@font-face{font-family:"Monaco";src:url(${toCssString(resolveAssetUrl('/fonts/Monaco.ttf'))}) format("truetype");font-style:normal;font-weight:400;font-display:swap;}`
@@ -98,8 +101,10 @@ function createFontCss(fonts: { en: string; code: string; zh: string; file: stri
   return `${mapleSubsetFontFace}
 @font-face{font-family:${zhSubsetFamily};src:url(${subsetFile}) format("${getFontFormat(subsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
 @font-face{font-family:${zhContentSubsetFamily};src:url(${contentSubsetFile}) format("${getFontFormat(contentSubsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
+/* 源字体缺两个繁体字（內 U+5185 / 閱 U+95B2），用 Noto Sans CJK TC 子集兜底。 */
+@font-face{font-family:${zhFallbackFamily};src:url(${fallbackFile}) format("${getFontFormat(fallbackUrl)}");font-style:normal;font-weight:400;font-display:swap;unicode-range:U+5185, U+95B2;}
 ${monacoFontFace}
-html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-config-zh:${zhFamily};--font-config-zh-subset:${zhSubsetFamily};--font-config-zh-content:${zhContentSubsetFamily};}
+html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-config-zh:${zhFamily};--font-config-zh-subset:${zhSubsetFamily};--font-config-zh-content:${zhContentSubsetFamily};--font-config-zh-fallback:${zhFallbackFamily};}
 `;
 }
 ---

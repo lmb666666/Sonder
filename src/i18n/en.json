@@ -191,5 +191,17 @@
     "showLess": "Collapse",
     "expanded": "Expanded",
     "collapsed": "Collapsed"
+  },
+  "homeStats": {
+    "posts": "Posts",
+    "categories": "Categories",
+    "tags": "Tags"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The requested page does not exist.",
+    "navLabel": "404 page navigation",
+    "home": "Back home",
+    "random": "Random post"
   }
 }

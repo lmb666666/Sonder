@@ -1,6 +1,6 @@
 import remarkCallouts, { calloutTypes } from '../callout/index.js';
 import { friendLinkApplicationHandler } from './application.js';
-import type { DirectiveFile, MdastNode } from './handlers.js';
+import type { ContainerContext, DirectiveFile, MdastNode } from './handlers.js';
 import {
   badgeHandler,
   spoilerHandler,
@@ -65,19 +65,15 @@ const CONSUMED_CHILDREN: Record<string, string[]> = {
   'media-shelf': ['media-item'],
 };
 
-const CONTAINER_HANDLERS: Record<
-  string,
-  (context: {
-    node: TreeNode;
-    children: TreeNode[];
-    label?: TreeNode[];
-    labelText?: string;
-    file: DirectiveFile;
-  }) => TreeNode[]
-> = {
-  ...Object.fromEntries(
-    [...calloutTypeNames].map((name) => [name, calloutContainerHandler(remarkCallouts)]),
-  ),
+const CONTAINER_HANDLERS: Record<string, (context: ContainerContext) => TreeNode[]> = {
+  ...(Object.fromEntries(
+    [...calloutTypeNames].map((name) => [
+      name,
+      calloutContainerHandler(remarkCallouts as never) as unknown as (
+        context: ContainerContext,
+      ) => TreeNode[],
+    ]),
+  ) as unknown as Record<string, (context: ContainerContext) => TreeNode[]>),
   details: detailsHandler,
   grid: gridHandler,
   btns: btnsHandler,

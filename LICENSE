@@ -8,6 +8,11 @@ Copyright (c) 2025 CuteLeaf
 Portions of the article share poster implementation are adapted from
 Firefly (https://github.com/CuteLeaf/Firefly), released under the MIT License.
 
+The bundled fallback glyph subset at public/fonts/fallback-cjk.woff2
+(U+5185, U+95B2) is derived from Noto Sans CJK TC, Copyright 2014-2021 Adobe
+(https://www.adobe.com/), released under the SIL Open Font License 1.1.
+
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights

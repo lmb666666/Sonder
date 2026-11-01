@@ -1,4 +1,4 @@
-import { h } from 'hastscript';
+import { h } from './h.js';
 import { musicThemeStyle, type MusicThemeName } from './music-theme.js';
 import type { AttributeValue, MdastNode } from './handlers.js';
 import { buildLinkCard, wrapHast } from './handlers.js';
@@ -493,7 +493,7 @@ function parseMetingTracks(data: unknown): MetingTrack[] {
         src,
       };
     })
-    .filter((track): track is MetingTrack => Boolean(track));
+    .filter((track) => track !== undefined) as MetingTrack[];
 }
 
 /** 构建期解析曲目/歌单（带模块级缓存，构建从不失败）。 */

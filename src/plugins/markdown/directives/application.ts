@@ -1,4 +1,4 @@
-import { h } from 'hastscript';
+import { h } from './h.js';
 import type { AttributeValue, MdastNode } from './handlers.js';
 import { wrapHast } from './handlers.js';
 import { icon } from './icons.js';

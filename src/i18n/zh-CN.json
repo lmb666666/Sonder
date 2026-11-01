@@ -173,5 +173,17 @@
     "showLess": "收起",
     "expanded": "已展开",
     "collapsed": "已折叠"
+  },
+  "homeStats": {
+    "posts": "文章数",
+    "categories": "分类数",
+    "tags": "标签数"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "请求的页面不存在。",
+    "navLabel": "404 页面导航",
+    "home": "回到首页",
+    "random": "随机文章"
   }
 }

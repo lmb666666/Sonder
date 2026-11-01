@@ -122,7 +122,7 @@ describe('tabs 容器', () => {
     expect(buttons).toHaveLength(2);
     expect((buttons[0] as { children: Array<{ value: string }> }).children[0].value).toBe('标题一');
 
-    const panels = node.children?.slice(1);
+    const panels = node.children?.slice(1) ?? [];
     expect(panels).toHaveLength(2);
     expect(panels[0]?.data?.hProperties?.className).toContain('is-active');
     expect(panels[1]?.data?.hProperties?.hidden).toBe(true);
@@ -266,7 +266,7 @@ describe('叶子指令', () => {
     expect(node.data?.hName).toBe('a');
     expect(node.data?.hProperties?.className).toContain('sd-github-card');
     expect(node.data?.hProperties?.href).toBe('https://github.com/CuteLeaf/Firefly');
-    const desc = node.data?.hChildren?.[1]?.children?.[1];
+    const desc = (node.data?.hChildren?.[1] as any)?.children?.[1];
     expect((desc as { children: Array<{ value: string }> }).children[0].value).toContain(
       'Astro blog theme',
     );
@@ -275,7 +275,7 @@ describe('叶子指令', () => {
   test('::github-card 未知仓库降级', async () => {
     const [node] = await run([leaf('github-card', { repo: 'unknown/unknown' })]);
     expect(node.data?.hProperties?.className).toContain('sd-github-card');
-    const desc = node.data?.hChildren?.[1]?.children?.[1];
+    const desc = (node.data?.hChildren?.[1] as any)?.children?.[1];
     expect((desc as { children: Array<{ value: string }> }).children[0].value).toBe('GitHub 仓库');
   });
 
@@ -289,7 +289,7 @@ describe('叶子指令', () => {
     expect(node.data?.hName).toBe('div');
     expect(node.data?.hProperties?.className).toContain('sd-embed');
     const iframe = node.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toBe(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toBe(
       'https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&autoplay=0&danmaku=0',
     );
   });
@@ -304,7 +304,7 @@ describe('叶子指令', () => {
     expect(node.data?.hName).toBe('div');
     expect(node.data?.hProperties?.className).toContain('sd-embed');
     const iframe = node.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toContain(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toContain(
       'type=2&id=28560087',
     );
   });
@@ -314,7 +314,7 @@ describe('叶子指令', () => {
     expect(node.data?.hName).toBe('div');
     expect(node.data?.hProperties?.className).toContain('sd-embed');
     const iframe = node.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toContain(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toContain(
       'type=0&id=7294439968',
     );
   });
@@ -322,7 +322,7 @@ describe('叶子指令', () => {
   test('::bilibili {nano} 切换小窗播放器', async () => {
     const [node] = await run([leaf('bilibili', { bvid: 'BV1xx411c7mD', nano: true })]);
     const iframe = node.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toBe(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toBe(
       'https://www.bilibili.com/blackboard/newplayer.html?bvid=BV1xx411c7mD',
     );
   });
@@ -351,7 +351,7 @@ describe('叶子指令', () => {
     expect(portrait.data?.hProperties?.style).toBe('aspect-ratio:27 / 56');
     expect(portrait.data?.hProperties?.['data-sd-video-zoom']).toBe('0.0031');
     const iframe = portrait.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toBe(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toBe(
       'https://open.douyin.com/player/video?vid=7301234567890123456',
     );
 
@@ -363,7 +363,7 @@ describe('叶子指令', () => {
   test('::tiktok 输出 embed v3 播放器', async () => {
     const [node] = await run([leaf('tiktok', { id: '7367543893026422146' })]);
     const iframe = node.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toBe(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toBe(
       'https://www.tiktok.com/embed/v3/7367543893026422146',
     );
   });
@@ -376,7 +376,7 @@ describe('叶子指令', () => {
   test('::music 电台直接走官方外链（无 Meting 解析）', async () => {
     const [node] = await run([leaf('music', { type: 'radio', id: '797632409' })]);
     const iframe = node.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toContain(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toContain(
       'type=19&id=797632409',
     );
   });
@@ -387,7 +387,7 @@ describe('叶子指令', () => {
     ]);
     expect(hashStyle.data?.hName).toBe('div');
     const iframe = hashStyle.data?.hChildren?.[0];
-    expect((iframe as { properties: { src: string } }).properties.src).toContain(
+    expect((iframe as unknown as { properties: { src: string } }).properties.src).toContain(
       'type=2&id=28560087',
     );
 
@@ -396,7 +396,7 @@ describe('叶子指令', () => {
     ]);
     expect(queryStyle.data?.hName).toBe('div');
     const playlistFrame = queryStyle.data?.hChildren?.[0];
-    expect((playlistFrame as { properties: { src: string } }).properties.src).toContain(
+    expect((playlistFrame as unknown as { properties: { src: string } }).properties.src).toContain(
       'type=0&id=7294439968',
     );
   });
@@ -417,7 +417,7 @@ describe('叶子指令', () => {
     expect(node.data?.hName).toBe('figure');
     expect(node.data?.hProperties?.className).toContain('sonder-audio-player');
     const embed = node.data?.hChildren?.[1];
-    expect((embed as { properties: { src: string } }).properties.src).toBe(
+    expect((embed as unknown as { properties: { src: string } }).properties.src).toBe(
       'https://open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT',
     );
   });
@@ -548,7 +548,7 @@ describe('P1 扩展：按钮组 / 本地音频 / 剧透点击', () => {
     ]);
     expect(node.data?.hName).toBe('figure');
     const embed = node.data?.hChildren?.[1];
-    expect((embed as { properties: { src: string } }).properties.src).toContain(
+    expect((embed as unknown as { properties: { src: string } }).properties.src).toContain(
       'open.spotify.com/embed',
     );
   });

@@ -9,6 +9,8 @@ declare module 'bun:test' {
   };
 
   export function describe(name: string, callback: () => void): void;
+  export function beforeAll(callback: () => void | Promise<void>): void;
+  export function afterAll(callback: () => void | Promise<void>): void;
   export function test(name: string, callback: () => void | Promise<void>): void;
   export const expect: <T>(value: T) => Matchers & { not: Matchers };
 }
