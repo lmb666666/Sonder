@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { h } from 'hastscript';
 import { musicThemeStyle, type MusicThemeName } from './music-theme.js';
 import type { AttributeValue, MdastNode } from './handlers.js';
@@ -251,15 +250,6 @@ export type MetingTrack = MusicTrack;
 const metingCache = new Map<string, MetingTrack[]>();
 const metingPending = new Map<string, Promise<MetingTrack[]>>();
 
-function metingApiTemplate(): string {
-  try {
-    const toml = readFileSync(new URL('../../../config/site.toml', import.meta.url), 'utf8');
-    return /meting_api\s*=\s*"([^"]*)"/.exec(toml)?.[1] ?? '';
-  } catch {
-    return '';
-  }
-}
-
 function parseMetingTracks(data: unknown): MetingTrack[] {
   const list = Array.isArray(data)
     ? data
@@ -304,15 +294,15 @@ function parseMetingTracks(data: unknown): MetingTrack[] {
 export function fetchMetingTracks(
   id: string,
   type: NeteaseMetingType = 'playlist',
+  template = '',
 ): Promise<MetingTrack[]> {
-  const cacheKey = `${type}:${id}`;
+  const cacheKey = `${template}|${type}:${id}`;
   const cached = metingCache.get(cacheKey);
   if (cached) return Promise.resolve(cached);
 
   const pending = metingPending.get(cacheKey);
   if (pending) return pending;
 
-  const template = metingApiTemplate();
   const task = (async () => {
     if (!template) return [];
     const endpoint = template

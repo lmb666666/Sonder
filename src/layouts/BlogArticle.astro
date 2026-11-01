@@ -174,6 +174,7 @@ const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : her
         <section
           id="article-start"
           class:list={['article-content', { 'article-content-ui': contentFont === 'ui' }]}
+          data-sonder-content
         >
           <slot />
         </section>

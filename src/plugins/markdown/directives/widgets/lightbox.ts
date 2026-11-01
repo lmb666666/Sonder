@@ -73,7 +73,7 @@ function wrapImages(gallery: HTMLElement): HTMLAnchorElement[] {
 }
 
 export function initLightbox() {
-  const gallery = document.querySelector<HTMLElement>('.article-content');
+  const gallery = document.querySelector<HTMLElement>('[data-sonder-content]');
   if (!gallery) return;
 
   wrapImages(gallery);

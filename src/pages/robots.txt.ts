@@ -1,13 +1,15 @@
+import type { APIContext } from 'astro';
 import { getSiteConfig } from '../data/site';
+import { withBase } from '../lib/url';
 
-export async function GET(context) {
+export async function GET(context: APIContext) {
   const { site } = await getSiteConfig();
   const origin = context.site ?? new URL(site.url);
 
   const body = `User-agent: *
 Allow: /
 
-Sitemap: ${new URL('sitemap-index.xml', origin)}
+Sitemap: ${new URL(withBase('/sitemap-index.xml'), origin)}
 `;
 
   return new Response(body, {

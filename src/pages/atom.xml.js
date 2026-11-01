@@ -2,6 +2,7 @@ import { getCollection } from 'astro:content';
 import { getSiteConfig } from '../data/site';
 import { sortByDateDesc } from '../lib/content-dates';
 import { escapeXml } from '../lib/xml';
+import { withBase } from '../lib/url';
 
 export async function GET(context) {
   const { site } = await getSiteConfig();
@@ -12,7 +13,7 @@ export async function GET(context) {
 
   const entries = posts
     .map((post) => {
-      const url = new URL(`/blog/${post.id}/`, origin);
+      const url = new URL(withBase(`/blog/${post.id}/`), origin);
       const categories = [...new Set([...(post.data.categories ?? []), ...(post.data.tags ?? [])])]
         .map((label) => `    <category term="${escapeXml(label)}" />`)
         .join('\n');
@@ -30,14 +31,14 @@ ${categories}
     .join('\n');
 
   const atom = `<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="/atom.xsl"?>
+<?xml-stylesheet type="text/xsl" href="${withBase('/atom.xsl')}"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>${escapeXml(site.title)}</title>
   <subtitle>${escapeXml(site.description)}</subtitle>
-  <id>${new URL('atom.xml', origin)}</id>
+  <id>${new URL(withBase('atom.xml'), origin)}</id>
   <updated>${iso(updated)}</updated>
-  <link rel="alternate" type="text/html" href="${origin}" />
-  <link rel="self" type="application/atom+xml" href="${new URL('atom.xml', origin)}" />
+  <link rel="alternate" type="text/html" href="${new URL(withBase('/'), origin)}" />
+  <link rel="self" type="application/atom+xml" href="${new URL(withBase('atom.xml'), origin)}" />
   <author>
     <name>Sonder</name>
   </author>

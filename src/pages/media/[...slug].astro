@@ -1,5 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
+import MarkdownWidgets from '../../components/markdown/MarkdownWidgets.astro';
+import MermaidRenderer from '../../components/markdown/MermaidRenderer.astro';
 import { getCollection, render } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import { getSiteConfig } from '../../data/site';
@@ -101,11 +103,15 @@ function parentRoute(pathname: string, id: string) {
           </div>
         </div>
       </header>
-      <section class="media-review-content">
+      <section class="media-review-content" data-sonder-content>
         <Content />
       </section>
     </article>
   </main>
+  <Fragment slot="after-content">
+    <MermaidRenderer />
+    <MarkdownWidgets />
+  </Fragment>
 </Base>
 
 <style>

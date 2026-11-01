@@ -175,7 +175,7 @@ function takeLabel(node: TreeNode) {
 }
 
 /** 预取文档内全部 ::netease 目标（song/playlist/album；radio 无 Meting 解析不预取） */
-async function prefetchNeteaseTracks(tree: TreeNode): Promise<NeteasePrefetch> {
+async function prefetchNeteaseTracks(tree: TreeNode, metingApi: string): Promise<NeteasePrefetch> {
   const targets = new Set<string>();
   const visit = (nodes: TreeNode[] | undefined) => {
     for (const node of nodes ?? []) {
@@ -194,7 +194,7 @@ async function prefetchNeteaseTracks(tree: TreeNode): Promise<NeteasePrefetch> {
   await Promise.all(
     [...targets].map(async (key) => {
       const [type, id] = key.split(':') as [NeteaseMetingType, string];
-      map.set(key, await fetchMetingTracks(id, type));
+      map.set(key, await fetchMetingTracks(id, type, metingApi));
     }),
   );
   return map;
@@ -335,11 +335,18 @@ function transformNodes(
   return result;
 }
 
-export default function remarkSonderDirectives() {
+export interface SonderDirectivesOptions {
+  layouts?: boolean;
+  metingApi?: string;
+}
+
+export default function remarkSonderDirectives(options: SonderDirectivesOptions = {}) {
+  const metingApi = options.metingApi ?? '';
+
   return async (tree: MdastNode, file: DirectiveFile & { path?: string }) => {
     if (!tree.children) return;
     try {
-      const extras = { netease: await prefetchNeteaseTracks(tree) };
+      const extras = { netease: await prefetchNeteaseTracks(tree, metingApi) };
       tree.children = transformNodes(tree.children, undefined, file, extras);
     } catch (error) {
       // 转换失败时保留原始内容，确保文章不至于空白

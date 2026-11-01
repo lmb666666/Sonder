@@ -69,7 +69,10 @@ const resolvedBase =
 const code = siteConfig.code;
 const isDarkCodeTheme = ({ theme }) => theme.name === code.darkTheme;
 
-const markdown = getMarkdownConfig(siteConfig.markdown);
+const markdown = getMarkdownConfig({
+  ...siteConfig.markdown,
+  metingApi: siteConfig.music.meting_api,
+});
 
 const expressiveCodeConfig = {
   plugins: [pluginLineNumbers(), pluginCollapsibleSections()],

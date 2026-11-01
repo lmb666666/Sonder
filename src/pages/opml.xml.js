@@ -1,6 +1,7 @@
 import { getSiteConfig } from '../data/site';
 import { allFriendLinks } from '../data/friends';
 import { escapeXml } from '../lib/xml';
+import { withBase } from '../lib/url';
 
 export async function GET(context) {
   const { site } = await getSiteConfig();
@@ -12,10 +13,10 @@ export async function GET(context) {
       const feedUrl = friend.rss.trim();
       const resolved = /^https?:\/\//i.test(feedUrl)
         ? feedUrl
-        : new URL(feedUrl.replace(/^\//, ''), origin).toString();
+        : new URL(withBase(feedUrl), origin).toString();
       const htmlUrl = friend.url.startsWith('http')
         ? friend.url
-        : new URL(friend.url.replace(/^\//, ''), origin).toString();
+        : new URL(withBase(friend.url), origin).toString();
       return `    <outline type="rss" text="${escapeXml(friend.name)}" title="${escapeXml(friend.name)}" xmlUrl="${escapeXml(resolved)}" htmlUrl="${escapeXml(htmlUrl)}" />`;
     })
     .join('\n');

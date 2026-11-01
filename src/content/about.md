@@ -4,9 +4,6 @@ description: 'Sonder 是一份以纸面阅读感为核心的个人发布模板�
 date: '2026-05-01T00:00:00+08:00'
 draft: false
 showHeroImage: false
-tags:
-  - About
-  - Sonder
 comments: false
 sidebar:
   enable: false

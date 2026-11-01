@@ -316,6 +316,7 @@ font.save(path)
 }
 
 const chars = new Set<string>();
+const siteConfigPath = join(projectRoot, 'site.config.toml');
 
 for (const dir of sourceDirs) {
   for (const file of walkFiles(join(projectRoot, dir), sourceExtensions)) {
@@ -343,8 +344,23 @@ for (const file of lightweightContentFiles) {
   if (existsSync(path)) collectCjk(chars, readFileSync(path, 'utf8'));
 }
 
+// 站点配置在根目录，不属于任何 src 目录：页脚版权、首页介绍等文案都来自这里。
+if (existsSync(siteConfigPath)) {
+  collectCjk(chars, readFileSync(siteConfigPath, 'utf8'));
+}
+
 // The sync Action writes RSS-derived display text before this build step.
 collectFriendCircleChars(chars);
+
+if (existsSync(siteConfigPath)) {
+  const configCjk = new Set(readFileSync(siteConfigPath, 'utf8').match(cjkPattern) ?? []);
+  const uncovered = [...configCjk].filter((char) => !chars.has(char));
+  if (uncovered.length > 0) {
+    throw new Error(
+      `site.config.toml 的中文字符未进入字体子集：${uncovered.join('')}。请把根配置加入字符收集。`,
+    );
+  }
+}
 
 const uiChars = [...chars].sort((a, b) => a.codePointAt(0)! - b.codePointAt(0)!).join('');
 if (!uiChars) throw new Error('No CJK UI characters were found for font subsetting.');

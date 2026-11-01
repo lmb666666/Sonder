@@ -165,6 +165,15 @@ const defaultPagesConfig = {
     kicker: 'Friends',
     subtitle: '那些人，那些事。',
   },
+  moments: {
+    title: '动态',
+    kicker: 'Moments',
+    subtitle: '记录生活点滴。',
+    note: '',
+    apiUrl: '',
+    pageSize: 20,
+    showPoweredBy: true,
+  },
 } as const;
 
 const blogPageSchema = z.object({
