@@ -1,10 +1,8 @@
 ---
+import Base from '../../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../../components/BaseHead.astro';
-import Footer from '../../../components/Footer.astro';
 import BackLink from '../../../components/blog/BackLink.astro';
 import BlogArchive from '../../../components/blog/BlogArchive.astro';
-import SiteHeader from '../../../components/blog/SiteHeader.astro';
 import { getSiteConfig } from '../../../data/site';
 import { sortBlogPostsForArchive } from '../../../utils/content-dates';
 import { getAllTags } from '../../../utils/content-groups';
@@ -36,17 +34,14 @@ export async function getStaticPaths() {
 }
 
 const siteConfig = await getSiteConfig();
-const { site, theme, pages } = siteConfig;
-const palette = theme.palette;
+const { site, pages } = siteConfig;
 const pageMeta = pages.blog;
 const { tag, page } = Astro.props;
 const ui = getUiText(siteConfig);
 ---
 
-<!doctype html>
-<html lang={ui.locale} data-palette={palette}>
-  <head>
-    <BaseHead title={`${tag.name} | ${site.title}`} description={site.description} />
+<Base title={`${tag.name} | ${site.title}`} description={site.description}>
+  <Fragment slot="head">
     <style>
       main {
         width: min(100%, var(--layout-shell-width));
@@ -60,20 +55,17 @@ const ui = getUiText(siteConfig);
         }
       }
     </style>
-  </head>
-  <body>
-    <SiteHeader />
-    <main data-pagefind-body>
-      <BackLink href="/blog/" label={ui.groups.back} />
-      <BlogArchive
-        page={page}
-        headerKicker={ui.groups.tag}
-        headerTitle={tag.name}
-        headerNote={ui.groups.tagNote(tag.count)}
-        coverImageStyle={pageMeta.coverImageStyle}
-        listLayout={pageMeta.listLayout}
-      />
-    </main>
-    <Footer />
-  </body>
-</html>
+  </Fragment>
+
+  <main data-pagefind-body>
+    <BackLink href="/blog/" label={ui.groups.back} />
+    <BlogArchive
+      page={page}
+      headerKicker={ui.groups.tag}
+      headerTitle={tag.name}
+      headerNote={ui.groups.tagNote(tag.count)}
+      coverImageStyle={pageMeta.coverImageStyle}
+      listLayout={pageMeta.listLayout}
+    />
+  </main>
+</Base>

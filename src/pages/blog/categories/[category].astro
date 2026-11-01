@@ -1,9 +1,7 @@
 ---
+import Base from '../../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../../components/BaseHead.astro';
-import Footer from '../../../components/Footer.astro';
 import BlogArchive from '../../../components/blog/BlogArchive.astro';
-import SiteHeader from '../../../components/blog/SiteHeader.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import {
@@ -40,8 +38,7 @@ export async function getStaticPaths() {
 }
 
 const siteConfig = await getSiteConfig();
-const { site, theme, pages } = siteConfig;
-const palette = theme.palette;
+const { site, pages } = siteConfig;
 const pageMeta = pages.blog;
 const { category, page } = Astro.props;
 const ui = getUiText(siteConfig);
@@ -49,10 +46,8 @@ const categoryName =
   category.slug === uncategorizedCategory.slug ? ui.groups.uncategorized : category.name;
 ---
 
-<!doctype html>
-<html lang={ui.locale} data-palette={palette}>
-  <head>
-    <BaseHead title={`${categoryName} | ${site.title}`} description={site.description} />
+<Base title={`${categoryName} | ${site.title}`} description={site.description}>
+  <Fragment slot="head">
     <style>
       main {
         width: min(100%, var(--layout-shell-width));
@@ -66,22 +61,19 @@ const categoryName =
         }
       }
     </style>
-  </head>
-  <body>
-    <SiteHeader />
-    <main data-pagefind-body>
-      <BlogArchive
-        page={page}
-        headerKicker={pageMeta.kicker}
-        headerTitle={pageMeta.title}
-        headerSubtitle={pageMeta.subtitle}
-        headerNote={pageMeta.note}
-        coverImageStyle={pageMeta.coverImageStyle}
-        listLayout={pageMeta.listLayout}
-      >
-        <GroupNav slot="after-header" activeCategory={category.slug} />
-      </BlogArchive>
-    </main>
-    <Footer />
-  </body>
-</html>
+  </Fragment>
+
+  <main data-pagefind-body>
+    <BlogArchive
+      page={page}
+      headerKicker={pageMeta.kicker}
+      headerTitle={pageMeta.title}
+      headerSubtitle={pageMeta.subtitle}
+      headerNote={pageMeta.note}
+      coverImageStyle={pageMeta.coverImageStyle}
+      listLayout={pageMeta.listLayout}
+    >
+      <GroupNav slot="after-header" activeCategory={category.slug} />
+    </BlogArchive>
+  </main>
+</Base>

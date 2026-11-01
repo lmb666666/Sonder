@@ -1,25 +1,259 @@
 ---
+// Import the global.css file here so that it is included on
+// all pages through the use of the <BaseHead /> component.
+import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
-import ThemeBaseHead from '@sonder/theme-default/components/BaseHead.astro';
+import { ClientRouter } from 'astro:transitions';
 import { getSiteConfig } from '../data/site';
 
 interface Props {
   title: string;
   description: string;
   image?: ImageMetadata | string;
+  fallbackImage?: ImageMetadata | string;
 }
 
-const { title, description, image } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
+const { title, description, image, fallbackImage = '/og-default.png' } = Astro.props;
 const { site, fonts } = await getSiteConfig();
-// 默认社交分享图（og:image / twitter:image）：public/og-default.png 品牌卡。
-// 文章未显式指定 image 时使用；fail-loading-image 仅作为 <img> 加载失败的兜底。
+const resolvedImage = image ?? fallbackImage;
+const imageUrl = typeof resolvedImage === 'string' ? resolvedImage : resolvedImage.src;
+const fontVariablesCss = createFontCss(fonts);
+
+function normalizeFontFamilyName(fontFamily: string) {
+  return fontFamily
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .trim()
+    .replace(/^['"]|['"]$/g, '');
+}
+
+function toCssFontFamily(fontFamily: string) {
+  const normalized = normalizeFontFamilyName(fontFamily);
+
+  return `"${normalized.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+function toCssString(value: string) {
+  const normalized = value.replace(/[\u0000-\u001f\u007f]/g, '').trim();
+
+  return `"${normalized.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+function resolveAssetUrl(url: string) {
+  if (/^(?:https?:)?\/\//i.test(url) || url.startsWith('data:')) return url;
+
+  const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const assetUrl = url.startsWith('/') ? url : `/${url}`;
+
+  return `${baseUrl}${assetUrl}`;
+}
+
+function getFontFormat(url: string) {
+  const extension = url.split('?')[0]?.split('#')[0]?.split('.').pop()?.toLowerCase();
+
+  if (extension === 'woff2') return 'woff2';
+  if (extension === 'woff') return 'woff';
+  if (extension === 'otf') return 'opentype';
+
+  return 'truetype';
+}
+
+function getFontBaseName(fontPath: string) {
+  const queryIndex = fontPath.search(/[?#]/);
+  const path = queryIndex === -1 ? fontPath : fontPath.slice(0, queryIndex);
+  const fileName = path.replace(/\\/g, '/').split('/').pop() ?? 'font';
+  const extensionIndex = fileName.lastIndexOf('.');
+
+  return extensionIndex === -1 ? fileName : fileName.slice(0, extensionIndex);
+}
+
+function createFontCss(fonts: { en: string; code: string; zh: string; file: string }) {
+  const zhFontName = normalizeFontFamilyName(fonts.zh);
+  const zhFamily = toCssFontFamily(zhFontName);
+  const zhSubsetFamily = toCssFontFamily(`${zhFontName} UI Subset`);
+  const zhContentSubsetFamily = toCssFontFamily(`${zhFontName} Content Subset`);
+  const enFamily = toCssFontFamily(fonts.en);
+  const codeFontName = normalizeFontFamilyName(fonts.code);
+  const codeFamily = toCssFontFamily(fonts.code);
+  const subsetUrl = `/fonts/${getFontBaseName(fonts.file)}-ui-subset.woff2`;
+  const subsetFile = toCssString(resolveAssetUrl(subsetUrl));
+  const contentSubsetUrl = subsetUrl.replace('-ui-subset.woff2', '-content-subset.woff2');
+  const contentSubsetFile = toCssString(resolveAssetUrl(contentSubsetUrl));
+  const monacoFontFace =
+    codeFontName === 'Monaco'
+      ? `@font-face{font-family:"Monaco";src:url(${toCssString(resolveAssetUrl('/fonts/Monaco.ttf'))}) format("truetype");font-style:normal;font-weight:400;font-display:swap;}`
+      : '';
+  const mapleSubsetFontFace = `
+@font-face{font-family:${enFamily};src:url(${toCssString(resolveAssetUrl('/fonts/maple-mono-400-subset.woff2'))}) format("woff2");font-style:normal;font-weight:400;font-display:swap;}
+@font-face{font-family:${enFamily};src:url(${toCssString(resolveAssetUrl('/fonts/maple-mono-700-subset.woff2'))}) format("woff2");font-style:normal;font-weight:700;font-display:swap;}
+`;
+
+  return `${mapleSubsetFontFace}
+@font-face{font-family:${zhSubsetFamily};src:url(${subsetFile}) format("${getFontFormat(subsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
+@font-face{font-family:${zhContentSubsetFamily};src:url(${contentSubsetFile}) format("${getFontFormat(contentSubsetUrl)}");font-style:normal;font-weight:400;font-display:swap;}
+${monacoFontFace}
+html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-config-zh:${zhFamily};--font-config-zh-subset:${zhSubsetFamily};--font-config-zh-content:${zhContentSubsetFamily};}
+`;
+}
 ---
 
-<ThemeBaseHead
-  title={title}
-  description={description}
-  image={image}
-  fallbackImage="/og-default.png"
-  site={site}
-  fonts={fonts}
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style is:inline set:html={fontVariablesCss}></style>
+<ClientRouter />
+<script
+  is:inline
+  define:vars={{
+    paletteIds: [
+      'green-soft',
+      'green-vivid',
+      'rose-soft',
+      'pink-soft',
+      'purple-soft',
+      'blue-soft',
+      'orange-soft',
+      'brown-soft',
+    ],
+  }}
+>
+  (() => {
+    const storageKey = 'sonder-theme';
+    const paletteKey = 'sonder-palette';
+    const root = document.documentElement;
+    const themeMeta = () => document.querySelector('meta[name="theme-color"]');
+    const systemTheme = () =>
+      window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const storedTheme = () => {
+      try {
+        return localStorage.getItem(storageKey);
+      } catch {
+        return null;
+      }
+    };
+    // 首帧前恢复持久化的色盘选择，避免换纸闪烁
+    try {
+      const storedPalette = localStorage.getItem(paletteKey);
+      if (storedPalette && paletteIds.includes(storedPalette)) {
+        root.dataset.palette = storedPalette;
+      }
+    } catch {}
+    const setStoredTheme = (theme) => {
+      try {
+        localStorage.setItem(storageKey, theme);
+      } catch {}
+    };
+    const applyTheme = (theme, persist = true) => {
+      const nextTheme = theme === 'dark' ? 'dark' : 'light';
+      const toggleLabel = nextTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+
+      root.dataset.theme = nextTheme;
+      root.style.colorScheme = nextTheme;
+      // 主题色跟随色盘的 --paper-theme-color（未定义时回退默认纸色）
+      const paletteThemeColor = getComputedStyle(root)
+        .getPropertyValue('--paper-theme-color')
+        .trim();
+      themeMeta()?.setAttribute(
+        'content',
+        paletteThemeColor || (nextTheme === 'dark' ? '#1c1610' : '#f7f3ed'),
+      );
+      for (const button of document.querySelectorAll('[data-theme-toggle]')) {
+        button.setAttribute('aria-label', toggleLabel);
+        button.setAttribute('title', toggleLabel);
+      }
+      if (persist) setStoredTheme(nextTheme);
+      window.dispatchEvent(
+        new CustomEvent('sonder:theme-change', { detail: { theme: nextTheme } }),
+      );
+    };
+    const syncThemeControls = () => {
+      applyTheme(root.dataset.theme || storedTheme() || systemTheme(), false);
+    };
+
+    applyTheme(storedTheme() || systemTheme(), false);
+
+    if (!window.__sonderTheme) {
+      window.__sonderTheme = {
+        toggle() {
+          applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+        },
+        set(theme) {
+          applyTheme(theme === 'dark' ? 'dark' : 'light');
+        },
+      };
+    }
+
+    if (window.__sonderThemeInitialized) {
+      syncThemeControls();
+      return;
+    }
+
+    window.__sonderThemeInitialized = true;
+
+    document.addEventListener('click', (event) => {
+      const toggle = event.target.closest?.('[data-theme-toggle]');
+      if (toggle) window.__sonderTheme.toggle();
+    });
+
+    document.addEventListener('DOMContentLoaded', syncThemeControls, { once: true });
+    document.addEventListener('astro:page-load', syncThemeControls);
+
+    // 换页前把运行时主题/色盘带进新文档：SSR 的 <html> 只有色盘没有 data-theme，
+    // Astro 交换根属性时会短暂丢掉深色主题，表现为换页闪一下白底。
+    document.addEventListener('astro:before-swap', (event) => {
+      const incoming = event.newDocument?.documentElement;
+      if (!incoming) return;
+      if (root.dataset.theme) incoming.dataset.theme = root.dataset.theme;
+      if (root.dataset.palette) incoming.dataset.palette = root.dataset.palette;
+      incoming.style.colorScheme = root.style.colorScheme || root.dataset.theme || '';
+    });
+
+    window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+      if (!storedTheme()) applyTheme(event.matches ? 'dark' : 'light', false);
+    });
+  })();
+</script>
+<link rel="icon" href={assetPath('favicon.svg')} sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href={assetPath('favicon-32x32.png')} />
+<link rel="icon" type="image/png" sizes="16x16" href={assetPath('favicon-16x16.png')} />
+<link rel="apple-touch-icon" sizes="180x180" href={assetPath('apple-touch-icon.png')} />
+<link rel="manifest" href={assetPath('manifest.json')} />
+<meta name="theme-color" content="#f7f3ed" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  title={site.title}
+  href={new URL('atom.xml', Astro.site)}
 />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={site.title}
+  href={new URL('rss.xml', Astro.site)}
+/>
+<meta name="generator" content={Astro.generator} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(imageUrl, Astro.url)} />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={new URL(imageUrl, Astro.url)} />

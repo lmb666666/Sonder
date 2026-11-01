@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { createI18n, defineTheme, getThemeComponent, normalizeLocale } from './index.js';
+import { createI18n, normalizeLocale } from './index.js';
 
 test('merges catalogs and lets later values override earlier ones', () => {
   const i18n = createI18n({
@@ -15,15 +15,13 @@ test('merges catalogs and lets later values override earlier ones', () => {
   expect(normalizeLocale('unknown')).toBe('en');
 });
 
-test('keeps a theme manifest package-addressable', () => {
-  const theme = defineTheme({
-    name: '@sonder/theme-default',
-    components: {
-      layout: '@sonder/theme-default/layouts/BaseLayout.astro',
-    },
-    styles: ['@sonder/theme-default/styles/palettes.css'],
+test('interpolates values and falls back to the key', () => {
+  const i18n = createI18n({
+    locale: 'en',
+    catalogs: [{ en: { count: 'Count: {count}', plural: { one: 'One', other: 'Many' } } }],
   });
-
-  expect(getThemeComponent(theme, 'layout')).toBe('@sonder/theme-default/layouts/BaseLayout.astro');
-  expect(getThemeComponent(theme, 'footer')).toBeUndefined();
+  expect(i18n.t('count', { count: 3 })).toBe('Count: 3');
+  expect(i18n.t('plural', { count: 1 })).toBe('One');
+  expect(i18n.t('plural', { count: 2 })).toBe('Many');
+  expect(i18n.t('missing.key')).toBe('missing.key');
 });

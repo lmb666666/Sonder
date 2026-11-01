@@ -1,24 +1,21 @@
 ---
 import { getCollection } from 'astro:content';
+import Base from './Base.astro';
 import ArticleHeader from '../components/article/ArticleHeader.astro';
 import ShareActions from '../components/article/ShareActions.astro';
 import ArticleJourney from '../components/blog/ArticleJourney.astro';
 import MobileToc from '../components/blog/MobileToc.astro';
-import SiteHeader from '../components/blog/SiteHeader.astro';
-import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
-import BaseHead from '../components/BaseHead.astro';
 import CommentSection from '../components/comments/CommentSection.astro';
-import Footer from '../components/Footer.astro';
 import MermaidRenderer from '@sonder/mdx-components/MermaidRenderer.astro';
 import MarkdownWidgets from '../components/markdown/MarkdownWidgets.astro';
-import { getThemePalette, getSiteConfig } from '../data/site';
+import { getSiteConfig } from '../data/site';
 import { resolveCommentsConfig, supportsCommentSection } from '../utils/comments';
 import { sortByDateDesc } from '../utils/content-dates';
 import { slugifyGroupName } from '../utils/content-groups';
 import { buildTocTree, countTocItems } from '../utils/toc-tree';
 import { getUiText } from '../utils/ui-text';
-import '@sonder/theme-default/styles/blog-article.css';
+import '../styles/blog-article.css';
 
 const siteConfig = await getSiteConfig();
 const { comments: rawComments, site, profile, article: articleConfig } = siteConfig;
@@ -65,7 +62,6 @@ interface Props {
 }
 
 const props = Astro.props;
-const palette = await getThemePalette();
 const headings = props.headings ?? [];
 const post = props.post ?? {
   id: 'standalone',
@@ -135,158 +131,158 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : heroImage.src) : '';
 ---
 
-<!doctype html>
-<html lang={ui.locale} data-palette={palette}>
-  <head>
-    <BaseHead title={title} description={description} />
+<Base
+  title={title}
+  description={description}
+  bodyClass={[
+    'blog-detail-page',
+    contentFont === 'ui' && 'blog-content-ui',
+    hasToc && 'has-mobile-toc',
+  ]
+    .filter(Boolean)
+    .join(' ')}
+  showTocIcon={hasToc}
+  tocItems={tocItems}
+>
+  <Fragment slot="head">
     {
       comments.provider === 'waline' && comments.enabled && (
         <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
       )
     }
-  </head>
-  <body
-    class:list={[
-      'blog-detail-page',
+  </Fragment>
+  <div class="blog-background" aria-hidden="true"></div>
+
+  <main class:list={['blog-layout', { 'blog-layout-centered': !hasSidebar }]} data-pagefind-body>
+    <div class="article-column">
+      <article class="article-card">
+        <ArticleHeader
+          title={title}
+          description={description}
+          date={date}
+          wordCount={wordCount}
+          readingTime={readingTime}
+          tags={tagLinks}
+          categories={categoryLinks}
+          heroImage={heroImage}
+          showHeroImage={showHeroImage}
+          variant={props.headerVariant}
+          kicker={props.headerKicker}
+          note={props.headerNote}
+        />
+
+        <section
+          id="article-start"
+          class:list={['article-content', { 'article-content-ui': contentFont === 'ui' }]}
+        >
+          <slot />
+        </section>
+      </article>
       {
-        'blog-content-ui': contentFont === 'ui',
-        'has-mobile-toc': hasToc,
-      },
-    ]}
-  >
-    <SiteHeader showTocIcon={hasToc} tocItems={tocItems} />
-    <div class="blog-background" aria-hidden="true"></div>
-
-    <main class:list={['blog-layout', { 'blog-layout-centered': !hasSidebar }]} data-pagefind-body>
-      <div class="article-column">
-        <article class="article-card">
-          <ArticleHeader
-            title={title}
-            description={description}
-            date={date}
-            wordCount={wordCount}
-            readingTime={readingTime}
-            tags={tagLinks}
-            categories={categoryLinks}
-            heroImage={heroImage}
-            showHeroImage={showHeroImage}
-            variant={props.headerVariant}
-            kicker={props.headerKicker}
-            note={props.headerNote}
-          />
-
-          <section
-            id="article-start"
-            class:list={['article-content', { 'article-content-ui': contentFont === 'ui' }]}
-          >
-            <slot />
+        references.length > 0 && (
+          <section class="article-references" aria-label={ui.article.referencesLabel}>
+            <h2 class="article-references-title">{ui.article.references}</h2>
+            <ol class="article-references-list">
+              {references.map(({ title, link }) => (
+                <li>
+                  {link ? (
+                    <a href={link} target="_blank" rel="noopener noreferrer">
+                      {title || link}
+                    </a>
+                  ) : (
+                    <span>{title}</span>
+                  )}
+                </li>
+              ))}
+            </ol>
           </section>
-        </article>
-        {
-          references.length > 0 && (
-            <section class="article-references" aria-label={ui.article.referencesLabel}>
-              <h2 class="article-references-title">{ui.article.references}</h2>
-              <ol class="article-references-list">
-                {references.map(({ title, link }) => (
-                  <li>
-                    {link ? (
-                      <a href={link} target="_blank" rel="noopener noreferrer">
-                        {title || link}
-                      </a>
-                    ) : (
-                      <span>{title}</span>
-                    )}
-                  </li>
-                ))}
-              </ol>
-            </section>
-          )
-        }
-        {
-          isBlogPost && articleConfig.share && (
-            <ShareActions
-              title={title}
-              description={description}
-              url={shareUrl}
-              siteTitle={site.title}
-              author={profile.name}
-              date={date.toISOString()}
-              avatar={profile.avatar}
-              logo={profile.avatar}
-              coverImage={posterCover}
-              coverSelector={showHeroImage && heroImage ? '.article-hero-image img' : ''}
-            />
-          )
-        }
-        {
-          isBlogPost && showJourney && (
-            <ArticleJourney
-              showPager={articleConfig.navigation}
-              previous={articleConfig.navigation ? previousPost : undefined}
-              next={articleConfig.navigation ? nextPost : undefined}
-              more={morePosts}
-            />
-          )
-        }
-        {
-          shouldMountCommentSection && (
-            <CommentSection frontmatter={post.data} pathname={Astro.url.pathname} />
-          )
-        }
-      </div>
-
-      {
-        hasSidebar && (
-          <aside class="right-sidebar" aria-label={ui.article.readingTools}>
-            <div class="right-sidebar-inner">
-              {hasToc && <TableOfContents items={tocItems} font={contentFont} />}
-            </div>
-          </aside>
         )
       }
-    </main>
-    {hasToc && <MobileToc items={tocItems} font={contentFont} />}
-    <ScrollToTopButton />
+      {
+        isBlogPost && articleConfig.share && (
+          <ShareActions
+            title={title}
+            description={description}
+            url={shareUrl}
+            siteTitle={site.title}
+            author={profile.name}
+            date={date.toISOString()}
+            avatar={profile.avatar}
+            logo={profile.avatar}
+            coverImage={posterCover}
+            coverSelector={showHeroImage && heroImage ? '.article-hero-image img' : ''}
+          />
+        )
+      }
+      {
+        isBlogPost && showJourney && (
+          <ArticleJourney
+            showPager={articleConfig.navigation}
+            previous={articleConfig.navigation ? previousPost : undefined}
+            next={articleConfig.navigation ? nextPost : undefined}
+            more={morePosts}
+          />
+        )
+      }
+      {
+        shouldMountCommentSection && (
+          <CommentSection frontmatter={post.data} pathname={Astro.url.pathname} />
+        )
+      }
+    </div>
+
+    {
+      hasSidebar && (
+        <aside class="right-sidebar" aria-label={ui.article.readingTools}>
+          <div class="right-sidebar-inner">
+            {hasToc && <TableOfContents items={tocItems} font={contentFont} />}
+          </div>
+        </aside>
+      )
+    }
+  </main>
+  {hasToc && <MobileToc items={tocItems} font={contentFont} />}
+  <Fragment slot="after-content">
     <MermaidRenderer />
     <MarkdownWidgets />
-    <Footer />
-  </body><style>
-    .article-references {
-      margin-top: var(--spacing-lg, 2rem);
-      padding: 1rem 1.25rem;
-      border: 1px solid var(--paper-rule);
-      border-radius: 0.75rem;
-      background: var(--paper-fog);
-      font-family: var(--font-meta);
-      font-size: 0.875rem;
-    }
+  </Fragment>
+</Base>
+<style>
+  .article-references {
+    margin-top: var(--spacing-lg, 2rem);
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--paper-rule);
+    border-radius: 0.75rem;
+    background: var(--paper-fog);
+    font-family: var(--font-meta);
+    font-size: 0.875rem;
+  }
 
-    .article-references-title {
-      margin: 0 0 0.5rem;
-      font-family: var(--font-heading);
-      font-size: 0.8125rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--paper-accent);
-    }
+  .article-references-title {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-heading);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--paper-accent);
+  }
 
-    .article-references-list {
-      margin: 0;
-      padding-inline-start: 1.25rem;
-      display: grid;
-      gap: 0.375rem;
-      line-height: 1.6;
-    }
+  .article-references-list {
+    margin: 0;
+    padding-inline-start: 1.25rem;
+    display: grid;
+    gap: 0.375rem;
+    line-height: 1.6;
+  }
 
-    .article-references-list a {
-      color: inherit;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 3px;
-    }
+  .article-references-list a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
 
-    .article-references-list a:hover {
-      color: var(--paper-accent);
-    }
-  </style>
-</html>
+  .article-references-list a:hover {
+    color: var(--paper-accent);
+  }
+</style>

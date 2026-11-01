@@ -181,10 +181,6 @@ export default defineConfig({
           find: /^@sonder\/mdx-components\/(.*)$/,
           replacement: fileURLToPath(new URL('./src/components/mdx/$1', import.meta.url)),
         },
-        {
-          find: /^@sonder\/core$/,
-          replacement: fileURLToPath(new URL('./src/framework/index.ts', import.meta.url)),
-        },
       ],
     },
   },

@@ -5,7 +5,7 @@ import BlogPostList from './BlogPostList.astro';
 import { getSiteConfig } from '../../data/site';
 import { getUiText } from '../../utils/ui-text';
 import { getPaginationItems } from '../../utils/pagination';
-import '@sonder/theme-default/styles/blog-archive.css';
+import '../../styles/blog-archive.css';
 
 type BlogPost = CollectionEntry<'blog'>;
 type CoverImageStyle = 'card' | 'mask';

@@ -1,10 +1,8 @@
 ---
+import Base from '../layouts/Base.astro';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import BaseHead from '../components/BaseHead.astro';
-import SiteHeader from '../components/blog/SiteHeader.astro';
-import Footer from '../components/Footer.astro';
 import FriendLinkApplication from '../components/mdx/FriendLinkApplication.astro';
 import FriendLinkCard from '../components/mdx/FriendLinkCard.astro';
 import {
@@ -13,16 +11,13 @@ import {
   type FriendPost,
 } from '../components/mdx/lib/friend-data';
 import { getSiteConfig } from '../data/site';
-import { getHtmlLang } from '../utils/ui-text';
 import PageHero from '../components/PageHero.astro';
 import demoFeed from '../data/friend-circle-demo.json';
 import { allFriendLinks, friendLinkGroups } from '../data/friends';
 
 const siteConfig = await getSiteConfig();
-const { site, theme, profile, pages } = siteConfig;
+const { site, profile, pages } = siteConfig;
 const pageMeta = pages.links;
-const htmlLang = getHtmlLang(siteConfig);
-const palette = theme.palette;
 
 const totalLinks = friendLinkGroups.reduce((count, group) => count + group.items.length, 0);
 const rssCount = friendLinkGroups.reduce(
@@ -106,369 +101,361 @@ const initialCount = Math.min(circlePosts.length, pageSize);
 const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
 ---
 
-<!doctype html>
-<html lang={htmlLang} data-palette={palette}>
-  <head>
-    <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
-  </head>
-  <body>
-    <SiteHeader />
-    <main class="links-page" data-pagefind-body>
-      <PageHero
-        kicker={pageMeta.kicker}
-        title={pageMeta.title}
-        subtitle={pageMeta.subtitle}
-        note={`共 ${totalLinks} 位朋友，其中 ${rssCount} 位提供订阅源，动态会出现在下方朋友圈。`}
-      />
+<Base title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle}>
+  <main class="links-page" data-pagefind-body>
+    <PageHero
+      kicker={pageMeta.kicker}
+      title={pageMeta.title}
+      subtitle={pageMeta.subtitle}
+      note={`共 ${totalLinks} 位朋友，其中 ${rssCount} 位提供订阅源，动态会出现在下方朋友圈。`}
+    />
 
-      {
-        friendLinkGroups.map((group) => (
-          <section class="links-group" aria-labelledby={`links-group-${group.title}`}>
-            <div class="links-group-heading">
-              <h2 id={`links-group-${group.title}`}>{group.title}</h2>
-              {group.description && <p>{group.description}</p>}
-            </div>
-            <FriendLinkCard items={group.items} columns={4} />
-          </section>
-        ))
-      }
+    {
+      friendLinkGroups.map((group) => (
+        <section class="links-group" aria-labelledby={`links-group-${group.title}`}>
+          <div class="links-group-heading">
+            <h2 id={`links-group-${group.title}`}>{group.title}</h2>
+            {group.description && <p>{group.description}</p>}
+          </div>
+          <FriendLinkCard items={group.items} columns={4} />
+        </section>
+      ))
+    }
 
-      <section class="links-circle" aria-label="朋友圈">
-        <div class="links-group-heading">
-          <h2>朋友圈</h2>
-          <p>
-            {circleFriendsCount} 位朋友 · {activeAuthors} 位活跃 · {circlePosts.length} 篇动态
-          </p>
-        </div>
+    <section class="links-circle" aria-label="朋友圈">
+      <div class="links-group-heading">
+        <h2>朋友圈</h2>
+        <p>
+          {circleFriendsCount} 位朋友 · {activeAuthors} 位活跃 · {circlePosts.length} 篇动态
+        </p>
+      </div>
 
-        <div class="circle-grid" data-circle-list data-circle-size={pageSize}>
-          {
-            circlePosts.map((post, index) => (
-              <article
-                class:list={['circle-card', { 'circle-card--hidden': index >= initialCount }]}
-                data-circle-card
+      <div class="circle-grid" data-circle-list data-circle-size={pageSize}>
+        {
+          circlePosts.map((post, index) => (
+            <article
+              class:list={['circle-card', { 'circle-card--hidden': index >= initialCount }]}
+              data-circle-card
+            >
+              <a
+                class="circle-card__author"
+                href={post.authorUrl || post.url}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <a
-                  class="circle-card__author"
-                  href={post.authorUrl || post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span class="circle-card__avatar" aria-hidden="true">
-                    {post.avatar ? (
-                      <img src={post.avatar} alt="" loading="lazy" decoding="async" />
-                    ) : (
-                      <span>{(post.author[0] || '?').toUpperCase()}</span>
-                    )}
+                <span class="circle-card__avatar" aria-hidden="true">
+                  {post.avatar ? (
+                    <img src={post.avatar} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <span>{(post.author[0] || '?').toUpperCase()}</span>
+                  )}
+                </span>
+                <span class="circle-card__name">{post.author}</span>
+              </a>
+              <a
+                class="circle-card__title"
+                href={post.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {post.title}
+              </a>
+              <footer class="circle-card__meta">
+                {post.tags?.length ? (
+                  <span class="circle-card__tags">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <span>#{tag}</span>
+                    ))}
                   </span>
-                  <span class="circle-card__name">{post.author}</span>
-                </a>
-                <a
-                  class="circle-card__title"
-                  href={post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {post.title}
-                </a>
-                <footer class="circle-card__meta">
-                  {post.tags?.length ? (
-                    <span class="circle-card__tags">
-                      {post.tags.slice(0, 3).map((tag) => (
-                        <span>#{tag}</span>
-                      ))}
-                    </span>
-                  ) : null}
-                  {post.date && <time datetime={shortDate(post)}>{shortDate(post)}</time>}
-                </footer>
-              </article>
-            ))
-          }
-        </div>
-
-        {
-          circlePosts.length > pageSize && (
-            <div class="circle-actions">
-              <button class="circle-more" type="button" data-circle-more>
-                展开更多
-              </button>
-            </div>
-          )
+                ) : null}
+                {post.date && <time datetime={shortDate(post)}>{shortDate(post)}</time>}
+              </footer>
+            </article>
+          ))
         }
-
-        {
-          feedNotice && (
-            <p class="links-circle-note">
-              {feedNotice}
-              {feedNotice.includes('演示数据') && (
-                <>
-                  {' '}
-                  在 site.toml 配置 <code>[config.friendCircle].feed_src</code>
-                  或由 FCL 工作流同步 <code>public/friend-circle.json</code>。
-                </>
-              )}
-            </p>
-          )
-        }
-      </section>
+      </div>
 
       {
-        issueRepository && (
-          <section class="links-apply" aria-label="申请友链">
-            <FriendLinkApplication
-              repository={issueRepository}
-              title="申请友链"
-              description="填写站点信息并提交 Issue，博主确认后会在这里挂上你的链接。"
-              labels={['friend-link']}
-              initialValue={{
-                name: profile.name,
-                url: site.url,
-                avatar: new URL(profile.avatar, site.url).toString(),
-                rss: `${site.url}/rss.xml`,
-                bio: profile.role,
-              }}
-            />
-          </section>
+        circlePosts.length > pageSize && (
+          <div class="circle-actions">
+            <button class="circle-more" type="button" data-circle-more>
+              展开更多
+            </button>
+          </div>
         )
       }
-    </main>
-    <Footer />
 
-    <style>
-      main {
-        width: min(100%, var(--layout-shell-width));
+      {
+        feedNotice && (
+          <p class="links-circle-note">
+            {feedNotice}
+            {feedNotice.includes('演示数据') && (
+              <>
+                {' '}
+                在 site.toml 配置 <code>[config.friendCircle].feed_src</code>
+                或由 FCL 工作流同步 <code>public/friend-circle.json</code>。
+              </>
+            )}
+          </p>
+        )
       }
+    </section>
 
-      .links-group,
-      .links-circle {
-        margin-bottom: clamp(36px, 6vw, 64px);
-      }
+    {
+      issueRepository && (
+        <section class="links-apply" aria-label="申请友链">
+          <FriendLinkApplication
+            repository={issueRepository}
+            title="申请友链"
+            description="填写站点信息并提交 Issue，博主确认后会在这里挂上你的链接。"
+            labels={['friend-link']}
+            initialValue={{
+              name: profile.name,
+              url: site.url,
+              avatar: new URL(profile.avatar, site.url).toString(),
+              rss: `${site.url}/rss.xml`,
+              bio: profile.role,
+            }}
+          />
+        </section>
+      )
+    }
+  </main>
 
-      .links-group-heading {
-        display: grid;
-        gap: 6px;
-        margin-bottom: 18px;
-      }
+  <style>
+    main {
+      width: min(100%, var(--layout-shell-width));
+    }
 
-      .links-group-heading h2 {
-        margin: 0;
-        color: var(--paper-ink);
-        font-size: 1.32rem;
-        font-weight: 600;
-      }
+    .links-group,
+    .links-circle {
+      margin-bottom: clamp(36px, 6vw, 64px);
+    }
 
-      .links-group-heading p {
-        margin: 0;
-        color: var(--paper-ink-faint);
-        font-family: var(--font-meta);
-        font-size: 0.8rem;
-      }
+    .links-group-heading {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
 
-      .links-circle {
-        padding-top: clamp(36px, 6vw, 64px);
-        border-top: 1px solid var(--paper-line);
-      }
+    .links-group-heading h2 {
+      margin: 0;
+      color: var(--paper-ink);
+      font-size: 1.32rem;
+      font-weight: 600;
+    }
 
-      .circle-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-        gap: 12px;
-      }
+    .links-group-heading p {
+      margin: 0;
+      color: var(--paper-ink-faint);
+      font-family: var(--font-meta);
+      font-size: 0.8rem;
+    }
 
-      .circle-card {
-        display: grid;
-        gap: 10px;
-        align-content: start;
-        padding: 14px 16px;
-        border: 1px solid var(--paper-line-strong);
-        border-radius: 0.75rem;
-        background: var(--paper-surface);
-        box-shadow: var(--paper-shadow);
-        font-family: var(--font-meta);
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s,
-          transform 0.2s;
-      }
+    .links-circle {
+      padding-top: clamp(36px, 6vw, 64px);
+      border-top: 1px solid var(--paper-line);
+    }
 
-      .circle-card:hover {
-        border-color: var(--paper-accent);
-        box-shadow: var(--paper-shadow-lift);
-        transform: translateY(-1px);
-      }
+    .circle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 12px;
+    }
 
-      .circle-card--hidden {
-        display: none;
-      }
+    .circle-card {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      padding: 14px 16px;
+      border: 1px solid var(--paper-line-strong);
+      border-radius: 0.75rem;
+      background: var(--paper-surface);
+      box-shadow: var(--paper-shadow);
+      font-family: var(--font-meta);
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        transform 0.2s;
+    }
 
-      .circle-card__author {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--paper-ink-soft);
-        font-size: 0.78rem;
-        text-decoration: none;
-      }
+    .circle-card:hover {
+      border-color: var(--paper-accent);
+      box-shadow: var(--paper-shadow-lift);
+      transform: translateY(-1px);
+    }
 
-      .circle-card__author:hover .circle-card__name {
-        color: var(--paper-accent);
-      }
+    .circle-card--hidden {
+      display: none;
+    }
 
-      .circle-card__avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        overflow: hidden;
-        border: 1px solid var(--paper-line);
-        border-radius: 999px;
-        background: var(--paper-surface-muted);
-        color: var(--paper-ink-faint);
-        font-size: 0.72rem;
-      }
+    .circle-card__author {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--paper-ink-soft);
+      font-size: 0.78rem;
+      text-decoration: none;
+    }
 
-      .circle-card__avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+    .circle-card__author:hover .circle-card__name {
+      color: var(--paper-accent);
+    }
 
-      .circle-card__name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+    .circle-card__avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      overflow: hidden;
+      border: 1px solid var(--paper-line);
+      border-radius: 999px;
+      background: var(--paper-surface-muted);
+      color: var(--paper-ink-faint);
+      font-size: 0.72rem;
+    }
 
-      .circle-card__title {
-        display: -webkit-box;
-        overflow: hidden;
-        color: var(--paper-ink);
-        font-size: 0.95rem;
-        font-weight: 600;
-        line-height: 1.5;
-        text-decoration: none;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-      }
+    .circle-card__avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-      .circle-card__title:hover {
-        color: var(--paper-accent);
-      }
+    .circle-card__name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-      .circle-card__meta {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        color: var(--paper-ink-faint);
-        font-size: 0.72rem;
-      }
+    .circle-card__title {
+      display: -webkit-box;
+      overflow: hidden;
+      color: var(--paper-ink);
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.5;
+      text-decoration: none;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
 
-      .circle-card__tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        overflow: hidden;
-      }
+    .circle-card__title:hover {
+      color: var(--paper-accent);
+    }
 
-      .circle-card__tags span {
-        max-width: 12ch;
-        overflow: hidden;
-        padding: 2px 8px;
-        border: 1px solid var(--paper-line);
-        border-radius: 999px;
-        color: var(--paper-ink-soft);
-        font-size: 0.7rem;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+    .circle-card__meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--paper-ink-faint);
+      font-size: 0.72rem;
+    }
 
-      .circle-card__meta time {
-        flex-shrink: 0;
-        font-variant-numeric: tabular-nums;
-      }
+    .circle-card__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      overflow: hidden;
+    }
 
-      .circle-actions {
-        display: flex;
-        justify-content: center;
-        margin-top: 18px;
-      }
+    .circle-card__tags span {
+      max-width: 12ch;
+      overflow: hidden;
+      padding: 2px 8px;
+      border: 1px solid var(--paper-line);
+      border-radius: 999px;
+      color: var(--paper-ink-soft);
+      font-size: 0.7rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-      .circle-more {
-        padding: 8px 22px;
-        border: 1px solid var(--paper-line-strong);
-        border-radius: 999px;
-        background: var(--paper-surface);
-        color: var(--paper-ink-soft);
-        font-family: var(--font-meta);
-        font-size: 0.82rem;
-        cursor: pointer;
-        transition:
-          color 0.2s,
-          border-color 0.2s;
-      }
+    .circle-card__meta time {
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
 
-      .circle-more:hover {
-        border-color: var(--paper-accent);
-        color: var(--paper-accent);
-      }
+    .circle-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 18px;
+    }
 
-      .links-circle-note {
-        max-width: 58ch;
-        margin: 18px 0 0;
-        padding: 10px 14px;
-        border: 1px dashed var(--paper-line-strong);
-        border-radius: 0.6rem;
-        color: var(--paper-ink-faint);
-        font-family: var(--font-meta);
-        font-size: 0.78rem;
-        line-height: 1.7;
-      }
+    .circle-more {
+      padding: 8px 22px;
+      border: 1px solid var(--paper-line-strong);
+      border-radius: 999px;
+      background: var(--paper-surface);
+      color: var(--paper-ink-soft);
+      font-family: var(--font-meta);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition:
+        color 0.2s,
+        border-color 0.2s;
+    }
 
-      .links-circle-note code {
-        padding: 0.1em 0.35em;
-        border-radius: 0.3em;
-        background: var(--paper-surface-muted);
-        font-family: var(--font-code);
-        font-size: 0.92em;
-      }
+    .circle-more:hover {
+      border-color: var(--paper-accent);
+      color: var(--paper-accent);
+    }
 
-      .links-apply {
-        margin-top: clamp(40px, 7vw, 72px);
-        padding-top: 34px;
-        border-top: 1px solid var(--paper-line);
-      }
-    </style>
+    .links-circle-note {
+      max-width: 58ch;
+      margin: 18px 0 0;
+      padding: 10px 14px;
+      border: 1px dashed var(--paper-line-strong);
+      border-radius: 0.6rem;
+      color: var(--paper-ink-faint);
+      font-family: var(--font-meta);
+      font-size: 0.78rem;
+      line-height: 1.7;
+    }
 
-    <script>
-      const bind = () => {
-        const grid = document.querySelector<HTMLElement>('[data-circle-list]');
-        const button = document.querySelector<HTMLButtonElement>('[data-circle-more]');
-        if (!grid || !button || button.dataset.bound === '1') return;
-        button.dataset.bound = '1';
-        const pageSize = Number(grid.dataset.circleSize ?? '20');
-        let visible = Math.min(
-          [...grid.querySelectorAll('[data-circle-card]')].filter(
-            (card) => !card.classList.contains('circle-card--hidden'),
-          ).length,
-          pageSize,
-        );
-        button.addEventListener('click', () => {
-          visible += pageSize;
-          const cards = [...grid.querySelectorAll<HTMLElement>('[data-circle-card]')];
-          cards.forEach((card, index) => {
-            card.classList.toggle('circle-card--hidden', index >= visible);
-          });
-          if (visible >= cards.length) button.hidden = true;
+    .links-circle-note code {
+      padding: 0.1em 0.35em;
+      border-radius: 0.3em;
+      background: var(--paper-surface-muted);
+      font-family: var(--font-code);
+      font-size: 0.92em;
+    }
+
+    .links-apply {
+      margin-top: clamp(40px, 7vw, 72px);
+      padding-top: 34px;
+      border-top: 1px solid var(--paper-line);
+    }
+  </style>
+
+  <script>
+    const bind = () => {
+      const grid = document.querySelector<HTMLElement>('[data-circle-list]');
+      const button = document.querySelector<HTMLButtonElement>('[data-circle-more]');
+      if (!grid || !button || button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
+      const pageSize = Number(grid.dataset.circleSize ?? '20');
+      let visible = Math.min(
+        [...grid.querySelectorAll('[data-circle-card]')].filter(
+          (card) => !card.classList.contains('circle-card--hidden'),
+        ).length,
+        pageSize,
+      );
+      button.addEventListener('click', () => {
+        visible += pageSize;
+        const cards = [...grid.querySelectorAll<HTMLElement>('[data-circle-card]')];
+        cards.forEach((card, index) => {
+          card.classList.toggle('circle-card--hidden', index >= visible);
         });
-      };
+        if (visible >= cards.length) button.hidden = true;
+      });
+    };
 
-      document.addEventListener('astro:page-load', bind);
-      if (document.readyState === 'loading')
-        document.addEventListener('DOMContentLoaded', bind, { once: true });
-      else bind();
-    </script>
-  </body>
-</html>
+    document.addEventListener('astro:page-load', bind);
+    if (document.readyState === 'loading')
+      document.addEventListener('DOMContentLoaded', bind, { once: true });
+    else bind();
+  </script>
+</Base>

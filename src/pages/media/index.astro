@@ -1,12 +1,10 @@
 ---
+import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import SiteHeader from '../../components/blog/SiteHeader.astro';
-import Footer from '../../components/Footer.astro';
 import PageHero from '../../components/PageHero.astro';
 import MediaShelf from '../../components/mdx/MediaShelf.astro';
 import { getSiteConfig } from '../../data/site';
-import { getHtmlLang, getI18n } from '../../utils/ui-text';
+import { getI18n } from '../../utils/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
 type CoverAspect = 'portrait' | 'landscape' | 'square' | 'wide';
@@ -31,7 +29,7 @@ type MediaEntry = {
 };
 
 const siteConfig = await getSiteConfig();
-const { site, theme, pages } = siteConfig;
+const { site, pages } = siteConfig;
 const i18n = getI18n(siteConfig);
 const ui = {
   media: {
@@ -49,8 +47,6 @@ const ui = {
     },
   },
 };
-const htmlLang = getHtmlLang(siteConfig);
-const palette = theme.palette;
 const configuredMedia = (pages as Record<string, unknown>).media;
 const pageMeta = isPageMeta(configuredMedia)
   ? configuredMedia
@@ -111,10 +107,8 @@ function isPageMeta(value: unknown): value is {
 }
 ---
 
-<!doctype html>
-<html lang={htmlLang} data-palette={palette}>
-  <head>
-    <BaseHead title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle} />
+<Base title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle}>
+  <Fragment slot="head">
     <style>
       html {
         scroll-behavior: smooth;
@@ -231,102 +225,99 @@ function isPageMeta(value: unknown): value is {
         }
       }
     </style>
-  </head>
-  <body>
-    <SiteHeader />
-    <main>
-      <PageHero
-        kicker={pageMeta.kicker}
-        title={pageMeta.title}
-        subtitle={pageMeta.subtitle}
-        note={pageMeta.note || undefined}
-      />
-      <div class="media-layout">
-        <div>
-          <nav class="media-mobile-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
-            {
-              sections.map((section, index) => (
-                <a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
-                  {section.label} <span>{section.items.length}</span>
-                </a>
-              ))
-            }
-          </nav>
-          {
-            sections.map((section) => (
-              <section class="media-section" id={section.id} data-media-section>
-                <div class="media-section-heading">
-                  <>
-                    <h2>{section.label}</h2>
-                    <span class="media-count">
-                      {section.items.length} · {section.description}
-                    </span>
-                  </>
-                </div>
-                {section.items.length ? (
-                  <MediaShelf
-                    columns={4}
-                    items={section.items.map((entry) => ({
-                      title: entry.data.title,
-                      creator: entry.data.creator,
-                      type: entry.data.type,
-                      cover: entry.data.cover,
-                      coverAspect: entry.data.coverAspect,
-                      rating: entry.data.rating,
-                      href: entry.data.externalUrl,
-                      reviewHref: entry.data.review ? `${mediaRoute}/${entry.id}/` : undefined,
-                      reviewLabel: entry.data.review ? ui.media.readReview : undefined,
-                    }))}
-                  />
-                ) : (
-                  <p class="media-empty">{ui.media.empty}</p>
-                )}
-              </section>
-            ))
-          }
-        </div>
-        <nav class="media-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
-          <p>{ui.media.browse}</p>
+  </Fragment>
+
+  <main>
+    <PageHero
+      kicker={pageMeta.kicker}
+      title={pageMeta.title}
+      subtitle={pageMeta.subtitle}
+      note={pageMeta.note || undefined}
+    />
+    <div class="media-layout">
+      <div>
+        <nav class="media-mobile-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
           {
             sections.map((section, index) => (
               <a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
-                <>
-                  <span>{section.label}</span>
-                  <span>{section.items.length}</span>
-                </>
+                {section.label} <span>{section.items.length}</span>
               </a>
             ))
           }
         </nav>
+        {
+          sections.map((section) => (
+            <section class="media-section" id={section.id} data-media-section>
+              <div class="media-section-heading">
+                <>
+                  <h2>{section.label}</h2>
+                  <span class="media-count">
+                    {section.items.length} · {section.description}
+                  </span>
+                </>
+              </div>
+              {section.items.length ? (
+                <MediaShelf
+                  columns={4}
+                  items={section.items.map((entry) => ({
+                    title: entry.data.title,
+                    creator: entry.data.creator,
+                    type: entry.data.type,
+                    cover: entry.data.cover,
+                    coverAspect: entry.data.coverAspect,
+                    rating: entry.data.rating,
+                    href: entry.data.externalUrl,
+                    reviewHref: entry.data.review ? `${mediaRoute}/${entry.id}/` : undefined,
+                    reviewLabel: entry.data.review ? ui.media.readReview : undefined,
+                  }))}
+                />
+              ) : (
+                <p class="media-empty">{ui.media.empty}</p>
+              )}
+            </section>
+          ))
+        }
       </div>
-    </main>
-    <Footer />
-    <script>
-      const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-media-section]'));
-      const navs = Array.from(document.querySelectorAll<HTMLElement>('[data-media-nav]'));
-      const setActive = (id: string) =>
-        navs.forEach((nav) =>
-          nav
-            .querySelectorAll<HTMLAnchorElement>('a')
-            .forEach((link) =>
-              link.setAttribute(
-                'aria-current',
-                link.getAttribute('href') === `#${id}` ? 'true' : 'false',
-              ),
+      <nav class="media-nav" aria-label={ui.media.sectionsLabel} data-media-nav>
+        <p>{ui.media.browse}</p>
+        {
+          sections.map((section, index) => (
+            <a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
+              <>
+                <span>{section.label}</span>
+                <span>{section.items.length}</span>
+              </>
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </main>
+  <script>
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-media-section]'));
+    const navs = Array.from(document.querySelectorAll<HTMLElement>('[data-media-nav]'));
+    const setActive = (id: string) =>
+      navs.forEach((nav) =>
+        nav
+          .querySelectorAll<HTMLAnchorElement>('a')
+          .forEach((link) =>
+            link.setAttribute(
+              'aria-current',
+              link.getAttribute('href') === `#${id}` ? 'true' : 'false',
             ),
-        );
-      if (sections.length) {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            const visible = entries
-              .filter((entry) => entry.isIntersecting)
-              .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-            if (visible) setActive((visible.target as HTMLElement).id);
-          },
-          { rootMargin: '-22% 0px -64%', threshold: [0, 0.1, 0.5] },
-        );
-        sections.forEach((section) => observer.observe(section));
-      }
-    </script>
-  </body>
-</html>
+          ),
+      );
+    if (sections.length) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (visible) setActive((visible.target as HTMLElement).id);
+        },
+        { rootMargin: '-22% 0px -64%', threshold: [0, 0.1, 0.5] },
+      );
+      sections.forEach((section) => observer.observe(section));
+    }
+  </script>
+</Base>

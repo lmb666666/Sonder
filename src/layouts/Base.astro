@@ -1,0 +1,37 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import ScrollToTopButton from '../components/ScrollToTopButton.astro';
+import SiteNav from '../components/blog/SiteNav.astro';
+import { getSiteConfig } from '../data/site';
+import { getHtmlLang } from '../utils/ui-text';
+import type { TocItem } from '../utils/toc-tree';
+
+interface Props {
+  title: string;
+  description: string;
+  bodyClass?: string;
+  showTocIcon?: boolean;
+  tocItems?: TocItem[];
+}
+
+const { title, description, bodyClass, showTocIcon = false, tocItems = [] } = Astro.props;
+const siteConfig = await getSiteConfig();
+const palette = siteConfig.theme.palette;
+const htmlLang = getHtmlLang(siteConfig);
+---
+
+<!doctype html>
+<html lang={htmlLang} data-palette={palette}>
+  <head>
+    <BaseHead title={title} description={description} />
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <SiteNav showTocIcon={showTocIcon} tocItems={tocItems} />
+    <slot />
+    <slot name="after-content" />
+    <ScrollToTopButton />
+    <slot name="footer"><Footer /></slot>
+  </body>
+</html>

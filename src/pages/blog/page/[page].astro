@@ -1,13 +1,10 @@
 ---
+import Base from '../../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../../components/BaseHead.astro';
-import Footer from '../../../components/Footer.astro';
 import BlogArchive from '../../../components/blog/BlogArchive.astro';
-import SiteHeader from '../../../components/blog/SiteHeader.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../data/site';
 import { sortBlogPostsForArchive } from '../../../utils/content-dates';
-import { getHtmlLang } from '../../../utils/ui-text';
 
 export async function getStaticPaths() {
   const { pages } = await getSiteConfig();
@@ -42,20 +39,16 @@ export async function getStaticPaths() {
 }
 
 const siteConfig = await getSiteConfig();
-const { site, theme, pages } = siteConfig;
-const palette = theme.palette;
-const htmlLang = getHtmlLang(siteConfig);
+const { site, pages } = siteConfig;
 const pageMeta = pages.blog;
 const { page, postOffset } = Astro.props;
 ---
 
-<!doctype html>
-<html lang={htmlLang} data-palette={palette}>
-  <head>
-    <BaseHead
-      title={`${pageMeta.title} | Page ${page.currentPage} | ${site.title}`}
-      description={pageMeta.subtitle}
-    />
+<Base
+  title={`${pageMeta.title} | Page ${page.currentPage} | ${site.title}`}
+  description={pageMeta.subtitle}
+>
+  <Fragment slot="head">
     <style>
       main {
         width: min(100%, var(--layout-shell-width));
@@ -69,23 +62,20 @@ const { page, postOffset } = Astro.props;
         }
       }
     </style>
-  </head>
-  <body>
-    <SiteHeader />
-    <main data-pagefind-body>
-      <BlogArchive
-        page={page}
-        postOffset={postOffset}
-        headerKicker={pageMeta.kicker}
-        headerTitle={pageMeta.title}
-        headerSubtitle={pageMeta.subtitle}
-        headerNote={pageMeta.note}
-        coverImageStyle={pageMeta.coverImageStyle}
-        listLayout={pageMeta.listLayout}
-      >
-        <GroupNav slot="after-header" />
-      </BlogArchive>
-    </main>
-    <Footer />
-  </body>
-</html>
+  </Fragment>
+
+  <main data-pagefind-body>
+    <BlogArchive
+      page={page}
+      postOffset={postOffset}
+      headerKicker={pageMeta.kicker}
+      headerTitle={pageMeta.title}
+      headerSubtitle={pageMeta.subtitle}
+      headerNote={pageMeta.note}
+      coverImageStyle={pageMeta.coverImageStyle}
+      listLayout={pageMeta.listLayout}
+    >
+      <GroupNav slot="after-header" />
+    </BlogArchive>
+  </main>
+</Base>

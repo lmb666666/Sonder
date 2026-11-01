@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import Footer from '../components/Footer.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import Base from '../layouts/Base.astro';
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -17,7 +16,7 @@ function withBase(href: string) {
 const postHrefs = posts.map((post) => withBase(`/blog/${post.id}/`));
 ---
 
-<BaseLayout title="页面未找到" description="请求的页面不存在。">
+<Base title="页面未找到" description="请求的页面不存在。">
   <div class="publication-bg" aria-hidden="true"></div>
   <main class="not-found-shell" aria-labelledby="not-found-title">
     <section class="not-found-panel">
@@ -48,8 +47,7 @@ const postHrefs = posts.map((post) => withBase(`/blog/${post.id}/`));
       </script>
     </section>
   </main>
-  <Footer />
-</BaseLayout>
+</Base>
 
 <style>
   .not-found-shell {

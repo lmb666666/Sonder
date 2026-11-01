@@ -1,5 +1,5 @@
 import type { SiteConfig } from '../data/site';
-import { createI18n, normalizeLocale, type I18nMessages } from '@sonder/core';
+import { createI18n, normalizeLocale, type I18nMessages } from '../i18n';
 import en from '../i18n/en.json';
 import zhCN from '../i18n/zh-CN.json';
 import zhTW from '../i18n/zh-TW.json';

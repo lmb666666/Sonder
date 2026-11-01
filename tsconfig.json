@@ -5,7 +5,6 @@
   "compilerOptions": {
     "strictNullChecks": true,
     "paths": {
-      "@sonder/core": ["./src/framework/index.ts"],
       "@sonder/mdx-components/*": ["./src/components/mdx/*"],
       "@sonder/theme-default": ["./src/components/theme/index.ts"],
       "@sonder/theme-default/*": ["./src/components/theme/*"]

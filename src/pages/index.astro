@@ -10,7 +10,7 @@ import LatestUpdates from '../components/widgets/LatestUpdates.astro';
 import SiteInfoCard from '../components/widgets/SiteInfoCard.astro';
 import { getSiteConfig } from '../data/site';
 import { formatCount } from '../utils/word-count';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import Base from '../layouts/Base.astro';
 
 const { home, profile, site } = await getSiteConfig();
 
@@ -26,7 +26,7 @@ const stats = [
 ];
 ---
 
-<BaseLayout title={site.pageTitle} description={site.pageDescription}>
+<Base title={site.pageTitle} description={site.pageDescription}>
   <div class="publication-bg" aria-hidden="true"></div>
   <DashboardFlow>
     <Fragment slot="profile">
@@ -63,10 +63,12 @@ const stats = [
       <ConnectCard links={home.links} />
     </Fragment>
   </DashboardFlow>
-  <div class="home-footer">
-    <Footer />
-  </div>
-</BaseLayout>
+  <Fragment slot="footer">
+    <div class="home-footer">
+      <Footer />
+    </div>
+  </Fragment>
+</Base>
 
 <style>
   /* 桌面首页的版权在站点信息卡里；移动端站点信息收起后使用全站页脚 */
