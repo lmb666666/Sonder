@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "fonts:subsets": "bun scripts/fonts/subset-fonts.ts",
-    "build": "bun run fonts:subsets && astro build && pagefind --site dist --output-subdir pagefind --root-selector main --exclude-selectors \"[data-pagefind-ignore]\" --force-language zh",
+    "build": "bun run fonts:subsets && astro build && bun scripts/check-assets.ts && pagefind --site dist --output-subdir pagefind --root-selector main --exclude-selectors \"[data-pagefind-ignore]\" --force-language zh",
     "preview": "astro preview",
     "astro": "astro",
     "content:new": "bun scripts/new-content.ts",

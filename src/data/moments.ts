@@ -42,7 +42,7 @@ export const demoMoments: MomentItem[] = [
     id: 'demo-7',
     content: '傍晚的江边，风把云吹成了鱼鳞的样子。',
     date: '2026-10-15T18:47:00+08:00',
-    images: ['/images/sample-bg.webp', '/images/site-in-devices.webp', '/images/blog-preview.webp'],
+    // 演示数据不引用不存在的图片（原先是 3 个死链）；需要演示图片时放文件到 public/images 后再填路径
     tags: ['生活'],
   },
   {
@@ -68,7 +68,7 @@ export const demoMoments: MomentItem[] = [
     id: 'demo-4',
     content: '新键盘到了。轴体是静音红的，深夜写东西再也不吵到人。',
     date: '2026-09-19T23:40:00+08:00',
-    images: ['/images/only-intro.webp', '/images/cover.webp'],
+    // 同上：避免死链
     tags: ['数码'],
   },
   {

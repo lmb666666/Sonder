@@ -1,6 +1,6 @@
 {
   "framework": "astro",
   "installCommand": "python3 -m venv .venv && .venv/bin/python -m pip install fonttools brotli && bun install --frozen-lockfile",
-  "buildCommand": "PATH=.venv/bin:$PATH bun run build",
+  "buildCommand": "rm -rf .astro node_modules/.astro && PATH=.venv/bin:$PATH bun run build",
   "outputDirectory": "dist"
 }
