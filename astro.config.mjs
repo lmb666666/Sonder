@@ -1,7 +1,6 @@
 // @ts-check
 
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { unified } from '@astrojs/markdown-remark';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
@@ -157,31 +156,4 @@ export default defineConfig({
     }),
   },
   integrations: [...markdown.integrations, expressiveCode(expressiveCodeConfig), sitemap()],
-
-  vite: {
-    resolve: {
-      alias: [
-        // Vendored @sonder/* packages — specifiers stay
-        // unchanged, they resolve to in-repo source instead of node_modules.
-        {
-          find: /^@sonder\/theme-default\/components\/(.*)$/,
-          replacement: fileURLToPath(
-            new URL('./src/components/theme/components/$1', import.meta.url),
-          ),
-        },
-        {
-          find: /^@sonder\/theme-default\/styles\/(.*)$/,
-          replacement: fileURLToPath(new URL('./src/components/theme/styles/$1', import.meta.url)),
-        },
-        {
-          find: /^@sonder\/theme-default$/,
-          replacement: fileURLToPath(new URL('./src/components/theme/index.ts', import.meta.url)),
-        },
-        {
-          find: /^@sonder\/mdx-components\/(.*)$/,
-          replacement: fileURLToPath(new URL('./src/components/mdx/$1', import.meta.url)),
-        },
-      ],
-    },
-  },
 });

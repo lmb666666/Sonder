@@ -3,11 +3,6 @@
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"],
   "compilerOptions": {
-    "strictNullChecks": true,
-    "paths": {
-      "@sonder/mdx-components/*": ["./src/components/mdx/*"],
-      "@sonder/theme-default": ["./src/components/theme/index.ts"],
-      "@sonder/theme-default/*": ["./src/components/theme/*"]
-    }
+    "strictNullChecks": true
   }
 }

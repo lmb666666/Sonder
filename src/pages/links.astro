@@ -3,13 +3,9 @@ import Base from '../layouts/Base.astro';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import FriendLinkApplication from '../components/mdx/FriendLinkApplication.astro';
-import FriendLinkCard from '../components/mdx/FriendLinkCard.astro';
-import {
-  crawlFriendPosts,
-  parseFriendCircleFeed,
-  type FriendPost,
-} from '../components/mdx/lib/friend-data';
+import FriendLinkApplication from '../components/links/FriendLinkApplication.astro';
+import FriendLinkCard from '../components/links/FriendLinkCard.astro';
+import { crawlFriendPosts, parseFriendCircleFeed, type FriendPost } from '../lib/friend-data';
 import { getSiteConfig } from '../data/site';
 import PageHero from '../components/PageHero.astro';
 import demoFeed from '../data/friend-circle-demo.json';

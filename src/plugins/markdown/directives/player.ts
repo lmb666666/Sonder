@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { h } from 'hastscript';
-import { musicThemeStyle, type MusicThemeName } from '../../../components/mdx/lib/music-theme.js';
+import { musicThemeStyle, type MusicThemeName } from './music-theme.js';
 import type { AttributeValue, MdastNode } from './handlers.js';
 import { wrapHast } from './handlers.js';
 import { icon } from './icons.js';

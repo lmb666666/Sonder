@@ -1,4 +1,4 @@
-import type { FriendLinkItem } from '../components/mdx/lib/friend-data';
+import type { FriendLinkItem } from '../lib/friend-data';
 
 export interface FriendLinkGroup {
   title: string;

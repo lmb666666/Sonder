@@ -1,8 +1,8 @@
 /* Sonder 外挂指令·重型组件的全局样式。
- * 由 src/components/mdx/*.astro 的 scoped 样式移植而来（类名保持一致），
+ * 由早期 MDX 组件（已移除）的 scoped 样式移植而来（类名保持一致），
  * 仅文章页（MarkdownWidgets）加载。 */
 
-/* ═══ 聊天记录（chat） — 移植自 src/components/mdx/Chat.astro ═══ */
+/* ═══ 聊天记录（chat） — 移植自已移除的 MDX 组件 ═══ */
 
 /* 原始内容默认隐藏（结构化由脚本完成）；无 JS 环境下回退为可见的原始文本 */
 .chat-source {
@@ -60,7 +60,7 @@
   margin: 0;
 }
 
-/* ═══ 诗歌排版（poetry） — 移植自 src/components/mdx/Poetry.astro ═══ */
+/* ═══ 诗歌排版（poetry） — 移植自已移除的 MDX 组件 ═══ */
 
 .poetry {
   width: fit-content;
@@ -93,7 +93,7 @@
   text-align: center;
 }
 
-/* ═══ 卡片列表（card-list） — 移植自 src/components/mdx/CardList.astro ═══ */
+/* ═══ 卡片列表（card-list） — 移植自已移除的 MDX 组件 ═══ */
 
 .card-list > :where(ol, ul):not([class]) {
   display: grid;
@@ -114,7 +114,7 @@
   font-family: var(--font-meta);
 }
 
-/* ═══ 长图（sonder-long-image） — 移植自 src/components/mdx/LongImage.astro ═══ */
+/* ═══ 长图（sonder-long-image） — 移植自已移除的 MDX 组件 ═══ */
 
 .sonder-long-image {
   margin: 28px 0 30px;
@@ -151,7 +151,7 @@
   }
 }
 
-/* ═══ 轮播（sonder-carousel） — 移植自 src/components/mdx/Carousel.astro ═══ */
+/* ═══ 轮播（sonder-carousel） — 移植自已移除的 MDX 组件 ═══ */
 
 .sonder-carousel {
   display: block;
@@ -198,7 +198,7 @@
   color: var(--paper-ink);
 }
 
-/* ═══ 媒体架（sonder-media-shelf） — 移植自 src/components/mdx/MediaShelf.astro ═══ */
+/* ═══ 媒体架（sonder-media-shelf） — 移植自已移除的 MDX 组件 ═══ */
 
 .sonder-media-shelf {
   container-type: inline-size;
@@ -412,7 +412,7 @@
   }
 }
 
-/* ═══ 友链卡片（friend-link-card） — 移植自 src/components/mdx/FriendLinkCard.astro ═══ */
+/* ═══ 友链卡片（friend-link-card） — 移植自已移除的 MDX 组件 ═══ */
 
 .friend-link-card__rss {
   position: absolute;
@@ -569,7 +569,7 @@
   }
 }
 
-/* ═══ 朋友圈（friend-circle） — 移植自 src/components/mdx/FriendCircle.astro ═══ */
+/* ═══ 朋友圈（friend-circle） — 移植自已移除的 MDX 组件 ═══ */
 
 .friend-circle {
   margin: 34px 0;
@@ -751,7 +751,7 @@
   }
 }
 
-/* ═══ ABC 乐谱（music-score） — 移植自 src/components/mdx/MusicScore.astro ═══ */
+/* ═══ ABC 乐谱（music-score） — 移植自已移除的 MDX 组件 ═══ */
 
 .music-score {
   margin: 1.5em 0;
@@ -873,7 +873,7 @@
   }
 }
 
-/* ═══ 音乐播放器（sonder-music-player） — 移植自 src/components/mdx/MusicPlayer.astro ═══ */
+/* ═══ 音乐播放器（sonder-music-player） — 移植自已移除的 MDX 组件 ═══ */
 
 .sonder-music-player {
   --music-surface: var(--music-surface-light);
@@ -1211,7 +1211,7 @@
   }
 }
 
-/* ═══ 友链申请表单（friend-link-application） — 移植自 src/components/mdx/FriendLinkApplication.astro ═══ */
+/* ═══ 友链申请表单（friend-link-application） — 移植自已移除的 MDX 组件 ═══ */
 
 .friend-link-application {
   container-type: inline-size;
