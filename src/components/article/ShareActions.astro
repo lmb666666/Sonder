@@ -272,7 +272,7 @@ const dateLabel =
         const themeColor =
           getComputedStyle(document.documentElement).getPropertyValue('--paper-accent').trim() ||
           '#5b7488';
-        const headingFont = getFont('--font-page-heading', '"ChillRoundM", sans-serif');
+        const headingFont = getFont('--font-page-heading', '"ChillRoundF", sans-serif');
         const metaFont = getFont('--font-meta', '"Maple Mono", monospace');
 
         const qrCodeUrl = await QRCode.toDataURL(shareUrl, {

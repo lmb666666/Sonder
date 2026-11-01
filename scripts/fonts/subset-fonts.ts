@@ -71,8 +71,8 @@ const cjkPattern =
 function readFontConfig(): FontConfig {
   const defaults: FontConfig = {
     en: 'Maple Mono',
-    zh: 'ChillRoundM',
-    file: 'assets/fonts/ChillRoundM.woff2',
+    zh: 'ChillRoundF',
+    file: 'assets/fonts/ChillRoundFRegular.woff2',
   };
   const siteConfigPath = join(projectRoot, 'site.config.toml');
 

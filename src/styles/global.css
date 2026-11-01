@@ -44,29 +44,21 @@
   --page-header-spacing-mobile: 28px;
   --font-config-en: 'Maple Mono';
   --font-config-code: 'Monaco';
-  --font-config-zh: 'ChillRoundM';
-  --font-config-zh-subset: 'ChillRoundM UI Subset';
-  --font-config-zh-content: 'ChillRoundM Content Subset';
-  --font-config-zh-fallback: 'ChillRoundM Fallback';
+  --font-config-zh: 'ChillRoundF';
+  --font-config-zh-subset: 'ChillRoundF UI Subset';
+  --font-config-zh-content: 'ChillRoundF Content Subset';
   --font-cjk-system: var(--font-config-en), 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-  --font-ui-cjk:
-    var(--font-config-zh-subset), var(--font-config-zh-fallback), var(--font-cjk-system);
+  --font-ui-cjk: var(--font-config-zh-subset), var(--font-cjk-system);
   --font-serif-cn: var(--font-ui-cjk);
   --font-mono:
-    var(--font-config-en), var(--font-config-zh-subset), var(--font-config-zh-fallback),
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    var(--font-config-en), var(--font-config-zh-subset), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, monospace;
   --font-body: var(--font-mono);
   --font-display: var(--font-mono);
   --font-note: var(--font-mono);
-  --font-article:
-    var(--font-config-en), var(--font-config-zh-content), var(--font-config-zh-fallback),
-    var(--font-cjk-system);
-  --font-heading:
-    var(--font-config-en), var(--font-config-zh-content), var(--font-config-zh-fallback),
-    var(--font-cjk-system);
-  --font-page-heading:
-    var(--font-config-en), var(--font-config-zh-subset), var(--font-config-zh-fallback),
-    var(--font-cjk-system);
+  --font-article: var(--font-config-en), var(--font-config-zh-content), var(--font-cjk-system);
+  --font-heading: var(--font-config-en), var(--font-config-zh-content), var(--font-cjk-system);
+  --font-page-heading: var(--font-config-en), var(--font-config-zh-subset), var(--font-cjk-system);
   --font-meta: var(--font-mono);
   --font-code: var(--font-config-code), var(--font-mono);
   --font-ui-label: var(--font-mono);

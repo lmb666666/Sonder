@@ -50,11 +50,11 @@ navStyle = "pill"
 en = "Maple Mono"
 # 代码字体名称
 code = "Monaco"
-# 中文阅读字体名称；模板内置 ChillRoundM，也可换成 LXGW WenKai
-zh = "ChillRoundM"
+# 中文阅读字体名称；模板内置 ChillRoundF（寒蝉全圆体）
+zh = "ChillRoundF"
 # 中文源字体：仅构建期读取，用于生成 UI / 内容子集（子集输出到 public/fonts）。
 # 源文件不会部署到站点，可放在 public 之外的任意项目路径。
-file = "assets/fonts/ChillRoundM.woff2"
+file = "assets/fonts/ChillRoundFRegular.woff2"
 
 [config.code]
 # 代码块显示行号、自动换行、保留缩进

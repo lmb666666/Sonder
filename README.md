@@ -119,4 +119,4 @@ bun test              # 单元测试
 
 ## 🙏 致谢与许可
 
-Sonder 基于 [Navfolio](https://github.com/dodolalorc/astro-navfolio) 二次开发，由 Liang 维护；分享海报参考了 [Firefly](https://github.com/CuteLeaf/Firefly)；字体兜底子集来自 Noto Sans CJK TC（SIL OFL 1.1）。相关版权声明统一保留在 [LICENSE](./LICENSE) 中，本项目以 MIT 许可发布。
+Sonder 基于 [Navfolio](https://github.com/dodolalorc/astro-navfolio) 二次开发，由 Liang 维护；分享海报参考了 [Firefly](https://github.com/CuteLeaf/Firefly)。相关版权声明统一保留在 [LICENSE](./LICENSE) 中，本项目以 MIT 许可发布。

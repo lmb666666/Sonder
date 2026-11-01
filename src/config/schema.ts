@@ -59,8 +59,8 @@ const defaultMarkdownConfig = {
 const defaultFontConfig = {
   en: 'Maple Mono',
   code: 'Monaco',
-  zh: 'ChillRoundM',
-  file: 'assets/fonts/ChillRoundM.woff2',
+  zh: 'ChillRoundF',
+  file: 'assets/fonts/ChillRoundFRegular.woff2',
 };
 
 const nonEmptyStringSchema = (fallback: string) =>
