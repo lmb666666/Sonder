@@ -41,9 +41,8 @@ icon = ""
 palette = "orange-soft"
 # 原生 UI 语言。可用值：en、zh-CN、zh-TW。未知值会回退到 en。
 lang = "zh-CN"
-# 导航栏样式："bar" 通栏工具条（默认，品牌 + 文字导航 + 操作区）；
-# "pill" 居中胶囊导航（品牌移除，头像与导航同基线，跨页时头像与首页大头像交换）；
-# "legacy" 旧版 Astro 通栏 Header（站点标题 + 文字导航 + 社交图标，无搜索/主题面板）。
+# 导航栏样式："bar" 通栏工具条（品牌 + 文字导航 + 操作区）；
+# "pill" 居中胶囊导航（品牌移除，头像与导航同基线，跨页时头像与首页大头像交换）。
 navStyle = "pill"
 
 [config.fonts]
@@ -68,8 +67,13 @@ preserveIndent = true
 # 折叠样式：github / collapsible-start / collapsible-end / collapsible-auto
 collapseStyle = "collapsible-auto"
 
-[config.math]
-render = "katex" # "katex" | "mathjax"
+[config.markdown]
+# 数学公式：关闭后不注入 KaTeX / MathJax
+math = true
+# 数学渲染器："katex" | "mathjax"
+mathRenderer = "katex"
+# Mermaid 图表：关闭后不打包 mermaid
+mermaid = true
 
 [config.music]
 # Meting API 实例地址，供 NeteasePlaylist 组件构建期解析歌单。

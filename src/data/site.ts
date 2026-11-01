@@ -12,7 +12,7 @@ export async function getSiteConfig() {
   const entry = await getEntry('siteConfig', 'config');
 
   if (!entry) {
-    throw new Error('Missing site config entry in src/config/site.toml');
+    throw new Error('Missing site config entry in site.config.toml');
   }
 
   return entry.data;

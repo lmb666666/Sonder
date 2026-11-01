@@ -4,7 +4,7 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 import { defineEcConfig, setAlpha } from 'astro-expressive-code';
 import { parse } from 'smol-toml';
 
-const siteToml = parse(fs.readFileSync(new URL('./src/config/site.toml', import.meta.url), 'utf8'));
+const siteToml = parse(fs.readFileSync(new URL('./site.config.toml', import.meta.url), 'utf8'));
 
 const code = {
   lightTheme: 'github-light',

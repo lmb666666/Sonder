@@ -81,7 +81,7 @@ function readFontConfig(): FontConfig {
     zh: 'ChillRoundM',
     file: 'assets/fonts/ChillRoundM.woff2',
   };
-  const siteConfigPath = join(projectRoot, 'src/config/site.toml');
+  const siteConfigPath = join(projectRoot, 'site.config.toml');
 
   if (!existsSync(siteConfigPath)) return defaults;
 
@@ -381,7 +381,7 @@ writeFileSync(contentCharsPath, `${contentCharsValue}\n`, 'utf8');
 
 if (!existsSync(sourceFontPath)) {
   throw new Error(
-    `${fontConfig.zh} source font not found. Place the full font at ${sourceFontPath}, or update config.fonts.file in src/config/site.toml.`,
+    `${fontConfig.zh} source font not found. Place the full font at ${sourceFontPath}, or update config.fonts.file in site.config.toml.`,
   );
 }
 

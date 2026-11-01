@@ -8,6 +8,7 @@ import { defineConfig } from 'astro/config';
 import { parse } from 'smol-toml';
 
 import sonderConfig from './sonder.config';
+import { siteConfigSchema } from './src/config/schema';
 import { getAstroPluginConfig } from './src/plugins/config';
 
 /**
@@ -16,13 +17,19 @@ import { getAstroPluginConfig } from './src/plugins/config';
  */
 const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
 
-const siteToml = parse(fs.readFileSync(new URL('./src/config/site.toml', import.meta.url), 'utf8'));
-const configToml = isRecord(siteToml.config) ? siteToml.config : {};
-const siteConfig = isRecord(configToml.site) ? configToml.site : {};
-const mathConfig = isRecord(configToml.math) ? configToml.math : {};
-const configuredSiteUrl = siteConfig.url;
-const configuredMathRenderer = mathConfig.render;
-const mathRenderer = configuredMathRenderer === 'mathjax' ? 'mathjax' : 'katex';
+const siteToml = parse(fs.readFileSync(new URL('./site.config.toml', import.meta.url), 'utf8'));
+const parsedSiteConfig = siteConfigSchema.safeParse(
+  isRecord(siteToml.config) ? siteToml.config : {},
+);
+if (!parsedSiteConfig.success) {
+  const issues = parsedSiteConfig.error.issues
+    .map((issue) => `${issue.path.join('.') || '(root)'}: ${issue.message}`)
+    .join('\n');
+  throw new Error(`Invalid site.config.toml:\n${issues}`);
+}
+const siteConfigData = parsedSiteConfig.data;
+const configuredSiteUrl = siteConfigData.site.url;
+const mathRenderer = siteConfigData.markdown.mathRenderer;
 const astroPluginConfig = getAstroPluginConfig(sonderConfig, { mathRenderer });
 /**
  * @param {unknown} value
