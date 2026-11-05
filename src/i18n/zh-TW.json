@@ -13,7 +13,10 @@
     "openPalette": "開啟主題色面板",
     "closePalette": "關閉主題色面板",
     "backToTop": "返回頂部",
-    "home": "首頁"
+    "home": "首頁",
+    "articleNav": "文章導覽",
+    "pageActions": "頁面操作",
+    "switchTheme": "切換深淺色"
   },
   "palette": {
     "greenSoft": "苔綠",
@@ -55,6 +58,7 @@
     "browseByTopic": "按主題瀏覽",
     "followConnectedNotes": "閱讀連續筆記",
     "blogBrowsingGroups": "文章瀏覽分組",
+    "blogViews": "文章檢視",
     "emptyCategories": "還沒有新增分類。",
     "emptyTags": "還沒有可展示的標籤。",
     "emptyArchives": "還沒有可歸檔的文章。",
@@ -277,6 +281,11 @@
       "minute": "{count}分",
       "second": "{count}秒"
     }
+  },
+  "connect": {
+    "links": "聯絡方式",
+    "copied": "已複製",
+    "copyFailed": "複製失敗"
   },
   "comments": {
     "title": "留言",

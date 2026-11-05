@@ -126,7 +126,7 @@ const paletteOptions = [
         </a>
       )
     ) : (
-      <a class="brand" href={withBase('/')} aria-label={`Go to ${site.title} home`}>
+      <a class="brand" href={withBase('/')} aria-label={`${ui.nav.home}: ${site.title}`}>
         <span class="brand-mark" aria-hidden="true" />
         <span class="brand-title">
           <span>{site.title}</span>
@@ -136,7 +136,7 @@ const paletteOptions = [
     )
   }
 
-  <nav class="nav-links" aria-label="Article navigation">
+  <nav class="nav-links" aria-label={ui.nav.articleNav}>
     {
       links.map((link) =>
         link.disabled ? (
@@ -229,7 +229,7 @@ const paletteOptions = [
     </div>
   </nav>
 
-  <div class="nav-actions" aria-label="Page actions">
+  <div class="nav-actions" role="group" aria-label={ui.nav.pageActions}>
     <button
       type="button"
       data-palette-toggle
@@ -240,7 +240,7 @@ const paletteOptions = [
     >
       <Palette size={17} stroke-width={2} />
     </button>
-    <button type="button" data-theme-toggle aria-label="Switch theme">
+    <button type="button" data-theme-toggle aria-label={ui.nav.switchTheme}>
       <Moon class="theme-icon-moon" size={17} stroke-width={2} />
       <Sun class="theme-icon-sun" size={17} stroke-width={2} />
     </button>

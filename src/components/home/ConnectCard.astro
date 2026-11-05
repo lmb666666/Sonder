@@ -1,11 +1,19 @@
 ---
 import ConnectIcon, { type ConnectLink } from './ConnectIcon.astro';
+import { getSiteConfig } from '../../config';
+import { getUiText } from '../../lib/ui-text';
 
 const { links } = Astro.props as { links: ConnectLink[] };
+const ui = getUiText(await getSiteConfig());
 ---
 
-<article class="connect-card" data-connect-card>
-  <div class="connect-list" aria-label="Connect links">
+<article
+  class="connect-card"
+  data-connect-card
+  data-copied-label={ui.connect.copied}
+  data-copy-failed-label={ui.connect.copyFailed}
+>
+  <div class="connect-list" role="group" aria-label={ui.connect.links}>
     {links.map((item) => <ConnectIcon item={item} />)}
   </div>
 </article>
@@ -44,6 +52,9 @@ const { links } = Astro.props as { links: ConnectLink[] };
     const value = button.dataset.copyValue ?? '';
     if (!value) return;
 
+    const card = button.closest<HTMLElement>('[data-connect-card]');
+    const copiedLabel = card?.dataset.copiedLabel ?? 'Copied';
+    const copyFailedLabel = card?.dataset.copyFailedLabel ?? 'Copy failed';
     const originalTooltip = button.dataset.tooltip ?? '';
     const previousTimeout = copyTimeouts.get(button);
     if (previousTimeout !== undefined) {
@@ -56,9 +67,9 @@ const { links } = Astro.props as { links: ConnectLink[] };
       }
 
       await navigator.clipboard.writeText(value);
-      setCopyState(button, 'Copied');
+      setCopyState(button, copiedLabel);
     } catch {
-      setCopyState(button, 'Copy failed');
+      setCopyState(button, copyFailedLabel);
     }
 
     const timeoutId = window.setTimeout(() => resetCopyState(button, originalTooltip), resetDelay);

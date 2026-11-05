@@ -32,6 +32,9 @@ type RawUiText = {
     openPalette: string;
     closePalette: string;
     backToTop: string;
+    articleNav: string;
+    pageActions: string;
+    switchTheme: string;
   };
   homeStats: {
     posts: string;
@@ -115,6 +118,11 @@ type RawUiText = {
     justNow: string;
     units: Record<TimeUnit, Message>;
   };
+  connect: {
+    links: string;
+    copied: string;
+    copyFailed: string;
+  };
   comments: {
     title: string;
     note: string;
@@ -159,6 +167,7 @@ type RawUiText = {
     browseByTopic: string;
     followConnectedNotes: string;
     blogBrowsingGroups: string;
+    blogViews: string;
     emptyCategories: string;
     emptyTags: string;
     emptyArchives: string;
@@ -318,6 +327,7 @@ export type UiText = Omit<
     timeElapsed: (parts: ElapsedPart[]) => string;
   };
   comments: RawUiText['comments'];
+  connect: RawUiText['connect'];
   nav: RawUiText['nav'];
   pagination: Omit<RawUiText['pagination'], 'page'> & {
     page: (current: number, total: number) => string;
@@ -377,6 +387,7 @@ function createUiText(raw: RawUiText): UiText {
       },
     },
     comments: raw.comments,
+    connect: raw.connect,
     palette: raw.palette,
     heatmap: {
       ...raw.heatmap,

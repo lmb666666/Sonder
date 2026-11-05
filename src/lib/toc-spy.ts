@@ -49,8 +49,12 @@ const setBranchExpanded = (item: HTMLElement, expanded: boolean): void => {
     return;
   }
 
+  const root = item.closest<HTMLElement>('[data-toc-root]');
+  const expandLabel = root?.dataset.expandAriaLabel ?? 'Expand section';
+  const collapseLabel = root?.dataset.collapseAriaLabel ?? 'Collapse section';
+
   toggle.setAttribute('aria-expanded', String(expanded));
-  toggle.setAttribute('aria-label', expanded ? 'Collapse section' : 'Expand section');
+  toggle.setAttribute('aria-label', expanded ? collapseLabel : expandLabel);
 };
 
 const expandLinkAncestors = (link: TocLink): void => {

@@ -13,7 +13,10 @@
     "openPalette": "Open accent color panel",
     "closePalette": "Close accent color panel",
     "backToTop": "Back to top",
-    "home": "Home"
+    "home": "Home",
+    "articleNav": "Article navigation",
+    "pageActions": "Page actions",
+    "switchTheme": "Switch theme"
   },
   "palette": {
     "greenSoft": "Moss green",
@@ -58,6 +61,7 @@
     "browseByTopic": "Browse by topic",
     "followConnectedNotes": "Follow connected notes",
     "blogBrowsingGroups": "Post browsing groups",
+    "blogViews": "Blog views",
     "emptyCategories": "No categories have been added yet.",
     "emptyTags": "No tags have been added yet.",
     "emptyArchives": "No articles are ready to archive yet.",
@@ -295,6 +299,11 @@
       "minute": { "one": "{count} minute", "other": "{count} minutes" },
       "second": { "one": "{count} second", "other": "{count} seconds" }
     }
+  },
+  "connect": {
+    "links": "Connect links",
+    "copied": "Copied",
+    "copyFailed": "Copy failed"
   },
   "comments": {
     "title": "Comments",

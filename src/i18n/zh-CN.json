@@ -13,7 +13,10 @@
     "openPalette": "打开主题色面板",
     "closePalette": "关闭主题色面板",
     "backToTop": "返回顶部",
-    "home": "首页"
+    "home": "首页",
+    "articleNav": "文章导航",
+    "pageActions": "页面操作",
+    "switchTheme": "切换深浅色"
   },
   "palette": {
     "greenSoft": "苔绿",
@@ -55,6 +58,7 @@
     "browseByTopic": "按主题浏览",
     "followConnectedNotes": "阅读连续笔记",
     "blogBrowsingGroups": "文章浏览分组",
+    "blogViews": "文章视图",
     "emptyCategories": "还没有添加分类。",
     "emptyTags": "还没有可展示的标签。",
     "emptyArchives": "还没有可归档的文章。",
@@ -277,6 +281,11 @@
       "minute": "{count}分",
       "second": "{count}秒"
     }
+  },
+  "connect": {
+    "links": "联系方式",
+    "copied": "已复制",
+    "copyFailed": "复制失败"
   },
   "comments": {
     "title": "评论",

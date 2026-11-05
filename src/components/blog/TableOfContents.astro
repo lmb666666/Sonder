@@ -46,7 +46,7 @@ const ui = getUiText(await getSiteConfig());
     >
       {!hideHeading && <h2>{ui.toc.title}</h2>}
       <div id={listId} class="toc-list-wrap" data-toc-scroll>
-        <TocTree items={items} idPrefix={treeIdPrefix} />
+        <TocTree items={items} idPrefix={treeIdPrefix} expandLabel={ui.toc.expand} />
       </div>
       {canCollapse && (
         <button

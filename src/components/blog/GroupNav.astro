@@ -71,7 +71,7 @@ function getCategoryName(name: string, slug: string) {
     }
   </div>
 
-  <div class="group-links" aria-label="Blog views">
+  <div class="group-links" role="group" aria-label={ui.groups.blogViews}>
     <a class:list={[activeView === 'tags' && 'is-active']} href={withBase('/blog/tags/')}>
       <Icon name="tags" size={15} />
       {ui.groups.tags}

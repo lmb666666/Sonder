@@ -259,6 +259,7 @@ function isPageMeta(value: unknown): value is {
               {section.items.length ? (
                 <MediaShelf
                   columns={4}
+                  label={i18n.t('media.shelf')}
                   items={section.items.map((entry) => ({
                     title: entry.data.title,
                     creator: entry.data.creator,

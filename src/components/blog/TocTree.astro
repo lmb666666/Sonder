@@ -9,9 +9,17 @@ interface Props {
   path?: string;
   idPrefix?: string;
   navLink?: boolean;
+  expandLabel?: string;
 }
 
-const { items, level = 1, path = '', idPrefix = 'toc', navLink = false } = Astro.props;
+const {
+  items,
+  level = 1,
+  path = '',
+  idPrefix = 'toc',
+  navLink = false,
+  expandLabel = 'Expand section',
+} = Astro.props;
 ---
 
 <ol class:list={['toc-tree', { 'toc-tree-nested': level > 1 }]}>
@@ -32,7 +40,7 @@ const { items, level = 1, path = '', idPrefix = 'toc', navLink = false } = Astro
               <button
                 class="toc-branch-toggle"
                 type="button"
-                aria-label="Expand section"
+                aria-label={expandLabel}
                 aria-expanded="false"
                 aria-controls={branchId}
                 data-toc-toggle
@@ -59,6 +67,7 @@ const { items, level = 1, path = '', idPrefix = 'toc', navLink = false } = Astro
                 path={branchKey}
                 idPrefix={idPrefix}
                 navLink={navLink}
+                expandLabel={expandLabel}
               />
             </div>
           )}

@@ -5,6 +5,7 @@ import BlogArchive from '../../../components/blog/BlogArchive.astro';
 import GroupNav from '../../../components/blog/GroupNav.astro';
 import { getSiteConfig } from '../../../config';
 import { sortBlogPostsForArchive } from '../../../lib/content-dates';
+import { getUiText } from '../../../lib/ui-text';
 
 export async function getStaticPaths() {
   const { pages } = await getSiteConfig();
@@ -41,11 +42,12 @@ export async function getStaticPaths() {
 const siteConfig = await getSiteConfig();
 const { site, pages } = siteConfig;
 const pageMeta = pages.blog;
+const ui = getUiText(siteConfig);
 const { page, postOffset } = Astro.props;
 ---
 
 <Base
-  title={`${pageMeta.title} | Page ${page.currentPage} | ${site.title}`}
+  title={`${pageMeta.title} | ${ui.pagination.page(page.currentPage, page.lastPage)} | ${site.title}`}
   description={pageMeta.subtitle}
 >
   <Fragment slot="head">

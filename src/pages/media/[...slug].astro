@@ -87,7 +87,7 @@ function parentRoute(pathname: string, id: string) {
         >
           {
             coverSrc ? (
-              <img src={coverSrc} alt={`${media.data.title} cover`} />
+              <img src={coverSrc} alt={media.data.title} />
             ) : (
               <span>{ui.media.types[media.data.type]}</span>
             )

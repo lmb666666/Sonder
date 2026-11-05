@@ -106,7 +106,7 @@ const extensionLabels: Record<string, string> = ui.moments.extension;
                 <div class="moment__video">
                   <iframe
                     src={videoEmbedUrl(moment.video)}
-                    title="moment video"
+                    title={ui.moments.extension.video}
                     loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture"
                   />
@@ -618,7 +618,7 @@ const extensionLabels: Record<string, string> = ui.moments.extension;
                       .join('')}</div>`
                   : ''
               }
-              ${video ? `<div class="moment__video"><iframe src="${esc(video)}" title="moment video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture"></iframe></div>` : ''}
+              ${video ? `<div class="moment__video"><iframe src="${esc(video)}" title="${esc(messages.extension.video)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture"></iframe></div>` : ''}
               ${extensionMarkup}
               ${tags.length ? `<footer class="moment__tags">${tags.map((tag) => `<span>${tag}</span>`).join('')}</footer>` : ''}
             </article>
