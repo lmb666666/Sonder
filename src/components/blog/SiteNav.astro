@@ -290,6 +290,8 @@ const paletteOptions = [
         data-nav-toc-menu
         data-toc-root
         data-toc-scroll
+        data-expand-aria-label={ui.toc.expand}
+        data-collapse-aria-label={ui.toc.collapse}
       >
         <p>{ui.toc.title}</p>
         <TocTree items={tocItems} idPrefix="nav-toc" navLink expandLabel={ui.toc.expand} />
