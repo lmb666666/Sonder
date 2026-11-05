@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import { format } from 'date-fns';
 import { getSiteConfig } from '../config';
 import { getUiText } from '../lib/ui-text';
+import { withBase } from '../lib/url';
 import PageHero from '../components/PageHero.astro';
 import { demoMoments } from '../data/moments';
 
@@ -31,7 +32,7 @@ const pageSize = pageMeta.pageSize;
 const initialItems = ech0Mode ? [] : demoMoments;
 const initialCount = Math.min(initialItems.length, pageSize);
 
-const ownerAvatar = profile.avatar;
+const ownerAvatar = withBase(profile.avatar);
 const ownerName = profile.name;
 
 const formatMomentTime = (iso: string) => {

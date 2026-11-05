@@ -16,12 +16,14 @@ import { sortByDateDesc } from '../lib/content-dates';
 import { slugifyGroupName } from '../lib/content-groups';
 import { buildTocTree, countTocItems } from '../lib/toc-tree';
 import { getUiText } from '../lib/ui-text';
+import { withBase } from '../lib/url';
 import '../styles/blog-article.css';
 
 const siteConfig = await getSiteConfig();
 const { comments: rawComments, site, profile, article: articleConfig } = siteConfig;
 const comments = resolveCommentsConfig(rawComments);
 const ui = getUiText(siteConfig);
+const profileAvatar = withBase(profile.avatar);
 
 type SidebarConfig = {
   enable?: boolean;
@@ -209,8 +211,8 @@ const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : her
             siteTitle={site.title}
             author={profile.name}
             date={date.toISOString()}
-            avatar={profile.avatar}
-            logo={profile.avatar}
+            avatar={profileAvatar}
+            logo={profileAvatar}
             coverImage={posterCover}
             coverSelector={showHeroImage && heroImage ? '.article-hero-image img' : ''}
           />

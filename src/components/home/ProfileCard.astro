@@ -1,6 +1,7 @@
 ---
 import Icon from '../Icon.astro';
 import { getSiteConfig } from '../../config';
+import { withBase } from '../../lib/url';
 
 interface Profile {
   name: string;
@@ -18,8 +19,8 @@ const { theme } = await getSiteConfig();
 <article class="profile-card" data-nav-style={theme.navStyle}>
   <div class="avatar-wrap" data-avatar-slot transition:name="site-avatar">
     <img
-      src={profile.avatar}
-      alt={`${profile.name} GitHub avatar`}
+      src={withBase(profile.avatar)}
+      alt={`${profile.name} avatar`}
       width="128"
       height="128"
       loading="eager"

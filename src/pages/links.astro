@@ -8,6 +8,7 @@ import FriendLinkCard from '../components/links/FriendLinkCard.astro';
 import { crawlFriendPosts, parseFriendCircleFeed, type FriendPost } from '../lib/friend-data';
 import { getSiteConfig } from '../config';
 import { getUiText } from '../lib/ui-text';
+import { withBase } from '../lib/url';
 import PageHero from '../components/PageHero.astro';
 import demoFeed from '../data/friend-circle-demo.json';
 import { allFriendLinks, friendLinkGroups } from '../data/friends';
@@ -213,7 +214,7 @@ const shortDate = (post: FriendPost) => String(post.date ?? '').slice(0, 10);
             initialValue={{
               name: profile.name,
               url: site.url,
-              avatar: new URL(profile.avatar, site.url).toString(),
+              avatar: new URL(withBase(profile.avatar), site.url).toString(),
               rss: `${site.url}/rss.xml`,
               bio: profile.role,
             }}

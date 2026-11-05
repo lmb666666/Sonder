@@ -108,7 +108,7 @@ const paletteOptions = [
         href={withBase('/')}
         aria-label={`${site.title} ${ui.nav.home}`}
       >
-        <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
+        <img src={withBase(profile.avatar)} alt="" width="72" height="72" loading="eager" />
       </a>
     )
   }
@@ -122,7 +122,7 @@ const paletteOptions = [
           aria-label={`${site.title} ${ui.nav.home}`}
           transition:name="site-avatar"
         >
-          <img src={profile.avatar} alt="" width="72" height="72" loading="eager" />
+          <img src={withBase(profile.avatar)} alt="" width="72" height="72" loading="eager" />
         </a>
       )
     ) : (
