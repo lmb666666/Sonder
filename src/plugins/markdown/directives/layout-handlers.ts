@@ -1,15 +1,10 @@
 import type { AttributeValue, ContainerContext, MdastNode } from './handlers.js';
-import { asString, classNames, positionOf, wrap } from './handlers.js';
+import { asString, classNames, positionOf, textOf, unwrapLabel, wrap } from './handlers.js';
 
 /**
  * columns / timeline 的指令渲染。
  * 输出类名与结构 layouts 插件逐字节一致，样式无缝迁移。
  */
-
-type Marker = {
-  name: string;
-  attributes: Record<string, AttributeValue>;
-};
 
 function isDirective(node: MdastNode, name: string): boolean {
   return node.type === 'containerDirective' && node.name === name;
@@ -17,11 +12,7 @@ function isDirective(node: MdastNode, name: string): boolean {
 
 function inlineTextOf(node: MdastNode): string {
   const first = node.children?.[0];
-  if (!first?.data?.directiveLabel) return '';
-  return (first.children ?? [])
-    .map((child) => (typeof child.value === 'string' ? child.value : ''))
-    .join('')
-    .trim();
+  return first?.data?.directiveLabel ? textOf(first.children).trim() : '';
 }
 
 function positiveInteger(value: AttributeValue | undefined): number | undefined {
@@ -71,6 +62,8 @@ export function columnsHandler({ node, children, transform, file }: ContainerCon
 
   for (const child of children) {
     if (isDirective(child, 'column')) {
+      // :::column[标题] 的标签不进入正文；column 没有独立标题位。
+      unwrapLabel(child);
       const isMedia = child.attributes?.media === true || child.attributes?.media === 'true';
       current = wrap(
         'div',

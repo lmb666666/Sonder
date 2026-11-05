@@ -117,11 +117,18 @@ export function unwrapLabel(node: MdastNode): MdastNode | undefined {
   return undefined;
 }
 
+export function textOf(nodes: MdastNode[] | undefined): string {
+  return (nodes ?? [])
+    .map((node) => {
+      if (typeof node.value === 'string') return node.value;
+      if (node.type === 'image') return node.alt ?? '';
+      return textOf(node.children);
+    })
+    .join('');
+}
+
 export function labelText(label: MdastNode[] | undefined): string {
-  return (label ?? [])
-    .map((child) => (typeof child.value === 'string' ? child.value : ''))
-    .join('')
-    .trim();
+  return textOf(label).trim();
 }
 
 export function positionOf(node: MdastNode | undefined) {
@@ -138,8 +145,8 @@ function isDirective(node: MdastNode, name: string): boolean {
 
 // ─── 容器：details（折叠面板） ───────────────────────────
 
-function detailsHandler({ node, children, label, labelText, file }: ContainerContext): MdastNode[] {
-  if (!label || !labelText) {
+function detailsHandler({ node, children, label, file }: ContainerContext): MdastNode[] {
+  if (!label) {
     file.message(
       ':::details 缺少 [标题]，已按普通内容渲染。',
       positionOf(node),
@@ -251,13 +258,7 @@ function tabsHandler({ children, transform, file }: ContainerContext): MdastNode
 
 function directiveLabelText(node: MdastNode): string {
   const first = node.children?.[0];
-  if (first?.data?.directiveLabel) {
-    return (first.children ?? [])
-      .map((child) => (typeof child.value === 'string' ? child.value : ''))
-      .join('')
-      .trim();
-  }
-  return '';
+  return first?.data?.directiveLabel ? textOf(first.children).trim() : '';
 }
 
 function stripDirectiveLabelData(node: MdastNode): MdastNode {

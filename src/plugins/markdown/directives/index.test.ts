@@ -586,6 +586,34 @@ describe('真实 Markdown 解析（裸旗标归一化）', () => {
     expect(node.data?.hProperties?.open).toBe(true);
   });
 
+  test('{open=true} 同样让折叠面板默认展开', async () => {
+    const [node] = await runMd(':::details[点我展开]{open=true}\n内容\n:::\n');
+    expect(node.data?.hName).toBe('details');
+    expect(node.data?.hProperties?.open).toBe(true);
+  });
+
+  test('富文本 label 不会被 details 误判为缺标题', async () => {
+    const [node] = await runMd(':::details[**粗体标题**]{open}\n内容\n:::\n');
+    expect(node.data?.hName).toBe('details');
+    const summary = node.children?.[0];
+    expect(summary?.data?.hName).toBe('summary');
+  });
+
+  test('未知叶子指令保留指令名而不是静默消失', async () => {
+    const [node] = await runMd('::mystery{foo="bar"}\n');
+    expect(node.children?.[0]?.value).toBe('::mystery');
+  });
+
+  test(':::column[标题] 的 label 不进入正文', async () => {
+    const [node] = await runMd('::::columns\n:::column[标题]\n内容\n:::\n::::\n');
+    const column = node.children?.[0];
+    const texts = (column?.children ?? [])
+      .flatMap((child) => child.children ?? [])
+      .map((child) => child.value)
+      .filter(Boolean);
+    expect(texts).not.toContain('标题');
+  });
+
   test('{square} 裸旗标取消徽标圆角', async () => {
     const [paragraph] = await runMd(':badge[方形]{img="https://x/y.png" square}\n');
     const node = paragraph.children?.[0];

@@ -17,6 +17,7 @@ import {
   positionOf,
   spanHandler,
   tabsHandler,
+  textOf,
   tiktokHandler,
   videoHandler,
 } from './handlers.js';
@@ -64,6 +65,40 @@ const CONSUMED_CHILDREN: Record<string, string[]> = {
   tabs: ['tab'],
   'media-shelf': ['media-item'],
 };
+
+/** 这些属性接受 `{flag}`、`{flag=true}`、`{flag=false}` 三种写法。 */
+const BOOLEAN_ATTRIBUTES = new Set([
+  'open',
+  'foldable',
+  'square',
+  'round',
+  'nano',
+  'wide',
+  'icon',
+  'active',
+  'media',
+  'ctrl',
+  'shift',
+  'alt',
+  'meta',
+  'win',
+  'cmd',
+  'no-icon',
+]);
+
+function normalizeAttributes(attributes: Record<string, string | true> | undefined) {
+  if (!attributes) return;
+
+  for (const key of Object.keys(attributes)) {
+    if (attributes[key] === '') {
+      attributes[key] = true;
+      continue;
+    }
+    if (BOOLEAN_ATTRIBUTES.has(key) && attributes[key] === 'true') {
+      attributes[key] = true;
+    }
+  }
+}
 
 const CONTAINER_HANDLERS: Record<string, (context: ContainerContext) => TreeNode[]> = {
   ...(Object.fromEntries(
@@ -134,9 +169,7 @@ const INLINE_HANDLERS: Record<
 };
 
 function inlineText(node: TreeNode): string {
-  return (node.children ?? [])
-    .map((child) => (typeof child.value === 'string' ? child.value : ''))
-    .join('');
+  return textOf(node.children ?? []);
 }
 
 function labelOf(node: TreeNode) {
@@ -184,21 +217,13 @@ function transformNodes(
 
     // 父指令消费的子指令（column/tab/event/media-item），交给父指令的 handler 处理
     if (parentDirective && CONSUMED_CHILDREN[parentDirective]?.includes(name)) {
-      if (node.attributes) {
-        for (const key of Object.keys(node.attributes)) {
-          if (node.attributes[key] === '') node.attributes[key] = true;
-        }
-      }
+      normalizeAttributes(node.attributes);
       result.push(node);
       continue;
     }
 
-    // 裸旗标（{open} {square}）经 remark-directive 解析为空串，统一归一为布尔 true
-    if (node.attributes) {
-      for (const key of Object.keys(node.attributes)) {
-        if (node.attributes[key] === '') node.attributes[key] = true;
-      }
-    }
+    // 裸旗标（{open} {square}）解析为空串；{open=true} 解析为字符串，统一归一。
+    normalizeAttributes(node.attributes);
 
     const containerHandler =
       node.type === 'containerDirective' ? CONTAINER_HANDLERS[name] : undefined;
@@ -251,6 +276,7 @@ function transformNodes(
           positionOf(node),
           'sonder-directives',
         );
+        result.push({ type: 'paragraph', children: [{ type: 'text', value: `::${name}` }] });
       }
       continue;
     }
@@ -287,6 +313,12 @@ function transformNodes(
 
     if (node.type === 'textDirective') {
       result.push({ type: 'text', value: `:${name}[${inlineText(node)}]` });
+      continue;
+    }
+
+    if (node.type === 'leafDirective') {
+      // 叶子没有子内容可展开；保留指令名，避免整块静默消失。
+      result.push({ type: 'paragraph', children: [{ type: 'text', value: `::${name}` }] });
       continue;
     }
 
