@@ -137,6 +137,7 @@ export function timelineHandler({
   }
 
   const events: MdastNode[] = [];
+  const leading: MdastNode[] = [];
   let current: MdastNode | undefined;
 
   for (const child of children) {
@@ -154,9 +155,11 @@ export function timelineHandler({
       continue;
     }
 
-    // 未包进 :::event 的内容并入当前事件
+    // 未包进 :::event 的内容并入当前事件；第一个事件之前的保留在时间线外。
     if (current) {
       current.children = [...(current.children ?? []), child];
+    } else {
+      leading.push(child);
     }
   }
 
@@ -164,6 +167,7 @@ export function timelineHandler({
   const list = wrap('ol', ['markdown-timeline-list'], events);
 
   return [
+    ...leading,
     wrap('section', classNames('markdown-layout', 'markdown-timeline', `is-${direction}`), [list], {
       dataMarkdownLayout: 'timeline',
       dataTimelineDirection: direction,

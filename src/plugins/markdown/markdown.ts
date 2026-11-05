@@ -60,6 +60,25 @@ function markdownTabsIntegration(): AstroIntegration {
       panel.hidden = !active;
     });
   });
+  document.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    const button = event.target instanceof Element ? event.target.closest('[data-sd-tab-btn]') : null;
+    if (!button) return;
+    const root = button.closest('[data-sd-tabs]');
+    if (!root) return;
+    const buttons = Array.from(root.querySelectorAll('[data-sd-tab-btn]'));
+    const index = buttons.indexOf(button);
+    if (index === -1 || buttons.length === 0) return;
+    const nextIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? buttons.length - 1
+          : (index + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+    event.preventDefault();
+    buttons[nextIndex].focus();
+    buttons[nextIndex].click();
+  });
 })();
 `,
         );

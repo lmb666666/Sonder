@@ -132,6 +132,33 @@ describe('tabs 容器', () => {
     const children = [paragraph('内容')];
     expect(await run([container('tabs', {}, children)])).toEqual(children);
   });
+
+  test('tabs 的按钮与面板有可访问关联', async () => {
+    const [node] = await run([
+      container('tabs', {}, [
+        container('tab', {}, [labelled('一'), paragraph('内容一')]),
+        container('tab', {}, [labelled('二'), paragraph('内容二')]),
+      ]),
+    ]);
+    const buttons = node.children?.[0]?.data?.hChildren ?? [];
+    const first = buttons[0] as { properties: Record<string, unknown> };
+    const second = buttons[1] as { properties: Record<string, unknown> };
+    const panels = node.children?.slice(1) ?? [];
+
+    expect(first.properties.ariaControls).toEqual([panels[0]?.data?.hProperties?.id]);
+    expect(second.properties.ariaControls).toEqual([panels[1]?.data?.hProperties?.id]);
+    expect(panels[0]?.data?.hProperties?.['aria-labelledby']).toBe(first.properties.id);
+  });
+
+  test('tabs 的非 tab 内容保留在标签页之后', async () => {
+    const extra = paragraph('额外内容');
+    const nodes = await run([
+      container('tabs', {}, [container('tab', {}, [labelled('一'), paragraph('内容一')]), extra]),
+    ]);
+
+    expect(nodes).toHaveLength(2);
+    expect(nodes[1]).toBe(extra);
+  });
 });
 
 describe('columns / timeline（layouts 迁移）', () => {
@@ -171,6 +198,19 @@ describe('columns / timeline（layouts 迁移）', () => {
     const list = node.children?.[0];
     const event = list?.children?.[0];
     expect(event?.data?.hProperties?.dataTimelineDate).toBe('2026-10-31');
+  });
+
+  test(':::timeline 第一个 event 前的内容不被丢弃', async () => {
+    const preamble = paragraph('时间线说明');
+    const nodes = await run([
+      container('timeline', {}, [
+        preamble,
+        container('event', { date: '2026-10-31' }, [paragraph('发布')]),
+      ]),
+    ]);
+
+    expect(nodes).toHaveLength(2);
+    expect(nodes[0]).toBe(preamble);
   });
 });
 

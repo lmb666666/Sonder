@@ -206,8 +206,11 @@ function btnsHandler({ node, children }: ContainerContext): MdastNode[] {
 
 // ─── 容器：tabs（标签页，消费 :::tab 子指令） ────────────
 
+let tabsGroupIndex = 0;
+
 function tabsHandler({ children, transform, file }: ContainerContext): MdastNode[] {
   const tabs = children.filter((child) => isDirective(child, 'tab'));
+  const extras = children.filter((child) => !isDirective(child, 'tab'));
 
   if (tabs.length === 0) {
     file.message(
@@ -218,15 +221,26 @@ function tabsHandler({ children, transform, file }: ContainerContext): MdastNode
     return children;
   }
 
+  if (extras.length > 0) {
+    file.message(
+      '::::tabs 内只有 :::tab 会进入标签页，其余内容已保留在标签页之后。',
+      positionOf(extras[0]),
+      'sonder-directives',
+    );
+  }
+
+  const groupId = `sd-tabs-${++tabsGroupIndex}`;
   const buttons = tabs.map(
     (tab, index) =>
       h(
         'button',
         {
+          id: `${groupId}-tab-${index}`,
           class: ['sd-tab-btn', ...(index === 0 ? ['is-active'] : [])],
           type: 'button',
           role: 'tab',
           'aria-selected': index === 0 ? 'true' : 'false',
+          'aria-controls': `${groupId}-panel-${index}`,
           'data-sd-tab-btn': String(index),
         },
         { type: 'text', value: directiveLabelText(tab) },
@@ -244,16 +258,18 @@ function tabsHandler({ children, transform, file }: ContainerContext): MdastNode
   };
 
   const panels = tabs.map((tab, index) => {
-    const label = unwrapLabel(tab);
+    unwrapLabel(tab);
     const body = transform((tab.children ?? []).map(stripDirectiveLabelData), 'tab', file);
     return wrap('section', ['sd-tab-panel', ...(index === 0 ? ['is-active'] : [])], body, {
+      id: `${groupId}-panel-${index}`,
       role: 'tabpanel',
+      'aria-labelledby': `${groupId}-tab-${index}`,
       'data-sd-tab-panel': String(index),
       ...(index === 0 ? {} : { hidden: true }),
     });
   });
 
-  return [wrap('div', ['sd-tabs'], [head, ...panels], { 'data-sd-tabs': '' })];
+  return [wrap('div', ['sd-tabs'], [head, ...panels], { 'data-sd-tabs': '' }), ...extras];
 }
 
 function directiveLabelText(node: MdastNode): string {
