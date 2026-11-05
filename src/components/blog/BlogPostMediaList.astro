@@ -115,7 +115,7 @@ const cards = await Promise.all(
               )}
               {sticky && (
                 <span class="media-pin">
-                  <Icon name="pin" size={12} strokeWidth={2.4} />
+                  <Icon name="pin" size={12} stroke-width={2.4} />
                   {ui.article.pinned}
                 </span>
               )}
@@ -124,7 +124,7 @@ const cards = await Promise.all(
                 <span class="media-meta">
                   <span class="media-meta-side">
                     <span class="media-meta-chip media-date">
-                      <Icon name="calendar" size={13} strokeWidth={2} />
+                      <Icon name="calendar" size={13} stroke-width={2} />
                       <span class="media-date-full">
                         <FormattedDate date={post.data.date} />
                       </span>
@@ -132,18 +132,18 @@ const cards = await Promise.all(
                     </span>
                     {groups.length > 0 && (
                       <span class="media-meta-chip media-meta-groups">
-                        <Icon name="folder" size={13} strokeWidth={2} />
+                        <Icon name="folder" size={13} stroke-width={2} />
                         {groups.join(', ')}
                       </span>
                     )}
                   </span>
                   <span class="media-meta-side">
                     <span class="media-meta-chip media-meta-words">
-                      <Icon name="pen" size={13} strokeWidth={2} />
+                      <Icon name="pen" size={13} stroke-width={2} />
                       {ui.article.wordCount(words)}
                     </span>
                     <span class="media-meta-chip">
-                      <Icon name="clock" size={13} strokeWidth={2} />
+                      <Icon name="clock" size={13} stroke-width={2} />
                       {ui.article.readingTime(minutes)}
                     </span>
                   </span>

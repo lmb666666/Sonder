@@ -138,21 +138,11 @@ const paletteOptions = [
 
   <nav class="nav-links" aria-label={ui.nav.articleNav}>
     {
-      links.map((link) =>
-        link.disabled ? (
-          <span
-            class="nav-link nav-link-placeholder"
-            aria-disabled="true"
-            title="Projects content placeholder"
-          >
-            {link.label}
-          </span>
-        ) : (
-          <a class:list={['nav-link', { active: isActive(link.href) }]} href={withBase(link.href)}>
-            {link.label}
-          </a>
-        ),
-      )
+      links.map((link) => (
+        <a class:list={['nav-link', { active: isActive(link.href) }]} href={withBase(link.href)}>
+          {link.label}
+        </a>
+      ))
     }
   </nav>
 
@@ -166,21 +156,15 @@ const paletteOptions = [
   >
     <div class="mobile-menu-links">
       {
-        links.map((link) =>
-          link.disabled ? (
-            <span class="mobile-menu-link mobile-menu-placeholder" aria-disabled="true">
-              {link.label}
-            </span>
-          ) : (
-            <a
-              class:list={['mobile-menu-link', { active: isActive(link.href) }]}
-              href={withBase(link.href)}
-              data-mobile-menu-link
-            >
-              {link.label}
-            </a>
-          ),
-        )
+        links.map((link) => (
+          <a
+            class:list={['mobile-menu-link', { active: isActive(link.href) }]}
+            href={withBase(link.href)}
+            data-mobile-menu-link
+          >
+            {link.label}
+          </a>
+        ))
       }
     </div>
 

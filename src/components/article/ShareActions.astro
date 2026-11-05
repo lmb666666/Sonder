@@ -119,7 +119,7 @@ const dateLabel =
 
 <script>
   const init = () => {
-    document.querySelectorAll('[data-share-root]').forEach((root) => {
+    document.querySelectorAll<HTMLElement>('[data-share-root]').forEach((root) => {
       if (root.dataset.shareReady === 'true') return;
       root.dataset.shareReady = 'true';
 
@@ -133,14 +133,14 @@ const dateLabel =
       const shareLogo = root.dataset.shareLogo || '';
       const shareCoverImage = root.dataset.shareCoverImage || '';
       const shareCoverSelector = root.dataset.shareCoverSelector || '';
-      const trigger = root.querySelector('[data-share-trigger]');
-      const modal = root.querySelector('[data-share-modal]');
-      const loading = root.querySelector('[data-share-loading]');
-      const poster = root.querySelector('[data-share-poster]');
-      const error = root.querySelector('[data-share-error]');
-      const copyButton = root.querySelector('[data-share-copy]');
-      const copyLabel = root.querySelector('[data-share-copy-label]');
-      const download = root.querySelector('[data-share-download]');
+      const trigger = root.querySelector<HTMLButtonElement>('[data-share-trigger]');
+      const modal = root.querySelector<HTMLDialogElement>('[data-share-modal]');
+      const loading = root.querySelector<HTMLElement>('[data-share-loading]');
+      const poster = root.querySelector<HTMLImageElement>('[data-share-poster]');
+      const error = root.querySelector<HTMLElement>('[data-share-error]');
+      const copyButton = root.querySelector<HTMLButtonElement>('[data-share-copy]');
+      const copyLabel = root.querySelector<HTMLElement>('[data-share-copy-label]');
+      const download = root.querySelector<HTMLButtonElement>('[data-share-download]');
       const labels = {
         copied: root.dataset.shareLabelCopied || 'Copied',
         copy: root.dataset.shareLabelCopy || 'Copy share message',
@@ -153,9 +153,9 @@ const dateLabel =
       const copyTitle = root.dataset.shareCopyTitle || `"${shareTitle}"`;
       let posterData = '';
       let generating = false;
-      let copiedTimer;
+      let copiedTimer: number | undefined;
 
-      const copyText = async (text) => {
+      const copyText = async (text: string) => {
         if (navigator.clipboard?.writeText) {
           try {
             await navigator.clipboard.writeText(text);
@@ -196,8 +196,8 @@ const dateLabel =
         }
       };
 
-      const loadImage = (src) =>
-        new Promise((resolve) => {
+      const loadImage = (src: string | null | undefined) =>
+        new Promise<HTMLImageElement | null>((resolve) => {
           if (!src) {
             resolve(null);
             return;
@@ -210,13 +210,13 @@ const dateLabel =
           image.src = src;
         });
 
-      const resolveImageSource = (source, selector) => {
+      const resolveImageSource = (source: string, selector: string) => {
         if (!selector) return source;
-        const image = document.querySelector(selector);
+        const image = document.querySelector<HTMLImageElement>(selector);
         return image?.currentSrc || image?.src || source || null;
       };
 
-      const getLines = (context, text, maxWidth) => {
+      const getLines = (context: CanvasRenderingContext2D, text: string, maxWidth: number) => {
         const chars = text.split('');
         const lines = [];
         let line = '';
@@ -235,7 +235,7 @@ const dateLabel =
         return lines;
       };
 
-      const fitText = (context, text, maxWidth) => {
+      const fitText = (context: CanvasRenderingContext2D, text: string, maxWidth: number) => {
         if (context.measureText(text).width <= maxWidth) return text;
         const chars = Array.from(text);
         while (chars.length > 0 && context.measureText(`${chars.join('')}…`).width > maxWidth) {
@@ -244,7 +244,14 @@ const dateLabel =
         return chars.length > 0 ? `${chars.join('')}…` : '…';
       };
 
-      const roundedRect = (context, x, y, width, height, radius) => {
+      const roundedRect = (
+        context: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        radius: number,
+      ) => {
         const r = Math.min(radius, width / 2, height / 2);
         context.beginPath();
         context.moveTo(x + r, y);
@@ -259,7 +266,7 @@ const dateLabel =
         context.closePath();
       };
 
-      const getFont = (name, fallback) =>
+      const getFont = (name: string, fallback: string) =>
         getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 
       const buildPoster = async () => {
@@ -302,7 +309,7 @@ const dateLabel =
         context.font = contentFont;
         const titleLines = getLines(context, shareTitle, contentWidth);
         const titleHeight = titleLines.length * titleLineHeight;
-        let descLines = [];
+        let descLines: string[] = [];
 
         if (shareDescription) {
           context.font = `400 ${14 * scale}px ${headingFont}`;
@@ -612,7 +619,7 @@ const dateLabel =
       trigger?.addEventListener('click', openShare);
       copyButton?.addEventListener('click', copyShareText);
       download?.addEventListener('click', downloadPoster);
-      root.querySelectorAll('[data-share-close]').forEach((button) => {
+      root.querySelectorAll<HTMLButtonElement>('[data-share-close]').forEach((button) => {
         button.addEventListener('click', closeShare);
       });
       modal?.addEventListener('click', (event) => {

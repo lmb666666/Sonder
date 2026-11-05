@@ -37,7 +37,7 @@ import {
   type Props as LucideProps,
 } from 'lucide-astro';
 
-interface Props extends Omit<LucideProps, 'name'> {
+interface Props extends Omit<LucideProps, 'name' | 'size'> {
   name: string;
   size?: number | string;
   class?: string;
@@ -88,12 +88,13 @@ const icons = {
 
 const IconComponent = icons[name as keyof typeof icons] ?? Sparkles;
 const iconSize = typeof size === 'number' ? `${size}px` : size;
+const numericSize = typeof size === 'number' ? size : Number.parseFloat(size) || 20;
 const iconStyle = `--icon-size: ${iconSize};${style ? ` ${style}` : ''}`;
 ---
 
 <IconComponent
   {...attrs}
-  size={size}
+  size={numericSize}
   stroke-width={attrs['stroke-width'] ?? 1.9}
   aria-hidden={attrs['aria-hidden'] ?? 'true'}
   focusable={attrs.focusable ?? 'false'}

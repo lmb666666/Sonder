@@ -312,7 +312,7 @@ export type UiText = Omit<
     feedError: (error: string) => string;
   };
   moments: Omit<RawUiText['moments'], 'count' | 'imageAria'> & {
-    count: (count: number) => string;
+    count: (count: number | string) => string;
     imageAria: (index: number) => string;
   };
   friendApplication: Omit<

@@ -15,7 +15,7 @@ const shouldOptimize = typeof src !== 'string';
 
 {
   shouldOptimize ? (
-    <Image src={src} alt={alt} widths={widths} sizes={sizes} {...imageAttrs} />
+    <Image src={src} alt={alt} widths={widths} sizes={sizes} {...(imageAttrs as any)} />
   ) : (
     <img src={src} alt={alt} sizes={sizes} {...imageAttrs} />
   )

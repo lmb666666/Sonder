@@ -31,7 +31,7 @@ const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf(
 if (siteInfo.uptime && site.timeEstablished && hasEstablished) {
   rows.push({
     label: ui.siteInfo.uptime,
-    value: ui.siteInfo.timeElapsed(elapsedParts(established)),
+    value: ui.siteInfo.timeElapsed(elapsedParts(established as Date)),
     tip: ui.siteInfo.uptimeTip(site.timeEstablished),
   });
 }

@@ -18,7 +18,8 @@
     "media:new": "bun scripts/new-content.ts media",
     "lint": "eslint .",
     "format": "prettier --write --ignore-unknown .",
-    "format:check": "bun run lint && bun run typecheck && prettier --check --ignore-unknown .",
+    "check:astro": "astro check",
+    "format:check": "bun run lint && bun run typecheck && bun run check:astro && bun test && prettier --check --ignore-unknown .",
     "prepare": "husky",
     "github-cards": "bun scripts/fetch-github-card-data.ts",
     "test": "bun test",
@@ -56,6 +57,7 @@
     "unist-util-visit": "^5.2.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
     "@fontsource/maple-mono": "^5.3.0",
     "@types/glob": "^8.1.0",
     "@typescript-eslint/eslint-plugin": "^8.65.0",
