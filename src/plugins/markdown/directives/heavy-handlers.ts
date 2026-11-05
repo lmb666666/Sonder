@@ -34,6 +34,15 @@ function firstImage(nodes: MdastNode[] | undefined): MdastNode | undefined {
   return undefined;
 }
 
+function firstImageLink(nodes: MdastNode[] | undefined): string | undefined {
+  for (const node of nodes ?? []) {
+    if (node.type === 'link' && (node.children ?? []).some((child) => child.type === 'image')) {
+      return node.url;
+    }
+  }
+  return undefined;
+}
+
 type HastLike = ReturnType<typeof h>;
 
 // ─── 容器：poetry（诗歌排版） ────────────────────────────
@@ -308,7 +317,7 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
         coverAspect: asString(attrs['cover-aspect']),
         rating: Number.isFinite(rawRating) ? Math.max(0, Math.min(5, Math.round(rawRating))) : 0,
         status: asString(attrs.status),
-        href: asString(attrs.href),
+        href: asString(attrs.href) ?? firstImageLink(imageParagraph?.children),
         reviewHref: asString(attrs['review-href']),
         reviewLabel: asString(attrs['review-label']),
         note: asString(attrs.note),

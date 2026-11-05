@@ -86,7 +86,7 @@
   margin: 0;
 }
 
-.friend-link-application__header h2 {
+.friend-link-application__header :is(h2, .friend-link-application__title) {
   color: var(--paper-ink);
   font-family: var(--font-heading);
   font-size: 1.34rem;
@@ -173,7 +173,7 @@
   margin-bottom: 18px;
 }
 
-.friend-link-application__preview-header h3 {
+.friend-link-application__preview-header :is(h3, .friend-link-application__preview-title) {
   margin: 0;
   color: var(--paper-ink);
   font-family: var(--font-heading);
@@ -594,7 +594,7 @@
     gap: 8px;
   }
 
-  .friend-link-application__preview-header h3 {
+  .friend-link-application__preview-header :is(h3, .friend-link-application__preview-title) {
     font-size: 0.98rem;
   }
 

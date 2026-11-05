@@ -730,6 +730,29 @@ describe('回归：近期修复的结构契约', () => {
     expect(JSON.stringify(item?.children?.[1]?.data?.hChildren)).toContain('短评');
   });
 
+  test(':::media-shelf 链接包裹封面可作为链接目标', async () => {
+    const [node] = await run([
+      container('media-shelf', {}, [
+        container('media-item', { type: 'book', title: 't', creator: 'c' }, [
+          {
+            type: 'paragraph',
+            children: [
+              {
+                type: 'link',
+                url: 'https://linked.example',
+                children: [{ type: 'image', url: '/a.png', alt: 'a' }],
+              },
+            ],
+          },
+        ]),
+      ]),
+    ]);
+
+    const item = node.children?.[0];
+    expect(item?.data?.hName).toBe('a');
+    expect(item?.data?.hProperties?.href).toBe('https://linked.example');
+  });
+
   test(':::music-score 优先读取围栏代码块内的 ABC（裸文本会被冒号解析撕碎）', async () => {
     const abc = 'X:1\nT:测试\nK:C\n"1"C D E F|';
     const [node] = await run([container('music-score', {}, [{ type: 'code', value: abc }])]);

@@ -545,7 +545,9 @@ const paletteOptions = [
             .getPropertyValue('--paper-theme-color')
             .trim();
           if (!color) return;
-          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
+          document
+            .querySelectorAll('meta[name="theme-color"]')
+            .forEach((meta) => meta.setAttribute('content', color));
         };
 
         const setPaletteOpen = (open: boolean) => {
