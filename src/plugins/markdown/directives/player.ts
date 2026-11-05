@@ -772,6 +772,6 @@ export function musicHandler(preloaded: MusicPrefetch) {
       undefined,
       'sonder-directives',
     );
-    return [buildLinkCard(fallbackUrl, title, '在平台打开')];
+    return [wrapHast('a', buildLinkCard(fallbackUrl, title, '在平台打开'))];
   };
 }

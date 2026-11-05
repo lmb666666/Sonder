@@ -373,6 +373,14 @@ describe('叶子指令', () => {
     expect(await run([leaf('tiktok', { id: 'abc' })])).toEqual([]);
   });
 
+  test('::music 元数据不可用时降级为链接卡片', async () => {
+    const [node] = await run([leaf('music', { server: 'tencent', type: 'song', id: '001abc' })]);
+
+    expect(node.data?.hName).toBe('a');
+    expect(node.data?.hProperties?.className).toContain('sd-link-card');
+    expect(node.data?.hProperties?.href).toBe('https://y.qq.com/n/ryqq/songDetail/001abc');
+  });
+
   test('::music 电台直接走官方外链（无 Meting 解析）', async () => {
     const [node] = await run([leaf('music', { type: 'radio', id: '797632409' })]);
     const iframe = node.data?.hChildren?.[0];
