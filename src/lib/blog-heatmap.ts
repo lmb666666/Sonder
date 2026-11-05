@@ -57,6 +57,15 @@ function getStartOfWeek(date: Date) {
 function getConfiguredStartDate(startDate: HeatmapStartDate) {
   if (!startDate) return null;
 
+  if (typeof startDate === 'string') {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(startDate.trim());
+    if (match) {
+      const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      date.setHours(0, 0, 0, 0);
+      return Number.isNaN(date.valueOf()) ? null : date;
+    }
+  }
+
   const date = startDate instanceof Date ? new Date(startDate) : new Date(startDate);
 
   if (Number.isNaN(date.valueOf())) {
@@ -99,7 +108,7 @@ export function createRecentBlogHeatmap(
   const safeWeeks = configuredStartDate
     ? Math.max(
         1,
-        Math.floor((currentWeekStart.valueOf() - start.valueOf()) / (DAYS_IN_WEEK * DAY_IN_MS)) + 1,
+        Math.round((currentWeekStart.valueOf() - start.valueOf()) / (DAYS_IN_WEEK * DAY_IN_MS)) + 1,
       )
     : Math.max(1, Math.floor(weeks));
 

@@ -9,8 +9,9 @@ describe('containsMath', () => {
     expect(containsMath('行内 \\(x\\) 公式')).toBe(true);
   });
 
-  test('忽略代码块与行内代码里的 $', () => {
+  test('忽略代码块、行内代码与货币金额', () => {
     expect(containsMath('```\n$x$\n```')).toBe(false);
     expect(containsMath('`$x$`')).toBe(false);
+    expect(containsMath('普通文本 $5 和 $10')).toBe(false);
   });
 });
