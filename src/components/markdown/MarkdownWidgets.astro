@@ -26,7 +26,6 @@ import '../../plugins/markdown/directives/styles.css';
   import { initFriendLinkApplications } from '../../plugins/markdown/directives/widgets/friend-link-application.js';
   import { bindBlurs } from '../../plugins/markdown/directives/widgets/blur.js';
   import { applyVideoZoom } from '../../plugins/markdown/directives/widgets/video.js';
-  import { initLightbox } from '../../plugins/markdown/directives/widgets/lightbox.js';
 
   document.addEventListener('click', (event) => {
     const frame =
@@ -34,26 +33,26 @@ import '../../plugins/markdown/directives/styles.css';
     frame?.classList.add('ff-copy-revealed');
   });
 
-  const boot = () => {
+  const boot = async () => {
     bindKeys();
     bindBlurs();
     applyVideoZoom();
-    initLightbox();
     initCarousels();
     initFriendCircles();
     initAudioPlayers();
     initFriendLinkApplications();
     void renderMusicScores();
+
+    if (document.querySelector('[data-sonder-content] img')) {
+      const { initLightbox } =
+        await import('../../plugins/markdown/directives/widgets/lightbox.js');
+      initLightbox();
+    }
   };
 
-  document.addEventListener('astro:page-load', boot);
+  document.addEventListener('astro:page-load', () => void boot());
   document.addEventListener('astro:before-swap', () => {
     pauseAudioPlayers();
     pauseMusicScores();
   });
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot, { once: true });
-  } else {
-    boot();
-  }
 </script>
