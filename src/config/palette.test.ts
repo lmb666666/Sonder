@@ -1,10 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 
 import { PALETTE_THEME_COLORS } from './palette';
 
-const palettesCss = readFileSync(join(process.cwd(), 'src/styles/palettes.css'), 'utf8');
+const palettesCss = readFileSync(new URL('../styles/palettes.css', import.meta.url), 'utf8');
 
 function cssThemeColor(palette: string, mode: 'light' | 'dark') {
   const blockPattern =
