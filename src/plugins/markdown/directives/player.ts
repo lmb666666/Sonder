@@ -435,12 +435,16 @@ export function resolveMusicTarget(
 }
 
 /** 网易云官方外链播放器（outchain iframe），Meting 不可用时的兜底。 */
-export function neteaseOutchainNode(type: MusicType, id: string): MdastNode {
+export function neteaseOutchainNode(
+  type: MusicType,
+  id: string,
+  title = '网易云音乐播放器',
+): MdastNode {
   const outchain = NETEASE_OUTCHAIN[type];
   const iframe = h('iframe', {
     class: 'sd-embed-frame',
     src: `https://music.163.com/outchain/player?type=${outchain.type}&id=${id}&auto=0&height=${outchain.height}`,
-    title: '网易云音乐播放器',
+    title,
     allow: 'autoplay',
     style: `height:${outchain.height}px`,
     loading: 'lazy',
@@ -698,7 +702,7 @@ export function audioHandler({
   ];
 }
 
-export function musicHandler(preloaded: MusicPrefetch) {
+export function musicHandler(preloaded: MusicPrefetch, neteasePlayerTitle = '网易云音乐播放器') {
   return ({
     attributes,
     file,
@@ -735,7 +739,7 @@ export function musicHandler(preloaded: MusicPrefetch) {
     const fallbackUrl = target.pageUrl;
 
     if (target.type === 'radio') {
-      return [neteaseOutchainNode('radio', target.id)];
+      return [neteaseOutchainNode('radio', target.id, neteasePlayerTitle)];
     }
 
     const entry = preloaded.get(musicKey(target));
@@ -760,7 +764,7 @@ export function musicHandler(preloaded: MusicPrefetch) {
         undefined,
         'sonder-directives',
       );
-      return [neteaseOutchainNode(target.type, target.id)];
+      return [neteaseOutchainNode(target.type, target.id, neteasePlayerTitle)];
     }
 
     if (entry?.tracks.length) {

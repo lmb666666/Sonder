@@ -15,6 +15,7 @@ export interface MarkdownConfigOptions {
   mathRenderer: MathRenderer;
   mermaid: boolean;
   metingApi?: string;
+  lang?: string;
 }
 
 export interface MarkdownConfig {
@@ -106,13 +107,14 @@ export function getMarkdownConfig({
   mathRenderer,
   mermaid,
   metingApi = '',
+  lang,
 }: MarkdownConfigOptions): MarkdownConfig {
   return {
     integrations: [markdownTabsIntegration()],
     remarkPlugins: [
       remarkCallouts,
       remarkDirective,
-      () => remarkSonderDirectives({ layouts: true, metingApi }),
+      () => remarkSonderDirectives({ layouts: true, metingApi, lang }),
       ...(math ? [remarkMath] : []),
       ...(mermaid ? [remarkMermaid] : []),
     ] as MarkdownConfig['remarkPlugins'],

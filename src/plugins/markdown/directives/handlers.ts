@@ -42,6 +42,8 @@ export interface ContainerContext {
   /** 指令方括号标题（`:::name[标题]` 的「标题」） */
   label?: MdastNode[];
   labelText?: string;
+  /** 指令层本地化文案（目前媒体架用于状态标签）。 */
+  statusLabels?: Record<string, string>;
   file: DirectiveFile;
 }
 

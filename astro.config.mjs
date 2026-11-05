@@ -73,6 +73,7 @@ const code = siteConfig.code;
 const markdown = getMarkdownConfig({
   ...siteConfig.markdown,
   metingApi: siteConfig.music.meting_api,
+  lang: siteConfig.theme.lang,
 });
 
 const expressiveCodeConfig = defineEcConfig({

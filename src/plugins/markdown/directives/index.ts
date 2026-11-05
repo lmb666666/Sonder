@@ -35,6 +35,7 @@ import {
   type FriendCirclePost,
   type FriendLinkEntry,
 } from './heavy-handlers.js';
+import { getDirectiveI18n } from './i18n.js';
 import { audioHandler, musicHandler, prefetchMusic, type MusicPrefetch } from './player.js';
 import friendCircleDemo from '../../../data/friend-circle-demo.json';
 import { githubCardData } from './github-cards.js';
@@ -149,7 +150,6 @@ const LEAF_HANDLERS: Record<
   'link-card': linkCardHandler,
   'friend-link-card': friendLinkCardHandler(dataSources),
   'friend-circle': friendCircleHandler(dataSources),
-  'friend-link-application': friendLinkApplicationHandler,
 };
 
 const INLINE_HANDLERS: Record<
@@ -196,7 +196,7 @@ function transformNodes(
   nodes: TreeNode[],
   parentDirective: string | undefined,
   file: DirectiveFile,
-  extras: { music: MusicPrefetch },
+  extras: { music: MusicPrefetch; text: ReturnType<typeof getDirectiveI18n> },
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
@@ -230,10 +230,12 @@ function transformNodes(
     const leafHandler =
       node.type === 'leafDirective'
         ? name === 'music'
-          ? musicHandler(extras.music)
+          ? musicHandler(extras.music, extras.text.neteasePlayer)
           : name === 'audio'
             ? audioHandler
-            : LEAF_HANDLERS[name]
+            : name === 'friend-link-application'
+              ? friendLinkApplicationHandler(extras.text.friendApplication)
+              : LEAF_HANDLERS[name]
         : undefined;
     const inlineHandler = node.type === 'textDirective' ? INLINE_HANDLERS[name] : undefined;
 
@@ -250,6 +252,7 @@ function transformNodes(
               transformNodes(nodes, parentName ?? name, file, extras),
             label: labelInfo?.label,
             labelText: labelInfo?.labelText,
+            statusLabels: extras.text.mediaStatus,
             file,
           }),
         );
@@ -331,15 +334,17 @@ function transformNodes(
 export interface SonderDirectivesOptions {
   layouts?: boolean;
   metingApi?: string;
+  lang?: string;
 }
 
 export default function remarkSonderDirectives(options: SonderDirectivesOptions = {}) {
   const metingApi = options.metingApi ?? '';
+  const text = getDirectiveI18n(options.lang);
 
   return async (tree: MdastNode, file: DirectiveFile & { path?: string }) => {
     if (!tree.children) return;
     try {
-      const extras = { music: await prefetchMusic(tree, metingApi) };
+      const extras = { music: await prefetchMusic(tree, metingApi), text };
       tree.children = transformNodes(tree.children, undefined, file, extras);
     } catch (error) {
       // 转换失败时保留原始内容，确保文章不至于空白

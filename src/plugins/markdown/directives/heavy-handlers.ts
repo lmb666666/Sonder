@@ -296,7 +296,12 @@ function isDirective(node: MdastNode, name: string): boolean {
   return node.type === 'containerDirective' && node.name === name;
 }
 
-export function mediaShelfHandler({ node, children, file }: ContainerContext): MdastNode[] {
+export function mediaShelfHandler({
+  node,
+  children,
+  file,
+  statusLabels,
+}: ContainerContext): MdastNode[] {
   const columns = positiveInteger(node.attributes?.columns, 4, 6);
   const variant = asString(node.attributes?.variant) ?? 'shelf';
   const label = asString(node.attributes?.label) ?? 'Media shelf';
@@ -374,7 +379,7 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
           ]),
           item.status
             ? h('span', { class: 'sonder-media-shelf__status', 'data-status': item.status }, [
-                item.status,
+                statusLabels?.[item.status] ?? item.status,
               ])
             : undefined,
           review,

@@ -23,6 +23,13 @@ async function run(children: MdastNode[]): Promise<MdastNode[]> {
   return tree.children ?? [];
 }
 
+async function runWithLang(children: MdastNode[], lang: string): Promise<MdastNode[]> {
+  const localized = remarkSonderDirectives({ lang });
+  const tree = { type: 'root', children } as MdastNode;
+  await localized(tree, fakeFile);
+  return tree.children ?? [];
+}
+
 function paragraph(value: string): MdastNode {
   return { type: 'paragraph', children: [{ type: 'text', value }] };
 }
@@ -428,7 +435,7 @@ describe('叶子指令', () => {
       properties: { src: string; title: string; style: string };
     };
     expect(iframe.properties.src).toContain('type=19&id=797632409');
-    expect(iframe.properties.title).toBe('网易云音乐播放器');
+    expect(iframe.properties.title).toBe('NetEase Cloud Music player');
     expect(iframe.properties.style).toContain('height:');
   });
 
@@ -728,6 +735,28 @@ describe('回归：近期修复的结构契约', () => {
     expect(item?.data?.hProperties?.href).toBe('https://example.com');
     expect(item?.children?.[0]?.children?.[0]?.type).toBe('image');
     expect(JSON.stringify(item?.children?.[1]?.data?.hChildren)).toContain('短评');
+  });
+
+  test('指令层文案跟随语言（媒体状态与友链申请）', async () => {
+    const [shelf] = await runWithLang(
+      [
+        container('media-shelf', {}, [
+          container(
+            'media-item',
+            { type: 'book', title: 't', creator: 'c', status: 'completed' },
+            [],
+          ),
+        ]),
+      ],
+      'en',
+    );
+    expect(JSON.stringify(shelf)).toContain('Completed');
+
+    const [application] = await runWithLang(
+      [leaf('friend-link-application', { repository: 'a/b' })],
+      'en',
+    );
+    expect(JSON.stringify(application)).toContain('Apply for a friend link');
   });
 
   test(':::media-shelf 链接包裹封面可作为链接目标', async () => {
