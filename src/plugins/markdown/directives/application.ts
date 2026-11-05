@@ -8,8 +8,6 @@ import { icon } from './icons.js';
  * 交互（校验 / JSON 预览 / 复制 / Issue 链接）由 MarkdownWidgets 客户端脚本接管。
  */
 
-type HastLike = ReturnType<typeof h>;
-
 function asString(value: AttributeValue | undefined): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }

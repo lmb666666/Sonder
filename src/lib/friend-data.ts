@@ -40,9 +40,6 @@ export type FriendCircleFeed = {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-const optionalString = (value: unknown) =>
-  value === undefined || value === null || typeof value === 'string';
-
 /** 模板内置的示例友链不应进入朋友圈抓取或 OPML 导出。 */
 export const isPlaceholderFeed = (value: string | null | undefined) =>
   /^https?:\/\/(?:www\.)?example\.(?:com|org|net|dev)(?:\/|$)/i.test(value ?? '');

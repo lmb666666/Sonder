@@ -60,7 +60,6 @@ const cards = await Promise.all(
       // 分类直接取文章 frontmatter
       groups: [...post.data.categories],
       cover,
-      bandImage,
       shortDate: format(post.data.date, 'MM-dd'),
       words: countWords(bodyText),
       minutes: readingMinutes(bodyText),
@@ -81,7 +80,6 @@ const cards = await Promise.all(
         sticky,
         groups,
         cover,
-        bandImage,
         shortDate,
         words,
         minutes,

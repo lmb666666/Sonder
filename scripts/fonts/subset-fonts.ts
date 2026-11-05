@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, extname, isAbsolute, join } from 'node:path';
+import { dirname, extname, join } from 'node:path';
 import { parse } from 'smol-toml';
 
 type FontConfig = {

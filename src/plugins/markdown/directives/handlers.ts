@@ -293,7 +293,7 @@ function stripDirectiveLabelData(node: MdastNode): MdastNode {
 // ─── 容器：提醒块（:::note 家族，复用 callout 渲染） ────
 
 function calloutContainerHandler(remarkCallouts: () => (tree: MdastNode) => void) {
-  return ({ node, children, label, labelText }: ContainerContext): MdastNode[] => {
+  return ({ node, children, labelText }: ContainerContext): MdastNode[] => {
     const fold = asString(node.attributes?.fold);
     const foldable = node.attributes?.foldable === true || fold === '-' || fold === '+';
     const open = node.attributes?.open === true;
@@ -561,7 +561,7 @@ function resolveBadgeImage(href: string | undefined, img: string | undefined): s
   return '';
 }
 
-function badgeHandler({ label, labelText, attributes }: InlineContext): MdastNode[] {
+function badgeHandler({ labelText, attributes }: InlineContext): MdastNode[] {
   const href = asString(attributes.href);
   const image = resolveBadgeImage(href, asString(attributes.img));
   const round = image ? attributes.square !== true : attributes.round === true;
@@ -601,7 +601,7 @@ function badgeHandler({ label, labelText, attributes }: InlineContext): MdastNod
   ];
 }
 
-function keyHandler({ label, labelText, attributes }: InlineContext): MdastNode[] {
+function keyHandler({ labelText, attributes }: InlineContext): MdastNode[] {
   const mods: string[] = (['ctrl', 'shift', 'alt', 'meta', 'win', 'cmd'] as const).filter(
     (mod) => attributes[mod] === true,
   );
@@ -624,7 +624,7 @@ function keyHandler({ label, labelText, attributes }: InlineContext): MdastNode[
   ];
 }
 
-function spoilerHandler({ label }: InlineContext): MdastNode[] {
+function spoilerHandler(): MdastNode[] {
   return [
     {
       type: 'emphasis',
@@ -642,7 +642,7 @@ function spoilerHandler({ label }: InlineContext): MdastNode[] {
   ];
 }
 
-function spanHandler({ label, attributes }: InlineContext): MdastNode[] {
+function spanHandler({ attributes }: InlineContext): MdastNode[] {
   const color = asString(attributes.color);
   const classes = classNames(
     'sd-span',
@@ -663,7 +663,7 @@ function spanHandler({ label, attributes }: InlineContext): MdastNode[] {
   ];
 }
 
-function btnHandler({ label, labelText, attributes, file }: InlineContext): MdastNode[] {
+function btnHandler({ labelText, attributes, file }: InlineContext): MdastNode[] {
   const href = asString(attributes.href);
   if (!href) {
     file.message(':btn 需要 {href} 属性，已按原样保留。', undefined, 'sonder-directives');
