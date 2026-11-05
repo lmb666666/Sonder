@@ -178,6 +178,7 @@ const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : her
           id="article-start"
           class:list={['article-content', { 'article-content-ui': contentFont === 'ui' }]}
           data-sonder-content
+          data-sonder-lightbox-label={ui.article.imagePreview}
         >
           <slot />
         </section>

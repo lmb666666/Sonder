@@ -33,6 +33,7 @@ const pagefindPath = `${baseUrl.replace(/\/$/, '')}/pagefind/pagefind.js`.replac
 let pagefindPromise: Promise<PagefindModule> | null = null;
 let lastFocusedElement: HTMLElement | null = null;
 const searchLayers = new WeakMap<HTMLElement, HTMLElement>();
+const searchClosers = new WeakMap<HTMLElement, () => void>();
 
 function getSearchSurface(root: HTMLElement) {
   return searchLayers.get(root) ?? root;
@@ -109,6 +110,8 @@ function setExpanded(root: HTMLElement, expanded: boolean) {
     searchLayers.get(root) ?? root.querySelector<HTMLElement>('[data-site-search-layer]');
 
   layer?.setAttribute('data-search-open', String(expanded));
+  layer?.toggleAttribute('inert', !expanded);
+  layer?.setAttribute('aria-hidden', String(!expanded));
   root
     .querySelector<HTMLButtonElement>('[data-site-search-trigger]')
     ?.setAttribute('aria-expanded', String(expanded));
@@ -138,6 +141,25 @@ function trapFocus(event: KeyboardEvent, dialog: HTMLElement) {
   }
 }
 
+function appendSanitizedExcerpt(target: HTMLElement, html: string) {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+
+  const walk = (node: Node, output: HTMLElement) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      output.append(node.textContent ?? '');
+      return;
+    }
+    if (!(node instanceof Element)) return;
+
+    const next = node.tagName === 'MARK' ? document.createElement('mark') : output;
+    node.childNodes.forEach((child) => walk(child, next));
+    if (next !== output) output.append(next);
+  };
+
+  template.content.childNodes.forEach((child) => walk(child, target));
+}
+
 function renderResults(root: HTMLElement, results: Awaited<ReturnType<PagefindResult['data']>>[]) {
   const list = querySearchSurface<HTMLElement>(root, '[data-site-search-results]');
   if (!list) return;
@@ -162,7 +184,7 @@ function renderResults(root: HTMLElement, results: Awaited<ReturnType<PagefindRe
     matchLabel.className = 'site-search-result-match-label';
     matchLabel.textContent = root.dataset.searchMatchLabel || 'Matched passage';
     excerpt.className = 'site-search-result-excerpt';
-    excerpt.innerHTML = result.excerpt;
+    appendSanitizedExcerpt(excerpt, result.excerpt);
 
     match.append(matchLabel, excerpt);
     link.append(title, meta, match);
@@ -210,6 +232,7 @@ export function initSiteSearch() {
       setStatus(root, root.dataset.searchIdleLabel || 'Start typing to search.');
       lastFocusedElement?.focus?.();
     };
+    searchClosers.set(root, close);
 
     const open = () => {
       lastFocusedElement =
@@ -277,14 +300,21 @@ export function initSiteSearch() {
       if ((event.target as Element).matches('[data-site-search-backdrop]')) close();
       if ((event.target as Element).closest('[data-site-search-results] a')) close();
     });
-
-    document.addEventListener('keydown', (event) => {
-      if (root.dataset.searchOpen !== 'true') return;
-      if (event.key === 'Escape') close();
-      trapFocus(event, dialog);
-    });
   }
 }
+
+document.addEventListener('keydown', (event) => {
+  const root = document.querySelector<HTMLElement>('[data-site-search-root]');
+  if (!root || root.dataset.searchOpen !== 'true') return;
+
+  if (event.key === 'Escape') {
+    searchClosers.get(root)?.();
+    return;
+  }
+
+  const dialog = querySearchSurface<HTMLElement>(root, '[data-site-search-dialog]');
+  if (dialog) trapFocus(event, dialog);
+});
 
 document.addEventListener('keydown', (event) => {
   const isModK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';

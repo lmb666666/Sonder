@@ -93,7 +93,8 @@
     "moreArticles": "更多文章",
     "moreCount": "{count} 篇",
     "references": "参考链接",
-    "referencesLabel": "参考链接"
+    "referencesLabel": "参考链接",
+    "imagePreview": "查看大图"
   },
   "share": {
     "title": "文章分享",

@@ -104,7 +104,11 @@ function parentRoute(pathname: string, id: string) {
           </div>
         </div>
       </header>
-      <section class="media-review-content" data-sonder-content>
+      <section
+        class="media-review-content"
+        data-sonder-content
+        data-sonder-lightbox-label={i18n.t('article.imagePreview')}
+      >
         <Content />
       </section>
     </article>

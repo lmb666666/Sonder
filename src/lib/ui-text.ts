@@ -203,6 +203,7 @@ type RawUiText = {
     moreCount: Message;
     references: string;
     referencesLabel: string;
+    imagePreview: string;
   };
   share: {
     title: string;

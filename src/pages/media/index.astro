@@ -295,21 +295,27 @@ function isPageMeta(value: unknown): value is {
     </div>
   </main>
   <script>
-    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-media-section]'));
-    const navs = Array.from(document.querySelectorAll<HTMLElement>('[data-media-nav]'));
-    const setActive = (id: string) =>
-      navs.forEach((nav) =>
-        nav
-          .querySelectorAll<HTMLAnchorElement>('a')
-          .forEach((link) =>
-            link.setAttribute(
-              'aria-current',
-              link.getAttribute('href') === `#${id}` ? 'true' : 'false',
+    let observer: IntersectionObserver | undefined;
+
+    const init = () => {
+      observer?.disconnect();
+      const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-media-section]'));
+      const navs = Array.from(document.querySelectorAll<HTMLElement>('[data-media-nav]'));
+      const setActive = (id: string) =>
+        navs.forEach((nav) =>
+          nav
+            .querySelectorAll<HTMLAnchorElement>('a')
+            .forEach((link) =>
+              link.setAttribute(
+                'aria-current',
+                link.getAttribute('href') === `#${id}` ? 'true' : 'false',
+              ),
             ),
-          ),
-      );
-    if (sections.length) {
-      const observer = new IntersectionObserver(
+        );
+
+      if (!sections.length) return;
+
+      observer = new IntersectionObserver(
         (entries) => {
           const visible = entries
             .filter((entry) => entry.isIntersecting)
@@ -318,7 +324,10 @@ function isPageMeta(value: unknown): value is {
         },
         { rootMargin: '-22% 0px -64%', threshold: [0, 0.1, 0.5] },
       );
-      sections.forEach((section) => observer.observe(section));
-    }
+      sections.forEach((section) => observer?.observe(section));
+    };
+
+    document.addEventListener('astro:page-load', init);
+    document.addEventListener('astro:before-swap', () => observer?.disconnect());
   </script>
 </Base>

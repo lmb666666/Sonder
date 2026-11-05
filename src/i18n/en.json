@@ -111,7 +111,8 @@
       "other": "{count} articles"
     },
     "references": "References",
-    "referencesLabel": "Reference links"
+    "referencesLabel": "Reference links",
+    "imagePreview": "View image"
   },
   "share": {
     "title": "Share this article",

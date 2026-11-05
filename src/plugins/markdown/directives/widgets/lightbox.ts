@@ -49,9 +49,11 @@ function shouldWrap(img: HTMLImageElement): boolean {
 
 function wrapImages(gallery: HTMLElement): HTMLAnchorElement[] {
   const images = Array.from(gallery.querySelectorAll('img')).filter(shouldWrap);
+  const label = gallery.dataset.sonderLightboxLabel || 'View image';
   return images.map((img) => {
     const anchor = document.createElement('a');
     anchor.className = 'sd-lightbox-item';
+    anchor.setAttribute('aria-label', img.alt ? `${label}: ${img.alt}` : label);
     // 全尺寸 src（Astro 处理后的原图），而非 currentSrc——
     // currentSrc 随版面宽度选中的是缩小变体，全屏看会糊
     anchor.href = img.getAttribute('src') ?? '';
