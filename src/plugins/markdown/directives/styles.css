@@ -287,6 +287,27 @@ a.sd-btn:hover {
   padding-top: 0.9em;
 }
 
+.sd-tab-panel-title {
+  display: none;
+}
+
+html:not(.js) .sd-tabs-head {
+  display: none;
+}
+
+html:not(.js) .sd-tab-panel-title {
+  display: block;
+  margin: 0 0 0.5em;
+  color: var(--paper-ink);
+  font-family: var(--font-ui-label);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.js .sd-tab-panel:not(.is-active) {
+  display: none;
+}
+
 .sd-tab-panel > :first-child {
   margin-top: 0;
 }

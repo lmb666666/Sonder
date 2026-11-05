@@ -258,15 +258,20 @@ function tabsHandler({ children, transform, file }: ContainerContext): MdastNode
   };
 
   const panels = tabs.map((tab, index) => {
-    unwrapLabel(tab);
+    const label = unwrapLabel(tab);
+    const title = label ? wrap('p', ['sd-tab-panel-title'], label.children ?? []) : undefined;
     const body = transform((tab.children ?? []).map(stripDirectiveLabelData), 'tab', file);
-    return wrap('section', ['sd-tab-panel', ...(index === 0 ? ['is-active'] : [])], body, {
-      id: `${groupId}-panel-${index}`,
-      role: 'tabpanel',
-      'aria-labelledby': `${groupId}-tab-${index}`,
-      'data-sd-tab-panel': String(index),
-      ...(index === 0 ? {} : { hidden: true }),
-    });
+    return wrap(
+      'section',
+      ['sd-tab-panel', ...(index === 0 ? ['is-active'] : [])],
+      [...(title ? [title] : []), ...body],
+      {
+        id: `${groupId}-panel-${index}`,
+        role: 'tabpanel',
+        'aria-labelledby': `${groupId}-tab-${index}`,
+        'data-sd-tab-panel': String(index),
+      },
+    );
   });
 
   return [wrap('div', ['sd-tabs'], [head, ...panels], { 'data-sd-tabs': '' }), ...extras];

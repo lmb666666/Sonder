@@ -125,7 +125,8 @@ describe('tabs 容器', () => {
     const panels = node.children?.slice(1) ?? [];
     expect(panels).toHaveLength(2);
     expect(panels[0]?.data?.hProperties?.className).toContain('is-active');
-    expect(panels[1]?.data?.hProperties?.hidden).toBe(true);
+    expect(panels[1]?.data?.hProperties?.hidden).toBeUndefined();
+    expect(panels[0]?.children?.[0]?.data?.hProperties?.className).toContain('sd-tab-panel-title');
   });
 
   test('空 tabs 降级为普通内容', async () => {
@@ -789,8 +790,7 @@ describe('未知指令与嵌套', () => {
     ]);
 
     const panel = node.children?.[1];
-    const callout = panel?.children?.[0];
-    expect(callout?.data?.hProperties?.className).toContain('callout-note');
+    expect(JSON.stringify(panel)).toContain('callout-note');
   });
 });
 

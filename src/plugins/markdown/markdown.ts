@@ -43,6 +43,18 @@ function markdownTabsIntegration(): AstroIntegration {
 (function () {
   if (window.__sonderTabsBound) return;
   window.__sonderTabsBound = true;
+  document.documentElement.classList.add('js');
+  const syncTabs = () => {
+    document.querySelectorAll('[data-sd-tabs]').forEach((root) => {
+      const active =
+        root.querySelector('[data-sd-tab-btn].is-active')?.getAttribute('data-sd-tab-btn') ?? '0';
+      root.querySelectorAll('[data-sd-tab-panel]').forEach((panel) => {
+        panel.hidden = panel.getAttribute('data-sd-tab-panel') !== active;
+      });
+    });
+  };
+  document.addEventListener('astro:page-load', syncTabs);
+  syncTabs();
   document.addEventListener('click', (event) => {
     const button = event.target instanceof Element ? event.target.closest('[data-sd-tab-btn]') : null;
     if (!button) return;
