@@ -372,6 +372,8 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
 </section>
 
 <script>
+  import { validateApplicationUrlValue } from '../../lib/friend-application';
+
   type ApplicationField = 'name' | 'url' | 'bio' | 'avatar' | 'backgroundImage' | 'rss';
   type ApplicationData = Record<ApplicationField, string> & { sticky: false };
   type ApplicationConfig = {
@@ -443,17 +445,14 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
     return url.toString();
   };
 
-  const validateApplicationUrl = (input: HTMLInputElement) => {
+  const validateApplicationUrl = (
+    input: HTMLInputElement,
+    messages: ApplicationConfig['messages'],
+  ) => {
     input.setCustomValidity('');
-    if (!input.value.trim()) return;
-    try {
-      const url = new URL(input.value);
-      if (!['http:', 'https:'].includes(url.protocol)) {
-        input.setCustomValidity(messages.invalidUrlProtocol);
-      }
-    } catch {
-      input.setCustomValidity(messages.invalidUrl);
-    }
+    const result = validateApplicationUrlValue(input.value);
+    if (result === 'protocol') input.setCustomValidity(messages.invalidUrlProtocol);
+    if (result === 'invalid') input.setCustomValidity(messages.invalidUrl);
   };
 
   const copyApplicationText = async (value: string) => {
@@ -601,7 +600,9 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
       };
 
       const update = () => {
-        form.querySelectorAll<HTMLInputElement>('[data-url-field]').forEach(validateApplicationUrl);
+        form
+          .querySelectorAll<HTMLInputElement>('[data-url-field]')
+          .forEach((input) => validateApplicationUrl(input, messages));
         const data = readApplicationData(form);
         const json = JSON.stringify(data, null, 2);
         const previewText = formatApplicationPreview(json);

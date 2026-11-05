@@ -20,6 +20,7 @@
     "format:check": "bun run lint && bun run typecheck && prettier --check --ignore-unknown .",
     "prepare": "husky",
     "github-cards": "bun scripts/fetch-github-card-data.ts",
+    "test": "bun test",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
