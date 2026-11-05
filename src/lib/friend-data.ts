@@ -43,18 +43,9 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const optionalString = (value: unknown) =>
   value === undefined || value === null || typeof value === 'string';
 
-export const isFriendLinkItem = (value: unknown): value is FriendLinkItem =>
-  isRecord(value) &&
-  typeof value.name === 'string' &&
-  typeof value.url === 'string' &&
-  optionalString(value.bio) &&
-  optionalString(value.avatar) &&
-  optionalString(value.backgroundImage) &&
-  optionalString(value.rss) &&
-  (value.sticky === undefined ||
-    value.sticky === null ||
-    typeof value.sticky === 'boolean' ||
-    typeof value.sticky === 'number');
+/** 模板内置的示例友链不应进入朋友圈抓取或 OPML 导出。 */
+export const isPlaceholderFeed = (value: string | null | undefined) =>
+  /^https?:\/\/(?:www\.)?example\.(?:com|org|net|dev)(?:\/|$)/i.test(value ?? '');
 
 const defaultFields = {
   name: 'name',

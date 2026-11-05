@@ -5,7 +5,12 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import FriendLinkApplication from '../components/links/FriendLinkApplication.astro';
 import FriendLinkCard from '../components/links/FriendLinkCard.astro';
-import { crawlFriendPosts, parseFriendCircleFeed, type FriendPost } from '../lib/friend-data';
+import {
+  crawlFriendPosts,
+  isPlaceholderFeed,
+  parseFriendCircleFeed,
+  type FriendPost,
+} from '../lib/friend-data';
 import { getSiteConfig } from '../config';
 import { getUiText } from '../lib/ui-text';
 import { withBase } from '../lib/url';
@@ -46,7 +51,7 @@ if (!feedSrc && existsSync(resolve(process.cwd(), 'public', 'friend-circle.json'
 
 const readFeedSource = async (source: string) => {
   if (/^https?:\/\//i.test(source)) {
-    const response = await fetch(source);
+    const response = await fetch(source, { signal: AbortSignal.timeout(8000) });
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
     return await response.text();
   }
@@ -68,8 +73,6 @@ let circleFriendsCount = allFriendLinks.length;
 let feedNotice = '';
 let feedIsDemo = false;
 
-const isPlaceholderFeed = (value: string | null | undefined) =>
-  /^https?:\/\/(?:www\.)?example\.(?:com|org|net|dev)(?:\/|$)/i.test(value ?? '');
 const feedFriends = allFriendLinks.filter((friend) => friend.rss && !isPlaceholderFeed(friend.rss));
 
 if (feedSrc) {

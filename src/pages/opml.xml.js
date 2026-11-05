@@ -1,12 +1,15 @@
 import { getSiteConfig } from '../config';
 import { allFriendLinks } from '../data/friends';
+import { isPlaceholderFeed } from '../lib/friend-data';
 import { escapeXml } from '../lib/xml';
 import { withBase } from '../lib/url';
 
 export async function GET(context) {
   const { site } = await getSiteConfig();
   const origin = context.site ?? new URL(site.url);
-  const subscribable = allFriendLinks.filter((friend) => friend.rss?.trim());
+  const subscribable = allFriendLinks.filter(
+    (friend) => friend.rss?.trim() && !isPlaceholderFeed(friend.rss),
+  );
 
   const outlines = subscribable
     .map((friend) => {
