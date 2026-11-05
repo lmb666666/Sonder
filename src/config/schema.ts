@@ -149,7 +149,6 @@ const defaultPagesConfig = {
     coverImageStyle: 'card',
     listLayout: 'rows',
     categories: {
-      title: 'Categories',
       kicker: 'Browse notes',
       subtitle: '',
       note: 'A quiet index of recurring topics, gathered from article frontmatter.',
@@ -196,7 +195,6 @@ const blogPageSchema = z.object({
   listLayout: z.enum(['rows', 'media']).optional().default(defaultPagesConfig.blog.listLayout),
   categories: z
     .object({
-      title: z.string().optional().default(defaultPagesConfig.blog.categories.title),
       kicker: z.string().optional().default(defaultPagesConfig.blog.categories.kicker),
       subtitle: z.string().optional().default(defaultPagesConfig.blog.categories.subtitle),
       note: z.string().optional().default(defaultPagesConfig.blog.categories.note),

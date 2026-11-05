@@ -31,8 +31,7 @@ const tagColors = [
 ];
 
 const siteConfig = await getSiteConfig();
-const { site, pages } = siteConfig;
-const pageMeta = pages.blog;
+const { site } = siteConfig;
 const tags = getAllTags(await getCollection('blog', ({ data }) => !data.draft));
 const ui = getUiText(siteConfig);
 const maxCount = Math.max(1, ...tags.map((tag) => tag.count));
@@ -161,10 +160,9 @@ function getTagWeight(count: number) {
 
   <main data-pagefind-body>
     <BlogArchiveHeader
-      kicker={pageMeta.kicker}
-      title={pageMeta.title}
-      subtitle={pageMeta.subtitle}
-      note={pageMeta.note}
+      kicker={ui.groups.tagCloudKicker}
+      title={ui.groups.tagCloud}
+      note={ui.groups.tagCloudNote}
     />
     <GroupNav activeView="tags" />
 

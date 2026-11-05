@@ -9,8 +9,7 @@ import { sortByDateDesc } from '../../../lib/content-dates';
 import { getUiText } from '../../../lib/ui-text';
 
 const siteConfig = await getSiteConfig();
-const { site, pages } = siteConfig;
-const pageMeta = pages.blog;
+const { site } = siteConfig;
 const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft));
 const ui = getUiText(siteConfig);
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -182,10 +181,9 @@ function formatMonthDay(date: Date) {
 
   <main data-pagefind-body>
     <BlogArchiveHeader
-      kicker={pageMeta.kicker}
-      title={pageMeta.title}
-      subtitle={pageMeta.subtitle}
-      note={pageMeta.note}
+      kicker={ui.groups.yearArchivesKicker}
+      title={ui.groups.yearArchives}
+      note={ui.groups.yearArchivesNote}
     />
     <GroupNav activeView="archives" />
 

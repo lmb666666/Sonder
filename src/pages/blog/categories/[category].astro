@@ -66,10 +66,10 @@ const categoryName =
   <main data-pagefind-body>
     <BlogArchive
       page={page}
-      headerKicker={pageMeta.kicker}
-      headerTitle={pageMeta.title}
-      headerSubtitle={pageMeta.subtitle}
-      headerNote={pageMeta.note}
+      headerKicker={pageMeta.categories.kicker}
+      headerTitle={categoryName}
+      headerSubtitle={pageMeta.categories.subtitle}
+      headerNote={pageMeta.categories.note}
       coverImageStyle={pageMeta.coverImageStyle}
       listLayout={pageMeta.listLayout}
     >
