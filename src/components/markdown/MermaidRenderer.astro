@@ -2,6 +2,11 @@
   const selector = '[data-mermaid-diagram] .mermaid';
   const sources = new WeakMap<Element, string>();
   let module: typeof import('mermaid') | undefined;
+  let scheduled = false;
+
+  const currentTheme = () =>
+    document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default';
+
   const render = async () => {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>(selector));
     if (!nodes.length) return;
@@ -17,7 +22,7 @@
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',
-        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+        theme: currentTheme(),
         fontFamily: getComputedStyle(document.documentElement)
           .getPropertyValue('--font-article')
           .trim(),
@@ -27,13 +32,19 @@
       console.error('Unable to render Mermaid diagram.', error);
     }
   };
-  const schedule = () => void window.requestAnimationFrame(() => void render());
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(() => {
+      scheduled = false;
+      void render();
+    });
+  };
+
   document.addEventListener('astro:page-load', schedule);
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', schedule, { once: true });
-  else schedule();
+  window.addEventListener('sonder:theme-change', schedule);
   new MutationObserver(schedule).observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['class'],
+    attributeFilter: ['data-theme'],
   });
 </script>
