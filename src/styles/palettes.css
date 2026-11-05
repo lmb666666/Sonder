@@ -1,8 +1,13 @@
+:root {
+  --paper-accent-text: var(--paper-accent);
+}
+
 :root,
 :root[data-palette='green-soft'] {
   --accent: #6b7d70;
   --accent-dark: #3f5348;
   --paper-accent: #667d6d;
+  --paper-accent-text: #5f7566;
   --paper-accent-soft: #edf3ed;
   --paper-fog: #dfe8e8;
   --paper-dust: #e9e2eb;
@@ -58,6 +63,7 @@
   --accent: #4e8a61;
   --accent-dark: #2f6844;
   --paper-accent: #4f855f;
+  --paper-accent-text: #477856;
   --paper-accent-soft: #eaf4ec;
   --paper-fog: #dceade;
   --paper-dust: #e8eadb;
@@ -112,6 +118,7 @@
   --accent: #9b6b70;
   --accent-dark: #74494f;
   --paper-accent: #95696d;
+  --paper-accent-text: #8e6468;
   --paper-accent-soft: #f5eded;
   --paper-fog: #eadfe0;
   --paper-dust: #ebe5dc;
@@ -166,6 +173,7 @@
   --accent: #a66d8a;
   --accent-dark: #7d4a66;
   --paper-accent: #9c6a83;
+  --paper-accent-text: #916079;
   --paper-accent-soft: #f6edf2;
   --paper-fog: #eadfea;
   --paper-dust: #e7e4dc;
@@ -220,6 +228,7 @@
   --accent: #7b6fa8;
   --accent-dark: #5a4d85;
   --paper-accent: #7b6fa8;
+  --paper-accent-text: #7265a2;
   --paper-accent-soft: #f0edf7;
   --paper-fog: #e6e1f1;
   --paper-dust: #efe3eb;
@@ -275,6 +284,7 @@
   --accent: #5b7488;
   --accent-dark: #3b566e;
   --paper-accent: #5b7488;
+  --paper-accent-text: #5a7386;
   --paper-accent-soft: #edf0f0;
   --paper-fog: #e0e6e8;
   --paper-dust: #e5e5dc;
@@ -285,7 +295,7 @@
   --paper-bg-deep: #eaeef1;
   --paper-surface: #fafbfc;
   --paper-surface-muted: #eef2f4;
-  --paper-surface-rgb: 252, 253, 254;
+  --paper-surface-rgb: 250, 251, 252;
   --paper-control: rgba(238, 242, 244, 0.76);
   --paper-control-hover: rgba(229, 236, 240, 0.92);
   --paper-nav: rgba(250, 251, 252, 0.92);
@@ -310,7 +320,7 @@
   --paper-bg-deep: #0d1013;
   --paper-surface: #1c2228;
   --paper-surface-muted: #232b32;
-  --paper-surface-rgb: 32, 38, 44;
+  --paper-surface-rgb: 28, 34, 40;
   --paper-control: rgba(36, 44, 52, 0.72);
   --paper-control-hover: rgba(46, 56, 66, 0.88);
   --paper-nav: rgba(28, 34, 40, 0.92);
@@ -329,6 +339,7 @@
   --accent: #8a5a32;
   --accent-dark: #653d1e;
   --paper-accent: #8a5a32;
+  --paper-accent-text: #8a5a32;
   --paper-accent-soft: #f5f0e8;
   --paper-fog: #eee3d4;
   --paper-dust: #e5e7dc;
@@ -381,6 +392,7 @@
   --accent: #836f5d;
   --accent-dark: #604f40;
   --paper-accent: #81705f;
+  --paper-accent-text: #7d6c5c;
   --paper-accent-soft: #f1eee9;
   --paper-fog: #e8e2d9;
   --paper-dust: #e2e6dc;

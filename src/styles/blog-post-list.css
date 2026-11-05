@@ -174,7 +174,7 @@
 }
 
 .title-link:hover {
-  color: var(--paper-accent);
+  color: var(--paper-accent-text);
 }
 
 .title-link:hover::before {
@@ -226,7 +226,7 @@
 }
 
 .post-tag {
-  color: var(--paper-accent);
+  color: var(--paper-accent-text);
   text-decoration: none;
   transition: color 180ms ease;
 }
@@ -268,7 +268,7 @@
 }
 
 .post-group {
-  color: var(--paper-accent);
+  color: var(--paper-accent-text);
   text-decoration: none;
   transition: color 180ms ease;
 }

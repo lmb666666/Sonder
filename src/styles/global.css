@@ -515,7 +515,7 @@ h6 {
 
 .archive-header-shared .archive-kicker {
   margin: 0;
-  color: var(--paper-accent);
+  color: var(--paper-accent-text);
   font-family: var(--font-ui-label);
   font-size: 0.78rem;
   font-weight: 700;

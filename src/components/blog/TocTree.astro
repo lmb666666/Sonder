@@ -94,7 +94,7 @@ const {
     scrollbar-gutter: stable;
     padding-right: 4px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(102, 125, 109, 0.24) transparent;
+    scrollbar-color: color-mix(in srgb, var(--paper-accent) 24%, transparent) transparent;
   }
 
   .toc-card.collapsible .toc-list-wrap {
@@ -107,7 +107,7 @@ const {
     gap: 4px;
     padding-top: 4px;
     padding-left: 13px;
-    border-left: 1px solid rgba(102, 125, 109, 0.14);
+    border-left: 1px solid color-mix(in srgb, var(--paper-accent) 14%, transparent);
   }
 
   .toc-tree-item {
@@ -146,8 +146,8 @@ const {
 
   .toc-branch-toggle:hover,
   .toc-branch-toggle:focus-visible {
-    background: rgba(102, 125, 109, 0.1);
-    color: var(--paper-accent);
+    background: color-mix(in srgb, var(--paper-accent) 10%, transparent);
+    color: var(--paper-accent-text);
   }
 
   .toc-branch-toggle i {
@@ -206,17 +206,17 @@ const {
   .toc-card .toc-tree a[aria-current='true'],
   .mobile-toc-panel .toc-tree a[data-state='active'],
   .mobile-toc-panel .toc-tree a[aria-current='true'] {
-    background: rgba(102, 125, 109, 0.16);
-    color: var(--accent-dark);
-    box-shadow: inset 2px 0 0 rgba(102, 125, 109, 0.5);
+    background: color-mix(in srgb, var(--paper-accent) 16%, transparent);
+    color: var(--paper-accent-text);
+    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--paper-accent) 50%, transparent);
   }
 
   .toc-card .toc-tree a[data-state]:not([data-state='active']):not([aria-current='true']):hover,
   .mobile-toc-panel
     .toc-tree
     a[data-state]:not([data-state='active']):not([aria-current='true']):hover {
-    background: rgba(102, 125, 109, 0.1);
-    color: var(--paper-accent);
+    background: color-mix(in srgb, var(--paper-accent) 10%, transparent);
+    color: var(--paper-accent-text);
   }
 
   @media (max-width: 900px) {

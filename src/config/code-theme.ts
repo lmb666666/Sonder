@@ -77,8 +77,8 @@ function createPaperTheme(name: string, type: 'light' | 'dark'): ThemeRegistrati
       'editor.background': type === 'dark' ? '#273026' : '#f7f8f3',
       'editor.foreground': type === 'dark' ? '#eaebe5' : '#272d28',
       'editorLineNumber.foreground': type === 'dark' ? '#98a294' : '#626c62',
-      'scrollbarSlider.background': type === 'dark' ? '#a8baa966' : '#667d6d55',
-      'scrollbarSlider.hoverBackground': type === 'dark' ? '#a8baa9aa' : '#667d6d88',
+      'scrollbarSlider.background': type === 'dark' ? '#98a29466' : '#626c6266',
+      'scrollbarSlider.hoverBackground': type === 'dark' ? '#b7c0b3aa' : '#626c6299',
     },
     settings: tokenSettings,
   };

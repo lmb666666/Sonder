@@ -14,7 +14,7 @@ interface Props {
 
 const { weeks = 24, excludeDraft = true, startDate, stats } = Astro.props;
 const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
-const heatmap = createRecentBlogHeatmap(posts, weeks, undefined, startDate);
+const heatmap = createRecentBlogHeatmap(posts, weeks, startDate);
 const ui = getUiText(await getSiteConfig());
 const statItems = stats ?? [
   { label: ui.heatmap.totalPosts, value: heatmap.totalPosts },
@@ -205,7 +205,7 @@ function getDayHref(day: HeatmapDay) {
 
   .heatmap-cell {
     border-radius: 2.5px;
-    background: rgba(102, 125, 109, 0.12);
+    background: color-mix(in srgb, var(--paper-accent) 12%, transparent);
     box-shadow: inset 0 0 0 1px var(--paper-line);
   }
 
@@ -215,23 +215,23 @@ function getDayHref(day: HeatmapDay) {
   }
 
   .level-0 {
-    background: rgba(102, 125, 109, 0.16);
+    background: color-mix(in srgb, var(--paper-accent) 16%, transparent);
   }
 
   .level-1 {
-    background: #dce8dc;
+    background: color-mix(in srgb, var(--paper-accent) 18%, var(--paper-bg));
   }
 
   .level-2 {
-    background: #b9cbb9;
+    background: color-mix(in srgb, var(--paper-accent) 34%, var(--paper-bg));
   }
 
   .level-3 {
-    background: #8fa58f;
+    background: color-mix(in srgb, var(--paper-accent) 56%, var(--paper-bg));
   }
 
   .level-4 {
-    background: #667d6d;
+    background: color-mix(in srgb, var(--paper-accent) 82%, var(--paper-bg));
   }
 
   footer {

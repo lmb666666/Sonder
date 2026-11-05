@@ -68,7 +68,7 @@
 .topic-chip.is-active {
   border-color: color-mix(in srgb, var(--paper-accent) 28%, var(--paper-line));
   background: var(--paper-surface);
-  color: var(--paper-accent);
+  color: var(--paper-accent-text);
 }
 
 .topic-chip.is-active::before {
@@ -146,13 +146,13 @@
 }
 
 .group-links a .site-icon {
-  color: var(--paper-accent);
+  color: var(--paper-accent-text);
   opacity: 0.82;
 }
 
 .group-links a:hover,
 .group-links a.is-active {
-  color: var(--paper-accent);
+  color: var(--paper-accent-text);
   text-decoration-color: currentColor;
 }
 
