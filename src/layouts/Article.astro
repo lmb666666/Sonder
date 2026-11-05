@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from './Base.astro';
-import 'katex/dist/katex.min.css';
+import katexCssUrl from 'katex/dist/katex.min.css?url';
 import ArticleHeader from '../components/article/ArticleHeader.astro';
 import ShareActions from '../components/article/ShareActions.astro';
 import ArticleJourney from '../components/blog/ArticleJourney.astro';
@@ -21,7 +21,13 @@ import { countWords, readingMinutes as estimateReadingMinutes } from '../lib/wor
 import '../styles/blog-article.css';
 
 const siteConfig = await getSiteConfig();
-const { comments: rawComments, site, profile, article: articleConfig } = siteConfig;
+const {
+  comments: rawComments,
+  site,
+  profile,
+  article: articleConfig,
+  markdown: markdownConfig,
+} = siteConfig;
 const comments = resolveCommentsConfig(rawComments);
 const ui = getUiText(siteConfig);
 const profileAvatar = withBase(profile.avatar);
@@ -88,6 +94,9 @@ const shouldMountCommentSection = supportsCommentSection(post.collection);
 const { title, description, date, heroImage, showHeroImage = true } = post.data;
 const contentFont = props.contentFont ?? 'article';
 const bodyText = 'body' in post && typeof post.body === 'string' ? post.body : description;
+const bodyWithoutCode = bodyText.replace(/```[\s\S]*?```/g, '').replace(/`[^`]*`/g, '');
+const hasMath = /\$\$?[^$]+\$\$?|\\\(|\\\[/.test(bodyWithoutCode);
+const needsKatexCss = markdownConfig.math && markdownConfig.mathRenderer === 'katex' && hasMath;
 const wordCount = countWords(bodyText);
 const readingTime = ui.article.readingTime(estimateReadingMinutes(bodyText));
 const tags = post.data.tags ?? [];
@@ -147,6 +156,7 @@ const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : her
   type="article"
 >
   <Fragment slot="head">
+    {needsKatexCss && <link rel="stylesheet" href={katexCssUrl} />}
     {
       comments.provider === 'waline' && comments.enabled && (
         <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
