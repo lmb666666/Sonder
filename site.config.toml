@@ -260,14 +260,12 @@ body = [
 count = 2
 # 热力图周数
 heatmapWeeks = 20
-# 是否显示首页「最新」与热力图区块
+# 是否显示首页「最新」与热力图区块；关闭后两块一起隐藏
 showHeatmapLatest = true
 # 是否排除草稿
 excludeDraft = true
 # 热力图起始日期；留空则按最近周数计算
 startDate = ""
-# 热力图日期链接前缀；留空时链接到当天第一篇文章
-dateArchiveBaseHref = ""
 
 # 首页联系方式；copy = true 时点击复制 tooltip
 [[config.home.links]]

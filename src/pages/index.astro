@@ -9,6 +9,7 @@ import BlogHeatmap from '../components/home/BlogHeatmap.astro';
 import LatestUpdates from '../components/home/LatestUpdates.astro';
 import SiteInfoCard from '../components/home/SiteInfoCard.astro';
 import { getSiteConfig } from '../config';
+import { getAllCategories, getAllTags } from '../lib/content-groups';
 import { formatCount } from '../lib/word-count';
 import { getUiText } from '../lib/ui-text';
 import Base from '../layouts/Base.astro';
@@ -19,8 +20,8 @@ const ui = getUiText(siteConfig);
 
 // 侧栏统计：文章数 / 分类数 / 标签数
 const posts = await getCollection('blog', ({ data }) => !data.draft);
-const categoryCount = new Set(posts.flatMap((post) => post.data.categories)).size;
-const tagCount = new Set(posts.flatMap((post) => post.data.tags ?? [])).size;
+const categoryCount = getAllCategories(posts).length;
+const tagCount = getAllTags(posts).length;
 
 const stats = [
   { label: ui.homeStats.posts, value: formatCount(posts.length) },
@@ -48,15 +49,18 @@ const stats = [
       )
     }
 
-    <Fragment slot="heatmap">
-      <BlogHeatmap
-        weeks={home.latest.heatmapWeeks}
-        excludeDraft={home.latest.excludeDraft}
-        startDate={home.latest.startDate || null}
-        dateArchiveBaseHref={home.latest.dateArchiveBaseHref || undefined}
-        stats={stats}
-      />
-    </Fragment>
+    {
+      home.latest.showHeatmapLatest && (
+        <Fragment slot="heatmap">
+          <BlogHeatmap
+            weeks={home.latest.heatmapWeeks}
+            excludeDraft={home.latest.excludeDraft}
+            startDate={home.latest.startDate || null}
+            stats={stats}
+          />
+        </Fragment>
+      )
+    }
 
     <Fragment slot="siteInfo">
       <SiteInfoCard />

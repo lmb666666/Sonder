@@ -450,7 +450,6 @@ export const siteConfigSchema = z.object({
         showHeatmapLatest: z.boolean().optional().default(true),
         excludeDraft: z.boolean().optional().default(true),
         startDate: z.string().optional().default(''),
-        dateArchiveBaseHref: z.string().optional().default(''),
       })
       .optional()
       .default({
@@ -459,7 +458,6 @@ export const siteConfigSchema = z.object({
         showHeatmapLatest: true,
         excludeDraft: true,
         startDate: '',
-        dateArchiveBaseHref: '',
       }),
     links: z.array(homeLinkSchema).optional().default([]),
   }),

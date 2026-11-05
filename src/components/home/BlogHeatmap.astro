@@ -7,13 +7,12 @@ import { getUiText } from '../../lib/ui-text';
 interface Props {
   weeks?: number;
   excludeDraft?: boolean;
-  dateArchiveBaseHref?: string;
   startDate?: Date | string | null;
   /** 覆盖顶部统计行（label/value）；缺省用内置的总文章/活跃天数/连续天数 */
   stats?: { label: string; value: string }[];
 }
 
-const { weeks = 24, excludeDraft = true, dateArchiveBaseHref, startDate, stats } = Astro.props;
+const { weeks = 24, excludeDraft = true, startDate, stats } = Astro.props;
 const posts = await getCollection('blog', ({ data }) => !excludeDraft || !data.draft);
 const heatmap = createRecentBlogHeatmap(posts, weeks, undefined, startDate);
 const ui = getUiText(await getSiteConfig());
@@ -40,10 +39,6 @@ function getDayTitle(day: HeatmapDay) {
 }
 
 function getDayHref(day: HeatmapDay) {
-  if (dateArchiveBaseHref && day.count > 0) {
-    return `${dateArchiveBaseHref.replace(/\/$/, '')}/${day.date}/`;
-  }
-
   return day.posts[0]?.href;
 }
 ---
