@@ -30,7 +30,7 @@ function paths(...specs: Array<string | HastChild>): HastChild[] {
   return specs.map((spec) => (typeof spec === 'string' ? h('path', { d: spec }) : spec));
 }
 
-export function icon(name: string, size = 16, strokeWidth = 2): HastChild {
+function iconBase(name: string, size = 16): HastChild {
   switch (name) {
     case 'play':
       return svg(
@@ -142,4 +142,12 @@ export function icon(name: string, size = 16, strokeWidth = 2): HastChild {
     default:
       return svg('circle', size, [h('circle', { cx: '12', cy: '12', r: '10' })]);
   }
+}
+
+export function icon(name: string, size = 16, strokeWidth?: number): HastChild {
+  const node = iconBase(name, size);
+  if (strokeWidth !== undefined && node && typeof node === 'object' && 'properties' in node) {
+    (node as { properties: Record<string, unknown> }).properties['stroke-width'] = strokeWidth;
+  }
+  return node;
 }

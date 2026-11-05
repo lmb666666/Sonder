@@ -118,6 +118,8 @@ const dateLabel =
 </section>
 
 <script>
+  import { copyText } from '../../lib/clipboard';
+
   const init = () => {
     document.querySelectorAll<HTMLElement>('[data-share-root]').forEach((root) => {
       if (root.dataset.shareReady === 'true') return;
@@ -154,28 +156,6 @@ const dateLabel =
       let posterData = '';
       let generating = false;
       let copiedTimer: number | undefined;
-
-      const copyText = async (text: string) => {
-        if (navigator.clipboard?.writeText) {
-          try {
-            await navigator.clipboard.writeText(text);
-            return;
-          } catch {
-            // Fall through to the selection-based fallback.
-          }
-        }
-
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.setAttribute('readonly', '');
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        const copied = document.execCommand('copy');
-        textarea.remove();
-        if (!copied) throw new Error('Copy command failed');
-      };
 
       const copyShareText = async () => {
         const attribution =

@@ -1,3 +1,4 @@
+import { copyText } from './clipboard';
 import { validateApplicationUrlValue } from './friend-application';
 
 type ApplicationField = 'name' | 'url' | 'bio' | 'avatar' | 'backgroundImage' | 'rss';
@@ -90,24 +91,6 @@ const validateApplicationUrl = (input: HTMLInputElement, messages: ApplicationMe
   const result = validateApplicationUrlValue(input.value);
   if (result === 'protocol') input.setCustomValidity(messages.invalidUrlProtocol);
   if (result === 'invalid') input.setCustomValidity(messages.invalidUrl);
-};
-
-const copyApplicationText = async (value: string) => {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value);
-    return;
-  }
-  const temporary = document.createElement('textarea');
-  temporary.value = value;
-  temporary.setAttribute('readonly', '');
-  temporary.style.position = 'fixed';
-  temporary.style.opacity = '0';
-  document.body.append(temporary);
-  temporary.select();
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- Clipboard API 不可用时的兜底（旧浏览器 / 非 https）
-  const copied = document.execCommand('copy');
-  temporary.remove();
-  if (!copied) throw new Error('Clipboard copy failed.');
 };
 
 const formatApplicationPreview = (json: string) =>
@@ -284,7 +267,7 @@ export function initFriendLinkApplications() {
         return;
       }
       try {
-        await copyApplicationText(currentPreview);
+        await copyText(currentPreview);
         window.clearTimeout(copyResetTimer);
         copyButton.dataset.copied = 'true';
         copyButton.dataset.tooltip = config.copySuccessText;

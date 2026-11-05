@@ -1,5 +1,5 @@
+import type { RehypePlugins, RemarkPlugins } from '@astrojs/markdown-remark';
 import type { AstroIntegration } from 'astro';
-import type { defineConfig } from 'astro/config';
 import rehypeKatex from 'rehype-katex';
 import rehypeMathjax from 'rehype-mathjax';
 import remarkDirective from 'remark-directive';
@@ -10,9 +10,6 @@ import rehypeResponsiveTables from './rehype-responsive-tables.js';
 import remarkMermaid from './remark-mermaid.js';
 import type { MathRenderer } from './types.js';
 
-type AstroUserConfig = Parameters<typeof defineConfig>[0];
-type AstroMarkdownConfig = NonNullable<AstroUserConfig['markdown']>;
-
 export interface MarkdownConfigOptions {
   math: boolean;
   mathRenderer: MathRenderer;
@@ -22,8 +19,8 @@ export interface MarkdownConfigOptions {
 
 export interface MarkdownConfig {
   integrations: AstroIntegration[];
-  remarkPlugins: NonNullable<AstroMarkdownConfig['remarkPlugins']>;
-  rehypePlugins: NonNullable<AstroMarkdownConfig['rehypePlugins']>;
+  remarkPlugins: RemarkPlugins;
+  rehypePlugins: RehypePlugins;
 }
 
 /**
