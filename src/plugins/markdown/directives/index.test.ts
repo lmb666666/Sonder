@@ -423,10 +423,12 @@ describe('叶子指令', () => {
 
   test('::music 电台直接走官方外链（无 Meting 解析）', async () => {
     const [node] = await run([leaf('music', { type: 'radio', id: '797632409' })]);
-    const iframe = node.data?.hChildren?.[0];
-    expect((iframe as unknown as { properties: { src: string } }).properties.src).toContain(
-      'type=19&id=797632409',
-    );
+    const iframe = node.data?.hChildren?.[0] as unknown as {
+      properties: { src: string; title: string; style: string };
+    };
+    expect(iframe.properties.src).toContain('type=19&id=797632409');
+    expect(iframe.properties.title).toBe('网易云音乐播放器');
+    expect(iframe.properties.style).toContain('height:');
   });
 
   test('::music{url} 直贴链接：hash 路由与查询参数均可识别', async () => {
@@ -572,6 +574,15 @@ describe('P1 扩展：按钮组 / 本地音频 / 剧透点击', () => {
     expect(node.data?.hProperties?.className).not.toContain('sd-btns--masonry');
   });
 
+  test('::audio 传递 size 与 theme', async () => {
+    const [node] = await run([
+      leaf('audio', { src: '/media/podcast.mp3', size: 'wide', theme: 'midnight' }),
+    ]);
+
+    expect(node.data?.hProperties?.className).toContain('sonder-audio-player--wide');
+    expect(node.data?.hProperties?.style).toContain('--music-surface-light');
+  });
+
   test('::audio {src} 走原生音频播放器', async () => {
     const [node] = await run([
       leaf('audio', { src: '/media/podcast.mp3', title: '播客', artist: '主播' }),
@@ -691,6 +702,31 @@ describe('回归：近期修复的结构契约', () => {
     const cover = item?.children?.[0];
     expect(cover?.data?.hProperties?.className).toContain('sonder-media-shelf__cover');
     expect(cover?.children?.[0]?.type).toBe('image');
+  });
+
+  test(':::media-shelf 支持链接包裹封面、href、note 与非法列数回退', async () => {
+    const image = { type: 'image', url: '/a.png', alt: 'a' };
+    const [node] = await run([
+      container('media-shelf', { columns: '-2' }, [
+        container(
+          'media-item',
+          { type: 'book', title: 't', creator: 'c', href: 'https://example.com', note: '短评' },
+          [
+            {
+              type: 'paragraph',
+              children: [{ type: 'link', url: 'https://example.com', children: [image] }],
+            },
+          ],
+        ),
+      ]),
+    ]);
+
+    expect(node.data?.hProperties?.style).toBe('--media-shelf-columns:4');
+    const item = node.children?.[0];
+    expect(item?.data?.hName).toBe('a');
+    expect(item?.data?.hProperties?.href).toBe('https://example.com');
+    expect(item?.children?.[0]?.children?.[0]?.type).toBe('image');
+    expect(JSON.stringify(item?.children?.[1]?.data?.hChildren)).toContain('短评');
   });
 
   test(':::music-score 优先读取围栏代码块内的 ABC（裸文本会被冒号解析撕碎）', async () => {

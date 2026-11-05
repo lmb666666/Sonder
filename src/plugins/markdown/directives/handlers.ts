@@ -601,6 +601,7 @@ function keyHandler({ label, labelText, attributes }: InlineContext): MdastNode[
     (mod) => attributes[mod] === true,
   );
   if (attributes.icon === true) mods.push('icon');
+  if (attributes['no-icon'] === true) mods.push('no-icon');
 
   return [
     {

@@ -28,7 +28,6 @@ export interface AudioPlayerOptions {
   playlist?: MusicTrack[];
   size?: string;
   theme?: MusicThemeName;
-  provider?: string;
   providerName?: string;
   embedUrl?: string;
   url?: string;
@@ -50,7 +49,6 @@ export function buildAudioPlayerNode(options: AudioPlayerOptions): MdastNode {
     playlist = [],
     size = 'normal',
     theme = 'system',
-    provider,
     providerName,
     embedUrl,
     url,
@@ -154,6 +152,9 @@ export function buildAudioPlayerNode(options: AudioPlayerOptions): MdastNode {
         h('audio', { preload: 'metadata', 'data-audio': '' }, [
           h('source', { src: directSources[0] }),
           '你的浏览器不支持音频播放。',
+        ]),
+        h('noscript', [
+          h('audio', { controls: true, preload: 'metadata', src: directSources[0] }, []),
         ]),
       ]),
     );
@@ -261,7 +262,7 @@ const NETEASE_PATH_TYPES: Record<string, MusicType> = {
 };
 
 const TENCENT_PATH_TYPES: Record<string, MusicType> = {
-  songDetail: 'song',
+  songdetail: 'song',
   playlist: 'playlist',
   album: 'album',
 };
@@ -324,7 +325,7 @@ export function parseTencentUrl(value: string): { type: MusicType; id: string } 
     if (!/(^|\.)y\.qq\.com$/i.test(parsed.hostname)) return undefined;
     const match = parsed.pathname.match(/\/(songDetail|playlist|album)\/([\w-]+)/i);
     if (!match) return undefined;
-    const type = TENCENT_PATH_TYPES[match[1]!];
+    const type = TENCENT_PATH_TYPES[match[1]!.toLowerCase()];
     if (!type) return undefined;
     return { type, id: match[2]! };
   } catch {
@@ -439,6 +440,9 @@ export function neteaseOutchainNode(type: MusicType, id: string): MdastNode {
   const iframe = h('iframe', {
     class: 'sd-embed-frame',
     src: `https://music.163.com/outchain/player?type=${outchain.type}&id=${id}&auto=0&height=${outchain.height}`,
+    title: '网易云音乐播放器',
+    allow: 'autoplay',
+    style: `height:${outchain.height}px`,
     loading: 'lazy',
   });
 
@@ -531,7 +535,6 @@ export function fetchMetingTracks(
       console.warn(
         `[sonder-directives] Meting ${server} ${type} ${id} 解析失败：${error instanceof Error ? error.message : error}`,
       );
-      metingCache.set(cacheKey, []);
       return [];
     } finally {
       metingPending.delete(cacheKey);
@@ -556,14 +559,10 @@ export async function probeAudio(url: string): Promise<boolean> {
     return response.ok && contentType.startsWith('audio/');
   };
 
-  try {
-    const ok = (await attempt('HEAD')) || (await attempt('GET'));
-    audioProbeCache.set(url, ok);
-    return ok;
-  } catch {
-    audioProbeCache.set(url, false);
-    return false;
-  }
+  const headOk = await attempt('HEAD').catch(() => false);
+  const ok = headOk || (await attempt('GET').catch(() => false));
+  audioProbeCache.set(url, ok);
+  return ok;
 }
 
 export interface MusicPrefetchEntry {
@@ -693,6 +692,8 @@ export function audioHandler({
       artwork: asString(attributes.artwork),
       caption: asString(attributes.caption),
       playlist: [{ title: asString(attributes.title) ?? '音频', src }],
+      size: asString(attributes.size),
+      theme: asString(attributes.theme) as MusicThemeName | undefined,
     }),
   ];
 }
@@ -719,10 +720,11 @@ export function musicHandler(preloaded: MusicPrefetch) {
       return [
         buildAudioPlayerNode({
           title: asString(attributes.title) ?? PROVIDER_NAMES[target.provider],
-          provider: target.provider,
           providerName: PROVIDER_NAMES[target.provider],
           embedUrl: target.embedUrl,
           url: target.url,
+          size: asString(attributes.size),
+          theme: asString(attributes.theme) as MusicThemeName | undefined,
           caption: asString(attributes.caption),
         }),
       ];
@@ -741,6 +743,9 @@ export function musicHandler(preloaded: MusicPrefetch) {
       return [
         buildAudioPlayerNode({
           title,
+          artist: asString(attributes.artist),
+          artwork: asString(attributes.artwork),
+          caption: asString(attributes.caption),
           playlist: entry.tracks,
           size: asString(attributes.size),
           theme: asString(attributes.theme) as MusicThemeName | undefined,

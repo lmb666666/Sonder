@@ -17,9 +17,21 @@ function asString(value: AttributeValue | undefined): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
-/** 构建期可判定的文本（代码块、纯文本段落等） */
-function plainText(nodes: MdastNode[] | undefined): string {
-  return (nodes ?? []).map((node) => (typeof node.value === 'string' ? node.value : '')).join('');
+function positiveInteger(value: AttributeValue | undefined, fallback: number, max: number) {
+  if (typeof value !== 'string' || !/^\d+$/.test(value)) return fallback;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? Math.min(parsed, max) : fallback;
+}
+
+function firstImage(nodes: MdastNode[] | undefined): MdastNode | undefined {
+  for (const node of nodes ?? []) {
+    if (node.type === 'image') return node;
+    if (node.type === 'link') {
+      const image = (node.children ?? []).find((child) => child.type === 'image');
+      if (image) return image;
+    }
+  }
+  return undefined;
 }
 
 type HastLike = ReturnType<typeof h>;
@@ -276,27 +288,29 @@ function isDirective(node: MdastNode, name: string): boolean {
 }
 
 export function mediaShelfHandler({ node, children, file }: ContainerContext): MdastNode[] {
-  const columns = Number(asString(node.attributes?.columns) ?? '4') || 4;
+  const columns = positiveInteger(node.attributes?.columns, 4, 6);
   const variant = asString(node.attributes?.variant) ?? 'shelf';
+  const label = asString(node.attributes?.label) ?? 'Media shelf';
 
   const items = children
     .filter((child) => isDirective(child, 'media-item'))
     .map((child) => {
       const attrs = child.attributes ?? {};
-      const paragraphs = (child.children ?? []).filter(
-        (inner) =>
-          inner.type === 'paragraph' &&
-          (inner.children ?? []).some((node) => node.type === 'image'),
+      const imageParagraph = (child.children ?? []).find(
+        (inner) => inner.type === 'paragraph' && firstImage(inner.children),
       );
-      const image = (paragraphs[0]?.children ?? []).find((node) => node.type === 'image') as
-        MdastNode | undefined;
+      const rawRating = Number(asString(attrs.rating) ?? '0');
       return {
         title: asString(attrs.title) ?? '',
         creator: asString(attrs.creator) ?? '',
         type: asString(attrs.type) ?? 'book',
-        image,
+        image: firstImage(imageParagraph?.children),
         coverAspect: asString(attrs['cover-aspect']),
-        rating: Number(asString(attrs.rating) ?? '0') || 0,
+        rating: Number.isFinite(rawRating) ? Math.max(0, Math.min(5, Math.round(rawRating))) : 0,
+        href: asString(attrs.href),
+        reviewHref: asString(attrs['review-href']),
+        reviewLabel: asString(attrs['review-label']),
+        note: asString(attrs.note),
       };
     });
 
@@ -330,10 +344,12 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
     });
 
     const rating = item.rating
-      ? h('span', { class: 'sonder-media-shelf__rating' }, [
-          '★'.repeat(Math.max(1, Math.min(5, Math.round(item.rating)))),
-        ])
+      ? h('span', { class: 'sonder-media-shelf__rating' }, ['★'.repeat(item.rating)])
       : undefined;
+    const review =
+      item.reviewHref && item.reviewLabel
+        ? h('span', { class: 'sonder-media-shelf__review' }, [icon('link', 13), item.reviewLabel])
+        : undefined;
     const content: MdastNode = {
       type: 'blockquote',
       children: [],
@@ -346,17 +362,31 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
             h('span', { class: 'sonder-media-shelf__creator' }, [item.creator]),
             ...(rating ? [rating] : []),
           ]),
-        ] as HastChild[],
+          review,
+          item.note ? h('p', [item.note]) : undefined,
+        ].filter(Boolean) as HastChild[],
       },
     };
 
-    return wrap('article', ['sonder-media-shelf__item'], [cover, content]);
+    const destination = item.reviewHref ?? item.href;
+    if (!destination) {
+      return wrap('article', ['sonder-media-shelf__item'], [cover, content]);
+    }
+
+    return wrap(
+      'a',
+      ['sonder-media-shelf__item'],
+      [cover, content],
+      item.reviewHref
+        ? { href: destination }
+        : { href: destination, target: '_blank', rel: 'noreferrer' },
+    );
   });
 
   return [
     wrap('section', ['sonder-media-shelf', `sonder-media-shelf--${variant}`], itemNodes, {
       style: `--media-shelf-columns:${columns}`,
-      'aria-label': 'Media shelf',
+      'aria-label': label,
     }),
   ];
 }
@@ -428,7 +458,7 @@ export function friendLinkCardHandler(dataSources: Record<string, { friends: Fri
     file: { message(v: string, p: unknown, s: string): void };
   }): MdastNode[] => {
     const src = asString(attributes.src);
-    const columns = Number(asString(attributes.columns) ?? '4') || 4;
+    const columns = positiveInteger(attributes.columns, 4, 4);
 
     let items: FriendLinkEntry[] = [];
     if (src) {
@@ -547,7 +577,7 @@ export function friendCircleHandler(
     file: { message(v: string, p: unknown, s: string): void };
   }): MdastNode[] => {
     const src = asString(attributes.src);
-    const limit = Number(asString(attributes.limit) ?? '10') || 10;
+    const limit = positiveInteger(attributes.limit, 10, 100);
     const title = asString(attributes.title) ?? '朋友动态';
 
     const dataSource = src ? dataSources[src] : undefined;
@@ -558,8 +588,14 @@ export function friendCircleHandler(
 
     const normalizeDate = (value?: string) => {
       if (!value) return '';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
       const parsed = new Date(value);
-      return Number.isNaN(parsed.valueOf()) ? value : parsed.toISOString().slice(0, 10);
+      if (Number.isNaN(parsed.valueOf())) return value;
+
+      const year = parsed.getFullYear();
+      const month = String(parsed.getMonth() + 1).padStart(2, '0');
+      const day = String(parsed.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     };
     const posts = dataSource.posts.map((post) => ({ ...post, date: normalizeDate(post.date) }));
     const initialPosts = posts.slice(0, limit);

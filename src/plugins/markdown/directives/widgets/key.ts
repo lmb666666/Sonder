@@ -71,6 +71,23 @@ function renderKey(el: HTMLElement) {
 
 const state = { ctrl: false, shift: false, alt: false, meta: false };
 
+const keyAliases: Record<string, string> = {
+  ctrl: 'control',
+  control: 'control',
+  cmd: 'meta',
+  command: 'meta',
+  meta: 'meta',
+  win: 'meta',
+  windows: 'meta',
+  alt: 'alt',
+  option: 'alt',
+  shift: 'shift',
+  esc: 'escape',
+  space: ' ',
+};
+
+const normalizeKey = (value: string) => keyAliases[value.toLowerCase()] ?? value.toLowerCase();
+
 function modifiersMatch(el: HTMLElement): boolean {
   const mods = (el.dataset.mods ?? '').split(' ');
   if (mods.includes('cmd')) {
@@ -80,12 +97,13 @@ function modifiersMatch(el: HTMLElement): boolean {
   if (mods.includes('shift') && !state.shift) return false;
   if (mods.includes('alt') && !state.alt) return false;
   if (mods.includes('meta') && !mods.includes('cmd') && !state.meta) return false;
+  if (mods.includes('win') && !state.meta) return false;
   return true;
 }
 
 function matchEvent(el: HTMLElement, event: KeyboardEvent): boolean {
   const code = el.dataset.key;
-  if (code && event.key.toLowerCase() !== code.toLowerCase()) return false;
+  if (code && normalizeKey(event.key) !== normalizeKey(code)) return false;
   return modifiersMatch(el);
 }
 

@@ -2,16 +2,6 @@
 
 const controllers = new WeakMap<Element, { pause: () => void }>();
 
-async function checkSoundFonts(url: string): Promise<boolean> {
-  try {
-    const res = await fetch(url, { method: 'HEAD' });
-    return res.ok;
-  } catch (error) {
-    console.error('[MusicScore] 无法连接 SoundFonts，仅渲染乐谱不启用播放\n', error);
-    return false;
-  }
-}
-
 export async function renderMusicScores() {
   const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-music-score]'));
   if (!nodes.length) return;
@@ -29,9 +19,6 @@ export async function renderMusicScores() {
 
       const synthHost = node.querySelector<HTMLElement>('.music-score-synth');
       if (!synthHost || !abcjs.synth.supportsAudio()) continue;
-
-      const soundfontsUrl = node.dataset.soundfonts ?? '';
-      if (soundfontsUrl && !(await checkSoundFonts(soundfontsUrl))) continue;
 
       const controller = new abcjs.synth.SynthController();
       controller.load(synthHost, null, {
