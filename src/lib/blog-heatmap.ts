@@ -1,5 +1,4 @@
 import type { CollectionEntry } from 'astro:content';
-import { sortByDateDesc } from './content-dates';
 import { withBase } from './url';
 
 export interface HeatmapPost {
@@ -22,13 +21,6 @@ export interface HeatmapWindow {
   totalPosts: number;
   activeDays: number;
   currentStreak: number;
-  latestPosts: LatestPost[];
-}
-
-export interface LatestPost {
-  title: string;
-  href: string;
-  date: Date;
 }
 
 type BlogPost = CollectionEntry<'blog'>;
@@ -51,16 +43,6 @@ export function getLevel(count: number): 0 | 1 | 2 | 3 | 4 {
   if (count === 2) return 2;
   if (count === 3) return 3;
   return 4;
-}
-
-export function getLatestPosts(posts: BlogPost[], count = 1): LatestPost[] {
-  return sortByDateDesc(posts)
-    .slice(0, Math.max(1, count))
-    .map((post) => ({
-      title: post.data.title,
-      href: withBase(`/blog/${post.id}/`),
-      date: post.data.date,
-    }));
 }
 
 function getStartOfWeek(date: Date) {
@@ -104,7 +86,6 @@ function getPostsByDate(posts: BlogPost[]) {
 export function createRecentBlogHeatmap(
   posts: BlogPost[],
   weeks = 12,
-  latestCount = 1,
   startDate?: HeatmapStartDate,
 ): HeatmapWindow {
   const today = new Date();
@@ -161,6 +142,5 @@ export function createRecentBlogHeatmap(
     totalPosts: posts.length,
     activeDays: days.filter((day) => day.count > 0).length,
     currentStreak,
-    latestPosts: getLatestPosts(posts, latestCount),
   };
 }

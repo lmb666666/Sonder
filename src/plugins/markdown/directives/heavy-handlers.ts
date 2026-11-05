@@ -307,6 +307,7 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
         image: firstImage(imageParagraph?.children),
         coverAspect: asString(attrs['cover-aspect']),
         rating: Number.isFinite(rawRating) ? Math.max(0, Math.min(5, Math.round(rawRating))) : 0,
+        status: asString(attrs.status),
         href: asString(attrs.href),
         reviewHref: asString(attrs['review-href']),
         reviewLabel: asString(attrs['review-label']),
@@ -362,6 +363,11 @@ export function mediaShelfHandler({ node, children, file }: ContainerContext): M
             h('span', { class: 'sonder-media-shelf__creator' }, [item.creator]),
             ...(rating ? [rating] : []),
           ]),
+          item.status
+            ? h('span', { class: 'sonder-media-shelf__status', 'data-status': item.status }, [
+                item.status,
+              ])
+            : undefined,
           review,
           item.note ? h('p', [item.note]) : undefined,
         ].filter(Boolean) as HastChild[],

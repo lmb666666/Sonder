@@ -50,7 +50,12 @@ const extensionLabels: Record<string, string> = ui.moments.extension;
 
 <Base title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle}>
   <main class="moments-page" data-pagefind-body>
-    <PageHero kicker={pageMeta.kicker} title={pageMeta.title} subtitle={pageMeta.subtitle}>
+    <PageHero
+      kicker={pageMeta.kicker}
+      title={pageMeta.title}
+      subtitle={pageMeta.subtitle}
+      note={pageMeta.note || undefined}
+    >
       <p class="moments-stats" data-moments-stats>
         {ech0Mode ? ui.moments.loading : ui.moments.count(initialItems.length)}
       </p>

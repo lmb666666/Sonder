@@ -1,13 +1,22 @@
 ---
 import { getSiteConfig } from '../config';
 
-const { profile } = await getSiteConfig();
+const { site, profile } = await getSiteConfig();
 const year = new Date().getFullYear();
 ---
 
 <p class="colophon">&copy; {year} {profile.name}.</p>
+{site.footerNote && <p class="colophon-license">{site.footerNote}</p>}
 
 <style>
+  .colophon-license {
+    margin: 0.35em 0 0;
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.64rem;
+    line-height: 1.6;
+  }
+
   .colophon {
     margin: 0;
     color: var(--paper-ink-soft);

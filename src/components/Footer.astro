@@ -8,6 +8,7 @@ const program = siteInfo.program.trim();
 
 <footer>
   <p class="copyright">&copy; {year} {profile.name}.</p>
+  {site.footerNote && <p class="license">{site.footerNote}</p>}
   {
     program && (
       <p class="powered">
@@ -30,6 +31,12 @@ const program = siteInfo.program.trim();
 
   footer p {
     margin: 0;
+  }
+
+  .license {
+    margin-top: 0.4em;
+    color: var(--paper-ink-faint);
+    font-size: 0.72rem;
   }
 
   .powered {

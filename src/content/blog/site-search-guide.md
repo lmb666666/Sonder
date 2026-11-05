@@ -33,13 +33,11 @@ sidebar:
 ```toml
 [config.search]
 enabled = true
-shortcut = "mod+k"
 placeholder = "搜索文章…"
 maxResults = 6
 ```
 
-- `enabled`：是否显示搜索入口
-- `shortcut`：`mod+k` 会映射为 Ctrl / Cmd + K
+- `enabled`：是否显示搜索入口；快捷键固定为 `Ctrl/Cmd + K`
 - `placeholder`：输入框提示
 - `maxResults`：一次展示的结果数量
 

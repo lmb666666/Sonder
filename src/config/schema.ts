@@ -396,11 +396,7 @@ export const siteConfigSchema = z.object({
     }),
   profile: z.object({
     name: z.string(),
-    handle: z.string(),
     role: z.string(),
-    email: z.email(),
-    website: z.url(),
-    github: z.url(),
     avatar: z.string(),
   }),
   topNav: z.object({
@@ -409,14 +405,12 @@ export const siteConfigSchema = z.object({
   search: z
     .object({
       enabled: z.boolean().optional().default(true),
-      shortcut: z.enum(['mod+k']).optional().default('mod+k'),
       placeholder: z.string().optional().default('Search notes...'),
       maxResults: z.number().int().positive().optional().default(6),
     })
     .optional()
     .default({
       enabled: true,
-      shortcut: 'mod+k',
       placeholder: 'Search notes...',
       maxResults: 6,
     }),
@@ -424,15 +418,7 @@ export const siteConfigSchema = z.object({
     .object({
       blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
       media: mediaPageSchema.optional().default(defaultPagesConfig.media),
-      moments: momentsPageSchema.optional().default({
-        title: '动态',
-        kicker: 'Moments',
-        subtitle: '记录生活点滴。',
-        note: '',
-        apiUrl: '',
-        pageSize: 20,
-        showPoweredBy: true,
-      }),
+      moments: momentsPageSchema.optional().default(defaultPagesConfig.moments),
       links: linksPageSchema.optional().default(defaultPagesConfig.links),
     })
     .optional()

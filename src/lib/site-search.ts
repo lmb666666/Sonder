@@ -25,10 +25,7 @@ const focusableSelector = [
 ].join(',');
 
 const baseUrl = import.meta.env.BASE_URL || '/';
-const pagefindPath = `${baseUrl.replace(/\/$/, '')}/pagefind/pagefind.js`.replace(
-  /^\/pagefind/,
-  '/pagefind',
-);
+const pagefindPath = `${baseUrl.replace(/\/$/, '')}/pagefind/pagefind.js`;
 
 let pagefindPromise: Promise<PagefindModule> | null = null;
 let lastFocusedElement: HTMLElement | null = null;

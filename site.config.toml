@@ -118,8 +118,6 @@ lang = "zh-CN"
 [config.search]
 # 是否启用 Pagefind 搜索
 enabled = true
-# 快捷键目前只支持 mod+k
-shortcut = "mod+k"
 # 搜索框占位与最大结果数
 placeholder = "搜索文章…"
 maxResults = 6
@@ -202,11 +200,7 @@ comment = true
 # 作者资料；头像支持 /public 路径或远程 URL
 [config.profile]
 name = "Sonder"
-handle = "@sonder"
 role = "写博客的人"
-email = "hello@sonder.liang.one"
-website = "https://sonder.liang.one"
-github = "https://github.com/lmb666666/Sonder"
 avatar = "/images/logo.svg"
 
 # 顶部导航；href 为普通链接，module 引用已启用的页面模块

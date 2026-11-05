@@ -32,11 +32,7 @@ timeEstablished = "2026-10-04"
 
 [config.profile]
 name = "Sonder"
-handle = "@sonder"
 role = "写博客的人"
-email = "hello@sonder.liang.one"
-website = "https://sonder.liang.one"
-github = "https://github.com/lmb666666/Sonder"
 avatar = "/images/logo.svg"
 ```
 
@@ -143,7 +139,6 @@ showHeatmapLatest = true
 ```toml
 [config.search]
 enabled = true
-shortcut = "mod+k"
 placeholder = "搜索文章…"
 maxResults = 6
 

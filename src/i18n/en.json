@@ -184,6 +184,12 @@
       "album": "Album",
       "podcast": "Podcast"
     },
+    "status": {
+      "completed": "Completed",
+      "in-progress": "In progress",
+      "planned": "Planned",
+      "abandoned": "Abandoned"
+    },
     "reviewKinds": {
       "book": "Book review",
       "film": "Film review",

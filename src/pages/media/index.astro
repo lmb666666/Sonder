@@ -31,6 +31,12 @@ type MediaEntry = {
 const siteConfig = await getSiteConfig();
 const { site, pages } = siteConfig;
 const i18n = getI18n(siteConfig);
+const statusLabels = Object.fromEntries(
+  ['completed', 'in-progress', 'planned', 'abandoned'].map((status) => [
+    status,
+    i18n.t(`media.status.${status}`),
+  ]),
+);
 const ui = {
   media: {
     browse: i18n.t('media.browse'),
@@ -47,15 +53,7 @@ const ui = {
     },
   },
 };
-const configuredMedia = (pages as Record<string, unknown>).media;
-const pageMeta = isPageMeta(configuredMedia)
-  ? configuredMedia
-  : {
-      title: '书影音',
-      kicker: 'Media',
-      subtitle: '读过、看过、听过的作品，以及一点当时的感受。',
-      note: 'A personal shelf for books, films, and music.',
-    };
+const pageMeta = pages.media;
 
 const allMedia = ((await getCollection('media')) as MediaEntry[])
   .filter((entry) => !entry.data.draft)
@@ -88,22 +86,6 @@ const sections = [
 
 function dateValue(value: Date | undefined) {
   return value?.valueOf() ?? 0;
-}
-
-function isPageMeta(value: unknown): value is {
-  title: string;
-  kicker: string;
-  subtitle: string;
-  note: string;
-} {
-  if (!value || typeof value !== 'object') return false;
-  const candidate = value as Record<string, unknown>;
-  return (
-    typeof candidate.title === 'string' &&
-    typeof candidate.kicker === 'string' &&
-    typeof candidate.subtitle === 'string' &&
-    typeof candidate.note === 'string'
-  );
 }
 ---
 
@@ -260,10 +242,12 @@ function isPageMeta(value: unknown): value is {
                 <MediaShelf
                   columns={4}
                   label={i18n.t('media.shelf')}
+                  statusLabels={statusLabels}
                   items={section.items.map((entry) => ({
                     title: entry.data.title,
                     creator: entry.data.creator,
                     type: entry.data.type,
+                    status: entry.data.status,
                     cover: entry.data.cover,
                     coverAspect: entry.data.coverAspect,
                     rating: entry.data.rating,

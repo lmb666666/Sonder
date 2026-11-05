@@ -166,6 +166,12 @@
       "album": "专辑",
       "podcast": "播客"
     },
+    "status": {
+      "completed": "已完成",
+      "in-progress": "进行中",
+      "planned": "计划中",
+      "abandoned": "已放弃"
+    },
     "reviewKinds": {
       "book": "书评",
       "film": "影评",

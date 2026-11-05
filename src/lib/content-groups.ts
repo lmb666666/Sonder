@@ -131,11 +131,3 @@ export function getAllTags(posts: BlogPost[]): TagGroup[] {
     }))
     .sort((a, b) => b.count - a.count || sortByName(a, b));
 }
-
-export function getPostsByTag(posts: BlogPost[], tagSlug: string) {
-  return posts.filter(
-    (post) =>
-      isPublished(post) &&
-      getGroupItems(post, 'tags').some((name) => slugifyGroupName(name) === tagSlug),
-  );
-}

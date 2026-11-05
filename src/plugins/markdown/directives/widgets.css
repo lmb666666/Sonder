@@ -264,6 +264,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.sonder-media-shelf__status {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 1px 7px;
+  border: 1px solid var(--paper-line);
+  border-radius: 999px;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
 .sonder-media-shelf__rating {
   flex: none;
   white-space: nowrap;

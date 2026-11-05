@@ -27,10 +27,7 @@ if (!about) {
 const { Content, headings } = await render(about);
 
 // 项目卡片：链接指向项目外部地址
-const projectEntries = (await getCollection('projects', ({ data }) => !data.draft)).filter(
-  (entry) => entry.id !== 'index',
-);
-const projects = sortByDateDesc(projectEntries);
+const projects = sortByDateDesc(await getCollection('projects', ({ data }) => !data.draft));
 
 const projectIcons = {
   github: Github,
@@ -91,6 +88,22 @@ const projectIcons = {
                   <h3>{cardTitle}</h3>
                 </div>
                 <p>{project.data.description}</p>
+                {project.data.authors.length > 0 && (
+                  <p class="project-authors">
+                    {project.data.authors.map((author, index) => (
+                      <>
+                        {index > 0 && <span aria-hidden="true"> · </span>}
+                        {author.url ? (
+                          <a href={author.url} target="_blank" rel="noopener noreferrer">
+                            {author.name}
+                          </a>
+                        ) : (
+                          author.name
+                        )}
+                      </>
+                    ))}
+                  </p>
+                )}
                 {project.data.links.length > 0 && (
                   <footer class="project-links" aria-label="项目链接">
                     {project.data.links.map((link) => (
@@ -185,6 +198,21 @@ const projectIcons = {
     color: var(--paper-ink-soft);
     font-size: 0.92rem;
     line-height: 1.7;
+  }
+
+  .project-authors {
+    color: var(--paper-ink-faint);
+    font-family: var(--font-meta);
+    font-size: 0.76rem;
+  }
+
+  .project-authors a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .project-authors a:hover {
+    color: var(--paper-accent);
   }
 
   .project-links {

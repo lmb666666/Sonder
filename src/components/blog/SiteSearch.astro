@@ -9,7 +9,7 @@ interface Props {
 
 const { search } = Astro.props;
 const ui = getUiText(await getSiteConfig());
-const shortcutLabel = search.shortcut === 'mod+k' ? 'Ctrl K / Cmd K' : search.shortcut;
+const shortcutLabel = 'Ctrl K / Cmd K';
 ---
 
 <div
