@@ -75,6 +75,8 @@ function parentRoute(pathname: string, id: string) {
   title={`${media.data.title} | ${siteConfig.site.title}`}
   description={media.data.creator}
   bodyClass="media-review-page"
+  image={media.data.cover}
+  type="article"
 >
   <main data-pagefind-body>
     <a class="media-review-back" href={`${mediaRoute}/`}>{ui.media.backToShelf}</a>

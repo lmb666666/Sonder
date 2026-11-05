@@ -79,8 +79,8 @@ const defaultGiscusConfig = {
   reactions_enabled: '1',
   emit_metadata: '0',
   input_position: 'bottom',
-  light_theme: 'github-light',
-  dark_theme: 'github-dark',
+  light_theme: 'light',
+  dark_theme: 'dark',
   lang: 'zh-CN',
   loading: 'lazy',
 };

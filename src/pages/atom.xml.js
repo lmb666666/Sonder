@@ -5,7 +5,7 @@ import { escapeXml } from '../lib/xml';
 import { withBase } from '../lib/url';
 
 export async function GET(context) {
-  const { site } = await getSiteConfig();
+  const { site, profile } = await getSiteConfig();
   const origin = context.site ?? new URL(site.url);
   const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft)).slice(0, 50);
   const updated = posts[0]?.data.date ?? new Date();
@@ -40,7 +40,7 @@ ${categories}
   <link rel="alternate" type="text/html" href="${new URL(withBase('/'), origin)}" />
   <link rel="self" type="application/atom+xml" href="${new URL(withBase('atom.xml'), origin)}" />
   <author>
-    <name>Sonder</name>
+    <name>${escapeXml(profile.name)}</name>
   </author>
 ${entries}
 </feed>`;
