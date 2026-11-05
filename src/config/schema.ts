@@ -238,7 +238,13 @@ export const siteConfigSchema = z.object({
     repository: z.url(),
     footerNote: z.string(),
     // 站点建立日期（站点信息卡的运行时长；留空隐藏该行）
-    timeEstablished: z.string().optional(),
+    timeEstablished: z
+      .string()
+      .optional()
+      .refine(
+        (value) => !value || !Number.isNaN(Date.parse(value)),
+        'timeEstablished 必须是可解析的日期字符串。',
+      ),
   }),
   theme: z
     .object({

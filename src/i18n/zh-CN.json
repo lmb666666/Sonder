@@ -267,7 +267,16 @@
     "lastUpdatedTip": "构建于页面生成时刻",
     "program": "站点程序",
     "imageBed": "图片存储",
-    "buildPlatform": "构建平台"
+    "buildPlatform": "构建平台",
+    "justNow": "刚刚",
+    "units": {
+      "year": "{count}年",
+      "month": "{count}个月",
+      "day": "{count}天",
+      "hour": "{count}小时",
+      "minute": "{count}分",
+      "second": "{count}秒"
+    }
   },
   "comments": {
     "title": "评论",

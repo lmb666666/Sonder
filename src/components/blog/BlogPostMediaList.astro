@@ -9,7 +9,7 @@ import { getSiteConfig } from '../../config';
 import { isStickyEntry } from '../../lib/content-dates';
 import { getCoverBand } from '../../lib/cover-band';
 import { getUiText } from '../../lib/ui-text';
-import { countWords, formatCount, readingMinutes } from '../../lib/word-count';
+import { countWords, readingMinutes } from '../../lib/word-count';
 import '../../styles/blog-post-media-list.css';
 
 type BlogPost = CollectionEntry<'blog'>;
@@ -62,7 +62,7 @@ const cards = await Promise.all(
       cover,
       bandImage,
       shortDate: format(post.data.date, 'MM-dd'),
-      words: formatCount(countWords(bodyText)),
+      words: countWords(bodyText),
       minutes: readingMinutes(bodyText),
       bandStyle: band ? `--media-band:${band.band};--media-fg:${band.fg}` : undefined,
       bandVars: bandImage ? `--media-image:url("${bandImage.replace(/"/g, '%22')}")` : undefined,
@@ -140,7 +140,7 @@ const cards = await Promise.all(
                   <span class="media-meta-side">
                     <span class="media-meta-chip media-meta-words">
                       <Icon name="pen" size={13} strokeWidth={2} />
-                      {words}字
+                      {ui.article.wordCount(words)}
                     </span>
                     <span class="media-meta-chip">
                       <Icon name="clock" size={13} strokeWidth={2} />

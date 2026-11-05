@@ -1,25 +1,38 @@
-/** 相对时长（Sonder v1 timeElapse 同款语义：取前 N 层非零单位拼接）。 */
-const INTERVALS = [
-  { label: '年', ms: 365.2422 * 24 * 60 * 60 * 1000 },
-  { label: '个月', ms: 30.44 * 24 * 60 * 60 * 1000 },
-  { label: '天', ms: 24 * 60 * 60 * 1000 },
-  { label: '小时', ms: 60 * 60 * 1000 },
-  { label: '分', ms: 60 * 1000 },
-  { label: '秒', ms: 1000 },
+/** 相对时长的结构化拆分：取前 N 层非零单位，由界面层负责本地化。 */
+export type TimeUnit = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second';
+
+export interface ElapsedPart {
+  unit: TimeUnit;
+  value: number;
+}
+
+const INTERVALS: { unit: TimeUnit; ms: number }[] = [
+  { unit: 'year', ms: 365.2422 * 24 * 60 * 60 * 1000 },
+  { unit: 'month', ms: 30.44 * 24 * 60 * 60 * 1000 },
+  { unit: 'day', ms: 24 * 60 * 60 * 1000 },
+  { unit: 'hour', ms: 60 * 60 * 1000 },
+  { unit: 'minute', ms: 60 * 1000 },
+  { unit: 'second', ms: 1000 },
 ];
 
-export function timeElapse(from: string | Date, now: Date = new Date(), maxDepth = 2): string {
+export function elapsedParts(
+  from: string | Date,
+  now: Date = new Date(),
+  maxDepth = 2,
+): ElapsedPart[] {
   const start = typeof from === 'string' ? new Date(from) : from;
+  if (Number.isNaN(start.valueOf())) return [];
+
   let remained = Math.max(0, now.valueOf() - start.valueOf());
-  let text = '';
+  const parts: ElapsedPart[] = [];
 
   for (const interval of INTERVALS) {
-    const count = Math.floor(remained / interval.ms);
-    if (count <= 0) continue;
-    text += `${count}${interval.label}`;
-    remained -= count * interval.ms;
-    if ((maxDepth -= 1) <= 0) break;
+    const value = Math.floor(remained / interval.ms);
+    if (value <= 0) continue;
+    parts.push({ unit: interval.unit, value });
+    remained -= value * interval.ms;
+    if (parts.length >= maxDepth) break;
   }
 
-  return text || '刚刚';
+  return parts;
 }

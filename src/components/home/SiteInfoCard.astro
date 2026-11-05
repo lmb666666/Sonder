@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { name as ciName, isCI } from 'ci-info';
 import Colophon from '../Colophon.astro';
 import { getSiteConfig } from '../../config';
-import { timeElapse } from '../../lib/time';
+import { elapsedParts } from '../../lib/time';
 import { getUiText } from '../../lib/ui-text';
 
 const siteConfig = await getSiteConfig();
@@ -26,10 +26,12 @@ function detectBuildPlatform(): string {
 const buildTime = new Date();
 
 const rows: Row[] = [];
-if (siteInfo.uptime && site.timeEstablished) {
+const established = site.timeEstablished ? new Date(site.timeEstablished) : null;
+const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf()));
+if (siteInfo.uptime && site.timeEstablished && hasEstablished) {
   rows.push({
     label: ui.siteInfo.uptime,
-    value: timeElapse(site.timeEstablished),
+    value: ui.siteInfo.timeElapsed(elapsedParts(established)),
     tip: ui.siteInfo.uptimeTip(site.timeEstablished),
   });
 }

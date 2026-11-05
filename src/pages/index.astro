@@ -24,9 +24,9 @@ const categoryCount = getAllCategories(posts).length;
 const tagCount = getAllTags(posts).length;
 
 const stats = [
-  { label: ui.homeStats.posts, value: formatCount(posts.length) },
-  { label: ui.homeStats.categories, value: formatCount(categoryCount) },
-  { label: ui.homeStats.tags, value: formatCount(tagCount) },
+  { label: ui.homeStats.posts, value: formatCount(posts.length, ui.locale) },
+  { label: ui.homeStats.categories, value: formatCount(categoryCount, ui.locale) },
+  { label: ui.homeStats.tags, value: formatCount(tagCount, ui.locale) },
 ];
 ---
 

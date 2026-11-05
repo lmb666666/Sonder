@@ -1,5 +1,6 @@
 import type { SiteConfig } from '../config';
 import { createI18n, normalizeLocale, type I18nMessages } from '../i18n';
+import type { ElapsedPart, TimeUnit } from './time';
 import en from '../i18n/en.json';
 import zhCN from '../i18n/zh-CN.json';
 import zhTW from '../i18n/zh-TW.json';
@@ -111,6 +112,8 @@ type RawUiText = {
     program: string;
     imageBed: string;
     buildPlatform: string;
+    justNow: string;
+    units: Record<TimeUnit, Message>;
   };
   comments: {
     title: string;
@@ -310,8 +313,9 @@ export type UiText = Omit<
     issueBody: (json: string) => string;
     previewAria: (name: string) => string;
   };
-  siteInfo: Omit<RawUiText['siteInfo'], 'uptimeTip'> & {
+  siteInfo: Omit<RawUiText['siteInfo'], 'uptimeTip' | 'units' | 'justNow'> & {
     uptimeTip: (date: string) => string;
+    timeElapsed: (parts: ElapsedPart[]) => string;
   };
   comments: RawUiText['comments'];
   nav: RawUiText['nav'];
@@ -336,6 +340,8 @@ function formatNumber(value: number, locale: string) {
 }
 
 function createUiText(raw: RawUiText): UiText {
+  const { units: elapsedUnits, justNow, ...siteInfoText } = raw.siteInfo;
+
   return {
     locale: raw.locale,
     nav: raw.nav,
@@ -360,8 +366,15 @@ function createUiText(raw: RawUiText): UiText {
       previewAria: (name) => formatMessage(raw.friendApplication.previewAria, { name }),
     },
     siteInfo: {
-      ...raw.siteInfo,
+      ...siteInfoText,
       uptimeTip: (date) => formatMessage(raw.siteInfo.uptimeTip, { date }),
+      timeElapsed: (parts) => {
+        if (parts.length === 0) return justNow;
+        const separator = raw.locale.startsWith('zh') ? '' : ' ';
+        return parts
+          .map(({ unit, value }) => formatMessage(elapsedUnits[unit], { count: value }))
+          .join(separator);
+      },
     },
     comments: raw.comments,
     palette: raw.palette,
