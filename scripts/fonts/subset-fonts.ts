@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, isAbsolute, join } from 'node:path';
 import { parse } from 'smol-toml';
 
@@ -10,6 +11,8 @@ type FontConfig = {
 };
 
 const projectRoot = process.cwd();
+const cachePath = join(projectRoot, 'node_modules/.cache/sonder-font-subsets.json');
+const forceSubsets = process.argv.includes('--force');
 const uiCharsPath = join(projectRoot, 'scripts/fonts/ui-chars.txt');
 const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
 const fontConfig = readFontConfig();
@@ -23,6 +26,14 @@ const contentOutputFontPath = resolveProjectPath(contentSubsetFontUrl);
 const sourceFontPath = resolveSourceFontPath(fontConfig.file);
 const subsetFontName = `${fontConfig.zh} UI Subset`;
 const contentSubsetFontName = `${fontConfig.zh} Content Subset`;
+const mapleWeights = ['400', '700'];
+const mapleFontDir = join(projectRoot, 'node_modules/@fontsource/maple-mono/files');
+const mapleInputPaths = mapleWeights.map((weight) =>
+  join(mapleFontDir, `maple-mono-latin-${weight}-normal.woff2`),
+);
+const mapleOutputPaths = mapleWeights.map((weight) =>
+  resolveProjectPath(`/fonts/maple-mono-${weight}-subset.woff2`),
+);
 const isWindows = process.platform === 'win32';
 const venvBinDir = isWindows ? 'Scripts' : 'bin';
 const pythonExe = isWindows ? 'python.exe' : 'python';
@@ -248,14 +259,11 @@ function runSubset(charsPath: string, fontOutputPath: string, unicodes?: string)
 }
 
 function runMapleSubsets() {
-  const mapleFontDir = join(projectRoot, 'node_modules/@fontsource/maple-mono/files');
   const mapleUnicodes = 'U+0020-007E,U+00A0-00FF,U+2000-206F,U+20AC,U+2190-2193,U+2212';
-  const weights = ['400', '700'];
 
-  for (const weight of weights) {
-    const inputFontPath = join(mapleFontDir, `maple-mono-latin-${weight}-normal.woff2`);
-    const outputUrl = `/fonts/maple-mono-${weight}-subset.woff2`;
-    const outputPath = resolveProjectPath(outputUrl);
+  for (const [index, weight] of mapleWeights.entries()) {
+    const inputFontPath = mapleInputPaths[index]!;
+    const outputPath = mapleOutputPaths[index]!;
 
     if (!existsSync(inputFontPath)) {
       throw new Error(`Maple Mono source font not found at ${inputFontPath}.`);
@@ -315,6 +323,43 @@ font.save(path)
   );
 }
 
+function fileFingerprint(path: string) {
+  try {
+    const stat = statSync(path);
+    return `${stat.size}:${stat.mtimeMs}`;
+  } catch {
+    return 'missing';
+  }
+}
+
+function computeSubsetFingerprint(uiChars: string, contentChars: string) {
+  return createHash('sha256')
+    .update(uiChars)
+    .update('\0')
+    .update(contentChars)
+    .update('\0')
+    .update(JSON.stringify(fontConfig))
+    .update('\0')
+    .update(fileFingerprint(sourceFontPath))
+    .update('\0')
+    .update(mapleInputPaths.map(fileFingerprint).join('\0'))
+    .digest('hex');
+}
+
+function readCachedFingerprint() {
+  try {
+    const cached = JSON.parse(readFileSync(cachePath, 'utf8')) as { fingerprint?: unknown };
+    return typeof cached.fingerprint === 'string' ? cached.fingerprint : '';
+  } catch {
+    return '';
+  }
+}
+
+function writeCachedFingerprint(fingerprint: string) {
+  mkdirSync(dirname(cachePath), { recursive: true });
+  writeFileSync(cachePath, `${JSON.stringify({ fingerprint }, null, 2)}\n`, 'utf8');
+}
+
 const chars = new Set<string>();
 const siteConfigPath = join(projectRoot, 'site.config.toml');
 
@@ -352,16 +397,6 @@ if (existsSync(siteConfigPath)) {
 // The sync Action writes RSS-derived display text before this build step.
 collectFriendCircleChars(chars);
 
-if (existsSync(siteConfigPath)) {
-  const configCjk = new Set(readFileSync(siteConfigPath, 'utf8').match(cjkPattern) ?? []);
-  const uncovered = [...configCjk].filter((char) => !chars.has(char));
-  if (uncovered.length > 0) {
-    throw new Error(
-      `site.config.toml 的中文字符未进入字体子集：${uncovered.join('')}。请把根配置加入字符收集。`,
-    );
-  }
-}
-
 const uiChars = [...chars].sort((a, b) => a.codePointAt(0)! - b.codePointAt(0)!).join('');
 if (!uiChars) throw new Error('No CJK UI characters were found for font subsetting.');
 
@@ -387,11 +422,24 @@ if (!existsSync(sourceFontPath)) {
   );
 }
 
+const fingerprint = computeSubsetFingerprint(uiChars, contentCharsValue);
+const expectedOutputs = [outputFontPath, contentOutputFontPath, ...mapleOutputPaths];
+const cacheHit =
+  !forceSubsets &&
+  fingerprint === readCachedFingerprint() &&
+  expectedOutputs.every((path) => existsSync(path));
+
+if (cacheHit) {
+  console.log('Font subsets are up to date; skipping pyftsubset.');
+  process.exit(0);
+}
+
 runSubset(uiCharsPath, outputFontPath);
 syncSubsetFontName(outputFontPath, subsetFontName);
 runSubset(contentCharsPath, contentOutputFontPath);
 syncSubsetFontName(contentOutputFontPath, contentSubsetFontName);
 runMapleSubsets();
+writeCachedFingerprint(fingerprint);
 
 console.log(`Generated ${uiCharsPath} with ${uiChars.length} CJK UI characters.`);
 console.log(

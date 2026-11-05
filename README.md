@@ -45,27 +45,23 @@ Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底�
 
 - **评论** —— giscus / utterances / Waline / Twikoo，可关闭
 - **数学公式与图表** —— KaTeX / MathJax、Mermaid、ABC 乐谱
-- **外挂标签** —— `:::note` / `:badge` / `::github` 等指令零 import 直写，覆盖提醒块、标签页、媒体、音乐、友链等 20+ 组件
+- **外挂标签** —— `:::note` / `:badge` / `::github-card` 等指令零 import 直写，覆盖提醒块、标签页、媒体、音乐、友链等 20+ 组件
 - **静态输出** —— RSS、Atom、sitemap、llms.txt；构建生成按需字体子集
 
 ## 🚀 快速开始
 
-环境要求：Node.js 22.12+、Bun；首次构建另需 Python 3 与 fonttools / brotli（用于字体子集）。
+环境要求：Node.js 22.12+、Bun；首次启动与构建还需要 Python 3 与 fonttools / brotli（用于生成字体子集）。
 
 ```bash
 git clone https://github.com/lmb666666/Sonder.git
 cd Sonder
 bun install
+python3 -m venv .venv
+.venv/bin/python -m pip install fonttools brotli
 bun run dev
 ```
 
-开发服务器默认运行在 `http://localhost:4321`。正式构建前补齐字体工具链：
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install fonttools brotli
-bun run build
-```
+开发服务器默认运行在 `http://localhost:4321`。`dev` 会先运行带缓存的 `fonts:subsets`；字符集或源字体变化时自动重建，需要强制重建用 `bun run fonts:force`。
 
 写第一篇文章用 `bun run post:new my-post`，frontmatter 常用字段：
 

@@ -45,27 +45,23 @@ Sonder is a personal publishing template built around a paper-like reading exper
 
 - **Comments** — giscus / utterances / Waline / Twikoo, or none
 - **Math & diagrams** — KaTeX / MathJax, Mermaid, ABC music scores
-- **Directives (outer tags)** — `:::note` / `:badge` / `::github` directives with zero imports, covering callouts, tabs, media, music, friend links and 20+ components
+- **Directives (outer tags)** — `:::note` / `:badge` / `::github-card` directives with zero imports, covering callouts, tabs, media, music, friend links and 20+ components
 - **Static output** — RSS, Atom, sitemap, llms.txt; on-demand font subsets at build
 
 ## 🚀 Quick start
 
-Requirements: Node.js 22.12+, Bun; the first build also needs Python 3 with fonttools / brotli (font subsets).
+Requirements: Node.js 22.12+, Bun; the first start and build also need Python 3 with fonttools / brotli (font subsets).
 
 ```bash
 git clone https://github.com/lmb666666/Sonder.git
 cd Sonder
 bun install
+python3 -m venv .venv
+.venv/bin/python -m pip install fonttools brotli
 bun run dev
 ```
 
-The dev server runs at `http://localhost:4321`. Before a production build:
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install fonttools brotli
-bun run build
-```
+The dev server runs at `http://localhost:4321`. `dev` runs the cached `fonts:subsets` first; it rebuilds when characters or the source font change. Use `bun run fonts:force` to force a rebuild.
 
 Create a post with `bun run post:new my-post`. Common frontmatter:
 
