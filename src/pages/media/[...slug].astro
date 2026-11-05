@@ -1,11 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
-import 'katex/dist/katex.min.css';
+import katexCssUrl from 'katex/dist/katex.min.css?url';
 import MarkdownWidgets from '../../components/markdown/MarkdownWidgets.astro';
 import MermaidRenderer from '../../components/markdown/MermaidRenderer.astro';
 import { getCollection, render } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import { getSiteConfig } from '../../config';
+import { containsMath } from '../../lib/math';
 import { getI18n } from '../../lib/ui-text';
 
 type MediaType = 'book' | 'film' | 'series' | 'album' | 'podcast';
@@ -38,6 +39,10 @@ export async function getStaticPaths() {
 const media = Astro.props as MediaEntry;
 const { Content } = await render(media as never);
 const siteConfig = await getSiteConfig();
+const needsKatexCss =
+  siteConfig.markdown.math &&
+  siteConfig.markdown.mathRenderer === 'katex' &&
+  containsMath(typeof media.body === 'string' ? media.body : '');
 const i18n = getI18n(siteConfig);
 const ui = {
   media: {
@@ -78,6 +83,9 @@ function parentRoute(pathname: string, id: string) {
   image={media.data.cover}
   type="article"
 >
+  <Fragment slot="head">
+    {needsKatexCss && <link rel="stylesheet" href={katexCssUrl} />}
+  </Fragment>
   <main data-pagefind-body>
     <a class="media-review-back" href={`${mediaRoute}/`}>{ui.media.backToShelf}</a>
     <article>
