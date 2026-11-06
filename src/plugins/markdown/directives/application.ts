@@ -3,6 +3,7 @@ import type { AttributeValue, MdastNode } from './handlers.js';
 import { wrapHast } from './handlers.js';
 import type { FriendApplicationText } from './i18n.js';
 import type { ApplyProvider } from '../../../config/youlin';
+import { parseGitHubRepository } from '../../../lib/github';
 import { icon } from './icons.js';
 
 /**
@@ -37,37 +38,6 @@ const FIELDS: Array<{
   { name: 'bio', wide: true },
   { name: 'rss' },
 ];
-
-/** 与组件一致的 repository 归一化（URL / git@ / owner/repo） */
-function resolveRepository(value: string): string | undefined {
-  const raw = value.trim();
-  if (!raw) return undefined;
-
-  let path = raw;
-  if (/^https?:\/\//i.test(raw)) {
-    try {
-      const parsed = new URL(raw);
-      if (!['github.com', 'www.github.com'].includes(parsed.hostname.toLowerCase()))
-        return undefined;
-      path = parsed.pathname;
-    } catch {
-      return undefined;
-    }
-  } else if (/^git@github\.com:/i.test(raw)) {
-    path = raw.replace(/^git@github\.com:/i, '');
-  }
-
-  const segments = path
-    .replace(/^\/+|\/+$/g, '')
-    .replace(/\.git$/i, '')
-    .split('/')
-    .filter(Boolean);
-  const repositoryPath = segments.slice(0, 2).join('/');
-  if (segments.length !== 2 || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repositoryPath)) {
-    return undefined;
-  }
-  return repositoryPath;
-}
 
 const formatPreview = (json: string) =>
   json
@@ -133,7 +103,7 @@ export function friendLinkApplicationHandler(
     }
 
     const repository = asString(attributes.repository);
-    const repositoryPath = repository ? resolveRepository(repository) : undefined;
+    const repositoryPath = repository ? parseGitHubRepository(repository) : null;
     if (!repositoryPath) {
       file.message(
         '::friend-link-application 需要 {repository="owner/repo"} 属性（GitHub 仓库），已跳过。',

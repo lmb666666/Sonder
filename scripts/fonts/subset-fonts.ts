@@ -276,17 +276,20 @@ async function collectYoulinChars(chars: Set<string>) {
   const cachedChars = readYoulinCharsCache(config.baseUrl);
   for (const char of cachedChars) chars.add(char);
 
+  // 字体步骤只做尽力收集，别让 dev/build 为它等满接口超时。
+  const timeoutMs = Math.min(config.timeoutMs, 3_000);
+
   const [links, circle] = await Promise.all([
     needsLinks
       ? loadYoulinLinks(config.baseUrl, {
           group: config.links.group,
-          timeoutMs: config.timeoutMs,
+          timeoutMs,
         })
       : Promise.resolve(null),
     needsCircle
       ? loadYoulinCircle(config.baseUrl, {
           limit: config.circle.limit,
-          timeoutMs: config.timeoutMs,
+          timeoutMs,
         })
       : Promise.resolve(null),
   ]);

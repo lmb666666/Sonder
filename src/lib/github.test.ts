@@ -10,6 +10,8 @@ describe('parseGitHubRepository', () => {
     );
     expect(parseGitHubRepository('https://www.github.com/owner/repo/tree/main')).toBe('owner/repo');
     expect(parseGitHubRepository('owner/repo')).toBe('owner/repo');
+    expect(parseGitHubRepository('git@github.com:owner/repo.git')).toBe('owner/repo');
+    expect(parseGitHubRepository('https://github.com/owner/repo.git/')).toBe('owner/repo');
   });
 
   test('拒绝非 GitHub 与空值', () => {

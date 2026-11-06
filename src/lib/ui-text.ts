@@ -57,7 +57,6 @@ type RawUiText = {
     feedError: Message;
     feedUnavailable: string;
     feedDemo: string;
-    feedDemoHint: string;
     youlinLinksFallback: string;
     youlinCircleFallback: string;
     youlinUnavailable: string;

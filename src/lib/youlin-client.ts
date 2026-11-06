@@ -5,6 +5,7 @@ import {
   mapYoulinCircle,
   mapYoulinLinks,
   toDisplayDate,
+  type MappedYoulinCircle,
   type YoulinCircleStats,
   type YoulinClientConfig,
 } from './youlin';
@@ -273,10 +274,16 @@ async function sync(): Promise<void> {
   try {
     const [linksResult, circleResult] = await Promise.all([
       config.linksUrl
-        ? fetchYoulinJson<unknown>(config.linksUrl, { timeoutMs: config.timeoutMs })
+        ? fetchYoulinJson<FriendLinkGroup[]>(config.linksUrl, {
+            timeoutMs: config.timeoutMs,
+            parse: mapYoulinLinks,
+          })
         : null,
       config.circleUrl
-        ? fetchYoulinJson<unknown>(config.circleUrl, { timeoutMs: config.timeoutMs })
+        ? fetchYoulinJson<MappedYoulinCircle>(config.circleUrl, {
+            timeoutMs: config.timeoutMs,
+            parse: mapYoulinCircle,
+          })
         : null,
     ]);
 
@@ -287,20 +294,13 @@ async function sync(): Promise<void> {
     let circleFailed = false;
 
     if (config.linksUrl) {
-      if (linksResult?.ok) {
-        const groups = mapYoulinLinks(linksResult.data);
-        if (groups) renderFriendLinks(groups, config);
-        else linksFailed = true;
-      } else {
-        linksFailed = true;
-      }
+      if (linksResult?.ok) renderFriendLinks(linksResult.data, config);
+      else linksFailed = true;
     }
 
     if (config.circleUrl) {
       if (circleResult?.ok) {
-        const mapped = mapYoulinCircle(circleResult.data);
-        if (mapped) renderCircle(mapped.posts, mapped.stats, config);
-        else circleFailed = true;
+        renderCircle(circleResult.data.posts, circleResult.data.stats, config);
       } else {
         circleFailed = true;
       }

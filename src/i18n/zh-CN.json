@@ -208,7 +208,6 @@
     "feedError": "feed 解析失败（{error}），回退演示数据。",
     "feedUnavailable": "友链 RSS 暂不可用，当前展示内置演示数据。",
     "feedDemo": "当前展示内置演示数据；配置 [config.youlin] 或 feed_src 后自动切换。",
-    "feedDemoHint": "配置",
     "youlinLinksFallback": "友邻友链接口不可用，已回退到本地友链数据。",
     "youlinCircleFallback": "友邻朋友圈接口不可用，已回退到现有朋友圈数据源。",
     "youlinUnavailable": "友邻接口暂时不可用，当前显示构建时数据。",

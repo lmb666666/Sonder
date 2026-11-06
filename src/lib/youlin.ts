@@ -23,9 +23,11 @@ export interface MappedYoulinCircle {
 
 export type YoulinResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
-export interface YoulinFetchOptions {
+export interface YoulinFetchOptions<T = unknown> {
   timeoutMs?: number;
   fetchImpl?: typeof fetch;
+  /** 成功响应先经过这里解析；返回 null 视为坏响应，且不写入缓存。 */
+  parse?: (value: unknown) => T | null;
 }
 
 export interface YoulinClientMessages {
@@ -177,10 +179,10 @@ export function mapYoulinCircle(value: unknown): MappedYoulinCircle | null {
   return { posts, stats };
 }
 
-/** 成功后缓存 60 秒；失败不缓存，便于下一次 source 重试。 */
-export async function fetchYoulinJson<T>(
+/** 成功后缓存 60 秒；失败或 parse 返回 null 时不缓存，便于下一次 source 重试。 */
+export async function fetchYoulinJson<T = unknown>(
   url: string,
-  options: YoulinFetchOptions = {},
+  options: YoulinFetchOptions<T> = {},
 ): Promise<YoulinResult<T>> {
   if (!url) return { ok: false, error: 'baseUrl_missing' };
 
@@ -211,6 +213,13 @@ export async function fetchYoulinJson<T>(
         return { ok: false, error: 'invalid_json' };
       }
 
+      if (options.parse) {
+        const parsed = options.parse(data);
+        if (parsed === null) return { ok: false, error: 'invalid_response' };
+        cache.set(url, { at: Date.now(), data: parsed });
+        return { ok: true, data: parsed };
+      }
+
       cache.set(url, { at: Date.now(), data });
       return { ok: true, data };
     } catch (error) {
@@ -230,26 +239,26 @@ export async function fetchYoulinJson<T>(
   }
 }
 
-export async function loadYoulinLinks(
+export function loadYoulinLinks(
   baseUrl: string,
-  options: YoulinFetchOptions & { group?: string } = {},
+  options: YoulinFetchOptions<FriendLinkGroup[]> & { group?: string } = {},
 ): Promise<YoulinResult<FriendLinkGroup[]>> {
-  const url = youlinLinksUrl(baseUrl, options.group);
-  const result = await fetchYoulinJson<unknown>(url, options);
-  if (!result.ok) return result;
-  const groups = mapYoulinLinks(result.data);
-  return groups ? { ok: true, data: groups } : { ok: false, error: 'invalid_links_response' };
+  return fetchYoulinJson<FriendLinkGroup[]>(youlinLinksUrl(baseUrl, options.group), {
+    timeoutMs: options.timeoutMs,
+    fetchImpl: options.fetchImpl,
+    parse: mapYoulinLinks,
+  });
 }
 
-export async function loadYoulinCircle(
+export function loadYoulinCircle(
   baseUrl: string,
-  options: YoulinFetchOptions & { limit?: number } = {},
+  options: YoulinFetchOptions<MappedYoulinCircle> & { limit?: number } = {},
 ): Promise<YoulinResult<MappedYoulinCircle>> {
-  const url = youlinCircleUrl(baseUrl, options.limit);
-  const result = await fetchYoulinJson<unknown>(url, options);
-  if (!result.ok) return result;
-  const mapped = mapYoulinCircle(result.data);
-  return mapped ? { ok: true, data: mapped } : { ok: false, error: 'invalid_circle_response' };
+  return fetchYoulinJson<MappedYoulinCircle>(youlinCircleUrl(baseUrl, options.limit), {
+    timeoutMs: options.timeoutMs,
+    fetchImpl: options.fetchImpl,
+    parse: mapYoulinCircle,
+  });
 }
 
 /** 日期显示统一为 YYYY-MM-DD（UTC）；非法值原样返回。 */

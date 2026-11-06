@@ -194,6 +194,31 @@ describe('fetchYoulinJson', () => {
     expect(second).toEqual({ ok: false, error: 'HTTP 500' });
     expect(calls).toBe(2);
   });
+
+  test('parse 返回 null 时不缓存坏响应', async () => {
+    clearYoulinCache();
+    let calls = 0;
+    const fetchImpl = (async () => {
+      calls += 1;
+      return new Response(JSON.stringify({ bad: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }) as unknown as typeof fetch;
+
+    const first = await fetchYoulinJson('https://youlin.example.com/api/links', {
+      fetchImpl,
+      parse: () => null,
+    });
+    const second = await fetchYoulinJson('https://youlin.example.com/api/links', {
+      fetchImpl,
+      parse: () => null,
+    });
+
+    expect(first).toEqual({ ok: false, error: 'invalid_response' });
+    expect(second).toEqual({ ok: false, error: 'invalid_response' });
+    expect(calls).toBe(2);
+  });
 });
 
 describe('toDisplayDate', () => {

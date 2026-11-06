@@ -226,7 +226,6 @@
     "feedError": "Feed parsing failed ({error}); showing demo data.",
     "feedUnavailable": "Friend RSS is unavailable; showing built-in demo data.",
     "feedDemo": "Showing built-in demo data; configure [config.youlin] or feed_src to switch.",
-    "feedDemoHint": "Configure",
     "youlinLinksFallback": "Youlin links are unavailable; showing local friend links.",
     "youlinCircleFallback": "Youlin circle is unavailable; showing the existing fallback feed.",
     "youlinUnavailable": "Youlin is temporarily unavailable; showing the build-time snapshot.",
