@@ -92,6 +92,43 @@ feed_src = ""
 # 朋友圈每次展示的条数
 pageSize = 20
 
+[config.youlin]
+# 可选：友邻（Youlin）实例地址。留空时所有 source 链都会跳过 youlin，
+# 完全沿用上面的本地友链与 friendCircle 配置。
+# baseUrl = "https://youlin.example.com"
+baseUrl = ""
+# 构建期 / 浏览器请求超时（毫秒）
+timeoutMs = 8000
+# 仅影响 /links 页的友链与朋友圈：build 构建期取数，client 浏览器刷新。
+# 文章内的 ::friend-circle / ::friend-link-card 始终构建期取数。
+mode = "build"
+
+[config.youlin.links]
+# 依次尝试：youlin（/api/links）-> local（src/data/friends.ts）
+# 把 local 放前面即可强制使用本地数据。
+sources = ["youlin", "local"]
+# 只取 Youlin 的某个分组，对应 /api/links?group=
+group = ""
+# 覆盖全局 mode
+# mode = "client"
+
+[config.youlin.circle]
+# 依次尝试：youlin（/api/circle）-> friendcircle（feed_src）-> public（public/friend-circle.json）
+#          -> rss（抓取友链 RSS）-> demo（内置演示数据）
+sources = ["youlin", "friendcircle", "public", "rss", "demo"]
+# 0 表示不传 limit，使用 Youlin 默认上限
+limit = 0
+# mode = "client"
+
+[config.youlin.apply]
+# auto：配了 baseUrl 走 Youlin /apply，否则用 GitHub Issue；也可强制 youlin / github / none
+provider = "auto"
+
+[config.youlin.directives]
+# 文章指令的默认数据源：auto（配了 baseUrl 用 youlin）| youlin | demo
+friendCircle = "auto"
+friendLinkCard = "auto"
+
 [config.article]
 # 是否显示文章底部分享卡片
 share = true
