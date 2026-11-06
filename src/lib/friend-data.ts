@@ -10,6 +10,12 @@ export type FriendLinkItem = {
   sticky?: number | boolean | null;
 };
 
+export type FriendLinkGroup = {
+  title: string;
+  description?: string;
+  items: FriendLinkItem[];
+};
+
 export type FriendPost = {
   title: string;
   url: string;
