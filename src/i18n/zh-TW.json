@@ -207,11 +207,18 @@
     "expandMore": "展開更多",
     "feedError": "feed 解析失敗（{error}），回退展示資料。",
     "feedUnavailable": "友鏈 RSS 暫時不可用，目前展示內建示範資料。",
-    "feedDemo": "目前展示內建示範資料；設定 feed_src 或同步 public/friend-circle.json 後自動切換。",
+    "feedDemo": "目前展示內建示範資料；設定 [config.youlin] 或 feed_src 後自動切換。",
     "feedDemoHint": "設定",
+    "youlinLinksFallback": "友鄰友鏈接口不可用，已回退到本地友鏈資料。",
+    "youlinCircleFallback": "友鄰朋友圈接口不可用，已回退到現有朋友圈資料源。",
+    "youlinUnavailable": "友鄰接口暫時不可用，目前顯示建置時資料。",
+    "emptyLinks": "還沒有友鏈。",
+    "emptyCircle": "還沒有朋友動態。",
     "applyAria": "申請友鏈",
     "applyTitle": "申請友鏈",
-    "applyDescription": "填寫站點資訊並提交 Issue，博主確認後會在這裡掛上你的連結。"
+    "applyDescription": "填寫站點資訊並提交 Issue，博主確認後會在這裡掛上你的連結。",
+    "applyYoulinDescription": "填寫站點資訊並提交，站長審核後會在這裡掛上你的連結。",
+    "applyYoulinLabel": "前往申請"
   },
   "moments": {
     "loading": "正在從 Ech0 取得動態…",

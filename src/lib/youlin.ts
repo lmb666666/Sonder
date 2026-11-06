@@ -210,32 +210,26 @@ export async function fetchYoulinJson<T>(
   }
 }
 
-export function loadYoulinLinks(
+export async function loadYoulinLinks(
   baseUrl: string,
   options: YoulinFetchOptions & { group?: string } = {},
 ): Promise<YoulinResult<FriendLinkGroup[]>> {
   const url = youlinLinksUrl(baseUrl, options.group);
-  return fetchYoulinJson<unknown>(url, options).then((result) => {
-    if (!result.ok) return result;
-    const groups = mapYoulinLinks(result.data);
-    return groups
-      ? { ok: true as const, data: groups }
-      : { ok: false as const, error: 'invalid_links_response' };
-  });
+  const result = await fetchYoulinJson<unknown>(url, options);
+  if (!result.ok) return result;
+  const groups = mapYoulinLinks(result.data);
+  return groups ? { ok: true, data: groups } : { ok: false, error: 'invalid_links_response' };
 }
 
-export function loadYoulinCircle(
+export async function loadYoulinCircle(
   baseUrl: string,
   options: YoulinFetchOptions & { limit?: number } = {},
 ): Promise<YoulinResult<MappedYoulinCircle>> {
   const url = youlinCircleUrl(baseUrl, options.limit);
-  return fetchYoulinJson<unknown>(url, options).then((result) => {
-    if (!result.ok) return result;
-    const mapped = mapYoulinCircle(result.data);
-    return mapped
-      ? { ok: true as const, data: mapped }
-      : { ok: false as const, error: 'invalid_circle_response' };
-  });
+  const result = await fetchYoulinJson<unknown>(url, options);
+  if (!result.ok) return result;
+  const mapped = mapYoulinCircle(result.data);
+  return mapped ? { ok: true, data: mapped } : { ok: false, error: 'invalid_circle_response' };
 }
 
 /** 日期显示统一为 YYYY-MM-DD（UTC）；非法值原样返回。 */

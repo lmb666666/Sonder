@@ -1,0 +1,56 @@
+.youlin-apply-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 0.75rem;
+  background: var(--paper-surface);
+  box-shadow: var(--paper-shadow);
+  color: var(--paper-ink);
+  font-family: var(--font-meta);
+  text-decoration: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.youlin-apply-card:hover {
+  border-color: var(--paper-accent);
+  box-shadow: var(--paper-shadow-lift);
+  transform: translateY(-1px);
+}
+
+.youlin-apply-card__copy {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.youlin-apply-card__copy strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.youlin-apply-card__copy span {
+  color: var(--paper-ink-soft);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.youlin-apply-card__action {
+  flex-shrink: 0;
+  color: var(--paper-accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .youlin-apply-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -58,9 +58,16 @@ type RawUiText = {
     feedUnavailable: string;
     feedDemo: string;
     feedDemoHint: string;
+    youlinLinksFallback: string;
+    youlinCircleFallback: string;
+    youlinUnavailable: string;
+    emptyLinks: string;
+    emptyCircle: string;
     applyAria: string;
     applyTitle: string;
     applyDescription: string;
+    applyYoulinDescription: string;
+    applyYoulinLabel: string;
   };
   moments: {
     loading: string;
@@ -308,7 +315,9 @@ export type UiText = Omit<
   };
   links: Omit<RawUiText['links'], 'note' | 'circleSummary' | 'feedError'> & {
     note: (total: number, rss: number) => string;
+    noteTemplate: string;
     circleSummary: (friends: number, active: number, posts: number) => string;
+    circleSummaryTemplate: string;
     feedError: (error: string) => string;
   };
   moments: Omit<RawUiText['moments'], 'count' | 'imageAria'> & {
@@ -346,6 +355,11 @@ function formatMessage(message: Message, values: TemplateValues = {}) {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 }
 
+/** 供客户端替换文案使用：保留 {token}，不在这里插值。 */
+function templateOf(message: Message): string {
+  return typeof message === 'string' ? message : message.other;
+}
+
 function formatNumber(value: number, locale: string) {
   return value.toLocaleString(locale);
 }
@@ -361,8 +375,10 @@ function createUiText(raw: RawUiText): UiText {
     links: {
       ...raw.links,
       note: (total, rss) => formatMessage(raw.links.note, { total, rss }),
+      noteTemplate: templateOf(raw.links.note),
       circleSummary: (friends, active, posts) =>
         formatMessage(raw.links.circleSummary, { friends, active, posts }),
+      circleSummaryTemplate: templateOf(raw.links.circleSummary),
       feedError: (error) => formatMessage(raw.links.feedError, { error }),
     },
     moments: {

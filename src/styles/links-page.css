@@ -1,0 +1,215 @@
+.links-page {
+  width: min(100%, var(--layout-shell-width));
+}
+
+.links-group,
+.links-circle {
+  margin-bottom: clamp(36px, 6vw, 64px);
+}
+
+.links-group-heading {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.links-group-heading h2 {
+  margin: 0;
+  color: var(--paper-ink);
+  font-size: 1.32rem;
+  font-weight: 600;
+}
+
+.links-group-heading p {
+  margin: 0;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.8rem;
+}
+
+.links-source-note {
+  max-width: 58ch;
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border: 1px dashed var(--paper-line-strong);
+  border-radius: 0.6rem;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.links-source-note code {
+  padding: 0.1em 0.35em;
+  border-radius: 0.3em;
+  background: var(--paper-surface-muted);
+  font-family: var(--font-code);
+  font-size: 0.92em;
+}
+
+.links-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 28px 16px;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.links-circle {
+  padding-top: clamp(36px, 6vw, 64px);
+  border-top: 1px solid var(--paper-line);
+}
+
+.circle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
+}
+
+.circle-card {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 14px 16px;
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 0.75rem;
+  background: var(--paper-surface);
+  box-shadow: var(--paper-shadow);
+  font-family: var(--font-meta);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.circle-card:hover {
+  border-color: var(--paper-accent);
+  box-shadow: var(--paper-shadow-lift);
+  transform: translateY(-1px);
+}
+
+.circle-card--hidden {
+  display: none;
+}
+
+.circle-card__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--paper-ink-soft);
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.circle-card__author:hover .circle-card__name {
+  color: var(--paper-accent);
+}
+
+.circle-card__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  overflow: hidden;
+  border: 1px solid var(--paper-line);
+  border-radius: 999px;
+  background: var(--paper-surface-muted);
+  color: var(--paper-ink-faint);
+  font-size: 0.72rem;
+}
+
+.circle-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.circle-card__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.circle-card__title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--paper-ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.circle-card__title:hover {
+  color: var(--paper-accent);
+}
+
+.circle-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--paper-ink-faint);
+  font-size: 0.72rem;
+}
+
+.circle-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.circle-card__tags span {
+  max-width: 12ch;
+  overflow: hidden;
+  padding: 2px 8px;
+  border: 1px solid var(--paper-line);
+  border-radius: 999px;
+  color: var(--paper-ink-soft);
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.circle-card__meta time {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.circle-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.circle-more {
+  padding: 8px 22px;
+  border: 1px solid var(--paper-line-strong);
+  border-radius: 999px;
+  background: var(--paper-surface);
+  color: var(--paper-ink-soft);
+  font-family: var(--font-meta);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.circle-more:hover {
+  border-color: var(--paper-accent);
+  color: var(--paper-accent);
+}
+
+.links-apply {
+  margin-top: clamp(40px, 7vw, 72px);
+  padding-top: 34px;
+  border-top: 1px solid var(--paper-line);
+}
