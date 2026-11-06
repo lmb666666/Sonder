@@ -14,9 +14,16 @@ import {
   resolveFriendLinkGroups,
   type FriendSourceDeps,
 } from '../lib/friend-sources';
-import { toDisplayDate } from '../lib/youlin';
+import { buildYoulinClientConfig, toDisplayDate } from '../lib/youlin';
 import { getSiteConfig } from '../config';
-import { resolveApplyProvider, resolveYoulinConfig, youlinApplyUrl } from '../config/youlin';
+import {
+  resolveApplyProvider,
+  resolveYoulinConfig,
+  shouldFetchYoulinFirst,
+  youlinApplyUrl,
+  youlinCircleUrl,
+  youlinLinksUrl,
+} from '../config/youlin';
 import { parseGitHubRepository } from '../lib/github';
 import { getUiText } from '../lib/ui-text';
 import { withBase } from '../lib/url';
@@ -71,6 +78,26 @@ const circleFriendsCount = circleResolved.friendsCount;
 const pageSize = siteConfig.friendCircle.pageSize;
 const initialCount = Math.min(circlePosts.length, pageSize);
 const shortDate = (post: { date?: string }) => toDisplayDate(post.date);
+
+const linksUrl = shouldFetchYoulinFirst(youlin.links.mode, youlin.links.sources, youlin.baseUrl)
+  ? youlinLinksUrl(youlin.baseUrl, youlin.links.group)
+  : null;
+const circleUrl = shouldFetchYoulinFirst(youlin.circle.mode, youlin.circle.sources, youlin.baseUrl)
+  ? youlinCircleUrl(youlin.baseUrl, youlin.circle.limit)
+  : null;
+const clientConfig = buildYoulinClientConfig({
+  linksUrl,
+  circleUrl,
+  timeoutMs: youlin.timeoutMs,
+  pageSize,
+  messages: {
+    note: ui.links.noteTemplate,
+    circleSummary: ui.links.circleSummaryTemplate,
+    unavailable: ui.links.youlinUnavailable,
+    emptyLinks: ui.links.emptyLinks,
+    emptyCircle: ui.links.emptyCircle,
+  },
+});
 
 const notices: string[] = [];
 if (linksResolved.youlinTried && linksResolved.source !== 'youlin') {
@@ -210,30 +237,31 @@ const sourceNotice = notices.join(' ');
         </section>
       )
     }
+
+    {
+      clientConfig && (
+        <script
+          type="application/json"
+          data-youlin-client-config
+          set:html={JSON.stringify(clientConfig).replace(/</g, '\\u003c')}
+        />
+      )
+    }
   </main>
 
   <script>
-    const bind = () => {
-      const grid = document.querySelector<HTMLElement>('[data-circle-list]');
-      const button = document.querySelector<HTMLButtonElement>('[data-circle-more]');
-      if (!grid || !button || button.dataset.bound === '1') return;
-      button.dataset.bound = '1';
-      const pageSize = Number(grid.dataset.circleSize ?? '20');
-      const cards = [...grid.querySelectorAll<HTMLElement>('[data-circle-card]')];
-      let visible = cards.filter((card) => !card.classList.contains('circle-card--hidden')).length;
-      if (visible === 0 && cards.length > 0) visible = Math.min(cards.length, pageSize);
-      button.hidden = visible >= cards.length;
-      button.addEventListener('click', () => {
-        visible += pageSize;
-        cards.forEach((card, index) => {
-          card.classList.toggle('circle-card--hidden', index >= visible);
-        });
-        if (visible >= cards.length) button.hidden = true;
-      });
+    import { bindCircleMore } from '../lib/circle-more';
+
+    const boot = () => {
+      bindCircleMore();
+      if (document.querySelector('script[data-youlin-client-config]')) {
+        void import('../lib/youlin-client').then(({ initYoulinClient }) => initYoulinClient());
+      }
     };
-    document.addEventListener('astro:page-load', bind);
+
+    document.addEventListener('astro:page-load', boot);
     if (document.readyState === 'loading')
-      document.addEventListener('DOMContentLoaded', bind, { once: true });
-    else bind();
+      document.addEventListener('DOMContentLoaded', boot, { once: true });
+    else boot();
   </script>
 </Base>
