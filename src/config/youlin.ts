@@ -142,6 +142,19 @@ export function shouldFetchYoulinFirst(
   return mode === 'client' && sources[0] === 'youlin' && Boolean(baseUrl);
 }
 
+/**
+ * 文章指令的默认数据源：
+ * auto 只在配置了 baseUrl 时启用 youlin；否则返回 null，保留原有“未指定 src”警告。
+ */
+export function resolveDirectiveSource(
+  value: YoulinDirectiveSource,
+  baseUrl: string,
+): 'youlin' | 'demo' | null {
+  if (value === 'demo') return 'demo';
+  if (value === 'youlin') return 'youlin';
+  return baseUrl ? 'youlin' : null;
+}
+
 export function youlinLinksUrl(baseUrl: string, group = ''): string {
   if (!baseUrl) return '';
   const base = `${baseUrl}/api/links`;

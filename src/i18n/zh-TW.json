@@ -244,6 +244,8 @@
     "description": "填寫站點資訊，隨後檢視、複製友鏈資料，或前往 GitHub 提交申請。",
     "applyLabel": "一鍵申請",
     "applyHint": "去開啟一個申請 Issue",
+    "youlinDescription": "填寫站點資訊並提交，站長審核後會在這裡掛上你的連結。",
+    "youlinApplyLabel": "前往申請",
     "copyHint": "可複製後填入留言申請友鏈！",
     "copySuccessText": "成功複製！",
     "issueTitle": "[友鏈申請] {name}",

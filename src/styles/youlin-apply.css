@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
+  margin: 18px 0;
   padding: 18px 20px;
   border: 1px solid var(--paper-line-strong);
   border-radius: 0.75rem;
@@ -45,6 +46,10 @@
   color: var(--paper-accent);
   font-size: 0.82rem;
   font-weight: 600;
+}
+
+.links-apply .youlin-apply-card {
+  margin: 0;
 }
 
 @media (max-width: 720px) {

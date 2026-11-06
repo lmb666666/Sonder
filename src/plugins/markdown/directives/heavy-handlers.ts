@@ -1,5 +1,11 @@
 import { h } from './h.js';
-import type { AttributeValue, ContainerContext, HastChild, MdastNode } from './handlers.js';
+import type {
+  AttributeValue,
+  ContainerContext,
+  HastChild,
+  LeafContext,
+  MdastNode,
+} from './handlers.js';
 import { classNames, labelText, wrap, wrapHast } from './handlers.js';
 import { icon } from './icons.js';
 
@@ -470,23 +476,25 @@ function friendLinkCardElement(item: FriendLinkEntry, preview = false): HastLike
 }
 
 export function friendLinkCardHandler(dataSources: Record<string, { friends: FriendLinkEntry[] }>) {
-  return ({
-    attributes,
-    file,
-  }: {
-    attributes: Record<string, AttributeValue>;
-    file: { message(v: string, p: unknown, s: string): void };
-  }): MdastNode[] => {
-    const src = asString(attributes.src);
+  return ({ attributes, file, youlin, youlinDefaults }: LeafContext): MdastNode[] => {
+    const src = asString(attributes.src) ?? youlinDefaults?.friendLinkCard ?? undefined;
     const columns = positiveInteger(attributes.columns, 4, 4);
 
     let items: FriendLinkEntry[] = [];
     if (src) {
-      const dataSource = dataSources[src];
-      if (dataSource) {
-        items = dataSource.friends;
+      if (src === 'youlin') {
+        items = youlin?.links ?? [];
+        if (items.length === 0) {
+          file.message('友邻友链数据不可用，已回退演示数据。', undefined, 'sonder-directives');
+          items = dataSources.demo?.friends ?? [];
+        }
       } else {
-        file.message(`::friend-link-card 未找到数据源 ${src}。`, undefined, 'sonder-directives');
+        const dataSource = dataSources[src];
+        if (dataSource) {
+          items = dataSource.friends;
+        } else {
+          file.message(`::friend-link-card 未找到数据源 ${src}。`, undefined, 'sonder-directives');
+        }
       }
     } else {
       const name = asString(attributes.name);
@@ -587,22 +595,27 @@ function friendCirclePostElement(post: FriendCirclePost): HastLike {
 }
 
 export function friendCircleHandler(
-  dataSources: Record<string, { friends: FriendLinkEntry[]; posts: FriendCirclePost[] }>,
+  dataSources: Record<
+    string,
+    { friends: FriendLinkEntry[]; posts: FriendCirclePost[]; friendCount?: number }
+  >,
 ) {
-  return ({
-    attributes,
-    file,
-  }: {
-    attributes: Record<string, AttributeValue>;
-    file: { message(v: string, p: unknown, s: string): void };
-  }): MdastNode[] => {
-    const src = asString(attributes.src);
+  return ({ attributes, file, youlin, youlinDefaults }: LeafContext): MdastNode[] => {
+    const src = asString(attributes.src) ?? youlinDefaults?.friendCircle ?? undefined;
     const limit = positiveInteger(attributes.limit, 10, 100);
     const title = asString(attributes.title) ?? '朋友动态';
 
-    const dataSource = src ? dataSources[src] : undefined;
+    let dataSource = src === 'youlin' ? youlin?.circle : src ? dataSources[src] : undefined;
+    if (src === 'youlin' && !dataSource) {
+      file.message('友邻朋友圈数据不可用，已回退演示数据。', undefined, 'sonder-directives');
+      dataSource = dataSources.demo;
+    }
     if (!dataSource) {
-      file.message(`::friend-circle 未找到数据源 ${src}。`, undefined, 'sonder-directives');
+      file.message(
+        `::friend-circle 未找到数据源 ${src ?? '(未指定)'}。`,
+        undefined,
+        'sonder-directives',
+      );
       return [];
     }
 
@@ -625,7 +638,7 @@ export function friendCircleHandler(
       h('div', [
         h('p', { class: 'friend-circle__eyebrow' }, [icon('rss', 14, 1.8), title]),
         h('p', { class: 'friend-circle__stats' }, [
-          `${dataSource.friends.length} friends`,
+          `${dataSource.friendCount ?? dataSource.friends.length} friends`,
           h('span', { 'aria-hidden': 'true' }, ['/']),
           `${activeFriends} active`,
           h('span', { 'aria-hidden': 'true' }, ['/']),

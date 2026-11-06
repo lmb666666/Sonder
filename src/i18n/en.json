@@ -262,6 +262,8 @@
     "description": "Fill in your site details, then copy the data or open a GitHub issue.",
     "applyLabel": "Open an issue",
     "applyHint": "Open a new application issue",
+    "youlinDescription": "Fill in your site details; the link appears here after review.",
+    "youlinApplyLabel": "Apply now",
     "copyHint": "Copy and paste it into the comments to apply.",
     "copySuccessText": "Copied!",
     "issueTitle": "[Friend link] {name}",

@@ -2,12 +2,24 @@ import { h } from './h.js';
 import type { AttributeValue, MdastNode } from './handlers.js';
 import { wrapHast } from './handlers.js';
 import type { FriendApplicationText } from './i18n.js';
+import type { ApplyProvider } from '../../../config/youlin';
 import { icon } from './icons.js';
 
 /**
  * 友链申请表单的指令渲染：构建期输出与 FriendLinkApplication.astro 一致的 DOM，
  * 交互（校验 / JSON 预览 / 复制 / Issue 链接）由 MarkdownWidgets 客户端脚本接管。
+ * 配置 apply.provider=youlin 时改为输出指向 Youlin /apply 的入口卡片。
  */
+
+export interface ApplicationApplyConfig {
+  provider: ApplyProvider;
+  baseUrl: string;
+}
+
+const DEFAULT_APPLY_CONFIG: ApplicationApplyConfig = {
+  provider: 'github',
+  baseUrl: '',
+};
 
 function asString(value: AttributeValue | undefined): string | undefined {
   return typeof value === 'string' ? value : undefined;
@@ -64,7 +76,10 @@ const formatPreview = (json: string) =>
     .map((line) => (line.startsWith('  ') ? line.slice(2) : line))
     .join('\n');
 
-export function friendLinkApplicationHandler(text: FriendApplicationText) {
+export function friendLinkApplicationHandler(
+  text: FriendApplicationText,
+  apply: ApplicationApplyConfig = DEFAULT_APPLY_CONFIG,
+) {
   return ({
     attributes,
     file,
@@ -72,6 +87,51 @@ export function friendLinkApplicationHandler(text: FriendApplicationText) {
     attributes: Record<string, AttributeValue>;
     file: { message(v: string, p: unknown, s: string): void };
   }): MdastNode[] => {
+    const providerAttr = asString(attributes.provider);
+    const provider: ApplyProvider =
+      providerAttr === 'youlin' || providerAttr === 'github' || providerAttr === 'none'
+        ? providerAttr
+        : apply.provider;
+
+    if (provider === 'none') {
+      file.message(
+        '友链申请已关闭（apply.provider=none），已跳过。',
+        undefined,
+        'sonder-directives',
+      );
+      return [];
+    }
+
+    if (provider === 'youlin') {
+      const baseUrl = apply.baseUrl.trim().replace(/\/+$/, '');
+      if (!baseUrl) {
+        file.message(
+          '::friend-link-application 需要配置 youlin.baseUrl 才能跳转申请页。',
+          undefined,
+          'sonder-directives',
+        );
+        return [];
+      }
+
+      const card = h('section', { class: 'youlin-apply-card', 'aria-label': text.title }, [
+        h('span', { class: 'youlin-apply-card__copy' }, [
+          h('strong', [text.title]),
+          h('span', [text.youlinDescription]),
+        ]),
+        h(
+          'a',
+          {
+            class: 'youlin-apply-card__action',
+            href: `${baseUrl}/apply`,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          },
+          [text.youlinApplyLabel],
+        ),
+      ]);
+      return [wrapHast('section', card as never)];
+    }
+
     const repository = asString(attributes.repository);
     const repositoryPath = repository ? resolveRepository(repository) : undefined;
     if (!repositoryPath) {
