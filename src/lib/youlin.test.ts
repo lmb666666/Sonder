@@ -4,10 +4,21 @@ import {
   buildYoulinClientConfig,
   clearYoulinCache,
   fetchYoulinJson,
+  isHttpUrl,
   mapYoulinCircle,
   mapYoulinLinks,
   toDisplayDate,
 } from './youlin';
+
+describe('isHttpUrl', () => {
+  test('只接受无凭据的 http(s) 地址', () => {
+    expect(isHttpUrl('https://example.com/')).toBe(true);
+    expect(isHttpUrl('http://127.0.0.1:8787')).toBe(true);
+    expect(isHttpUrl('https://user:pass@example.com/')).toBe(false);
+    expect(isHttpUrl('javascript:alert(1)')).toBe(false);
+    expect(isHttpUrl('')).toBe(false);
+  });
+});
 
 describe('mapYoulinLinks', () => {
   test('把 Youlin 分组映射成 Sonder 友链结构', () => {
@@ -78,6 +89,17 @@ describe('mapYoulinLinks', () => {
     expect(groups?.[0]?.items[0]?.name).toBe('Good');
     expect(mapYoulinLinks({ groups: 'nope' })).toBe(null);
   });
+
+  test('结构存在但全部条目无效时视为响应损坏', () => {
+    expect(
+      mapYoulinLinks({
+        groups: [{ name: '坏数据', links: [{ author: 'Bad', link: 'javascript:alert(1)' }] }],
+      }),
+    ).toBe(null);
+    expect(mapYoulinLinks({ groups: [{ name: '坏分组' }] })).toBe(null);
+    expect(mapYoulinLinks({ groups: [] })).toEqual([]);
+    expect(mapYoulinLinks({ groups: [{ name: '空分组', links: [] }] })).toEqual([]);
+  });
 });
 
 describe('mapYoulinCircle', () => {
@@ -123,6 +145,13 @@ describe('mapYoulinCircle', () => {
 
     expect(mapped?.posts).toHaveLength(1);
     expect(mapYoulinCircle({ articles: 'nope' })).toBe(null);
+    expect(mapYoulinCircle({ stats: {}, articles: [{ title: 'Bad', link: 'not-a-url' }] })).toBe(
+      null,
+    );
+    expect(mapYoulinCircle({ stats: {}, articles: [] })).toEqual({
+      posts: [],
+      stats: { friends: 0, active: 0, failed: 0, articles: 0, updatedAt: null },
+    });
   });
 });
 

@@ -171,6 +171,23 @@ describe('resolveFriendCircle', () => {
     expect(result.posts[0]?.title).toBe('Public post');
   });
 
+  cachedTest('readPublic 抛错时回退 demo，不中断解析', async () => {
+    const fetchImpl = (async () =>
+      new Response('nope', { status: 500 })) as unknown as typeof fetch;
+    const readPublic = async () => {
+      throw new Error('EISDIR');
+    };
+    const crawl = async () => [];
+
+    const result = await resolveFriendCircle(config, deps({ fetchImpl, readPublic, crawl }), {
+      links: localGroups,
+      feedSrc: '/friend-circle.json',
+    });
+
+    expect(result.source).toBe('demo');
+    expect(result.errors.some((error) => error.includes('EISDIR'))).toBe(true);
+  });
+
   cachedTest('RSS 抓取 0 篇后回退 demo', async () => {
     const fetchImpl = (async () =>
       new Response('nope', { status: 500 })) as unknown as typeof fetch;

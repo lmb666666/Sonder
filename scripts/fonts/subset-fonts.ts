@@ -16,6 +16,7 @@ type FontConfig = {
 
 const projectRoot = process.cwd();
 const cachePath = join(projectRoot, 'node_modules/.cache/sonder-font-subsets.json');
+const youlinCharsCachePath = join(projectRoot, 'node_modules/.cache/sonder-youlin-chars.json');
 const forceSubsets = process.argv.includes('--force');
 const uiCharsPath = join(projectRoot, 'scripts/fonts/ui-chars.txt');
 const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
@@ -239,6 +240,29 @@ function readYoulinConfig() {
   return resolveYoulinConfig(result.data.youlin);
 }
 
+function readYoulinCharsCache(baseUrl: string): string[] {
+  if (!existsSync(youlinCharsCachePath)) return [];
+  try {
+    const parsed = JSON.parse(readFileSync(youlinCharsCachePath, 'utf8')) as {
+      baseUrl?: unknown;
+      chars?: unknown;
+    };
+    if (parsed.baseUrl !== baseUrl || !Array.isArray(parsed.chars)) return [];
+    return parsed.chars.filter((char): char is string => typeof char === 'string');
+  } catch {
+    return [];
+  }
+}
+
+function writeYoulinCharsCache(baseUrl: string, chars: string[]) {
+  try {
+    mkdirSync(dirname(youlinCharsCachePath), { recursive: true });
+    writeFileSync(youlinCharsCachePath, `${JSON.stringify({ baseUrl, chars }, null, 2)}\n`, 'utf8');
+  } catch (error) {
+    console.warn('Unable to cache Youlin font characters:', error);
+  }
+}
+
 /** 友邻数据是构建期注入的文本，字体子集也要把它算进去；失败不影响构建。 */
 async function collectYoulinChars(chars: Set<string>) {
   const config = readYoulinConfig();
@@ -247,6 +271,10 @@ async function collectYoulinChars(chars: Set<string>) {
   const needsLinks = config.links.sources.includes('youlin');
   const needsCircle = config.circle.sources.includes('youlin');
   if (!needsLinks && !needsCircle) return;
+
+  // 网络抖动时沿用上一次成功的字符集，避免子集突然缩小导致页面缺字。
+  const cachedChars = readYoulinCharsCache(config.baseUrl);
+  for (const char of cachedChars) chars.add(char);
 
   const [links, circle] = await Promise.all([
     needsLinks
@@ -263,11 +291,30 @@ async function collectYoulinChars(chars: Set<string>) {
       : Promise.resolve(null),
   ]);
 
-  if (links?.ok) collectStrings(chars, links.data);
-  else if (links) console.warn(`Unable to collect Youlin link characters: ${links.error}`);
+  const remoteChars = new Set<string>();
+  let fetched = false;
 
-  if (circle?.ok) collectStrings(chars, circle.data.posts);
-  else if (circle) console.warn(`Unable to collect Youlin circle characters: ${circle.error}`);
+  if (links?.ok) {
+    collectStrings(remoteChars, links.data);
+    fetched = true;
+  } else if (links) {
+    console.warn(`Unable to collect Youlin link characters: ${links.error}`);
+  }
+
+  if (circle?.ok) {
+    collectStrings(remoteChars, circle.data.posts);
+    fetched = true;
+  } else if (circle) {
+    console.warn(`Unable to collect Youlin circle characters: ${circle.error}`);
+  }
+
+  for (const char of remoteChars) chars.add(char);
+  if (fetched) {
+    const merged = [...new Set([...cachedChars, ...remoteChars])].sort(
+      (a, b) => a.codePointAt(0)! - b.codePointAt(0)!,
+    );
+    writeYoulinCharsCache(config.baseUrl, merged);
+  }
 }
 
 function runPyftsubset(args: string[]) {

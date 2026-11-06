@@ -52,6 +52,8 @@ describe('normalizeBaseUrl', () => {
     expect(normalizeBaseUrl('https://user:pass@example.com')).toBe('');
     expect(normalizeBaseUrl('https://example.com/?a=1')).toBe('');
     expect(normalizeBaseUrl('https://example.com/#top')).toBe('');
+    expect(normalizeBaseUrl('https://example.com/path?')).toBe('');
+    expect(normalizeBaseUrl('https://example.com/path#')).toBe('');
   });
 });
 
@@ -88,6 +90,19 @@ describe('resolveYoulinConfig', () => {
         links: { ...rawConfig.links, mode: 'build' },
       });
       expect(resolved.links.mode).toBe('build');
+      expect(resolved.circle.mode).toBe('client');
+    });
+  });
+
+  test('环境变量 mode 是覆盖层，连 per-feature mode 一起覆盖', () => {
+    withEnv({ SONDER_YOULIN_BASE_URL: undefined, SONDER_YOULIN_MODE: 'client' }, () => {
+      const resolved = resolveYoulinConfig({
+        ...rawConfig,
+        mode: 'build',
+        links: { ...rawConfig.links, mode: 'build' },
+        circle: { ...rawConfig.circle, mode: 'build' },
+      });
+      expect(resolved.links.mode).toBe('client');
       expect(resolved.circle.mode).toBe('client');
     });
   });

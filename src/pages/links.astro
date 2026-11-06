@@ -51,13 +51,20 @@ const sourceDeps: FriendSourceDeps = {
   crawl: crawlFriendPosts,
 };
 
+const clientLinks = shouldFetchYoulinFirst(youlin.links.mode, youlin.links.sources, youlin.baseUrl);
+const clientCircle = shouldFetchYoulinFirst(
+  youlin.circle.mode,
+  youlin.circle.sources,
+  youlin.baseUrl,
+);
+
 const linksResolved = await resolveFriendLinkGroups(youlin, sourceDeps, {
-  skipYoulin: youlin.links.mode === 'client',
+  skipYoulin: clientLinks,
 });
 const circleResolved = await resolveFriendCircle(youlin, sourceDeps, {
   links: linksResolved.groups,
   feedSrc: siteConfig.friendCircle.feed_src,
-  skipYoulin: youlin.circle.mode === 'client',
+  skipYoulin: clientCircle,
 });
 
 for (const error of [...linksResolved.errors, ...circleResolved.errors]) {
@@ -79,12 +86,8 @@ const pageSize = siteConfig.friendCircle.pageSize;
 const initialCount = Math.min(circlePosts.length, pageSize);
 const shortDate = (post: { date?: string }) => toDisplayDate(post.date);
 
-const linksUrl = shouldFetchYoulinFirst(youlin.links.mode, youlin.links.sources, youlin.baseUrl)
-  ? youlinLinksUrl(youlin.baseUrl, youlin.links.group)
-  : null;
-const circleUrl = shouldFetchYoulinFirst(youlin.circle.mode, youlin.circle.sources, youlin.baseUrl)
-  ? youlinCircleUrl(youlin.baseUrl, youlin.circle.limit)
-  : null;
+const linksUrl = clientLinks ? youlinLinksUrl(youlin.baseUrl, youlin.links.group) : null;
+const circleUrl = clientCircle ? youlinCircleUrl(youlin.baseUrl, youlin.circle.limit) : null;
 const clientConfig = buildYoulinClientConfig({
   linksUrl,
   circleUrl,
@@ -99,20 +102,28 @@ const clientConfig = buildYoulinClientConfig({
   },
 });
 
-const notices: string[] = [];
+const linksNotices: string[] = [];
 if (linksResolved.youlinTried && linksResolved.source !== 'youlin') {
-  notices.push(ui.links.youlinLinksFallback);
+  linksNotices.push(ui.links.youlinLinksFallback);
 }
+const linksNotice = linksNotices.join(' ');
+
+const circleNotices: string[] = [];
 if (circleResolved.youlinTried && circleResolved.source !== 'youlin') {
-  notices.push(ui.links.youlinCircleFallback);
+  circleNotices.push(ui.links.youlinCircleFallback);
 }
 if (circleResolved.source === 'demo') {
   const feedError = circleResolved.errors.find((error) => error.startsWith('friendcircle:'));
-  notices.push(
-    feedError ? ui.links.feedError(feedError.replace(/^friendcircle:\s*/, '')) : ui.links.feedDemo,
+  const rssError = circleResolved.errors.find((error) => error.startsWith('rss:'));
+  circleNotices.push(
+    feedError
+      ? ui.links.feedError(feedError.replace(/^friendcircle:\s*/, ''))
+      : rssError
+        ? ui.links.feedUnavailable
+        : ui.links.feedDemo,
   );
 }
-const sourceNotice = notices.join(' ');
+const circleNotice = circleNotices.join(' ');
 ---
 
 <Base title={`${pageMeta.title} | ${site.title}`} description={pageMeta.subtitle}>
@@ -121,7 +132,7 @@ const sourceNotice = notices.join(' ');
       <p class="archive-note" data-links-note>{ui.links.note(totalLinks, rssCount)}</p>
     </PageHero>
 
-    <p class="links-source-note" data-source-note hidden={!sourceNotice}>{sourceNotice}</p>
+    <p class="links-source-note" data-links-notice hidden={!linksNotice}>{linksNotice}</p>
 
     <div data-friend-links>
       {
@@ -148,6 +159,8 @@ const sourceNotice = notices.join(' ');
           {ui.links.circleSummary(circleFriendsCount, activeCount, circlePosts.length)}
         </p>
       </div>
+
+      <p class="links-source-note" data-circle-notice hidden={!circleNotice}>{circleNotice}</p>
 
       <div class="circle-grid" data-circle-list data-circle-size={pageSize}>
         {circlePosts.length === 0 && <p class="links-empty">{ui.links.emptyCircle}</p>}
@@ -195,7 +208,7 @@ const sourceNotice = notices.join(' ');
         }
       </div>
 
-      <div class="circle-actions">
+      <div class="circle-actions" hidden={circlePosts.length <= pageSize}>
         <button
           class="circle-more"
           type="button"

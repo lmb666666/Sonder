@@ -64,7 +64,11 @@ export function isHttpUrl(value: unknown): value is string {
   if (typeof value !== 'string' || value.trim() === '') return false;
   try {
     const url = new URL(value.trim());
-    return url.protocol === 'http:' || url.protocol === 'https:';
+    return (
+      (url.protocol === 'http:' || url.protocol === 'https:') &&
+      url.username === '' &&
+      url.password === ''
+    );
   } catch {
     return false;
   }
@@ -79,17 +83,26 @@ export function mapYoulinLinks(value: unknown): FriendLinkGroup[] | null {
   if (!isRecord(value) || !Array.isArray(value.groups)) return null;
 
   const groups: FriendLinkGroup[] = [];
+  let rawGroups = false;
+  let validGroup = false;
+  let rawLinks = false;
+  let mappedLinks = 0;
+
   for (const rawGroup of value.groups) {
+    rawGroups = true;
     if (!isRecord(rawGroup)) continue;
     const title = text(rawGroup.name);
     if (!title || !Array.isArray(rawGroup.links)) continue;
+    validGroup = true;
 
     const items: FriendLinkItem[] = [];
     for (const rawLink of rawGroup.links) {
+      rawLinks = true;
       if (!isRecord(rawLink)) continue;
       const link = text(rawLink.link);
       if (!isHttpUrl(link)) continue;
 
+      mappedLinks += 1;
       const author = text(rawLink.author);
       const siteTitle = text(rawLink.title);
       const name = siteTitle || author || new URL(link).hostname;
@@ -114,6 +127,10 @@ export function mapYoulinLinks(value: unknown): FriendLinkGroup[] | null {
       items,
     });
   }
+
+  // 有原始分组但没有任何合法结构，或有链接条目但全部映射失败：视为响应损坏。
+  if (rawGroups && !validGroup) return null;
+  if (rawLinks && mappedLinks === 0) return null;
 
   return groups;
 }
@@ -153,6 +170,9 @@ export function mapYoulinCircle(value: unknown): MappedYoulinCircle | null {
       ...(publishedAt ? { date: publishedAt } : {}),
     });
   }
+
+  // 有文章条目但全部不合法：按响应损坏处理，交给 source 链回退。
+  if (value.articles.length > 0 && posts.length === 0) return null;
 
   return { posts, stats };
 }

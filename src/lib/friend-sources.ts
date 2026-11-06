@@ -96,7 +96,12 @@ async function readFeedSource(source: string, deps: FriendSourceDeps): Promise<R
   }
 
   const file = source.replace(/^\/+/, '');
-  const text = await deps.readPublic?.(file);
+  let text: string | null | undefined;
+  try {
+    text = await deps.readPublic?.(file);
+  } catch (error) {
+    return { ok: false, error: `读取 public/${file} 失败：${errorText(error)}` };
+  }
   if (!text) return { ok: false, error: `public/${file} 不存在` };
 
   try {
@@ -215,7 +220,13 @@ export async function resolveFriendCircle(
       if (triedPublic.has(file)) continue;
       triedPublic.add(file);
 
-      const text = await deps.readPublic?.(file);
+      let text: string | null | undefined;
+      try {
+        text = await deps.readPublic?.(file);
+      } catch (error) {
+        errors.push(`public: 读取 public/${file} 失败：${errorText(error)}`);
+        continue;
+      }
       if (!text) continue;
 
       let value: unknown;
@@ -271,7 +282,7 @@ export async function resolveFriendCircle(
     if (source === 'demo' && deps.demo) {
       return {
         posts: deps.demo.posts,
-        friendsCount: deps.demo.friends.length || friendCount(options.links, deps.demo.posts),
+        friendsCount: friendCount(options.links, deps.demo.posts),
         stats: null,
         source,
         youlinTried,

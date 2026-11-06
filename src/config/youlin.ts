@@ -47,7 +47,7 @@ function envValue(name: string): string {
 /** 统一去掉尾部斜杠；拒绝非 http(s)、账号密码、query 与 hash。 */
 export function normalizeBaseUrl(value: string): string {
   const trimmed = value.trim();
-  if (!trimmed) return '';
+  if (!trimmed || /[?#]/.test(trimmed)) return '';
 
   try {
     const url = new URL(trimmed);
@@ -66,12 +66,17 @@ export function normalizeBaseUrl(value: string): string {
   }
 }
 
-function resolveMode(raw: SiteConfig['youlin']['mode'], envMode: string): YoulinMode {
-  if (envMode === 'build' || envMode === 'client') return envMode;
-  if (envMode) {
-    console.warn(`[sonder youlin] 忽略无效的 SONDER_YOULIN_MODE：${envMode}`);
+/** 日志里去掉 URL 内嵌凭据。 */
+function redact(value: string): string {
+  return value.replace(/\/\/[^/@]*@/, '//***@');
+}
+
+function parseEnvMode(value: string): YoulinMode | null {
+  if (value === 'build' || value === 'client') return value;
+  if (value) {
+    console.warn(`[sonder youlin] 忽略无效的 SONDER_YOULIN_MODE：${value}`);
   }
-  return raw;
+  return null;
 }
 
 export function resolveYoulinConfig(raw: SiteConfig['youlin']): ResolvedYoulinConfig {
@@ -81,29 +86,31 @@ export function resolveYoulinConfig(raw: SiteConfig['youlin']): ResolvedYoulinCo
   if (envBase) {
     baseUrl = normalizeBaseUrl(envBase);
     if (!baseUrl) {
-      console.warn(`[sonder youlin] 忽略无效的 SONDER_YOULIN_BASE_URL：${envBase}`);
+      console.warn(`[sonder youlin] 忽略无效的 SONDER_YOULIN_BASE_URL：${redact(envBase)}`);
     }
   }
 
   if (!baseUrl) {
     baseUrl = normalizeBaseUrl(raw.baseUrl);
     if (raw.baseUrl && !baseUrl) {
-      console.warn(`[sonder youlin] 忽略无效的 youlin.baseUrl：${raw.baseUrl}`);
+      console.warn(`[sonder youlin] 忽略无效的 youlin.baseUrl：${redact(raw.baseUrl)}`);
     }
   }
 
-  const globalMode = resolveMode(raw.mode, envValue('SONDER_YOULIN_MODE'));
+  const envMode = parseEnvMode(envValue('SONDER_YOULIN_MODE'));
+  const globalMode = envMode ?? raw.mode;
 
   return {
     baseUrl,
     timeoutMs: raw.timeoutMs,
     links: {
-      mode: raw.links.mode ?? globalMode,
+      // 环境变量是覆盖层：显式设置时连 per-feature mode 一起覆盖
+      mode: envMode ?? raw.links.mode ?? globalMode,
       sources: [...raw.links.sources],
       group: raw.links.group,
     },
     circle: {
-      mode: raw.circle.mode ?? globalMode,
+      mode: envMode ?? raw.circle.mode ?? globalMode,
       sources: [...raw.circle.sources],
       limit: raw.circle.limit,
     },

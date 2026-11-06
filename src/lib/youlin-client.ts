@@ -224,11 +224,30 @@ function renderCircle(
   bindCircleMore();
 }
 
-function showNotice(text: string): void {
-  const notice = document.querySelector<HTMLElement>('[data-source-note]');
+function showNotice(feature: 'links' | 'circle', text: string): void {
+  const selector = feature === 'links' ? '[data-links-notice]' : '[data-circle-notice]';
+  const notice = document.querySelector<HTMLElement>(selector);
   if (!notice) return;
   notice.textContent = text;
   notice.hidden = text === '';
+}
+
+function isClientConfig(value: unknown): value is YoulinClientConfig {
+  if (typeof value !== 'object' || value === null) return false;
+  const config = value as Record<string, unknown>;
+  const messages = config.messages;
+  if (typeof messages !== 'object' || messages === null) return false;
+  const catalog = messages as Record<string, unknown>;
+
+  return (
+    (config.linksUrl === null || typeof config.linksUrl === 'string') &&
+    (config.circleUrl === null || typeof config.circleUrl === 'string') &&
+    typeof config.timeoutMs === 'number' &&
+    typeof config.pageSize === 'number' &&
+    ['note', 'circleSummary', 'unavailable', 'emptyLinks', 'emptyCircle'].every(
+      (key) => typeof catalog[key] === 'string',
+    )
+  );
 }
 
 function readClientConfig(): YoulinClientConfig | null {
@@ -236,7 +255,8 @@ function readClientConfig(): YoulinClientConfig | null {
   if (!script?.textContent) return null;
 
   try {
-    return JSON.parse(script.textContent) as YoulinClientConfig;
+    const parsed: unknown = JSON.parse(script.textContent);
+    return isClientConfig(parsed) ? parsed : null;
   } catch {
     return null;
   }
@@ -260,15 +280,19 @@ async function sync(): Promise<void> {
         : null,
     ]);
 
-    let failed = false;
+    // View Transition 期间旧页面可能已被替换，不要往新页面写旧结果
+    if (!page.isConnected) return;
+
+    let linksFailed = false;
+    let circleFailed = false;
 
     if (config.linksUrl) {
       if (linksResult?.ok) {
         const groups = mapYoulinLinks(linksResult.data);
         if (groups) renderFriendLinks(groups, config);
-        else failed = true;
+        else linksFailed = true;
       } else {
-        failed = true;
+        linksFailed = true;
       }
     }
 
@@ -276,15 +300,21 @@ async function sync(): Promise<void> {
       if (circleResult?.ok) {
         const mapped = mapYoulinCircle(circleResult.data);
         if (mapped) renderCircle(mapped.posts, mapped.stats, config);
-        else failed = true;
+        else circleFailed = true;
       } else {
-        failed = true;
+        circleFailed = true;
       }
     }
 
-    showNotice(failed ? config.messages.unavailable : '');
+    if (config.linksUrl) {
+      showNotice('links', linksFailed ? config.messages.unavailable : '');
+    }
+    if (config.circleUrl) {
+      showNotice('circle', circleFailed ? config.messages.unavailable : '');
+    }
   } catch {
-    showNotice(config.messages.unavailable);
+    if (config.linksUrl) showNotice('links', config.messages.unavailable);
+    if (config.circleUrl) showNotice('circle', config.messages.unavailable);
   }
 }
 

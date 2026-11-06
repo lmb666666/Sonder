@@ -11,11 +11,7 @@ export async function GET(context) {
   const { site } = siteConfig;
   const origin = context.site ?? new URL(site.url);
   const youlin = resolveYoulinConfig(siteConfig.youlin);
-  const resolved = await resolveFriendLinkGroups(
-    youlin,
-    { localGroups: friendLinkGroups },
-    { skipYoulin: youlin.links.mode === 'client' },
-  );
+  const resolved = await resolveFriendLinkGroups(youlin, { localGroups: friendLinkGroups });
 
   for (const error of resolved.errors) {
     console.warn(`[sonder friends] ${error}`);

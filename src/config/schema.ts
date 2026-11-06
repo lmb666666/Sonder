@@ -223,6 +223,7 @@ const youlinBaseUrlSchema = z
   .default('')
   .refine((value) => {
     if (!value) return true;
+    if (/[?#]/.test(value)) return false;
     try {
       const url = new URL(value);
       return (

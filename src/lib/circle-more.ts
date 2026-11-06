@@ -10,15 +10,21 @@ export function bindCircleMore(root: ParentNode = document): void {
 
   const pageSize = Math.max(1, Number(grid.dataset.circleSize ?? '20'));
   const cards = [...grid.querySelectorAll<HTMLElement>('[data-circle-card]')];
+  const actions = fresh.parentElement;
+  const setHidden = (hidden: boolean) => {
+    fresh.hidden = hidden;
+    if (actions) actions.hidden = hidden;
+  };
+
   let visible = cards.filter((card) => !card.classList.contains('circle-card--hidden')).length;
   if (visible === 0 && cards.length > 0) visible = Math.min(cards.length, pageSize);
-  fresh.hidden = visible >= cards.length;
+  setHidden(visible >= cards.length);
 
   fresh.addEventListener('click', () => {
     visible += pageSize;
     cards.forEach((card, index) => {
       card.classList.toggle('circle-card--hidden', index >= visible);
     });
-    if (visible >= cards.length) fresh.hidden = true;
+    if (visible >= cards.length) setHidden(true);
   });
 }

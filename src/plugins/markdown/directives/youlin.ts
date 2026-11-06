@@ -101,7 +101,7 @@ export async function prefetchYoulinDirectives(
   }
 
   const [linksResult, circleResult] = await Promise.all([
-    needLinks || needCircle
+    needLinks
       ? loadYoulinLinks(config.baseUrl, {
           group: config.links.group,
           timeoutMs: config.timeoutMs,
@@ -109,7 +109,7 @@ export async function prefetchYoulinDirectives(
       : Promise.resolve(null),
     needCircle
       ? loadYoulinCircle(config.baseUrl, {
-          limit: 0,
+          limit: config.circle.limit,
           timeoutMs: config.timeoutMs,
         })
       : Promise.resolve(null),
@@ -117,7 +117,7 @@ export async function prefetchYoulinDirectives(
 
   const errors: string[] = [];
   const links = linksResult?.ok ? toEntries(linksResult.data) : null;
-  if ((needLinks || needCircle) && linksResult && !linksResult.ok) {
+  if (needLinks && linksResult && !linksResult.ok) {
     errors.push(`links: ${linksResult.error}`);
   }
 

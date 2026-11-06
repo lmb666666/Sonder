@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import type { ResolvedYoulinConfig } from '../../../config/youlin';
 import { clearYoulinCache } from '../../../lib/youlin';
+import { friendLinkCardHandler } from './heavy-handlers';
 import type { MdastNode } from './handlers';
 import { getYoulinDirectiveDefaults, prefetchYoulinDirectives } from './youlin';
 
@@ -52,8 +53,10 @@ describe('getYoulinDirectiveDefaults', () => {
 describe('prefetchYoulinDirectives', () => {
   test('只为出现的目标源发请求，并映射成指令数据结构', async () => {
     clearYoulinCache();
+    const requests: string[] = [];
     const fetchImpl = (async (input: string | URL | Request) => {
       const url = String(input);
+      requests.push(url);
       if (url.includes('/api/links')) {
         return json({
           groups: [
@@ -90,10 +93,11 @@ describe('prefetchYoulinDirectives', () => {
       const data = await prefetchYoulinDirectives(tree('friend-circle', { src: 'youlin' }), config);
 
       expect(data?.error).toBeUndefined();
-      expect(data?.links?.[0]?.name).toBe('Liang 的博客');
+      expect(data?.links).toBe(null);
       expect(data?.circle?.posts[0]?.title).toBe('近期小记');
       expect(data?.circle?.friendCount).toBe(1);
-      expect(data?.circle?.friends[0]?.url).toBe('https://blog.liang.one/');
+      expect(data?.circle?.friends).toEqual([]);
+      expect(requests.some((url) => url.includes('/api/links'))).toBe(false);
     } finally {
       globalThis.fetch = originalFetch;
       clearYoulinCache();
@@ -171,11 +175,35 @@ describe('prefetchYoulinDirectives', () => {
       const data = await prefetchYoulinDirectives(tree('friend-circle', { src: 'youlin' }), config);
       expect(data?.links).toBe(null);
       expect(data?.circle).toBe(null);
-      expect(data?.error).toContain('links: HTTP 500');
       expect(data?.error).toContain('circle: HTTP 500');
+      expect(data?.error).not.toContain('links:');
     } finally {
       globalThis.fetch = originalFetch;
       clearYoulinCache();
     }
+  });
+});
+
+describe('friendLinkCardHandler', () => {
+  test('内联 name/url 优先于 directives.friendLinkCard 的 youlin 默认源', () => {
+    const messages: string[] = [];
+    const handler = friendLinkCardHandler({
+      demo: { friends: [{ name: 'DemoCard', url: 'https://demo.example.com/' }] },
+    });
+    const nodes = handler({
+      attributes: { name: 'InlineCard', url: 'https://inline.example.com/' },
+      file: {
+        message(value: string) {
+          messages.push(value);
+        },
+      },
+      youlin: null,
+      youlinDefaults: { friendCircle: 'youlin', friendLinkCard: 'youlin' },
+    });
+    const html = JSON.stringify(nodes);
+
+    expect(html).toContain('InlineCard');
+    expect(html).not.toContain('DemoCard');
+    expect(messages).toEqual([]);
   });
 });
