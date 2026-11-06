@@ -73,7 +73,7 @@ const rssCount = groups.reduce(
 
 const circlePosts = circleResolved.posts;
 const activeCount =
-  circleResolved.stats?.active || new Set(circlePosts.map((post) => post.author)).size;
+  circleResolved.stats?.active ?? new Set(circlePosts.map((post) => post.author)).size;
 const circleFriendsCount = circleResolved.friendsCount;
 const pageSize = siteConfig.friendCircle.pageSize;
 const initialCount = Math.min(circlePosts.length, pageSize);

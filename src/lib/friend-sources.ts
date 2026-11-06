@@ -108,7 +108,9 @@ async function readFeedSource(source: string, deps: FriendSourceDeps): Promise<R
 
 function parseFeedPayload(value: unknown): FriendCircleFeed | null {
   if (Array.isArray(value)) return parseFriendCircleFeed(value);
-  if (isRecord(value) && Array.isArray(value.posts)) return parseFriendCircleFeed(value);
+  if (isRecord(value) && (Array.isArray(value.posts) || Array.isArray(value.friends))) {
+    return parseFriendCircleFeed(value);
+  }
   return null;
 }
 
@@ -167,7 +169,7 @@ export async function resolveFriendCircle(
       if (result.ok) {
         return {
           posts: result.data.posts,
-          friendsCount: result.data.stats.friends || friendCount(options.links, result.data.posts),
+          friendsCount: result.data.stats.friends,
           stats: result.data.stats,
           source,
           youlinTried,

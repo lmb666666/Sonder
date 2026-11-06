@@ -181,7 +181,7 @@ friendLinkCard = "auto"
 - `mode = "build"` 在构建期 SSR，SEO 与 Pagefind 覆盖最好；`mode = "client"` 先渲染构建期回退，浏览器再请求 Youlin 替换 DOM。可在 `links` / `circle` 下单独覆盖。
 - `apply.provider = "auto"` 时，配了 `baseUrl` 就用 Youlin `/apply`，否则沿用 GitHub Issue；也可强制 `github` / `none`。
 - 文章里的 `::friend-circle{src="youlin"}` 与 `::friend-link-card{src="youlin"}` 同样可用；不写 `src` 时取 `directives.*` 的默认值。
-- 环境变量 `SONDER_YOULIN_BASE_URL` / `SONDER_YOULIN_MODE` 可覆盖 TOML，适合 CI 或预览环境。
+- 环境变量 `SONDER_YOULIN_BASE_URL` / `SONDER_YOULIN_MODE` 可覆盖 TOML，适合 CI 或预览环境。复用本地 Astro 内容缓存时，如果发现文章内指令没有跟随新配置，用 `bunx astro build --force` 重建。
 - build 模式下数据变化需要重新构建：可以在 Youlin 设置 `rebuild.*` webhook / GitHub dispatch 触发本站构建，或手动重建。
 
 ## Markdown 开关

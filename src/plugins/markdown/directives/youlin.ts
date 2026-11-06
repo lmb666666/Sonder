@@ -125,7 +125,7 @@ export async function prefetchYoulinDirectives(
     ? {
         friends: links ?? [],
         posts: circleResult.data.posts.map(toCirclePost),
-        friendCount: circleResult.data.stats.friends || (links?.length ?? 0),
+        friendCount: circleResult.data.stats.friends,
       }
     : null;
   if (needCircle && circleResult && !circleResult.ok) {

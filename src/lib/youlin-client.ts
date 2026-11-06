@@ -212,8 +212,8 @@ function renderCircle(
   const summary = document.querySelector<HTMLElement>('[data-circle-summary]');
   if (summary) {
     const authors = new Set(posts.map((post) => post.author)).size;
-    const friends = stats?.friends || authors;
-    const active = stats?.active || authors;
+    const friends = stats?.friends ?? authors;
+    const active = stats?.active ?? authors;
     summary.textContent = formatMessage(config.messages.circleSummary, {
       friends,
       active,

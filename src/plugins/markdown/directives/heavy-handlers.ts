@@ -483,10 +483,11 @@ export function friendLinkCardHandler(dataSources: Record<string, { friends: Fri
     let items: FriendLinkEntry[] = [];
     if (src) {
       if (src === 'youlin') {
-        items = youlin?.links ?? [];
-        if (items.length === 0) {
+        if (youlin?.links == null) {
           file.message('友邻友链数据不可用，已回退演示数据。', undefined, 'sonder-directives');
           items = dataSources.demo?.friends ?? [];
+        } else {
+          items = youlin.links;
         }
       } else {
         const dataSource = dataSources[src];
@@ -515,7 +516,7 @@ export function friendLinkCardHandler(dataSources: Record<string, { friends: Fri
 
     if (items.length === 0) {
       file.message(
-        '::friend-link-card 缺少 src 或 name/url 属性。',
+        src === 'youlin' ? '友邻暂无友链数据。' : '::friend-link-card 缺少 src 或 name/url 属性。',
         undefined,
         'sonder-directives',
       );
