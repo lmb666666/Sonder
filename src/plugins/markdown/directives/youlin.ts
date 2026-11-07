@@ -81,8 +81,11 @@ export async function prefetchYoulinDirectives(
         }
 
         if (node.name === 'friend-link-card') {
-          const inline = Boolean(asString(node.attributes?.name) && asString(node.attributes?.url));
-          const target = src ?? (inline ? null : defaults.friendLinkCard);
+          const name = asString(node.attributes?.name);
+          const url = asString(node.attributes?.url);
+          const inline = Boolean(name && url);
+          const partialInline = Boolean(name || url) && !inline;
+          const target = src ?? (inline || partialInline ? null : defaults.friendLinkCard);
           if (target === 'youlin') needLinks = true;
         }
       }

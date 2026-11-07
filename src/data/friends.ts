@@ -1,5 +1,8 @@
 import type { FriendLinkGroup, FriendLinkItem } from '../lib/friend-data';
 
+// 兼容模板用户从数据文件导入类型的既有写法
+export type { FriendLinkGroup } from '../lib/friend-data';
+
 /**
  * 友链数据（默认来源）。配置 [config.youlin] 后，接口数据优先；
  * 这份文件保留为构建失败时的回退，也是未接入 Youlin 站点的开箱数据。

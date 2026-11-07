@@ -480,9 +480,18 @@ export function friendLinkCardHandler(dataSources: Record<string, { friends: Fri
     const explicitSrc = asString(attributes.src);
     const inlineName = asString(attributes.name);
     const inlineUrl = asString(attributes.url);
+    const hasInline = Boolean(inlineName && inlineUrl);
+    const partialInline = Boolean(inlineName || inlineUrl) && !hasInline;
+    if (!explicitSrc && partialInline) {
+      file.message(
+        '::friend-link-card 的 name 与 url 属性需要同时提供。',
+        undefined,
+        'sonder-directives',
+      );
+      return [];
+    }
     const source =
-      explicitSrc ??
-      (inlineName && inlineUrl ? undefined : (youlinDefaults?.friendLinkCard ?? undefined));
+      explicitSrc ?? (hasInline ? undefined : (youlinDefaults?.friendLinkCard ?? undefined));
     const columns = positiveInteger(attributes.columns, 4, 4);
 
     let items: FriendLinkEntry[] = [];

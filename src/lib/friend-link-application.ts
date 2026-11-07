@@ -12,6 +12,7 @@ export type ApplicationMessages = {
   statusIncomplete: string;
   submitPending: string;
   submitSuccess: string;
+  submitApproved: string;
   submitFailed: string;
   turnstileMissing: string;
   copyFailed: string;
@@ -24,6 +25,7 @@ type ApplicationConfig = {
   provider?: ApplicationProvider;
   submitUrl?: string;
   turnstileSiteKey?: string;
+  submitTimeoutMs?: number;
   issueBase: string;
   labels: string[];
   issueTemplate: string;
@@ -45,6 +47,7 @@ const DEFAULT_MESSAGES: ApplicationMessages = {
   statusIncomplete: '完成必填项后即可提交申请。',
   submitPending: '正在提交申请…',
   submitSuccess: '申请已提交，等待站长审核。',
+  submitApproved: '申请已自动通过，已加入友链。',
   submitFailed: '提交失败，请稍后重试。',
   turnstileMissing: '请先完成人机验证。',
   copyFailed: '复制失败，请手动选中当前数据。',
@@ -151,6 +154,10 @@ export function initFriendLinkApplications() {
     const provider: ApplicationProvider = config.provider === 'youlin' ? 'youlin' : 'github';
     const submitUrl = config.submitUrl?.trim() ?? '';
     const turnstileSiteKey = provider === 'youlin' ? (config.turnstileSiteKey?.trim() ?? '') : '';
+    const submitTimeoutMs =
+      Number.isFinite(config.submitTimeoutMs) && (config.submitTimeoutMs ?? 0) >= 5_000
+        ? Math.min(config.submitTimeoutMs ?? 45_000, 120_000)
+        : 45_000;
     let copyResetTimer = 0;
     let imageUpdateTimer = 0;
     let currentPreview = '';
@@ -160,18 +167,25 @@ export function initFriendLinkApplications() {
         window as unknown as {
           turnstile?: {
             render?: (el: HTMLElement, options: { sitekey: string; theme: string }) => unknown;
-            reset?: () => void;
+            reset?: (widgetId?: string) => void;
           };
         }
       ).turnstile;
+
+    let turnstileWidgetId: string | undefined;
 
     const renderTurnstile = () => {
       const api = getTurnstile();
       if (!api?.render) return;
       root.querySelectorAll<HTMLElement>('.cf-turnstile').forEach((element) => {
         if (element.dataset.rendered === 'true') return;
-        element.dataset.rendered = 'true';
-        api.render?.(element, { sitekey: turnstileSiteKey, theme: 'auto' });
+        try {
+          const widgetId = api.render?.(element, { sitekey: turnstileSiteKey, theme: 'auto' });
+          if (typeof widgetId === 'string') turnstileWidgetId = widgetId;
+          element.dataset.rendered = 'true';
+        } catch (error) {
+          console.warn('Unable to render Turnstile widget:', error);
+        }
       });
     };
 
@@ -198,7 +212,7 @@ export function initFriendLinkApplications() {
 
     const resetTurnstile = () => {
       try {
-        getTurnstile()?.reset?.();
+        getTurnstile()?.reset?.(turnstileWidgetId);
       } catch {
         // Turnstile 未加载或已卸载时忽略
       }
@@ -340,16 +354,27 @@ export function initFriendLinkApplications() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(15_000),
+          signal: AbortSignal.timeout(submitTimeoutMs),
         });
         const body = (await response.json().catch(() => null)) as {
-          error?: { message?: string; details?: Record<string, string> };
+          id?: number;
+          status?: string;
+          error?: { code?: string; message?: string; details?: Record<string, string> };
           backlink?: { ok?: boolean | null; detail?: string | null };
         } | null;
 
+        if (response.redirected) {
+          status.textContent = messages.submitFailed;
+          return;
+        }
+
         if (!response.ok) {
           const error = body?.error;
-          status.textContent = error?.message || messages.submitFailed;
+          if (error?.details?.turnstileToken || error?.code === 'turnstile_failed') {
+            status.textContent = messages.turnstileMissing;
+          } else {
+            status.textContent = error?.message || messages.submitFailed;
+          }
           if (error?.details) {
             const fieldMap: Record<string, ApplicationField> = {
               siteName: 'name',
@@ -370,10 +395,21 @@ export function initFriendLinkApplications() {
           return;
         }
 
+        const accepted =
+          body !== null &&
+          typeof body.id === 'number' &&
+          (body.status === 'pending' || body.status === 'approved');
+        if (!accepted) {
+          status.textContent = messages.submitFailed;
+          return;
+        }
+
         applyLink.dataset.submitted = 'true';
         applyLink.setAttribute('aria-disabled', 'true');
-        const backlink = body?.backlink;
-        status.textContent = `${messages.submitSuccess}${
+        const backlink = body.backlink;
+        const success =
+          body.status === 'approved' ? messages.submitApproved : messages.submitSuccess;
+        status.textContent = `${success}${
           backlink?.ok === true && backlink.detail ? ` ${backlink.detail}` : ''
         }`;
       } catch {

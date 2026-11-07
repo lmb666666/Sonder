@@ -195,6 +195,7 @@ const defaultYoulinConfig: {
   apply: {
     provider: 'auto' | 'youlin' | 'github' | 'none';
     turnstileSiteKey: string;
+    timeoutMs: number;
   };
   directives: { friendCircle: YoulinDirectiveSource; friendLinkCard: YoulinDirectiveSource };
 } = {
@@ -212,6 +213,7 @@ const defaultYoulinConfig: {
   apply: {
     provider: 'auto',
     turnstileSiteKey: '',
+    timeoutMs: 45_000,
   },
   directives: {
     friendCircle: 'auto',
@@ -417,9 +419,11 @@ export const siteConfigSchema = z.object({
           provider: youlinApplyProviderSchema.optional().default('auto'),
           // Youlin 的 Turnstile 公开 site key；开启人机验证时填写
           turnstileSiteKey: z.string().trim().max(200).optional().default(''),
+          // 提交是同步反链检测 + 可选 Turnstile，给足服务端处理时间
+          timeoutMs: z.number().int().min(5_000).max(120_000).optional().default(45_000),
         })
         .optional()
-        .default({ provider: 'auto', turnstileSiteKey: '' }),
+        .default({ provider: 'auto', turnstileSiteKey: '', timeoutMs: 45_000 }),
       directives: z
         .object({
           friendCircle: youlinDirectiveSourceSchema.optional().default('auto'),

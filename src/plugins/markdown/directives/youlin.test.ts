@@ -11,7 +11,7 @@ const config: ResolvedYoulinConfig = {
   timeoutMs: 8000,
   links: { mode: 'build', sources: ['youlin', 'local'], group: '' },
   circle: { mode: 'build', sources: ['youlin', 'demo'], limit: 0 },
-  apply: { provider: 'auto', turnstileSiteKey: '' },
+  apply: { provider: 'auto', turnstileSiteKey: '', timeoutMs: 45000 },
   directives: { friendCircle: 'auto', friendLinkCard: 'auto' },
 };
 
@@ -205,5 +205,25 @@ describe('friendLinkCardHandler', () => {
     expect(html).toContain('InlineCard');
     expect(html).not.toContain('DemoCard');
     expect(messages).toEqual([]);
+  });
+
+  test('内联卡片只给 name/url 之一时提示，不静默使用默认源', () => {
+    const messages: string[] = [];
+    const handler = friendLinkCardHandler({
+      demo: { friends: [{ name: 'DemoCard', url: 'https://demo.example.com/' }] },
+    });
+    const nodes = handler({
+      attributes: { name: 'OnlyName' },
+      file: {
+        message(value: string) {
+          messages.push(value);
+        },
+      },
+      youlin: null,
+      youlinDefaults: { friendCircle: 'youlin', friendLinkCard: 'youlin' },
+    });
+
+    expect(nodes).toEqual([]);
+    expect(messages[0]).toContain('name 与 url');
   });
 });

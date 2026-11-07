@@ -362,6 +362,7 @@ export interface SonderDirectivesOptions {
   applyProvider?: ApplyProvider;
   youlinBaseUrl?: string;
   youlinApplyTurnstileSiteKey?: string;
+  youlinApplyTimeoutMs?: number;
 }
 
 export default function remarkSonderDirectives(options: SonderDirectivesOptions = {}) {
@@ -388,6 +389,7 @@ export default function remarkSonderDirectives(options: SonderDirectivesOptions 
           baseUrl: options.youlinBaseUrl ?? youlin?.baseUrl ?? '',
           turnstileSiteKey:
             options.youlinApplyTurnstileSiteKey ?? youlin?.apply.turnstileSiteKey ?? '',
+          timeoutMs: options.youlinApplyTimeoutMs ?? youlin?.apply.timeoutMs ?? 45_000,
         },
       };
       tree.children = transformNodes(tree.children, undefined, file, extras);

@@ -28,6 +28,7 @@ describe('friendLinkApplicationHandler', () => {
 
     expect(html).toContain('dataFriendLinkApplication');
     expect(html).toContain('youlin.example.com/apply');
+    expect(html).toContain('submitTimeoutMs');
     expect(html).toContain(text.youlinApplyLabel);
     expect(html).toContain(text.youlinDescription);
     expect(html).not.toContain('youlin-apply-card');
@@ -80,6 +81,16 @@ describe('friendLinkApplicationHandler', () => {
 
     expect(nodes).toEqual([]);
     expect(messages[0]).toContain('apply.provider=none');
+  });
+
+  test('全局 none 但指令显式给 repository 时仍走 GitHub', () => {
+    const { file } = fileRecorder();
+    const nodes = friendLinkApplicationHandler(text, { provider: 'none', baseUrl: '' })({
+      attributes: { repository: 'owner/repo' },
+      file,
+    });
+
+    expect(JSON.stringify(nodes)).toContain('https://github.com/owner/repo/issues/new');
   });
 
   test('provider=youlin 但 baseUrl 为空时降级为提示', () => {

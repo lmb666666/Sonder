@@ -16,6 +16,7 @@ interface Props {
   provider?: 'github' | 'youlin';
   submitUrl?: string;
   turnstileSiteKey?: string;
+  submitTimeoutMs?: number;
   appearance?: ApplicationAppearance;
   labels?: string[];
   issueTemplate?: string;
@@ -67,6 +68,7 @@ const {
   provider = 'github',
   submitUrl = '',
   turnstileSiteKey = '',
+  submitTimeoutMs = 45_000,
   appearance = 'seamless',
   labels = [],
   issueTemplate,
@@ -93,6 +95,13 @@ const {
 const applicationProvider = provider === 'youlin' ? 'youlin' : 'github';
 const safeSubmitUrl = applicationProvider === 'youlin' ? submitUrl.trim() : '';
 const safeTurnstileSiteKey = applicationProvider === 'youlin' ? turnstileSiteKey.trim() : '';
+const safeSubmitTimeoutMs =
+  Number.isFinite(submitTimeoutMs) && submitTimeoutMs >= 5_000
+    ? Math.min(submitTimeoutMs, 120_000)
+    : 45_000;
+if (applicationProvider === 'youlin' && !safeSubmitUrl) {
+  throw new Error('FriendLinkApplication provider="youlin" requires a submitUrl.');
+}
 const clientMessages = {
   previewName: messages.previewName,
   previewBio: messages.previewBio,
@@ -101,6 +110,7 @@ const clientMessages = {
     applicationProvider === 'youlin' ? messages.youlinStatusIncomplete : messages.statusIncomplete,
   submitPending: messages.submitPending,
   submitSuccess: messages.submitSuccess,
+  submitApproved: messages.submitApproved,
   submitFailed: messages.submitFailed,
   turnstileMissing: messages.turnstileMissing,
   copyFailed: messages.copyFailed,
@@ -166,6 +176,7 @@ const config = {
   provider: applicationProvider,
   submitUrl: safeSubmitUrl,
   turnstileSiteKey: safeTurnstileSiteKey,
+  submitTimeoutMs: safeSubmitTimeoutMs,
   issueBase:
     applicationProvider === 'github' ? `https://github.com/${repositoryPath}/issues/new` : '',
   labels: cleanList(labels),

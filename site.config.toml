@@ -100,7 +100,7 @@ baseUrl = ""
 # 构建期 / 浏览器请求超时（毫秒）
 timeoutMs = 8000
 # 仅影响 /links 页的友链与朋友圈：build 构建期取数，client 浏览器刷新。
-# 文章内的 ::friend-circle / ::friend-link-card 始终构建期取数。
+# client 刷新只在 youlin 位于对应 sources 第一位时生效；文章指令始终构建期取数。
 mode = "build"
 
 [config.youlin.links]
@@ -123,9 +123,12 @@ limit = 0
 [config.youlin.apply]
 # auto：配了 baseUrl 时表单直接提交到 Youlin /apply（页面不跳转），否则用 GitHub Issue；
 # 也可强制 youlin / github / none
+# 浏览器提交要求 Youlin 的 api.corsOrigin 允许本站域名
 provider = "auto"
 # Youlin 开启 Turnstile 人机验证时，填它的公开 site key；关闭时留空
 turnstileSiteKey = ""
+# 提交申请的超时（毫秒）；Youlin 会同步做反链检测，默认留足 45 秒
+timeoutMs = 45000
 
 [config.youlin.directives]
 # 文章指令的默认数据源：auto（配了 baseUrl 用 youlin）| youlin | demo

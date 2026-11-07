@@ -32,6 +32,7 @@ export interface ResolvedYoulinConfig {
   apply: {
     provider: YoulinApplyProvider;
     turnstileSiteKey: string;
+    timeoutMs: number;
   };
   directives: {
     friendCircle: YoulinDirectiveSource;
@@ -118,6 +119,7 @@ export function resolveYoulinConfig(raw: SiteConfig['youlin']): ResolvedYoulinCo
     apply: {
       provider: raw.apply.provider,
       turnstileSiteKey: raw.apply.turnstileSiteKey,
+      timeoutMs: raw.apply.timeoutMs,
     },
     directives: {
       friendCircle: raw.directives.friendCircle,

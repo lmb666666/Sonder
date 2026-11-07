@@ -85,6 +85,7 @@ const markdown = getMarkdownConfig({
   applyProvider,
   youlinBaseUrl: youlin.baseUrl,
   youlinApplyTurnstileSiteKey: youlin.apply.turnstileSiteKey,
+  youlinApplyTimeoutMs: youlin.apply.timeoutMs,
 });
 
 const expressiveCodeConfig = defineEcConfig({

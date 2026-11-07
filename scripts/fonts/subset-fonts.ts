@@ -5,7 +5,7 @@ import { dirname, extname, join } from 'node:path';
 import { parse } from 'smol-toml';
 
 import { siteConfigSchema } from '../../src/config/schema';
-import { resolveYoulinConfig } from '../../src/config/youlin';
+import { resolveDirectiveSource, resolveYoulinConfig } from '../../src/config/youlin';
 import { loadYoulinCircle, loadYoulinLinks } from '../../src/lib/youlin';
 
 type FontConfig = {
@@ -268,8 +268,12 @@ async function collectYoulinChars(chars: Set<string>) {
   const config = readYoulinConfig();
   if (!config?.baseUrl) return;
 
-  const needsLinks = config.links.sources.includes('youlin');
-  const needsCircle = config.circle.sources.includes('youlin');
+  const needsLinks =
+    config.links.sources.includes('youlin') ||
+    resolveDirectiveSource(config.directives.friendLinkCard, config.baseUrl) === 'youlin';
+  const needsCircle =
+    config.circle.sources.includes('youlin') ||
+    resolveDirectiveSource(config.directives.friendCircle, config.baseUrl) === 'youlin';
   if (!needsLinks && !needsCircle) return;
 
   // 网络抖动时沿用上一次成功的字符集，避免子集突然缩小导致页面缺字。

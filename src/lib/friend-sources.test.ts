@@ -18,7 +18,7 @@ const config: ResolvedYoulinConfig = {
     sources: ['youlin', 'friendcircle', 'public', 'rss', 'demo'],
     limit: 0,
   },
-  apply: { provider: 'auto', turnstileSiteKey: '' },
+  apply: { provider: 'auto', turnstileSiteKey: '', timeoutMs: 45000 },
   directives: { friendCircle: 'auto', friendLinkCard: 'auto' },
 };
 

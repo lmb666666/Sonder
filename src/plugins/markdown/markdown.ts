@@ -21,6 +21,7 @@ export interface MarkdownConfigOptions {
   applyProvider?: ApplyProvider;
   youlinBaseUrl?: string;
   youlinApplyTurnstileSiteKey?: string;
+  youlinApplyTimeoutMs?: number;
 }
 
 export interface MarkdownConfig {
@@ -117,6 +118,7 @@ export function getMarkdownConfig({
   applyProvider,
   youlinBaseUrl,
   youlinApplyTurnstileSiteKey,
+  youlinApplyTimeoutMs,
 }: MarkdownConfigOptions): MarkdownConfig {
   return {
     integrations: [markdownTabsIntegration()],
@@ -132,6 +134,7 @@ export function getMarkdownConfig({
           applyProvider,
           youlinBaseUrl,
           youlinApplyTurnstileSiteKey,
+          youlinApplyTimeoutMs,
         }),
       ...(math ? [remarkMath] : []),
       ...(mermaid ? [remarkMermaid] : []),

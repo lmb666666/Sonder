@@ -189,6 +189,10 @@
   margin-top: 18px;
 }
 
+.circle-actions[hidden] {
+  display: none;
+}
+
 .circle-more {
   padding: 8px 22px;
   border: 1px solid var(--paper-line-strong);

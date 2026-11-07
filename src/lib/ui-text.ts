@@ -110,6 +110,7 @@ type RawUiText = {
     youlinStatusIncomplete: string;
     submitPending: string;
     submitSuccess: string;
+    submitApproved: string;
     submitFailed: string;
     turnstileMissing: string;
     copyFailed: string;

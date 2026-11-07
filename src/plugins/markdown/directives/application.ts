@@ -16,6 +16,7 @@ export interface ApplicationApplyConfig {
   provider: ApplyProvider;
   baseUrl: string;
   turnstileSiteKey?: string;
+  timeoutMs?: number;
 }
 
 const DEFAULT_APPLY_CONFIG: ApplicationApplyConfig = {
@@ -60,10 +61,13 @@ export function friendLinkApplicationHandler(
     file: { message(v: string, p: unknown, s: string): void };
   }): MdastNode[] => {
     const providerAttr = asString(attributes.provider);
+    const explicitRepository = asString(attributes.repository);
     const provider: ApplyProvider =
       providerAttr === 'youlin' || providerAttr === 'github' || providerAttr === 'none'
         ? providerAttr
-        : apply.provider;
+        : apply.provider === 'none' && explicitRepository
+          ? 'github'
+          : apply.provider;
 
     if (provider === 'none') {
       file.message(
@@ -84,7 +88,7 @@ export function friendLinkApplicationHandler(
       return [];
     }
 
-    const repository = asString(attributes.repository);
+    const repository = explicitRepository;
     const repositoryPath =
       provider === 'github' && repository ? parseGitHubRepository(repository) : null;
     if (provider === 'github' && !repositoryPath) {
@@ -98,6 +102,12 @@ export function friendLinkApplicationHandler(
 
     const submitUrl = provider === 'youlin' ? `${baseUrl}/apply` : '';
     const turnstileSiteKey = provider === 'youlin' ? (apply.turnstileSiteKey ?? '').trim() : '';
+    const submitTimeoutMs =
+      typeof apply.timeoutMs === 'number' &&
+      Number.isFinite(apply.timeoutMs) &&
+      apply.timeoutMs >= 5_000
+        ? Math.min(apply.timeoutMs, 120_000)
+        : 45_000;
 
     const title = asString(attributes.title) ?? text.title;
     const description =
@@ -124,6 +134,7 @@ export function friendLinkApplicationHandler(
       provider,
       submitUrl,
       turnstileSiteKey,
+      submitTimeoutMs,
       issueBase:
         provider === 'github' ? `https://github.com/${repositoryPath ?? ''}/issues/new` : '',
       labels: [] as string[],
@@ -150,6 +161,7 @@ export function friendLinkApplicationHandler(
         statusIncomplete,
         submitPending: text.submitPending,
         submitSuccess: text.submitSuccess,
+        submitApproved: text.submitApproved,
         submitFailed: text.submitFailed,
         turnstileMissing: text.turnstileMissing,
         copyFailed: text.copyFailed,
