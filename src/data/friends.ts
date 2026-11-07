@@ -1,13 +1,12 @@
-import type { FriendLinkItem } from '../lib/friend-data';
+import type { FriendLinkGroup, FriendLinkItem } from '../lib/friend-data';
 
-export interface FriendLinkGroup {
-  title: string;
-  description?: string;
-  items: FriendLinkItem[];
-}
+// 兼容模板用户从数据文件导入类型的既有写法
+export type { FriendLinkGroup } from '../lib/friend-data';
 
 /**
- * 友链数据。卡片视觉由主题组件渲染：无头像时回退为首字母。
+ * 友链数据（默认来源）。配置 [config.youlin] 后，接口数据优先；
+ * 这份文件保留为构建失败时的回退，也是未接入 Youlin 站点的开箱数据。
+ * 卡片视觉由主题组件渲染：无头像时回退为首字母。
  * sticky 置顶（true 或权重数字）；rss 用于朋友圈聚合。
  */
 export const friendLinkGroups: FriendLinkGroup[] = [

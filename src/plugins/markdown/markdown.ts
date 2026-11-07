@@ -9,6 +9,7 @@ import remarkSonderDirectives from './directives/index.js';
 import rehypeResponsiveTables from './rehype-responsive-tables.js';
 import remarkMermaid from './remark-mermaid.js';
 import type { MathRenderer } from './types.js';
+import type { ApplyProvider, ResolvedYoulinConfig } from '../../config/youlin.js';
 
 export interface MarkdownConfigOptions {
   math: boolean;
@@ -16,6 +17,11 @@ export interface MarkdownConfigOptions {
   mermaid: boolean;
   metingApi?: string;
   lang?: string;
+  youlin?: ResolvedYoulinConfig;
+  applyProvider?: ApplyProvider;
+  youlinBaseUrl?: string;
+  youlinApplyTurnstileSiteKey?: string;
+  youlinApplyTimeoutMs?: number;
 }
 
 export interface MarkdownConfig {
@@ -108,13 +114,28 @@ export function getMarkdownConfig({
   mermaid,
   metingApi = '',
   lang,
+  youlin,
+  applyProvider,
+  youlinBaseUrl,
+  youlinApplyTurnstileSiteKey,
+  youlinApplyTimeoutMs,
 }: MarkdownConfigOptions): MarkdownConfig {
   return {
     integrations: [markdownTabsIntegration()],
     remarkPlugins: [
       remarkCallouts,
       remarkDirective,
-      () => remarkSonderDirectives({ layouts: true, metingApi, lang }),
+      () =>
+        remarkSonderDirectives({
+          layouts: true,
+          metingApi,
+          lang,
+          youlin,
+          applyProvider,
+          youlinBaseUrl,
+          youlinApplyTurnstileSiteKey,
+          youlinApplyTimeoutMs,
+        }),
       ...(math ? [remarkMath] : []),
       ...(mermaid ? [remarkMermaid] : []),
     ] as MarkdownConfig['remarkPlugins'],

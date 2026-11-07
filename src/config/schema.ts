@@ -17,6 +17,11 @@ const siteUrlSchema = z.preprocess((value) => {
 
 const commentProviderSchema = z.enum(['giscus', 'utterances', 'waline', 'twikoo', 'none']);
 const mathRendererSchema = z.enum(['katex', 'mathjax']);
+const youlinModeSchema = z.enum(['build', 'client']);
+const youlinLinkSourceSchema = z.enum(['youlin', 'local']);
+const youlinCircleSourceSchema = z.enum(['youlin', 'friendcircle', 'public', 'rss', 'demo']);
+const youlinApplyProviderSchema = z.enum(['auto', 'youlin', 'github', 'none']);
+const youlinDirectiveSourceSchema = z.enum(['auto', 'youlin', 'demo']);
 const paletteSchema = z.enum([
   'green-soft',
   'green-vivid',
@@ -176,6 +181,69 @@ const defaultPagesConfig = {
   },
 } as const;
 
+type YoulinLinkSource = z.infer<typeof youlinLinkSourceSchema>;
+type YoulinCircleSource = z.infer<typeof youlinCircleSourceSchema>;
+type YoulinMode = z.infer<typeof youlinModeSchema>;
+type YoulinDirectiveSource = z.infer<typeof youlinDirectiveSourceSchema>;
+
+const defaultYoulinConfig: {
+  baseUrl: string;
+  timeoutMs: number;
+  mode: YoulinMode;
+  links: { sources: YoulinLinkSource[]; group: string };
+  circle: { sources: YoulinCircleSource[]; limit: number };
+  apply: {
+    provider: 'auto' | 'youlin' | 'github' | 'none';
+    turnstileSiteKey: string;
+    timeoutMs: number;
+  };
+  directives: { friendCircle: YoulinDirectiveSource; friendLinkCard: YoulinDirectiveSource };
+} = {
+  baseUrl: '',
+  timeoutMs: 8000,
+  mode: 'build',
+  links: {
+    sources: ['youlin', 'local'],
+    group: '',
+  },
+  circle: {
+    sources: ['youlin', 'friendcircle', 'public', 'rss', 'demo'],
+    limit: 0,
+  },
+  apply: {
+    provider: 'auto',
+    turnstileSiteKey: '',
+    timeoutMs: 45_000,
+  },
+  directives: {
+    friendCircle: 'auto',
+    friendLinkCard: 'auto',
+  },
+};
+
+const youlinBaseUrlSchema = z
+  .string()
+  .trim()
+  .max(2048)
+  .optional()
+  .default('')
+  .refine((value) => {
+    if (!value) return true;
+    if (/[?#]/.test(value)) return false;
+    try {
+      const url = new URL(value);
+      return (
+        (url.protocol === 'http:' || url.protocol === 'https:') &&
+        url.username === '' &&
+        url.password === '' &&
+        url.search === '' &&
+        url.hash === ''
+      );
+    } catch {
+      return false;
+    }
+  }, 'youlin.baseUrl 必须是 http(s) URL，且不能包含账号密码、查询参数或 hash。');
+
 const blogPageSchema = z.object({
   title: z.string().optional().default(defaultPagesConfig.blog.title),
   kicker: z.string().optional().default(defaultPagesConfig.blog.kicker),
@@ -317,6 +385,55 @@ export const siteConfigSchema = z.object({
     })
     .optional()
     .default({ feed_src: '', pageSize: 20 }),
+  youlin: z
+    .object({
+      // 友邻实例地址；留空时所有 source 链都会跳过 youlin，保持原有本地行为
+      baseUrl: youlinBaseUrlSchema,
+      timeoutMs: z.number().int().min(500).max(30_000).optional().default(8000),
+      // 仅影响 /links 页的友链与朋友圈；文章内指令始终构建期取数
+      mode: youlinModeSchema.optional().default('build'),
+      links: z
+        .object({
+          mode: youlinModeSchema.optional(),
+          sources: z.array(youlinLinkSourceSchema).optional().default(['youlin', 'local']),
+          group: z.string().trim().max(100).optional().default(''),
+        })
+        .optional()
+        .default({ sources: ['youlin', 'local'], group: '' }),
+      circle: z
+        .object({
+          mode: youlinModeSchema.optional(),
+          sources: z
+            .array(youlinCircleSourceSchema)
+            .optional()
+            .default(['youlin', 'friendcircle', 'public', 'rss', 'demo']),
+          limit: z.number().int().min(0).max(5000).optional().default(0),
+        })
+        .optional()
+        .default({
+          sources: ['youlin', 'friendcircle', 'public', 'rss', 'demo'],
+          limit: 0,
+        }),
+      apply: z
+        .object({
+          provider: youlinApplyProviderSchema.optional().default('auto'),
+          // Youlin 的 Turnstile 公开 site key；开启人机验证时填写
+          turnstileSiteKey: z.string().trim().max(200).optional().default(''),
+          // 提交是同步反链检测 + 可选 Turnstile，给足服务端处理时间
+          timeoutMs: z.number().int().min(5_000).max(120_000).optional().default(45_000),
+        })
+        .optional()
+        .default({ provider: 'auto', turnstileSiteKey: '', timeoutMs: 45_000 }),
+      directives: z
+        .object({
+          friendCircle: youlinDirectiveSourceSchema.optional().default('auto'),
+          friendLinkCard: youlinDirectiveSourceSchema.optional().default('auto'),
+        })
+        .optional()
+        .default({ friendCircle: 'auto', friendLinkCard: 'auto' }),
+    })
+    .optional()
+    .default(defaultYoulinConfig),
   comments: z
     .object({
       enabled: z.boolean().optional().default(false),

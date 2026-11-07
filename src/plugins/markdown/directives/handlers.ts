@@ -1,5 +1,6 @@
 import { h } from './h.js';
 import type { Element, ElementContent } from 'hast';
+import type { YoulinDirectiveData, YoulinDirectiveDefaults } from './youlin';
 
 /**
  * Sonder 外挂指令渲染层。
@@ -50,6 +51,9 @@ export interface ContainerContext {
 export interface LeafContext {
   attributes: Record<string, AttributeValue>;
   file: DirectiveFile;
+  /** Youlin 预取数据；仅 ::friend-circle / ::friend-link-card 使用 */
+  youlin?: YoulinDirectiveData | null;
+  youlinDefaults?: YoulinDirectiveDefaults;
 }
 
 export interface InlineContext {

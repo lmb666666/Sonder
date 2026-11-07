@@ -1,14 +1,20 @@
 import { copyText } from './clipboard';
-import { validateApplicationUrlValue } from './friend-application';
+import { buildYoulinApplicationPayload, validateApplicationUrlValue } from './friend-application';
 
 type ApplicationField = 'name' | 'url' | 'bio' | 'avatar' | 'backgroundImage' | 'rss';
 type ApplicationData = Record<ApplicationField, string> & { sticky: false };
+type ApplicationProvider = 'github' | 'youlin';
 
 export type ApplicationMessages = {
   previewName: string;
   previewBio: string;
   statusReady: string;
   statusIncomplete: string;
+  submitPending: string;
+  submitSuccess: string;
+  submitApproved: string;
+  submitFailed: string;
+  turnstileMissing: string;
   copyFailed: string;
   invalidUrl: string;
   invalidUrlProtocol: string;
@@ -16,6 +22,10 @@ export type ApplicationMessages = {
 };
 
 type ApplicationConfig = {
+  provider?: ApplicationProvider;
+  submitUrl?: string;
+  turnstileSiteKey?: string;
+  submitTimeoutMs?: number;
   issueBase: string;
   labels: string[];
   issueTemplate: string;
@@ -33,8 +43,13 @@ type ApplicationConfig = {
 const DEFAULT_MESSAGES: ApplicationMessages = {
   previewName: '你的站点',
   previewBio: '站点简介会显示在这里',
-  statusReady: '资料已就绪，可复制数据或前往 GitHub 确认提交。',
-  statusIncomplete: '完成必填项后，将生成 GitHub Issue 申请链接。',
+  statusReady: '资料已就绪，可以提交申请。',
+  statusIncomplete: '完成必填项后即可提交申请。',
+  submitPending: '正在提交申请…',
+  submitSuccess: '申请已提交，等待站长审核。',
+  submitApproved: '申请已自动通过，已加入友链。',
+  submitFailed: '提交失败，请稍后重试。',
+  turnstileMissing: '请先完成人机验证。',
   copyFailed: '复制失败，请手动选中当前数据。',
   invalidUrl: '请输入完整、有效的网址。',
   invalidUrlProtocol: '仅支持 http:// 或 https:// 地址。',
@@ -136,9 +151,74 @@ export function initFriendLinkApplications() {
 
     const config = JSON.parse(configElement.textContent) as ApplicationConfig;
     const messages = { ...DEFAULT_MESSAGES, ...config.messages };
+    const provider: ApplicationProvider = config.provider === 'youlin' ? 'youlin' : 'github';
+    const submitUrl = config.submitUrl?.trim() ?? '';
+    const turnstileSiteKey = provider === 'youlin' ? (config.turnstileSiteKey?.trim() ?? '') : '';
+    const submitTimeoutMs =
+      Number.isFinite(config.submitTimeoutMs) && (config.submitTimeoutMs ?? 0) >= 5_000
+        ? Math.min(config.submitTimeoutMs ?? 45_000, 120_000)
+        : 45_000;
     let copyResetTimer = 0;
     let imageUpdateTimer = 0;
     let currentPreview = '';
+
+    const getTurnstile = () =>
+      (
+        window as unknown as {
+          turnstile?: {
+            render?: (el: HTMLElement, options: { sitekey: string; theme: string }) => unknown;
+            reset?: (widgetId?: string) => void;
+          };
+        }
+      ).turnstile;
+
+    let turnstileWidgetId: string | undefined;
+
+    const renderTurnstile = () => {
+      const api = getTurnstile();
+      if (!api?.render) return;
+      root.querySelectorAll<HTMLElement>('.cf-turnstile').forEach((element) => {
+        if (element.dataset.rendered === 'true') return;
+        try {
+          const widgetId = api.render?.(element, { sitekey: turnstileSiteKey, theme: 'auto' });
+          if (typeof widgetId === 'string') turnstileWidgetId = widgetId;
+          element.dataset.rendered = 'true';
+        } catch (error) {
+          console.warn('Unable to render Turnstile widget:', error);
+        }
+      });
+    };
+
+    const ensureTurnstileScript = () => {
+      if (!turnstileSiteKey) return;
+      const existing = document.querySelector<HTMLScriptElement>('script[data-sonder-turnstile]');
+      if (existing) {
+        if (getTurnstile()) renderTurnstile();
+        else existing.addEventListener('load', renderTurnstile, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.dataset.sonderTurnstile = '';
+      script.addEventListener('load', renderTurnstile, { once: true });
+      document.head.append(script);
+    };
+
+    const readTurnstileToken = () =>
+      root.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value.trim() ?? '';
+
+    const resetTurnstile = () => {
+      try {
+        getTurnstile()?.reset?.(turnstileWidgetId);
+      } catch {
+        // Turnstile 未加载或已卸载时忽略
+      }
+    };
+
+    ensureTurnstileScript();
 
     const updatePreviewImage = (
       image: HTMLImageElement | null,
@@ -219,6 +299,7 @@ export function initFriendLinkApplications() {
     };
 
     const update = () => {
+      if (applyLink.dataset.pending === 'true') return;
       form
         .querySelectorAll<HTMLInputElement>('[data-url-field]')
         .forEach((input) => validateApplicationUrl(input, messages));
@@ -226,26 +307,137 @@ export function initFriendLinkApplications() {
       const json = JSON.stringify(data, null, 2);
       const previewText = formatApplicationPreview(json);
       const isValid = form.checkValidity();
+      const submitted = applyLink.dataset.submitted === 'true';
       currentPreview = previewText;
       preview.textContent = previewText;
       updateCardPreview(data);
       copyButton.setAttribute('aria-disabled', String(!isValid));
-      applyLink.setAttribute('aria-disabled', String(!isValid));
+      applyLink.setAttribute('aria-disabled', String(!isValid || submitted));
       if (isValid) {
-        applyLink.href = createIssueUrl(config, data);
-        status.textContent = messages.statusReady;
+        if (provider === 'github') applyLink.href = createIssueUrl(config, data);
+        else applyLink.href = submitUrl || '#';
+        if (!submitted) status.textContent = messages.statusReady;
       } else {
-        applyLink.href = config.issueBase;
+        applyLink.href = provider === 'github' ? config.issueBase : submitUrl || '#';
         status.textContent = messages.statusIncomplete;
       }
     };
 
-    form.addEventListener('input', update);
+    const submitYoulin = async () => {
+      if (provider !== 'youlin' || applyLink.dataset.pending === 'true') return;
+      if (applyLink.dataset.submitted === 'true') return;
+      if (!submitUrl) {
+        status.textContent = messages.submitFailed;
+        return;
+      }
+
+      update();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const data = readApplicationData(form);
+      const token = readTurnstileToken();
+      if (turnstileSiteKey && !token) {
+        status.textContent = messages.turnstileMissing;
+        return;
+      }
+
+      const payload = buildYoulinApplicationPayload(data, token);
+      applyLink.dataset.pending = 'true';
+      applyLink.setAttribute('aria-disabled', 'true');
+      status.textContent = messages.submitPending;
+
+      try {
+        const response = await fetch(submitUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(submitTimeoutMs),
+        });
+        const body = (await response.json().catch(() => null)) as {
+          id?: number;
+          status?: string;
+          error?: { code?: string; message?: string; details?: Record<string, string> };
+          backlink?: { ok?: boolean | null; detail?: string | null };
+        } | null;
+
+        if (response.redirected) {
+          status.textContent = messages.submitFailed;
+          return;
+        }
+
+        if (!response.ok) {
+          const error = body?.error;
+          if (error?.details?.turnstileToken || error?.code === 'turnstile_failed') {
+            status.textContent = messages.turnstileMissing;
+          } else {
+            status.textContent = error?.message || messages.submitFailed;
+          }
+          if (error?.details) {
+            const fieldMap: Record<string, ApplicationField> = {
+              siteName: 'name',
+              link: 'url',
+              avatar: 'avatar',
+              feed: 'rss',
+              desc: 'bio',
+            };
+            for (const [key, message] of Object.entries(error.details)) {
+              const field = fieldMap[key];
+              if (!field) continue;
+              form
+                .querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${field}"]`)
+                ?.setCustomValidity(String(message));
+            }
+            form.reportValidity();
+          }
+          return;
+        }
+
+        const accepted =
+          body !== null &&
+          typeof body.id === 'number' &&
+          (body.status === 'pending' || body.status === 'approved');
+        if (!accepted) {
+          status.textContent = messages.submitFailed;
+          return;
+        }
+
+        applyLink.dataset.submitted = 'true';
+        applyLink.setAttribute('aria-disabled', 'true');
+        const backlink = body.backlink;
+        const success =
+          body.status === 'approved' ? messages.submitApproved : messages.submitSuccess;
+        status.textContent = `${success}${
+          backlink?.ok === true && backlink.detail ? ` ${backlink.detail}` : ''
+        }`;
+      } catch {
+        status.textContent = messages.submitFailed;
+      } finally {
+        delete applyLink.dataset.pending;
+        resetTurnstile();
+        if (applyLink.dataset.submitted !== 'true') {
+          applyLink.setAttribute('aria-disabled', String(!form.checkValidity()));
+        }
+      }
+    };
+
+    form.addEventListener('input', (event) => {
+      const target = event.target as HTMLInputElement | HTMLTextAreaElement | null;
+      target?.setCustomValidity('');
+      delete applyLink.dataset.submitted;
+      update();
+    });
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       update();
       if (!form.checkValidity()) {
         form.reportValidity();
+        return;
+      }
+      if (provider === 'youlin') {
+        void submitYoulin();
         return;
       }
       applyLink.click();
@@ -294,6 +486,15 @@ export function initFriendLinkApplications() {
       if (!form.checkValidity()) {
         event.preventDefault();
         form.reportValidity();
+        return;
+      }
+      if (applyLink.dataset.submitted === 'true') {
+        event.preventDefault();
+        return;
+      }
+      if (provider === 'youlin') {
+        event.preventDefault();
+        void submitYoulin();
       }
     });
 

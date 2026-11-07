@@ -13,6 +13,7 @@ import { parse } from 'smol-toml';
 
 import { getCodeCollapseLabels, paperCodeThemes } from './src/config/code-theme';
 import { siteConfigSchema } from './src/config/schema';
+import { resolveApplyProvider, resolveYoulinConfig } from './src/config/youlin';
 import { getMarkdownConfig } from './src/plugins/markdown';
 
 /**
@@ -70,10 +71,21 @@ const resolvedBase =
   customBase || (isGitHubActions && isProjectPage && repositoryName ? `/${repositoryName}` : '/');
 
 const code = siteConfig.code;
+const youlin = resolveYoulinConfig(siteConfig.youlin);
+const applyProvider = resolveApplyProvider(
+  youlin.apply.provider,
+  youlin.baseUrl,
+  siteConfig.site.repository,
+);
 const markdown = getMarkdownConfig({
   ...siteConfig.markdown,
   metingApi: siteConfig.music.meting_api,
   lang: siteConfig.theme.lang,
+  youlin,
+  applyProvider,
+  youlinBaseUrl: youlin.baseUrl,
+  youlinApplyTurnstileSiteKey: youlin.apply.turnstileSiteKey,
+  youlinApplyTimeoutMs: youlin.apply.timeoutMs,
 });
 
 const expressiveCodeConfig = defineEcConfig({

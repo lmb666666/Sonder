@@ -53,9 +53,11 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 | `video` | 本地/直链视频；`{src="…" poster="…" ratio="…"}` |
 | `douyin` | 抖音视频；`{vid="…"}`，`{wide}` 横屏 |
 | `tiktok` | TikTok 视频；`{id="…"}` |
-| `friend-link-card` | 友链卡片网格；`{src="数据源" columns="3"}` |
-| `friend-circle` | 朋友圈动态；`{src="数据源" limit="10" title="…"}` |
-| `friend-link-application` | 友链申请表单；`{repository="owner/repo"}` |
+| `friend-link-card` | 友链卡片网格；`{src="demo"\|"youlin" columns="3"}` |
+| `friend-circle` | 朋友圈动态；`{src="demo"\|"youlin" limit="10" title="…"}` |
+| `friend-link-application` | 友链申请表单；`{repository="owner/repo"}`；可用 `provider="github"\|"youlin"` 覆盖全局申请入口 |
+
+配置 `[config.youlin]` 后，`src="youlin"` 会读取友邻接口；未配置或接口不可用时回退内置演示数据。
 
 | 行内指令 | 说明 |
 | --- | --- |
@@ -568,7 +570,7 @@ flowchart LR
 
 ### FriendLinkApplication 友链申请
 
-填写名称、主页、简介、头像和 RSS，实时生成友链 JSON；可以复制，也可以直接打开 GitHub Issue 申请。
+填写名称、主页、简介、头像和 RSS，实时生成友链 JSON；可以复制，也可以直接提交申请（GitHub Issue 或 Youlin `/apply`，取决于配置）。
 
 ```md
 ::friend-link-application{repository="https://github.com/lmb666666/Sonder"}

@@ -1,5 +1,11 @@
 import { h } from './h.js';
-import type { AttributeValue, ContainerContext, HastChild, MdastNode } from './handlers.js';
+import type {
+  AttributeValue,
+  ContainerContext,
+  HastChild,
+  LeafContext,
+  MdastNode,
+} from './handlers.js';
 import { classNames, labelText, wrap, wrapHast } from './handlers.js';
 import { icon } from './icons.js';
 
@@ -470,44 +476,63 @@ function friendLinkCardElement(item: FriendLinkEntry, preview = false): HastLike
 }
 
 export function friendLinkCardHandler(dataSources: Record<string, { friends: FriendLinkEntry[] }>) {
-  return ({
-    attributes,
-    file,
-  }: {
-    attributes: Record<string, AttributeValue>;
-    file: { message(v: string, p: unknown, s: string): void };
-  }): MdastNode[] => {
-    const src = asString(attributes.src);
+  return ({ attributes, file, youlin, youlinDefaults }: LeafContext): MdastNode[] => {
+    const explicitSrc = asString(attributes.src);
+    const inlineName = asString(attributes.name);
+    const inlineUrl = asString(attributes.url);
+    const hasInline = Boolean(inlineName && inlineUrl);
+    const partialInline = Boolean(inlineName || inlineUrl) && !hasInline;
+    if (!explicitSrc && partialInline) {
+      file.message(
+        '::friend-link-card 的 name 与 url 属性需要同时提供。',
+        undefined,
+        'sonder-directives',
+      );
+      return [];
+    }
+    const source =
+      explicitSrc ?? (hasInline ? undefined : (youlinDefaults?.friendLinkCard ?? undefined));
     const columns = positiveInteger(attributes.columns, 4, 4);
 
     let items: FriendLinkEntry[] = [];
-    if (src) {
-      const dataSource = dataSources[src];
-      if (dataSource) {
-        items = dataSource.friends;
+    if (source) {
+      if (source === 'youlin') {
+        if (youlin?.links == null) {
+          file.message('友邻友链数据不可用，已回退演示数据。', undefined, 'sonder-directives');
+          items = dataSources.demo?.friends ?? [];
+        } else {
+          items = youlin.links;
+        }
       } else {
-        file.message(`::friend-link-card 未找到数据源 ${src}。`, undefined, 'sonder-directives');
+        const dataSource = dataSources[source];
+        if (dataSource) {
+          items = dataSource.friends;
+        } else {
+          file.message(
+            `::friend-link-card 未找到数据源 ${source}。`,
+            undefined,
+            'sonder-directives',
+          );
+        }
       }
-    } else {
-      const name = asString(attributes.name);
-      const url = asString(attributes.url);
-      if (name && url) {
-        items = [
-          {
-            name,
-            url,
-            avatar: asString(attributes.avatar),
-            bio: asString(attributes.bio) ?? asString(attributes.description),
-            backgroundImage: asString(attributes['background-image']),
-            rss: asString(attributes.rss),
-          },
-        ];
-      }
+    } else if (inlineName && inlineUrl) {
+      items = [
+        {
+          name: inlineName,
+          url: inlineUrl,
+          avatar: asString(attributes.avatar),
+          bio: asString(attributes.bio) ?? asString(attributes.description),
+          backgroundImage: asString(attributes['background-image']),
+          rss: asString(attributes.rss),
+        },
+      ];
     }
 
     if (items.length === 0) {
       file.message(
-        '::friend-link-card 缺少 src 或 name/url 属性。',
+        source === 'youlin'
+          ? '友邻暂无友链数据。'
+          : '::friend-link-card 缺少 src 或 name/url 属性。',
         undefined,
         'sonder-directives',
       );
@@ -587,22 +612,27 @@ function friendCirclePostElement(post: FriendCirclePost): HastLike {
 }
 
 export function friendCircleHandler(
-  dataSources: Record<string, { friends: FriendLinkEntry[]; posts: FriendCirclePost[] }>,
+  dataSources: Record<
+    string,
+    { friends: FriendLinkEntry[]; posts: FriendCirclePost[]; friendCount?: number }
+  >,
 ) {
-  return ({
-    attributes,
-    file,
-  }: {
-    attributes: Record<string, AttributeValue>;
-    file: { message(v: string, p: unknown, s: string): void };
-  }): MdastNode[] => {
-    const src = asString(attributes.src);
+  return ({ attributes, file, youlin, youlinDefaults }: LeafContext): MdastNode[] => {
+    const src = asString(attributes.src) ?? youlinDefaults?.friendCircle ?? undefined;
     const limit = positiveInteger(attributes.limit, 10, 100);
     const title = asString(attributes.title) ?? '朋友动态';
 
-    const dataSource = src ? dataSources[src] : undefined;
+    let dataSource = src === 'youlin' ? youlin?.circle : src ? dataSources[src] : undefined;
+    if (src === 'youlin' && !dataSource) {
+      file.message('友邻朋友圈数据不可用，已回退演示数据。', undefined, 'sonder-directives');
+      dataSource = dataSources.demo;
+    }
     if (!dataSource) {
-      file.message(`::friend-circle 未找到数据源 ${src}。`, undefined, 'sonder-directives');
+      file.message(
+        `::friend-circle 未找到数据源 ${src ?? '(未指定)'}。`,
+        undefined,
+        'sonder-directives',
+      );
       return [];
     }
 
@@ -612,9 +642,10 @@ export function friendCircleHandler(
       const parsed = new Date(value);
       if (Number.isNaN(parsed.valueOf())) return value;
 
-      const year = parsed.getFullYear();
-      const month = String(parsed.getMonth() + 1).padStart(2, '0');
-      const day = String(parsed.getDate()).padStart(2, '0');
+      // 与 /links 页的 toDisplayDate 保持一致：按 UTC 日历日展示
+      const year = parsed.getUTCFullYear();
+      const month = String(parsed.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(parsed.getUTCDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     };
     const posts = dataSource.posts.map((post) => ({ ...post, date: normalizeDate(post.date) }));
@@ -625,7 +656,7 @@ export function friendCircleHandler(
       h('div', [
         h('p', { class: 'friend-circle__eyebrow' }, [icon('rss', 14, 1.8), title]),
         h('p', { class: 'friend-circle__stats' }, [
-          `${dataSource.friends.length} friends`,
+          `${dataSource.friendCount ?? dataSource.friends.length} friends`,
           h('span', { 'aria-hidden': 'true' }, ['/']),
           `${activeFriends} active`,
           h('span', { 'aria-hidden': 'true' }, ['/']),

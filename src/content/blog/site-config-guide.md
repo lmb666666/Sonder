@@ -152,6 +152,41 @@ pageSize = 20
 
 评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.comments.*]` 区块中填写。朋友页的 `feed_src` 可以指向 Friend-Circle-Lite 订阅源，也可以留空使用 `public/friend-circle.json` 或构建期 RSS 聚合。
 
+## 友邻（Youlin）
+
+可选接入 [友邻](https://github.com/lmb666666/youlin)：友链和朋友圈改由 Youlin 接口提供，本地数据与 `friendCircle` 配置保留为回退。
+
+```toml
+[config.youlin]
+baseUrl = "https://youlin.example.com"
+timeoutMs = 8000
+mode = "build" # build | client
+
+[config.youlin.links]
+sources = ["youlin", "local"]
+
+[config.youlin.circle]
+sources = ["youlin", "friendcircle", "public", "rss", "demo"]
+
+[config.youlin.apply]
+provider = "auto" # auto | youlin | github | none
+# Youlin 开启 Turnstile 时填写它的公开 site key
+turnstileSiteKey = ""
+
+[config.youlin.directives]
+friendCircle = "auto"
+friendLinkCard = "auto"
+```
+
+- `baseUrl` 为空时完全沿用原有本地链路，不会发出任何 Youlin 请求。
+- `sources` 按顺序尝试：只有网络/HTTP/解析失败才继续下一个源；Youlin 返回 200 且 JSON 合法即采用（空结果也有效）。
+- `mode = "build"` 在构建期 SSR，SEO 与 Pagefind 覆盖最好；`mode = "client"` 先渲染构建期回退，浏览器再请求 Youlin 替换 DOM。可在 `links` / `circle` 下单独覆盖。client 刷新只在 `youlin` 位于对应 `sources` 第一位时生效；把 `local` 放前面会退回构建期行为。
+- `apply.provider = "auto"` 时，配了 `baseUrl` 就用 Youlin 的 `/apply` 接口：表单在当前页面直接 POST，不跳转；开启 Turnstile 时把公开 site key 填到 `turnstileSiteKey`。也可强制 `github` / `none`。
+- 浏览器内提交与 client 刷新都要求 Youlin 的 `api.corsOrigin` 允许博客域名；启用 Turnstile 时 site key 也要允许该域名。
+- 文章里的 `::friend-circle{src="youlin"}` 与 `::friend-link-card{src="youlin"}` 同样可用；不写 `src` 时取 `directives.*` 的默认值。
+- 环境变量是覆盖层：`SONDER_YOULIN_BASE_URL` 覆盖地址，`SONDER_YOULIN_MODE` 覆盖全局以及 `links` / `circle` 的 mode；无效值会被忽略并回退 TOML。适合 CI 或预览环境。复用本地 Astro 内容缓存时，如果发现文章内指令没有跟随新配置，用 `bunx astro build --force` 重建。
+- build 模式下数据变化需要重新构建：可以在 Youlin 设置 `rebuild.*` webhook / GitHub dispatch 触发本站构建，或手动重建。
+
 ## Markdown 开关
 
 `[config.markdown]` 控制数学公式与 Mermaid 图表：

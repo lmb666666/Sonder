@@ -1,6 +1,13 @@
 import remarkCallouts, { calloutTypes } from '../callout/index.js';
-import { friendLinkApplicationHandler } from './application.js';
-import type { ContainerContext, DirectiveFile, MdastNode } from './handlers.js';
+import { friendLinkApplicationHandler, type ApplicationApplyConfig } from './application.js';
+import type { ContainerContext, DirectiveFile, LeafHandler, MdastNode } from './handlers.js';
+import type { ResolvedYoulinConfig, ApplyProvider } from '../../../config/youlin';
+import {
+  getYoulinDirectiveDefaults,
+  prefetchYoulinDirectives,
+  type YoulinDirectiveData,
+  type YoulinDirectiveDefaults,
+} from './youlin.js';
 import {
   badgeHandler,
   spoilerHandler,
@@ -49,7 +56,19 @@ import { githubCardData } from './github-cards.js';
 
 type TreeNode = MdastNode;
 
-type FriendDataSource = { friends: FriendLinkEntry[]; posts: FriendCirclePost[] };
+type FriendDataSource = {
+  friends: FriendLinkEntry[];
+  posts: FriendCirclePost[];
+  friendCount?: number;
+};
+
+type DirectiveExtras = {
+  music: MusicPrefetch;
+  text: ReturnType<typeof getDirectiveI18n>;
+  youlin: YoulinDirectiveData | null;
+  youlinDefaults: YoulinDirectiveDefaults;
+  apply: ApplicationApplyConfig;
+};
 
 const dataSources: Record<string, FriendDataSource> = {
   demo: friendCircleDemo as unknown as FriendDataSource,
@@ -125,10 +144,7 @@ const CONTAINER_HANDLERS: Record<string, (context: ContainerContext) => TreeNode
   'media-shelf': mediaShelfHandler,
 };
 
-const LEAF_HANDLERS: Record<
-  string,
-  (context: { attributes: Record<string, string | true>; file: DirectiveFile }) => TreeNode[]
-> = {
+const LEAF_HANDLERS: Record<string, LeafHandler> = {
   'github-card': githubCardHandler(githubCardData),
   bilibili: embedHandler('bilibili', (attributes) => {
     const bvid = typeof attributes.bvid === 'string' ? attributes.bvid : undefined;
@@ -196,7 +212,7 @@ function transformNodes(
   nodes: TreeNode[],
   parentDirective: string | undefined,
   file: DirectiveFile,
-  extras: { music: MusicPrefetch; text: ReturnType<typeof getDirectiveI18n> },
+  extras: DirectiveExtras,
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
@@ -234,7 +250,7 @@ function transformNodes(
           : name === 'audio'
             ? audioHandler
             : name === 'friend-link-application'
-              ? friendLinkApplicationHandler(extras.text.friendApplication)
+              ? friendLinkApplicationHandler(extras.text.friendApplication, extras.apply)
               : LEAF_HANDLERS[name]
         : undefined;
     const inlineHandler = node.type === 'textDirective' ? INLINE_HANDLERS[name] : undefined;
@@ -271,7 +287,14 @@ function transformNodes(
 
     if (leafHandler) {
       try {
-        result.push(...leafHandler({ attributes: node.attributes ?? {}, file }));
+        result.push(
+          ...leafHandler({
+            attributes: node.attributes ?? {},
+            file,
+            youlin: extras.youlin,
+            youlinDefaults: extras.youlinDefaults,
+          }),
+        );
       } catch (error) {
         const detail = error instanceof Error ? error.message : String(error);
         file.message(
@@ -335,6 +358,11 @@ export interface SonderDirectivesOptions {
   layouts?: boolean;
   metingApi?: string;
   lang?: string;
+  youlin?: ResolvedYoulinConfig;
+  applyProvider?: ApplyProvider;
+  youlinBaseUrl?: string;
+  youlinApplyTurnstileSiteKey?: string;
+  youlinApplyTimeoutMs?: number;
 }
 
 export default function remarkSonderDirectives(options: SonderDirectivesOptions = {}) {
@@ -344,7 +372,26 @@ export default function remarkSonderDirectives(options: SonderDirectivesOptions 
   return async (tree: MdastNode, file: DirectiveFile & { path?: string }) => {
     if (!tree.children) return;
     try {
-      const extras = { music: await prefetchMusic(tree, metingApi), text };
+      const youlin = options.youlin;
+      const [music, youlinData] = await Promise.all([
+        prefetchMusic(tree, metingApi),
+        youlin ? prefetchYoulinDirectives(tree, youlin) : Promise.resolve(null),
+      ]);
+      const extras: DirectiveExtras = {
+        music,
+        text,
+        youlin: youlinData,
+        youlinDefaults: youlin
+          ? getYoulinDirectiveDefaults(youlin)
+          : { friendCircle: null, friendLinkCard: null },
+        apply: {
+          provider: options.applyProvider ?? 'github',
+          baseUrl: options.youlinBaseUrl ?? youlin?.baseUrl ?? '',
+          turnstileSiteKey:
+            options.youlinApplyTurnstileSiteKey ?? youlin?.apply.turnstileSiteKey ?? '',
+          timeoutMs: options.youlinApplyTimeoutMs ?? youlin?.apply.timeoutMs ?? 45_000,
+        },
+      };
       tree.children = transformNodes(tree.children, undefined, file, extras);
     } catch (error) {
       // 转换失败时保留原始内容，确保文章不至于空白

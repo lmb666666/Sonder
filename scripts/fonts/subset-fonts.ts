@@ -4,6 +4,10 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { dirname, extname, join } from 'node:path';
 import { parse } from 'smol-toml';
 
+import { siteConfigSchema } from '../../src/config/schema';
+import { resolveDirectiveSource, resolveYoulinConfig } from '../../src/config/youlin';
+import { loadYoulinCircle, loadYoulinLinks } from '../../src/lib/youlin';
+
 type FontConfig = {
   en: string;
   zh: string;
@@ -12,6 +16,7 @@ type FontConfig = {
 
 const projectRoot = process.cwd();
 const cachePath = join(projectRoot, 'node_modules/.cache/sonder-font-subsets.json');
+const youlinCharsCachePath = join(projectRoot, 'node_modules/.cache/sonder-youlin-chars.json');
 const forceSubsets = process.argv.includes('--force');
 const uiCharsPath = join(projectRoot, 'scripts/fonts/ui-chars.txt');
 const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
@@ -201,24 +206,121 @@ function extractFrontmatterFields(frontmatter: string) {
   return values.join('\n');
 }
 
+function collectStrings(chars: Set<string>, value: unknown): void {
+  if (typeof value === 'string') {
+    collectCjk(chars, value);
+  } else if (Array.isArray(value)) {
+    for (const item of value) collectStrings(chars, item);
+  } else if (value && typeof value === 'object') {
+    for (const nestedValue of Object.values(value)) collectStrings(chars, nestedValue);
+  }
+}
+
 function collectFriendCircleChars(chars: Set<string>) {
   if (!existsSync(friendCirclePath)) return;
 
   try {
-    const data: unknown = JSON.parse(readFileSync(friendCirclePath, 'utf8'));
-    const collectStrings = (value: unknown): void => {
-      if (typeof value === 'string') {
-        collectCjk(chars, value);
-      } else if (Array.isArray(value)) {
-        for (const item of value) collectStrings(item);
-      } else if (value && typeof value === 'object') {
-        for (const nestedValue of Object.values(value)) collectStrings(nestedValue);
-      }
-    };
-
-    collectStrings(data);
+    collectStrings(chars, JSON.parse(readFileSync(friendCirclePath, 'utf8')) as unknown);
   } catch (error) {
     console.warn(`Unable to collect friend-circle characters from ${friendCirclePath}:`, error);
+  }
+}
+
+function readYoulinConfig() {
+  if (!existsSync(siteConfigPath)) return null;
+
+  const parsed = parse(readFileSync(siteConfigPath, 'utf8')) as { config?: unknown };
+  const result = siteConfigSchema.safeParse(parsed.config ?? {});
+  if (!result.success) {
+    console.warn(
+      'Unable to read [config.youlin] for font subsetting; site.config.toml is invalid.',
+    );
+    return null;
+  }
+  return resolveYoulinConfig(result.data.youlin);
+}
+
+function readYoulinCharsCache(baseUrl: string): string[] {
+  if (!existsSync(youlinCharsCachePath)) return [];
+  try {
+    const parsed = JSON.parse(readFileSync(youlinCharsCachePath, 'utf8')) as {
+      baseUrl?: unknown;
+      chars?: unknown;
+    };
+    if (parsed.baseUrl !== baseUrl || !Array.isArray(parsed.chars)) return [];
+    return parsed.chars.filter((char): char is string => typeof char === 'string');
+  } catch {
+    return [];
+  }
+}
+
+function writeYoulinCharsCache(baseUrl: string, chars: string[]) {
+  try {
+    mkdirSync(dirname(youlinCharsCachePath), { recursive: true });
+    writeFileSync(youlinCharsCachePath, `${JSON.stringify({ baseUrl, chars }, null, 2)}\n`, 'utf8');
+  } catch (error) {
+    console.warn('Unable to cache Youlin font characters:', error);
+  }
+}
+
+/** 友邻数据是构建期注入的文本，字体子集也要把它算进去；失败不影响构建。 */
+async function collectYoulinChars(chars: Set<string>) {
+  const config = readYoulinConfig();
+  if (!config?.baseUrl) return;
+
+  const needsLinks =
+    config.links.sources.includes('youlin') ||
+    resolveDirectiveSource(config.directives.friendLinkCard, config.baseUrl) === 'youlin';
+  const needsCircle =
+    config.circle.sources.includes('youlin') ||
+    resolveDirectiveSource(config.directives.friendCircle, config.baseUrl) === 'youlin';
+  if (!needsLinks && !needsCircle) return;
+
+  // 网络抖动时沿用上一次成功的字符集，避免子集突然缩小导致页面缺字。
+  const cachedChars = readYoulinCharsCache(config.baseUrl);
+  for (const char of cachedChars) chars.add(char);
+
+  // 字体步骤只做尽力收集，别让 dev/build 为它等满接口超时。
+  const timeoutMs = Math.min(config.timeoutMs, 3_000);
+
+  const [links, circle] = await Promise.all([
+    needsLinks
+      ? loadYoulinLinks(config.baseUrl, {
+          group: config.links.group,
+          timeoutMs,
+        })
+      : Promise.resolve(null),
+    needsCircle
+      ? loadYoulinCircle(config.baseUrl, {
+          limit: config.circle.limit,
+          timeoutMs,
+        })
+      : Promise.resolve(null),
+  ]);
+
+  const remoteChars = new Set<string>();
+  let fetched = false;
+
+  if (links?.ok) {
+    collectStrings(remoteChars, links.data);
+    fetched = true;
+  } else if (links) {
+    console.warn(`Unable to collect Youlin link characters: ${links.error}`);
+  }
+
+  if (circle?.ok) {
+    collectStrings(remoteChars, circle.data.posts);
+    fetched = true;
+  } else if (circle) {
+    console.warn(`Unable to collect Youlin circle characters: ${circle.error}`);
+  }
+
+  for (const char of remoteChars) chars.add(char);
+  if (fetched) {
+    const merged = [...new Set([...cachedChars, ...remoteChars])].sort(
+      (a, b) => a.codePointAt(0)! - b.codePointAt(0)!,
+    );
+    writeYoulinCharsCache(config.baseUrl, merged);
   }
 }
 
@@ -396,6 +498,9 @@ if (existsSync(siteConfigPath)) {
 
 // The sync Action writes RSS-derived display text before this build step.
 collectFriendCircleChars(chars);
+
+// Youlin 的友链名/朋友圈标题也可能含 CJK；取不到就只用现有字符集。
+await collectYoulinChars(chars);
 
 const uiChars = [...chars].sort((a, b) => a.codePointAt(0)! - b.codePointAt(0)!).join('');
 if (!uiChars) throw new Error('No CJK UI characters were found for font subsetting.');
