@@ -11,7 +11,7 @@ const config: ResolvedYoulinConfig = {
   timeoutMs: 8000,
   links: { mode: 'build', sources: ['youlin', 'local'], group: '' },
   circle: { mode: 'build', sources: ['youlin', 'demo'], limit: 0 },
-  apply: { provider: 'auto' },
+  apply: { provider: 'auto', turnstileSiteKey: '' },
   directives: { friendCircle: 'auto', friendLinkCard: 'auto' },
 };
 

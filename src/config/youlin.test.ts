@@ -17,7 +17,7 @@ const rawConfig: SiteConfig['youlin'] = {
   mode: 'build',
   links: { sources: ['youlin', 'local'], group: '' },
   circle: { sources: ['youlin', 'friendcircle', 'public', 'rss', 'demo'], limit: 0 },
-  apply: { provider: 'auto' },
+  apply: { provider: 'auto', turnstileSiteKey: '' },
   directives: { friendCircle: 'auto', friendLinkCard: 'auto' },
 };
 

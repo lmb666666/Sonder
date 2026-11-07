@@ -18,7 +18,7 @@ function fileRecorder() {
 }
 
 describe('friendLinkApplicationHandler', () => {
-  test('provider=youlin 输出申请入口卡片，不再要求 repository', () => {
+  test('provider=youlin 输出内联提交表单，不再要求 repository', () => {
     const { file } = fileRecorder();
     const nodes = friendLinkApplicationHandler(text, {
       provider: 'youlin',
@@ -26,10 +26,24 @@ describe('friendLinkApplicationHandler', () => {
     })({ attributes: {}, file });
     const html = JSON.stringify(nodes);
 
-    expect(html).toContain('youlin-apply-card');
-    expect(html).toContain('https://youlin.example.com/apply');
+    expect(html).toContain('dataFriendLinkApplication');
+    expect(html).toContain('youlin.example.com/apply');
     expect(html).toContain(text.youlinApplyLabel);
     expect(html).toContain(text.youlinDescription);
+    expect(html).not.toContain('youlin-apply-card');
+  });
+
+  test('provider=youlin 配置 Turnstile 时渲染验证容器', () => {
+    const { file } = fileRecorder();
+    const nodes = friendLinkApplicationHandler(text, {
+      provider: 'youlin',
+      baseUrl: 'https://youlin.example.com',
+      turnstileSiteKey: 'turnstile-key',
+    })({ attributes: {}, file });
+    const html = JSON.stringify(nodes);
+
+    expect(html).toContain('cf-turnstile');
+    expect(html).toContain('turnstile-key');
   });
 
   test('默认 provider=github 保持原 Issue 表单', () => {

@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, Check, Copy, ExternalLink, FileJson2 } from 'lucide-astro';
+import { ArrowLeft, ArrowRight, Check, Copy, ExternalLink, FileJson2, Send } from 'lucide-astro';
 import FriendLinkCard from './FriendLinkCard.astro';
 import '../../styles/friend-link-application.css';
 import type { FriendLinkItem } from '../../lib/friend-data';
@@ -12,7 +12,10 @@ type IssueFieldMap = Partial<Record<ApplicationField, string | false>>;
 type ApplicationAppearance = 'seamless' | 'bordered';
 
 interface Props {
-  repository: string;
+  repository?: string;
+  provider?: 'github' | 'youlin';
+  submitUrl?: string;
+  turnstileSiteKey?: string;
   appearance?: ApplicationAppearance;
   labels?: string[];
   issueTemplate?: string;
@@ -40,16 +43,6 @@ const siteConfig = await getSiteConfig();
 const ui = getUiText(siteConfig);
 const messages = ui.friendApplication;
 const fields = messages.fields;
-const clientMessages = {
-  previewName: messages.previewName,
-  previewBio: messages.previewBio,
-  statusReady: messages.statusReady,
-  statusIncomplete: messages.statusIncomplete,
-  copyFailed: messages.copyFailed,
-  invalidUrl: messages.invalidUrl,
-  invalidUrlProtocol: messages.invalidUrlProtocol,
-  previewAriaPrefix: messages.previewAriaPrefix,
-};
 
 const defaultPlaceholders: Record<ApplicationField, string> = {
   name: messages.placeholders.name,
@@ -70,7 +63,10 @@ const defaultIssueFieldMap: Record<ApplicationField, string> = {
 };
 
 const {
-  repository,
+  repository = '',
+  provider = 'github',
+  submitUrl = '',
+  turnstileSiteKey = '',
   appearance = 'seamless',
   labels = [],
   issueTemplate,
@@ -93,6 +89,25 @@ const {
   bioMaxLength = 160,
   urlMaxLength = 2048,
 } = Astro.props;
+
+const applicationProvider = provider === 'youlin' ? 'youlin' : 'github';
+const safeSubmitUrl = applicationProvider === 'youlin' ? submitUrl.trim() : '';
+const safeTurnstileSiteKey = applicationProvider === 'youlin' ? turnstileSiteKey.trim() : '';
+const clientMessages = {
+  previewName: messages.previewName,
+  previewBio: messages.previewBio,
+  statusReady: applicationProvider === 'youlin' ? messages.youlinStatusReady : messages.statusReady,
+  statusIncomplete:
+    applicationProvider === 'youlin' ? messages.youlinStatusIncomplete : messages.statusIncomplete,
+  submitPending: messages.submitPending,
+  submitSuccess: messages.submitSuccess,
+  submitFailed: messages.submitFailed,
+  turnstileMissing: messages.turnstileMissing,
+  copyFailed: messages.copyFailed,
+  invalidUrl: messages.invalidUrl,
+  invalidUrlProtocol: messages.invalidUrlProtocol,
+  previewAriaPrefix: messages.previewAriaPrefix,
+};
 
 const resolveRepository = (value: string) => {
   const raw = value?.trim();
@@ -128,7 +143,7 @@ const positiveInteger = (value: number, fallback: number) =>
 const cleanList = (values: string[]) =>
   values.map((value) => value.trim()).filter((value) => value.length > 0);
 const cleanValue = (value: unknown) => (typeof value === 'string' ? value : '');
-const repositoryPath = resolveRepository(repository);
+const repositoryPath = applicationProvider === 'github' ? resolveRepository(repository) : '';
 const placeholders = { ...defaultPlaceholders, ...customPlaceholders };
 const fieldMap = { ...defaultIssueFieldMap, ...issueFieldMap };
 Object.values(fieldMap).forEach((fieldId) => {
@@ -148,7 +163,11 @@ const initialData = {
   sticky: false,
 };
 const config = {
-  issueBase: `https://github.com/${repositoryPath}/issues/new`,
+  provider: applicationProvider,
+  submitUrl: safeSubmitUrl,
+  turnstileSiteKey: safeTurnstileSiteKey,
+  issueBase:
+    applicationProvider === 'github' ? `https://github.com/${repositoryPath}/issues/new` : '',
   labels: cleanList(labels),
   issueTemplate: issueTemplate?.trim() || '',
   issueTitle,
@@ -296,21 +315,39 @@ const initialPreview = formatApplicationPreview(JSON.stringify(initialData, null
               />
             </label>
 
+            {
+              applicationProvider === 'youlin' && safeTurnstileSiteKey && (
+                <div class="friend-link-application__field friend-link-application__field--wide">
+                  <div class="cf-turnstile" data-sitekey={safeTurnstileSiteKey} data-theme="auto" />
+                </div>
+              )
+            }
+
             <div class="friend-link-application__actions">
               <a
                 class="friend-link-application__apply"
-                target="_blank"
-                rel="noopener noreferrer"
-                href={config.issueBase}
+                target={applicationProvider === 'github' ? '_blank' : undefined}
+                rel={applicationProvider === 'github' ? 'noopener noreferrer' : undefined}
+                href={applicationProvider === 'github' ? config.issueBase : safeSubmitUrl || '#'}
                 aria-disabled="true"
                 data-tooltip={applyHint}
                 data-apply-application
               >
                 <span>{applyLabel}</span>
-                <ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" />
+                {
+                  applicationProvider === 'youlin' ? (
+                    <Send size={15} strokeWidth={1.8} aria-hidden="true" />
+                  ) : (
+                    <ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" />
+                  )
+                }
               </a>
               <p data-application-status aria-live="polite">
-                {messages.statusIncomplete}
+                {
+                  applicationProvider === 'youlin'
+                    ? messages.youlinStatusIncomplete
+                    : messages.statusIncomplete
+                }
               </p>
             </div>
           </div>

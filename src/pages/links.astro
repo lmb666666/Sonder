@@ -5,7 +5,6 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import FriendLinkApplication from '../components/links/FriendLinkApplication.astro';
 import FriendLinkCard from '../components/links/FriendLinkCard.astro';
-import YoulinApplyCard from '../components/links/YoulinApplyCard.astro';
 import '../styles/friend-link-card.css';
 import '../styles/links-page.css';
 import { crawlFriendPosts, type FriendCircleFeed } from '../lib/friend-data';
@@ -222,12 +221,24 @@ const circleNotice = circleNotices.join(' ');
 
     {
       applyProvider === 'youlin' && (
-        <YoulinApplyCard
-          href={youlinApplyUrl(youlin.baseUrl)}
-          title={ui.links.applyTitle}
-          description={ui.links.applyYoulinDescription}
-          label={ui.links.applyYoulinLabel}
-        />
+        <section class="links-apply" aria-label={ui.links.applyAria}>
+          <FriendLinkApplication
+            provider="youlin"
+            submitUrl={youlinApplyUrl(youlin.baseUrl)}
+            turnstileSiteKey={youlin.apply.turnstileSiteKey}
+            title={ui.links.applyTitle}
+            description={ui.links.applyYoulinDescription}
+            applyLabel={ui.links.applyYoulinLabel}
+            applyHint={ui.links.applyYoulinHint}
+            initialValue={{
+              name: profile.name,
+              url: site.url,
+              avatar: new URL(withBase(profile.avatar), site.url).toString(),
+              rss: `${site.url}/rss.xml`,
+              bio: profile.role,
+            }}
+          />
+        </section>
       )
     }
 

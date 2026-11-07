@@ -570,7 +570,7 @@ flowchart LR
 
 ### FriendLinkApplication 友链申请
 
-填写名称、主页、简介、头像和 RSS，实时生成友链 JSON；可以复制，也可以直接打开 GitHub Issue 申请。
+填写名称、主页、简介、头像和 RSS，实时生成友链 JSON；可以复制，也可以直接提交申请（GitHub Issue 或 Youlin `/apply`，取决于配置）。
 
 ```md
 ::friend-link-application{repository="https://github.com/lmb666666/Sonder"}

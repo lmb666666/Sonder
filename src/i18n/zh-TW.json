@@ -217,7 +217,8 @@
     "applyTitle": "申請友鏈",
     "applyDescription": "填寫站點資訊並提交 Issue，博主確認後會在這裡掛上你的連結。",
     "applyYoulinDescription": "填寫站點資訊並提交，站長審核後會在這裡掛上你的連結。",
-    "applyYoulinLabel": "前往申請"
+    "applyYoulinLabel": "提交申請",
+    "applyYoulinHint": "提交後由站長審核"
   },
   "moments": {
     "loading": "正在從 Ech0 取得動態…",
@@ -244,7 +245,8 @@
     "applyLabel": "一鍵申請",
     "applyHint": "去開啟一個申請 Issue",
     "youlinDescription": "填寫站點資訊並提交，站長審核後會在這裡掛上你的連結。",
-    "youlinApplyLabel": "前往申請",
+    "youlinApplyLabel": "提交申請",
+    "youlinApplyHint": "提交後由站長審核",
     "copyHint": "可複製後填入留言申請友鏈！",
     "copySuccessText": "成功複製！",
     "issueTitle": "[友鏈申請] {name}",
@@ -269,6 +271,12 @@
     "invalidUrlProtocol": "僅支援 http:// 或 https:// 網址。",
     "statusReady": "資料已就緒，可複製資料或前往 GitHub 確認提交。",
     "statusIncomplete": "完成必填項後，將產生 GitHub Issue 申請連結。",
+    "youlinStatusReady": "資料已就緒，可直接提交申請。",
+    "youlinStatusIncomplete": "完成必填項後即可提交申請。",
+    "submitPending": "正在提交申請…",
+    "submitSuccess": "申請已提交，等待站長審核。",
+    "submitFailed": "提交失敗，請稍後重試。",
+    "turnstileMissing": "請先完成人機驗證。",
     "copyFailed": "複製失敗，請手動選取目前資料。",
     "previewName": "你的站點",
     "previewBio": "站點簡介會顯示在這裡",

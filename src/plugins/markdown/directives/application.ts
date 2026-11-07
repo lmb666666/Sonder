@@ -8,18 +8,20 @@ import { icon } from './icons.js';
 
 /**
  * 友链申请表单的指令渲染：构建期输出与 FriendLinkApplication.astro 一致的 DOM，
- * 交互（校验 / JSON 预览 / 复制 / Issue 链接）由 MarkdownWidgets 客户端脚本接管。
- * 配置 apply.provider=youlin 时改为输出指向 Youlin /apply 的入口卡片。
+ * 交互（校验 / JSON 预览 / 复制 / 提交）由 MarkdownWidgets 客户端脚本接管。
+ * 配置 apply.provider=youlin 时表单直接 POST 到 Youlin /apply，不离开当前页面。
  */
 
 export interface ApplicationApplyConfig {
   provider: ApplyProvider;
   baseUrl: string;
+  turnstileSiteKey?: string;
 }
 
 const DEFAULT_APPLY_CONFIG: ApplicationApplyConfig = {
   provider: 'github',
   baseUrl: '',
+  turnstileSiteKey: '',
 };
 
 function asString(value: AttributeValue | undefined): string | undefined {
@@ -72,39 +74,20 @@ export function friendLinkApplicationHandler(
       return [];
     }
 
-    if (provider === 'youlin') {
-      const baseUrl = apply.baseUrl.trim().replace(/\/+$/, '');
-      if (!baseUrl) {
-        file.message(
-          '::friend-link-application 需要配置 youlin.baseUrl 才能跳转申请页。',
-          undefined,
-          'sonder-directives',
-        );
-        return [];
-      }
-
-      const card = h('section', { class: 'youlin-apply-card', 'aria-label': text.title }, [
-        h('span', { class: 'youlin-apply-card__copy' }, [
-          h('strong', [text.title]),
-          h('span', [text.youlinDescription]),
-        ]),
-        h(
-          'a',
-          {
-            class: 'youlin-apply-card__action',
-            href: `${baseUrl}/apply`,
-            target: '_blank',
-            rel: 'noopener noreferrer',
-          },
-          [text.youlinApplyLabel],
-        ),
-      ]);
-      return [wrapHast('section', card as never)];
+    const baseUrl = apply.baseUrl.trim().replace(/\/+$/, '');
+    if (provider === 'youlin' && !baseUrl) {
+      file.message(
+        '::friend-link-application 需要配置 youlin.baseUrl 才能提交申请。',
+        undefined,
+        'sonder-directives',
+      );
+      return [];
     }
 
     const repository = asString(attributes.repository);
-    const repositoryPath = repository ? parseGitHubRepository(repository) : null;
-    if (!repositoryPath) {
+    const repositoryPath =
+      provider === 'github' && repository ? parseGitHubRepository(repository) : null;
+    if (provider === 'github' && !repositoryPath) {
       file.message(
         '::friend-link-application 需要 {repository="owner/repo"} 属性（GitHub 仓库），已跳过。',
         undefined,
@@ -113,11 +96,20 @@ export function friendLinkApplicationHandler(
       return [];
     }
 
+    const submitUrl = provider === 'youlin' ? `${baseUrl}/apply` : '';
+    const turnstileSiteKey = provider === 'youlin' ? (apply.turnstileSiteKey ?? '').trim() : '';
+
     const title = asString(attributes.title) ?? text.title;
-    const description = asString(attributes.description) ?? text.description;
+    const description =
+      asString(attributes.description) ??
+      (provider === 'youlin' ? text.youlinDescription : text.description);
     const appearance = asString(attributes.appearance) === 'bordered' ? 'bordered' : 'seamless';
     const copyHint = asString(attributes['copy-hint']) ?? text.copyHint;
     const copySuccessText = asString(attributes['copy-success-text']) ?? text.copySuccessText;
+    const applyLabel = provider === 'youlin' ? text.youlinApplyLabel : text.applyLabel;
+    const applyHint = provider === 'youlin' ? text.youlinApplyHint : text.applyHint;
+    const statusIncomplete =
+      provider === 'youlin' ? text.youlinStatusIncomplete : text.statusIncomplete;
 
     const initialData = {
       name: '',
@@ -129,7 +121,11 @@ export function friendLinkApplicationHandler(
       sticky: false,
     };
     const config = {
-      issueBase: `https://github.com/${repositoryPath}/issues/new`,
+      provider,
+      submitUrl,
+      turnstileSiteKey,
+      issueBase:
+        provider === 'github' ? `https://github.com/${repositoryPath ?? ''}/issues/new` : '',
       labels: [] as string[],
       issueTemplate: '',
       issueTitle: text.issueTitle,
@@ -150,8 +146,12 @@ export function friendLinkApplicationHandler(
       messages: {
         previewName: text.previewName,
         previewBio: text.previewBio,
-        statusReady: text.statusReady,
-        statusIncomplete: text.statusIncomplete,
+        statusReady: provider === 'youlin' ? text.youlinStatusReady : text.statusReady,
+        statusIncomplete,
+        submitPending: text.submitPending,
+        submitSuccess: text.submitSuccess,
+        submitFailed: text.submitFailed,
+        turnstileMissing: text.turnstileMissing,
         copyFailed: text.copyFailed,
         invalidUrl: text.invalidUrl,
         invalidUrlProtocol: text.invalidUrlProtocol,
@@ -188,6 +188,21 @@ export function friendLinkApplicationHandler(
       );
     });
 
+    const turnstileField =
+      provider === 'youlin' && turnstileSiteKey
+        ? h(
+            'div',
+            { class: ['friend-link-application__field', 'friend-link-application__field--wide'] },
+            [
+              h('div', {
+                class: 'cf-turnstile',
+                'data-sitekey': turnstileSiteKey,
+                'data-theme': 'auto',
+              }),
+            ],
+          )
+        : undefined;
+
     const formPage = h(
       'section',
       {
@@ -214,23 +229,26 @@ export function friendLinkApplicationHandler(
         h('form', { class: 'friend-link-application__form', 'data-application-form': '' }, [
           h('div', { class: 'friend-link-application__fields' }, [
             ...formFields,
+            ...(turnstileField ? [turnstileField] : []),
             h('div', { class: 'friend-link-application__actions' }, [
               h(
                 'a',
                 {
                   class: 'friend-link-application__apply',
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                  href: config.issueBase,
+                  ...(provider === 'github'
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {}),
+                  href: provider === 'github' ? config.issueBase : submitUrl,
                   'aria-disabled': 'true',
-                  'data-tooltip': text.applyHint,
+                  'data-tooltip': applyHint,
                   'data-apply-application': '',
                 },
-                [h('span', [text.applyLabel]), icon('external-link', 15, 1.8)],
+                [
+                  h('span', [applyLabel]),
+                  icon(provider === 'youlin' ? 'arrow-right' : 'external-link', 15, 1.8),
+                ],
               ),
-              h('p', { 'data-application-status': '', 'aria-live': 'polite' }, [
-                text.statusIncomplete,
-              ]),
+              h('p', { 'data-application-status': '', 'aria-live': 'polite' }, [statusIncomplete]),
             ]),
           ]),
         ]),

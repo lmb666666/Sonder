@@ -121,8 +121,11 @@ limit = 0
 # mode = "client"
 
 [config.youlin.apply]
-# auto：配了 baseUrl 走 Youlin /apply，否则用 GitHub Issue；也可强制 youlin / github / none
+# auto：配了 baseUrl 时表单直接提交到 Youlin /apply（页面不跳转），否则用 GitHub Issue；
+# 也可强制 youlin / github / none
 provider = "auto"
+# Youlin 开启 Turnstile 人机验证时，填它的公开 site key；关闭时留空
+turnstileSiteKey = ""
 
 [config.youlin.directives]
 # 文章指令的默认数据源：auto（配了 baseUrl 用 youlin）| youlin | demo

@@ -84,6 +84,7 @@ const markdown = getMarkdownConfig({
   youlin,
   applyProvider,
   youlinBaseUrl: youlin.baseUrl,
+  youlinApplyTurnstileSiteKey: youlin.apply.turnstileSiteKey,
 });
 
 const expressiveCodeConfig = defineEcConfig({

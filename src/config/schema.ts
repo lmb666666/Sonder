@@ -192,7 +192,10 @@ const defaultYoulinConfig: {
   mode: YoulinMode;
   links: { sources: YoulinLinkSource[]; group: string };
   circle: { sources: YoulinCircleSource[]; limit: number };
-  apply: { provider: 'auto' | 'youlin' | 'github' | 'none' };
+  apply: {
+    provider: 'auto' | 'youlin' | 'github' | 'none';
+    turnstileSiteKey: string;
+  };
   directives: { friendCircle: YoulinDirectiveSource; friendLinkCard: YoulinDirectiveSource };
 } = {
   baseUrl: '',
@@ -208,6 +211,7 @@ const defaultYoulinConfig: {
   },
   apply: {
     provider: 'auto',
+    turnstileSiteKey: '',
   },
   directives: {
     friendCircle: 'auto',
@@ -411,9 +415,11 @@ export const siteConfigSchema = z.object({
       apply: z
         .object({
           provider: youlinApplyProviderSchema.optional().default('auto'),
+          // Youlin 的 Turnstile 公开 site key；开启人机验证时填写
+          turnstileSiteKey: z.string().trim().max(200).optional().default(''),
         })
         .optional()
-        .default({ provider: 'auto' }),
+        .default({ provider: 'auto', turnstileSiteKey: '' }),
       directives: z
         .object({
           friendCircle: youlinDirectiveSourceSchema.optional().default('auto'),

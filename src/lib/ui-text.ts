@@ -67,6 +67,7 @@ type RawUiText = {
     applyDescription: string;
     applyYoulinDescription: string;
     applyYoulinLabel: string;
+    applyYoulinHint: string;
   };
   moments: {
     loading: string;
@@ -92,6 +93,9 @@ type RawUiText = {
     description: string;
     applyLabel: string;
     applyHint: string;
+    youlinDescription: string;
+    youlinApplyLabel: string;
+    youlinApplyHint: string;
     copyHint: string;
     copySuccessText: string;
     issueTitle: Message;
@@ -102,6 +106,12 @@ type RawUiText = {
     invalidUrlProtocol: string;
     statusReady: string;
     statusIncomplete: string;
+    youlinStatusReady: string;
+    youlinStatusIncomplete: string;
+    submitPending: string;
+    submitSuccess: string;
+    submitFailed: string;
+    turnstileMissing: string;
     copyFailed: string;
     previewName: string;
     previewBio: string;

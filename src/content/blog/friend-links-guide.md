@@ -86,6 +86,6 @@ sources = ["youlin", "friendcircle", "public", "rss", "demo"]
 
 默认由 `site.repository` 指向的 GitHub 仓库生成 Issue。仓库地址为空或不可解析时，申请区不会显示。提交的 Issue 通过 `friend-link` 标签归档，博主确认后把友链加入 `src/data/friends.ts`。
 
-配置 `[config.youlin].apply.provider = "youlin"`（或 `auto` + `baseUrl`）后，申请入口改为 Youlin `/apply`。文章里的 `::friend-link-application` 默认跟随全局 provider，也可以用 `provider="github"` / `provider="youlin"` 单点覆盖。
+配置 `[config.youlin].apply.provider = "youlin"`（或 `auto` + `baseUrl`）后，申请表单直接 POST 到 Youlin `/apply`，页面不跳转；开启 Turnstile 时把公开 site key 填到 `turnstileSiteKey`。文章里的 `::friend-link-application` 默认跟随全局 provider，也可以用 `provider="github"` / `provider="youlin"` 单点覆盖。
 
 朋友页的标题、kicker 和副标题在 `site.config.toml` 的 `[config.pages.links]` 中配置。

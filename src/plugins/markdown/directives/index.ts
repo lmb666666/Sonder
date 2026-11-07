@@ -361,6 +361,7 @@ export interface SonderDirectivesOptions {
   youlin?: ResolvedYoulinConfig;
   applyProvider?: ApplyProvider;
   youlinBaseUrl?: string;
+  youlinApplyTurnstileSiteKey?: string;
 }
 
 export default function remarkSonderDirectives(options: SonderDirectivesOptions = {}) {
@@ -385,6 +386,8 @@ export default function remarkSonderDirectives(options: SonderDirectivesOptions 
         apply: {
           provider: options.applyProvider ?? 'github',
           baseUrl: options.youlinBaseUrl ?? youlin?.baseUrl ?? '',
+          turnstileSiteKey:
+            options.youlinApplyTurnstileSiteKey ?? youlin?.apply.turnstileSiteKey ?? '',
         },
       };
       tree.children = transformNodes(tree.children, undefined, file, extras);

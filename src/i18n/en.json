@@ -235,7 +235,8 @@
     "applyTitle": "Apply for a friend link",
     "applyDescription": "Fill in your site details and open an issue; the link appears here after review.",
     "applyYoulinDescription": "Fill in your site details; the link appears here after review.",
-    "applyYoulinLabel": "Apply now"
+    "applyYoulinLabel": "Submit application",
+    "applyYoulinHint": "Submitted for review"
   },
   "moments": {
     "loading": "Loading moments from Ech0…",
@@ -262,7 +263,8 @@
     "applyLabel": "Open an issue",
     "applyHint": "Open a new application issue",
     "youlinDescription": "Fill in your site details; the link appears here after review.",
-    "youlinApplyLabel": "Apply now",
+    "youlinApplyLabel": "Submit application",
+    "youlinApplyHint": "Submitted for review",
     "copyHint": "Copy and paste it into the comments to apply.",
     "copySuccessText": "Copied!",
     "issueTitle": "[Friend link] {name}",
@@ -287,6 +289,12 @@
     "invalidUrlProtocol": "Only http:// and https:// URLs are supported.",
     "statusReady": "Ready to copy the data or open the GitHub issue.",
     "statusIncomplete": "Complete the required fields to generate the issue link.",
+    "youlinStatusReady": "Ready to submit the application.",
+    "youlinStatusIncomplete": "Complete the required fields to submit.",
+    "submitPending": "Submitting application…",
+    "submitSuccess": "Application submitted; waiting for review.",
+    "submitFailed": "Submission failed. Please try again.",
+    "turnstileMissing": "Complete the human verification first.",
     "copyFailed": "Copy failed. Select the data manually.",
     "previewName": "Your site",
     "previewBio": "Your site description appears here.",
