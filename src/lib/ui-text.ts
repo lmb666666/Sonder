@@ -41,6 +41,45 @@ type RawUiText = {
     categories: string;
     tags: string;
   };
+  about: {
+    kicker: string;
+    now: string;
+    journey: string;
+    journeyTitle: string;
+    journeyAccent: string;
+    skills: string;
+    skillsTitle: string;
+    skillsAccent: string;
+    tech: string;
+    techTitle: string;
+    techAccent: string;
+    techHint: string;
+    techReset: string;
+    tokens: string;
+    tokenTitle: string;
+    tokenAccent: string;
+    tokenCardTitle: string;
+    tokenCardSubtitle: string;
+    tokenToday: string;
+    tokenTotal: string;
+    tokenPeak: string;
+    tokenCurrent: string;
+    tokenLongest: string;
+    tokenLess: string;
+    tokenMore: string;
+    tokenHint: string;
+    tokenWeekdays: string[];
+    works: string;
+    worksTitle: string;
+    worksAccent: string;
+    viewProject: string;
+    contact: string;
+    contactTitle: string;
+    contactAccent: string;
+    contactNote: string;
+    story: string;
+    since: string;
+  };
   notFound: {
     title: string;
     description: string;
@@ -385,6 +424,7 @@ function createUiText(raw: RawUiText): UiText {
     locale: raw.locale,
     nav: raw.nav,
     homeStats: raw.homeStats,
+    about: raw.about,
     notFound: raw.notFound,
     links: {
       ...raw.links,

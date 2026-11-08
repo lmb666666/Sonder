@@ -1,0 +1,139 @@
+---
+import { ArrowDown, ArrowUpRight } from 'lucide-astro';
+import { withBase } from '../../lib/url';
+
+interface StatItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  profile: { name: string; role: string; avatar: string };
+  title: string;
+  description: string;
+  lede: string[];
+  subtitle?: string;
+  location?: string;
+  status?: string;
+  since?: string;
+  sinceLabel: string;
+  kicker: string;
+  stats: StatItem[];
+}
+
+const {
+  profile,
+  title,
+  description,
+  lede,
+  subtitle = '',
+  location = '',
+  status = '',
+  since = '',
+  sinceLabel,
+  kicker,
+  stats,
+} = Astro.props;
+
+const meta = [profile.role, location].map((item) => item.trim()).filter(Boolean);
+const ledeLines = lede.length > 0 ? lede : [description];
+---
+
+<header class="about-hero" id="top">
+  <div class="about-hero-top">
+    <p class="about-kicker"><span aria-hidden="true"></span>{kicker}</p>
+    {
+      status && (
+        <p class="about-status">
+          <i aria-hidden="true" />
+          {status}
+        </p>
+      )
+    }
+  </div>
+
+  <div class="about-hero-grid">
+    <div class="about-hero-copy">
+      <h1 id="about-title" aria-label={title}>
+        <span>关于</span>
+        <em>{profile.name}</em>
+      </h1>
+      <p class="about-hero-lede">
+        {ledeLines.map((line) => <span>{line}</span>)}
+      </p>
+      <p class="about-hero-meta">
+        {
+          meta.map((item, index) => (
+            <>
+              {index > 0 && <i aria-hidden="true">·</i>}
+              <span>{item}</span>
+            </>
+          ))
+        }
+        {
+          since && (
+            <>
+              <i aria-hidden="true">·</i>
+              <span>
+                {sinceLabel} {since}
+              </span>
+            </>
+          )
+        }
+      </p>
+      <div class="about-hero-actions">
+        <a class="about-button about-button-primary" href="#contact">
+          写信给我
+          <ArrowUpRight size={15} strokeWidth={1.8} aria-hidden="true" />
+        </a>
+        <a class="about-button about-button-quiet" href="#works">
+          看看作品
+          <ArrowDown size={15} strokeWidth={1.8} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+
+    <div class="about-seal" aria-hidden="true">
+      <svg class="about-seal-ring" viewBox="0 0 220 220" focusable="false">
+        <defs>
+          <path id="about-seal-path" d="M 110,110 m -84,0 a 84,84 0 1,1 168,0 a 84,84 0 1,1 -168,0"
+          ></path>
+        </defs>
+        <text>
+          <textPath href="#about-seal-path" startOffset="0">
+            SONDER · RECORD &amp; CREATE · {since || '2026'} · SONDER · RECORD &amp; CREATE · {
+              since || '2026'
+            } ·
+          </textPath>
+        </text>
+      </svg>
+      <span class="about-seal-orbit about-seal-orbit-a"></span>
+      <span class="about-seal-orbit about-seal-orbit-b"></span>
+      <span class="about-seal-orbit about-seal-orbit-c"></span>
+      <div class="about-seal-core">
+        <img
+          src={withBase(profile.avatar)}
+          alt=""
+          width="160"
+          height="160"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      {subtitle && <p class="about-seal-note">{subtitle}</p>}
+    </div>
+  </div>
+
+  {
+    stats.length > 0 && (
+      <dl class="about-hero-stats" aria-label="站点统计">
+        {stats.map((item) => (
+          <div>
+            <dt>{item.label}</dt>
+            <dd>{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+</header>

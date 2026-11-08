@@ -1,22 +1,28 @@
 ---
-import {
-  Box,
-  Code2,
-  Database,
-  ExternalLink,
-  FileCode2,
-  Github,
-  Globe2,
-  Layers3,
-  Palette,
-  Rocket,
-  Sparkles,
-  Terminal,
-  WandSparkles,
-} from 'lucide-astro';
 import { getCollection, render } from 'astro:content';
-import Article from '../layouts/Article.astro';
-import { sortByDateDesc } from '../lib/content-dates';
+
+import AboutContact from '../components/about/AboutContact.astro';
+import AboutHero from '../components/about/AboutHero.astro';
+import AboutJourney from '../components/about/AboutJourney.astro';
+import AboutManifesto from '../components/about/AboutManifesto.astro';
+import AboutSkills from '../components/about/AboutSkills.astro';
+import AboutTechStack from '../components/about/AboutTechStack.astro';
+import AboutTokens from '../components/about/AboutTokens.astro';
+import AboutWorks from '../components/about/AboutWorks.astro';
+import { getSiteConfig } from '../config';
+import { tokenUsage } from '../data/token-usage';
+import Base from '../layouts/Base.astro';
+import { sortBlogPostsForArchive } from '../lib/content-dates';
+import { getAllCategories, getAllTags } from '../lib/content-groups';
+import { collectSiteStats } from '../lib/site-stats';
+import { elapsedParts } from '../lib/time';
+import { buildTokenCalendar, expandTokenUsage, summarizeTokenUsage } from '../lib/token-usage';
+import { getUiText } from '../lib/ui-text';
+import { formatCount } from '../lib/word-count';
+import '../styles/about.css';
+
+import cocoaCover from '../assets/figure/covers/cover-08-cocoa.png';
+import steelCover from '../assets/figure/covers/cover-13-steel.png';
 
 const [about] = await getCollection('about');
 
@@ -24,220 +30,143 @@ if (!about) {
   throw new Error('Missing src/content/about.md content entry.');
 }
 
-const { Content, headings } = await render(about);
+const { Content } = await render(about);
+const siteConfig = await getSiteConfig();
+const { home, profile, site } = siteConfig;
+const ui = getUiText(siteConfig);
 
-// 项目卡片：链接指向项目外部地址
-const projects = sortByDateDesc(await getCollection('projects', ({ data }) => !data.draft));
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const projects = sortBlogPostsForArchive(
+  await getCollection('projects', ({ data }) => !data.draft),
+);
+const siteStats = collectSiteStats(posts);
 
-const projectIcons = {
-  github: Github,
-  box: Box,
-  'code-2': Code2,
-  database: Database,
-  'file-code-2': FileCode2,
-  'globe-2': Globe2,
-  'layers-3': Layers3,
-  palette: Palette,
-  rocket: Rocket,
-  sparkles: Sparkles,
-  terminal: Terminal,
-  'wand-sparkles': WandSparkles,
-};
+const established = site.timeEstablished ? new Date(site.timeEstablished) : null;
+const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf()));
+const since = hasEstablished ? String((established as Date).getFullYear()) : '';
+
+const stats = [
+  { label: ui.homeStats.posts, value: String(posts.length) },
+  { label: ui.homeStats.categories, value: String(getAllCategories(posts).length) },
+  { label: ui.homeStats.tags, value: String(getAllTags(posts).length) },
+  { label: ui.siteInfo.totalWords, value: formatCount(siteStats.totalWords, ui.locale) },
+];
+
+if (hasEstablished) {
+  stats.push({
+    label: ui.siteInfo.uptime,
+    value: ui.siteInfo.timeElapsed(elapsedParts(established as Date)),
+  });
+}
+
+const manifesto = about.data.manifesto.length > 0 ? about.data.manifesto : [about.data.description];
+const hasStory = typeof about.body === 'string' && about.body.trim().length > 0;
+
+const tokenDays = expandTokenUsage(tokenUsage);
+const tokenSummary = summarizeTokenUsage(tokenDays);
+const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
 ---
 
-<Article
-  post={about}
-  headings={headings}
-  sidebar={{ enable: false, ...about.data.sidebar }}
-  contentFont="ui"
->
-  <Content />
+<Base title={about.data.title} description={about.data.description}>
+  <main class="about-page" data-pagefind-body data-about-page>
+    <AboutHero
+      profile={profile}
+      title={about.data.title}
+      description={about.data.description}
+      lede={about.data.lede}
+      subtitle={about.data.subtitle}
+      location={about.data.location}
+      status={about.data.status}
+      since={since}
+      sinceLabel={ui.about.since}
+      kicker={ui.about.kicker}
+      stats={stats}
+    />
 
-  {
-    projects.length > 0 && (
-      <section class="about-projects" aria-label="项目">
-        <h2>项目</h2>
-        <div class="project-grid">
-          {projects.map((project) => {
-            const ProjectIcon = projectIcons[project.data.icon] ?? Github;
-            const primaryLink = project.data.links[0];
-            const cardTitle = primaryLink ? (
-              <a href={primaryLink.href} target="_blank" rel="noopener noreferrer">
-                {project.data.title}
-              </a>
-            ) : (
-              <span>{project.data.title}</span>
-            );
+    <AboutManifesto lines={manifesto} now={about.data.now} nowLabel={ui.about.now} />
 
-            return (
-              <article
-                class="project-card"
-                style={
-                  project.data.iconColor
-                    ? `--project-icon-color: ${project.data.iconColor}`
-                    : undefined
-                }
-              >
-                <div class="project-card-heading">
-                  <ProjectIcon
-                    class="project-icon"
-                    size={22}
-                    strokeWidth={1.55}
-                    aria-hidden="true"
-                  />
-                  <h3>{cardTitle}</h3>
-                </div>
-                <p>{project.data.description}</p>
-                {project.data.authors.length > 0 && (
-                  <p class="project-authors">
-                    {project.data.authors.map((author, index) => (
-                      <>
-                        {index > 0 && <span aria-hidden="true"> · </span>}
-                        {author.url ? (
-                          <a href={author.url} target="_blank" rel="noopener noreferrer">
-                            {author.name}
-                          </a>
-                        ) : (
-                          author.name
-                        )}
-                      </>
-                    ))}
-                  </p>
-                )}
-                {project.data.links.length > 0 && (
-                  <footer class="project-links" aria-label="项目链接">
-                    {project.data.links.map((link) => (
-                      <a href={link.href} target="_blank" rel="noopener noreferrer">
-                        {link.kind === 'github' ? (
-                          <Github size={13} strokeWidth={1.8} aria-hidden="true" />
-                        ) : (
-                          <ExternalLink size={13} strokeWidth={1.8} aria-hidden="true" />
-                        )}
-                        {link.label}
-                      </a>
-                    ))}
-                  </footer>
-                )}
-              </article>
-            );
-          })}
-        </div>
-      </section>
-    )
-  }
-</Article>
+    <AboutJourney
+      items={about.data.journey}
+      label={ui.about.journey}
+      title={ui.about.journeyTitle}
+      accent={ui.about.journeyAccent}
+      index="01"
+    />
 
-<style>
-  .about-projects {
-    margin-top: 44px;
-    padding-top: 28px;
-    border-top: 1px solid var(--paper-line);
-  }
+    <AboutSkills
+      items={about.data.skills}
+      label={ui.about.skills}
+      title={ui.about.skillsTitle}
+      accent={ui.about.skillsAccent}
+      index="02"
+    />
 
-  .about-projects h2 {
-    margin: 0 0 6px;
-    color: var(--paper-ink);
-    font-family: var(--font-ui-label);
-    font-size: 1.32rem;
-  }
+    <AboutTechStack
+      tools={about.data.tools}
+      label={ui.about.tech}
+      title={ui.about.techTitle}
+      accent={ui.about.techAccent}
+      hint={ui.about.techHint}
+      resetLabel={ui.about.techReset}
+      index="03"
+    />
 
-  .project-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(12px, 2vw, 22px);
-    margin-top: 22px;
-  }
+    <AboutTokens
+      calendar={tokenCalendar}
+      summary={tokenSummary}
+      locale={ui.locale}
+      label={ui.about.tokens}
+      title={ui.about.tokenTitle}
+      accent={ui.about.tokenAccent}
+      index="04"
+      cardTitle={ui.about.tokenCardTitle}
+      cardSubtitle={ui.about.tokenCardSubtitle}
+      labels={{
+        today: ui.about.tokenToday,
+        total: ui.about.tokenTotal,
+        peak: ui.about.tokenPeak,
+        current: ui.about.tokenCurrent,
+        longest: ui.about.tokenLongest,
+        less: ui.about.tokenLess,
+        more: ui.about.tokenMore,
+        hint: ui.about.tokenHint,
+        weekdays: ui.about.tokenWeekdays,
+      }}
+    />
 
-  .project-card {
-    display: grid;
-    gap: 12px;
-    align-content: start;
-    padding: 16px;
-    border-radius: 8px;
-    color: var(--paper-ink);
-    font-family: var(--font-ui-label);
-    transition:
-      transform 180ms ease,
-      background 180ms ease;
-  }
+    <AboutWorks
+      projects={projects}
+      covers={[steelCover, cocoaCover]}
+      label={ui.about.works}
+      title={ui.about.worksTitle}
+      accent={ui.about.worksAccent}
+      index="05"
+    />
 
-  .project-card:hover {
-    background: var(--paper-control-hover);
-    transform: translateY(-1px);
-  }
-
-  .project-card-heading {
-    display: flex;
-    gap: 11px;
-    align-items: center;
-  }
-
-  .project-icon {
-    flex: none;
-    color: var(--project-icon-color, var(--paper-accent));
-  }
-
-  .project-card h3 {
-    margin: 0;
-    font-size: 1.12rem;
-    line-height: 1.3;
-  }
-
-  .project-card h3 a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .project-card h3 a:hover {
-    color: var(--paper-accent);
-  }
-
-  .project-card p {
-    margin: 0;
-    max-width: 58ch;
-    color: var(--paper-ink-soft);
-    font-size: 0.92rem;
-    line-height: 1.7;
-  }
-
-  .project-authors {
-    color: var(--paper-ink-faint);
-    font-family: var(--font-meta);
-    font-size: 0.76rem;
-  }
-
-  .project-authors a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .project-authors a:hover {
-    color: var(--paper-accent);
-  }
-
-  .project-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 14px;
-    color: var(--paper-ink-faint);
-    font-size: 0.74rem;
-  }
-
-  .project-links a {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .project-links a:hover {
-    color: var(--paper-accent);
-  }
-
-  @media (max-width: 720px) {
-    .project-grid {
-      grid-template-columns: 1fr;
+    {
+      hasStory && (
+        <section class="about-story" aria-labelledby="about-story-title">
+          <h2 class="about-section-label" id="about-story-title">
+            {ui.about.story}
+          </h2>
+          <div class="about-story-prose">
+            <Content />
+          </div>
+        </section>
+      )
     }
-  }
-</style>
+
+    <AboutContact
+      links={home.links}
+      label={ui.about.contact}
+      title={ui.about.contactTitle}
+      accent={ui.about.contactAccent}
+      note={ui.about.contactNote}
+      index="06"
+    />
+  </main>
+</Base>
+
+<script>
+  import '../lib/about-page';
+</script>

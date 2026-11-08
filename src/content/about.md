@@ -1,37 +1,136 @@
 ---
 title: '关于 Sonder'
-description: 'Sonder 是一份以纸面阅读感为核心的个人发布模板，用 Astro 与 Bun 把长文、书影音、动态和朋友页收在一处。'
-date: '2026-05-01T00:00:00+08:00'
-draft: false
-showHeroImage: false
-comments: false
-sidebar:
-  enable: false
-  toc: false
+description: '一个安静写字的地方。长文进博客，碎片进随记，书影音各归其位。'
+lede:
+  - '一个安静写字的地方。长文进博客，'
+  - '碎片进随记，书影音各归其位。'
+subtitle: '纸面、文字与一点点光。'
+location: '杭州'
+status: '正在整理这座小站'
+manifesto:
+  - '不把首页做成'
+  - '营销落地页。'
+  - '让长文、碎片、'
+  - '书影音和朋友页'
+  - '各自有合适的位置。'
+now:
+  - label: '在做'
+    value: 'Sonder v2 的关于页重构'
+  - label: '在读'
+    value: '《玻璃球游戏》'
+  - label: '在听'
+    value: '坂本龍一 · async'
+journey:
+  - year: '2024 — 2026'
+    label: '旧 Firefly 博客'
+    meta: '独立写作 / 前端实验'
+    description: '把零散的笔记收进一套固定的版式，开始认真对待写作这件事。'
+    color: '#a06f4b'
+  - year: '2026 — 至今'
+    label: '重写 Sonder'
+    meta: 'Astro / 内容系统 / 视觉'
+    description: '从旧栈迁到 Astro，重新整理内容结构、纸面视觉和发布流程。'
+    color: '#6f8165'
+  - year: '今天'
+    label: '继续整理'
+    meta: '阅读 / 设计 / 长期主义'
+    description: '把阅读、设计和生活放回同一个坐标系，慢慢做长期的事。'
+    color: '#557f9d'
+skills:
+  - title: '写作'
+    glyph: '写'
+    description: '把复杂的事讲清楚，把模糊的感受写具体。长文、文档、随笔和那些还没有名字的片段。'
+    tags:
+      - 长文
+      - 文档
+      - 随笔
+  - title: '设计'
+    glyph: '设'
+    description: '喜欢纸面、留白和低饱和的层次。比起堆组件，更在意信息在页面上的呼吸感。'
+    tags:
+      - 版式
+      - 视觉
+      - 交互
+  - title: '开发'
+    glyph: '开'
+    description: '用 Astro、TypeScript 和 CSS 把想法落到静态页面。保持简单，保持可维护。'
+    tags:
+      - Astro
+      - TypeScript
+      - CSS
+  - title: '研究'
+    glyph: '研'
+    description: '对 AI、产品与长期主义保持好奇。把新工具当成材料，而不是答案。'
+    tags:
+      - AI
+      - 产品
+      - 长期主义
+tools:
+  - name: 'Astro'
+    note: '静态构建'
+    short: 'A'
+    color: '#c17850'
+    text: 'dark'
+  - name: 'Bun'
+    note: '运行时与脚本'
+    short: 'B'
+    color: '#bd9158'
+    text: 'dark'
+  - name: 'TypeScript'
+    note: '类型与组件'
+    short: 'TS'
+    color: '#557f9d'
+  - name: 'Markdown'
+    note: '写作格式'
+    short: 'MD'
+    color: '#6f8165'
+  - name: 'CSS'
+    note: '纸面与排版'
+    short: 'CSS'
+    color: '#a66d7d'
+  - name: 'Git'
+    note: '版本与发布'
+    short: 'GIT'
+    color: '#686b70'
+  - name: 'Node.js'
+    note: '接口与脚本'
+    short: 'N'
+    color: '#5b7c5a'
+  - name: 'Vite'
+    note: '构建工具'
+    short: 'V'
+    color: '#8b6fb0'
+  - name: 'SQLite'
+    note: '本地数据'
+    short: 'DB'
+    color: '#527f8a'
+  - name: 'Vercel'
+    note: '部署'
+    short: 'VC'
+    color: '#2f3430'
+  - name: 'Figma'
+    note: '界面草图'
+    short: 'F'
+    color: '#b65c5c'
+  - name: 'Motion'
+    note: '过渡与动效'
+    short: 'M'
+    color: '#9a7b3f'
+    text: 'dark'
+  - name: 'Hono'
+    note: '接口服务'
+    short: 'H'
+    color: '#b06a4e'
+  - name: 'Docker'
+    note: '容器部署'
+    short: 'DK'
+    color: '#4f7fa3'
+  - name: 'Pagefind'
+    note: '站内搜索'
+    short: 'PF'
+    color: '#7b6c58'
 ---
 
+Sonder 是一份以纸面阅读感为核心的个人发布模板。它不把首页做成营销落地页，而是让长文、碎片、书影音和朋友页各自有合适的位置。
 
-Sonder 是一份安静的个人发布模板。它不把首页做成营销落地页，而是把身份、近况、写作和阅读痕迹放在同一张纸面上：左侧是正文与最新文章，右侧是身份、统计、热力图和站点信息。
-
-模板基于 Astro 静态构建，使用 Bun 运行脚本，内容由 Markdown 管理。没有后端依赖，也没有复杂的状态管理；所有页面在构建时生成，适合部署到 GitHub Pages、Vercel、Netlify、Cloudflare Pages 或任意静态托管平台。
-
-## 这里有什么
-
-- **文章**：文章卡片使用 16:9 封面和磨砂文字条，支持分类、标签、目录、上下篇、更多文章和深色模式。
-- **书影音**：书籍、电影、剧集、专辑与播客的媒体架，按类型分区浏览。
-- **动态**：按时间排列的短记录，可切换为 Ech0 数据源。
-- **朋友**：友链分组与朋友圈聚合，支持 RSS 同步和友链申请。
-- **个人资料**：头像、身份、社交链接和站点信息都可以在 `site.config.toml` 中维护。
-
-## 从哪里开始
-
-1. 阅读 [Sonder 快速开始](/blog/get-start/)。
-2. 在 `site.config.toml` 里替换站点标题、作者资料、导航和首页文案。
-3. 在 `src/content/` 下编辑或删除示例内容。
-4. 运行 `bun run build`，把 `dist/` 部署到你的托管平台。
-
-视觉上，模板尽量保持克制：纸面底色、发丝线、低饱和色盘和轻量动效。需要调整时，优先改主题色盘与 CSS 变量，而不是在每个页面里单独覆盖样式。
-
-## 相关链接
-
-::friend-link-card{src="demo" columns="3"}
+这里没有复杂的后端和状态管理。所有页面在构建时生成，内容用 Markdown 管理，适合长期写作，也适合慢慢整理。视觉上尽量克制：纸面底色、发丝线、低饱和色盘和轻量动效。

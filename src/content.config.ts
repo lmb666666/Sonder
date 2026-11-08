@@ -39,6 +39,59 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     sidebar: sidebarSchema,
   });
 
+const aboutColorSchema = z
+  .string()
+  .regex(/^(#[0-9a-f]{3,8}|var\(--[a-z0-9-]+\))$/i, 'Use a CSS color, hex color, or CSS variable.');
+
+const aboutSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  lede: z.array(z.string()).optional().default([]),
+  subtitle: z.string().optional().default(''),
+  location: z.string().optional().default(''),
+  status: z.string().optional().default(''),
+  manifesto: z.array(z.string()).optional().default([]),
+  now: z
+    .array(z.object({ label: z.string(), value: z.string() }))
+    .optional()
+    .default([]),
+  journey: z
+    .array(
+      z.object({
+        year: z.string(),
+        label: z.string(),
+        meta: z.string().optional().default(''),
+        description: z.string().optional().default(''),
+        color: aboutColorSchema.optional(),
+      }),
+    )
+    .optional()
+    .default([]),
+  skills: z
+    .array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        glyph: z.string().optional().default(''),
+        tags: z.array(z.string()).optional().default([]),
+      }),
+    )
+    .optional()
+    .default([]),
+  tools: z
+    .array(
+      z.object({
+        name: z.string(),
+        note: z.string().optional().default(''),
+        short: z.string().optional().default(''),
+        color: aboutColorSchema.optional(),
+        text: z.enum(['light', 'dark']).optional().default('light'),
+      }),
+    )
+    .optional()
+    .default([]),
+});
+
 const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
   articleSchema(context).extend({
     sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
@@ -68,7 +121,7 @@ const blog = defineCollection({
 
 const about = defineCollection({
   loader: glob({ base: contentBase, pattern: 'about.md' }),
-  schema: articleSchema,
+  schema: aboutSchema,
 });
 
 const projects = defineCollection({

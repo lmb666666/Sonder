@@ -1,0 +1,94 @@
+---
+import { ArrowUpRight, Github, Link2, Mail, Rss } from 'lucide-astro';
+
+import { withBase } from '../../lib/url';
+
+interface ContactLink {
+  label: string;
+  icon: string;
+  tooltip: string;
+  copy: boolean;
+}
+
+interface Props {
+  links: ContactLink[];
+  label: string;
+  title: string;
+  accent: string;
+  note: string;
+  index: string;
+}
+
+const { links, label, title, accent, note, index } = Astro.props;
+
+const icons = {
+  github: Github,
+  mail: Mail,
+  rss: Rss,
+} as const;
+
+const channels = links.map((link) => {
+  const isMail = link.icon === 'mail';
+  const isExternal = /^https?:\/\//i.test(link.tooltip);
+  const href = isMail
+    ? `mailto:${link.tooltip}`
+    : isExternal
+      ? link.tooltip
+      : withBase(link.tooltip);
+  const value = link.tooltip.replace(/^mailto:/i, '').replace(/^https?:\/\//i, '');
+  return { ...link, href, value, isExternal };
+});
+
+const email = channels.find((channel) => channel.icon === 'mail');
+const secondary = channels.filter((channel) => channel.icon !== 'mail');
+---
+
+<section class="about-contact" id="contact">
+  <div class="about-contact-copy">
+    <p class="about-section-label"><span>{index}</span>{label}</p>
+    <h2>
+      {title}
+      <br />
+      <em>{accent}</em>
+    </h2>
+    <p class="about-contact-note">{note}</p>
+    {
+      email && (
+        <a class="about-contact-email" href={email.href}>
+          <span>{email.value}</span>
+          <ArrowUpRight size={18} strokeWidth={1.7} aria-hidden="true" />
+        </a>
+      )
+    }
+  </div>
+
+  {
+    secondary.length > 0 && (
+      <nav class="about-contact-channels" aria-label={label}>
+        {secondary.map((channel, channelIndex) => {
+          const Icon = icons[channel.icon as keyof typeof icons] ?? Link2;
+          return (
+            <a
+              href={channel.href}
+              target={channel.isExternal ? '_blank' : undefined}
+              rel={channel.isExternal ? 'noreferrer' : undefined}
+            >
+              <span class="about-contact-index">{String(channelIndex + 1).padStart(2, '0')}</span>
+              <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
+              <span class="about-contact-channel-copy">
+                <small>{channel.label}</small>
+                <strong>{channel.value}</strong>
+              </span>
+              <ArrowUpRight
+                class="about-contact-channel-arrow"
+                size={14}
+                strokeWidth={1.7}
+                aria-hidden="true"
+              />
+            </a>
+          );
+        })}
+      </nav>
+    )
+  }
+</section>

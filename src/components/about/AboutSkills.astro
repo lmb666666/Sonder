@@ -1,0 +1,60 @@
+---
+interface SkillItem {
+  title: string;
+  description: string;
+  glyph?: string;
+  tags: string[];
+}
+
+interface Props {
+  items: SkillItem[];
+  label: string;
+  title: string;
+  accent: string;
+  index: string;
+}
+
+const { items, label, title, accent, index } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section class="about-chapter about-skills" id="skills">
+      <header class="about-section-head">
+        <p class="about-section-label">
+          <span>{index}</span>
+          {label}
+        </p>
+        <h2>
+          {title}
+          <br />
+          <em>{accent}</em>
+        </h2>
+      </header>
+
+      <div class="about-skills-list">
+        {items.map((item, itemIndex) => (
+          <article class="about-skill" data-about-skill>
+            <span class="about-skill-index" aria-hidden="true">
+              {String(itemIndex + 1).padStart(2, '0')}
+            </span>
+            <div class="about-skill-copy">
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+              {item.tags.length > 0 && (
+                <ul class="about-skill-tags" aria-label={`${item.title}标签`}>
+                  {item.tags.map((tag) => (
+                    <li>{tag}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <span class="about-skill-glyph" aria-hidden="true">
+              {item.glyph || item.title.slice(0, 1)}
+            </span>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}

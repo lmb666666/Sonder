@@ -1,0 +1,42 @@
+---
+interface NowItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  lines: string[];
+  now: NowItem[];
+  nowLabel: string;
+}
+
+const { lines, now, nowLabel } = Astro.props;
+---
+
+<section class="about-manifesto" aria-label="简介">
+  <div class="about-manifesto-copy">
+    {
+      lines.map((line, index) => (
+        <span class="about-manifesto-line">
+          {index === lines.length - 1 ? <em>{line}</em> : line}
+        </span>
+      ))
+    }
+  </div>
+
+  {
+    now.length > 0 && (
+      <aside class="about-now" aria-label={nowLabel}>
+        <p class="about-section-label">{nowLabel}</p>
+        <dl>
+          {now.map((item) => (
+            <div>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </aside>
+    )
+  }
+</section>
