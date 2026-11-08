@@ -129,6 +129,9 @@ type RawUiText = {
     uptimeTip: Message;
     lastUpdated: string;
     lastUpdatedTip: string;
+    totalWords: string;
+    lastContentUpdate: string;
+    lastContentUpdateTip: string;
     program: string;
     imageBed: string;
     buildPlatform: string;
@@ -207,6 +210,7 @@ type RawUiText = {
     readingTools: string;
     wordCount: Message;
     readingTime: Message;
+    updated: string;
     pinned: string;
     navigation: string;
     pagerLabel: string;

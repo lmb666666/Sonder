@@ -45,11 +45,13 @@ avatar = "/images/logo.svg"
 title = "站点信息"
 program = "Sonder"
 uptime = true
+totalWords = true
+lastContentUpdate = true
 lastUpdated = true
 buildPlatform = true
 ```
 
-`program` 会显示为「站点程序」一行，也用于页脚的 Powered by；留空时两处一起隐藏。`uptime`、`lastUpdated` 和 `buildPlatform` 控制其余信息行。
+`program` 会显示为「站点程序」一行，也用于页脚的 Powered by；留空时两处一起隐藏。`uptime`、`totalWords`、`lastContentUpdate`、`lastUpdated` 和 `buildPlatform` 控制其余信息行。`lastUpdated` 是构建时间，`lastContentUpdate` 取文章发布时间与修改时间的最大值。
 
 ## 导航与外观
 
@@ -186,6 +188,31 @@ friendLinkCard = "auto"
 - 文章里的 `::friend-circle{src="youlin"}` 与 `::friend-link-card{src="youlin"}` 同样可用；不写 `src` 时取 `directives.*` 的默认值。
 - 环境变量是覆盖层：`SONDER_YOULIN_BASE_URL` 覆盖地址，`SONDER_YOULIN_MODE` 覆盖全局以及 `links` / `circle` 的 mode；无效值会被忽略并回退 TOML。适合 CI 或预览环境。复用本地 Astro 内容缓存时，如果发现文章内指令没有跟随新配置，用 `bunx astro build --force` 重建。
 - build 模式下数据变化需要重新构建：可以在 Youlin 设置 `rebuild.*` webhook / GitHub dispatch 触发本站构建，或手动重建。
+
+## 统计与分析（Umami / 51la）
+
+访问统计是可选的，所有 ID 留空就不会加载任何第三方脚本。
+
+```toml
+[config.analytics]
+sendInDev = false
+
+[config.analytics.umami]
+websiteId = ""
+scriptUrl = ""
+hostUrl = ""
+
+[config.analytics.la51]
+id = ""
+lingqueMonitorId = ""
+```
+
+- **Umami**：`websiteId` 和 `scriptUrl` 都填写才启用。`scriptUrl` 填 Umami 实例的 `script.js` 地址；如果脚本走 CDN 或镜像，`hostUrl` 必须填 Umami 实例地址，否则数据会发到脚本所在域。站点域名填在 Umami 后台即可。
+- 最新版 Umami 会自动跟随 `ClientRouter` 的站内换页，不需要手动上报 pageview。
+- **51la**：填 `id` 启用；再填 `lingqueMonitorId` 会额外加载灵雀 perf SDK，启用 `sendSpaPv` 与 `sendSuspicious`。灵雀 SDK 失败不影响 51la。灵雀会采集应用异常与可疑行为数据，开启前请确认其隐私说明。
+- Umami 和 51la 同时开启会各自统计一份，数字不会一致，通常二选一即可。
+- `sendInDev = false` 时开发环境不加载统计脚本。Vercel Preview 请在环境变量里设置 `SONDER_ANALYTICS_DISABLED=1`，并且只勾选 Preview，不要影响 Production。
+- 统计脚本异步加载，被广告拦截器拦截时只影响统计，不影响页面。
 
 ## Markdown 开关
 

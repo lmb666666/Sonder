@@ -5,7 +5,14 @@ import Colophon from '../Colophon.astro';
 import { getSiteConfig } from '../../config';
 import { elapsedParts } from '../../lib/time';
 import { getUiText } from '../../lib/ui-text';
+import { formatCount } from '../../lib/word-count';
 
+interface Props {
+  totalWords?: number;
+  lastUpdatedAt?: Date | null;
+}
+
+const { totalWords, lastUpdatedAt } = Astro.props;
 const siteConfig = await getSiteConfig();
 const { site, siteInfo } = siteConfig;
 const ui = getUiText(siteConfig);
@@ -33,6 +40,20 @@ if (siteInfo.uptime && site.timeEstablished && hasEstablished) {
     label: ui.siteInfo.uptime,
     value: ui.siteInfo.timeElapsed(elapsedParts(established as Date)),
     tip: ui.siteInfo.uptimeTip(site.timeEstablished),
+  });
+}
+if (siteInfo.totalWords && typeof totalWords === 'number' && totalWords > 0) {
+  rows.push({
+    label: ui.siteInfo.totalWords,
+    value: formatCount(totalWords, ui.locale),
+    tip: String(totalWords),
+  });
+}
+if (siteInfo.lastContentUpdate && lastUpdatedAt && !Number.isNaN(lastUpdatedAt.valueOf())) {
+  rows.push({
+    label: ui.siteInfo.lastContentUpdate,
+    value: format(lastUpdatedAt, 'yyyy-MM-dd'),
+    tip: ui.siteInfo.lastContentUpdateTip,
   });
 }
 if (siteInfo.lastUpdated) {

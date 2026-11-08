@@ -1,0 +1,121 @@
+---
+import { getSiteConfig } from '../../config';
+import { resolveAnalyticsConfig } from '../../config/analytics';
+
+const { analytics } = await getSiteConfig();
+const resolved = resolveAnalyticsConfig(analytics);
+
+// 构建期开关：本地开发默认关闭；Vercel Preview 用环境变量关闭。
+const disabled =
+  process.env.SONDER_ANALYTICS_DISABLED === '1' || (import.meta.env.DEV && !resolved.sendInDev);
+const umamiConfig = disabled ? null : resolved.umami;
+const la51Config = disabled ? null : resolved.la51;
+const la51Sdk = la51Config
+  ? {
+      main: 'https://sdk.51.la/js-sdk-pro.min.js',
+      perf: 'https://sdk.51.la/perf/js-sdk-perf.min.js',
+    }
+  : null;
+---
+
+<script is:inline define:vars={{ umamiConfig, la51Config, la51Sdk }}>
+  (() => {
+    const loadScript = (src, options = {}) =>
+      new Promise((resolve) => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          resolve();
+        };
+
+        if (options.global && window[options.global]) {
+          finish();
+          return;
+        }
+
+        const existing = Array.from(document.querySelectorAll('script[data-sonder-src]')).find(
+          (script) => script.dataset.sonderSrc === src,
+        );
+
+        if (existing) {
+          existing.addEventListener('load', finish, { once: true });
+          existing.addEventListener('error', finish, { once: true });
+          window.setTimeout(finish, 5000);
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.dataset.sonderSrc = src;
+        if (options.id) script.id = options.id;
+        if (options.charset) script.setAttribute('charset', options.charset);
+        if (options.crossOrigin) script.crossOrigin = options.crossOrigin;
+        script.addEventListener('load', finish, { once: true });
+        script.addEventListener('error', finish, { once: true });
+        window.setTimeout(finish, 5000);
+        document.head.appendChild(script);
+      });
+
+    const setupUmami = (config) => {
+      if (window.__sonderUmamiLoaded) return;
+      window.__sonderUmamiLoaded = true;
+
+      const script = document.createElement('script');
+      script.src = config.scriptUrl;
+      script.async = true;
+      script.dataset.websiteId = config.websiteId;
+      if (config.hostUrl) script.dataset.hostUrl = config.hostUrl;
+      script.dataset.sonderUmami = '';
+      document.head.appendChild(script);
+    };
+
+    const setupLa51 = (config) => {
+      if (!la51Sdk || window.__sonderLa51Loaded) return;
+      window.__sonderLa51Loaded = true;
+
+      loadScript(la51Sdk.main, {
+        global: 'LA',
+        id: 'LA_COLLECT',
+        charset: 'UTF-8',
+      }).then(() => {
+        if (!window.LA || typeof window.LA.init !== 'function') return;
+        try {
+          window.LA.init({
+            id: config.id,
+            ck: config.id,
+            autoTrack: true,
+            hashMode: false,
+            screenRecord: false,
+          });
+        } catch {}
+      });
+    };
+
+    const setupLingque = (config) => {
+      if (!la51Sdk || !config.lingqueMonitorId || window.__sonderLingqueLoaded) return;
+      window.__sonderLingqueLoaded = true;
+
+      loadScript(la51Sdk.perf, {
+        global: 'LingQue',
+        crossOrigin: 'anonymous',
+      }).then(() => {
+        if (!window.LingQue || typeof window.LingQue.Monitor !== 'function') return;
+        try {
+          new window.LingQue.Monitor().init({
+            id: config.lingqueMonitorId,
+            sendSpaPv: true,
+            sendSuspicious: true,
+          });
+        } catch {}
+      });
+    };
+
+    if (umamiConfig) setupUmami(umamiConfig);
+    if (la51Config) {
+      setupLa51(la51Config);
+      setupLingque(la51Config);
+    }
+  })();
+</script>

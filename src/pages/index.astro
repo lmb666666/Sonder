@@ -10,6 +10,7 @@ import LatestUpdates from '../components/home/LatestUpdates.astro';
 import SiteInfoCard from '../components/home/SiteInfoCard.astro';
 import { getSiteConfig } from '../config';
 import { getAllCategories, getAllTags } from '../lib/content-groups';
+import { collectSiteStats } from '../lib/site-stats';
 import { formatCount } from '../lib/word-count';
 import { getUiText } from '../lib/ui-text';
 import Base from '../layouts/Base.astro';
@@ -22,6 +23,7 @@ const ui = getUiText(siteConfig);
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 const categoryCount = getAllCategories(posts).length;
 const tagCount = getAllTags(posts).length;
+const siteStats = collectSiteStats(posts);
 
 const stats = [
   { label: ui.homeStats.posts, value: formatCount(posts.length, ui.locale) },
@@ -63,7 +65,7 @@ const stats = [
     }
 
     <Fragment slot="siteInfo">
-      <SiteInfoCard />
+      <SiteInfoCard totalWords={siteStats.totalWords} lastUpdatedAt={siteStats.lastUpdatedAt} />
     </Fragment>
 
     <Fragment slot="connect">

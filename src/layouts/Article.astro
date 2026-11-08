@@ -47,6 +47,7 @@ interface Props {
       title: string;
       description: string;
       date: Date;
+      updated?: Date;
       heroImage?: ImageMetadata | string;
       showHeroImage?: boolean;
       tags?: string[];
@@ -65,6 +66,7 @@ interface Props {
   title?: string;
   description?: string;
   date?: Date;
+  updated?: Date;
   heroImage?: ImageMetadata | string;
   showHeroImage?: boolean;
   tags?: string[];
@@ -82,6 +84,7 @@ const post = props.post ?? {
     title: props.title ?? 'Untitled',
     description: props.description ?? '',
     date: props.date ?? new Date(),
+    updated: props.updated,
     heroImage: props.heroImage,
     showHeroImage: props.showHeroImage ?? true,
     tags: props.tags ?? [],
@@ -92,7 +95,7 @@ const post = props.post ?? {
 };
 const isBlogPost = post.collection === 'blog';
 const shouldMountCommentSection = supportsCommentSection(post.collection);
-const { title, description, date, heroImage, showHeroImage = true } = post.data;
+const { title, description, date, updated, heroImage, showHeroImage = true } = post.data;
 const contentFont = props.contentFont ?? 'article';
 const bodyText = 'body' in post && typeof post.body === 'string' ? post.body : description;
 const needsKatexCss =
@@ -172,6 +175,7 @@ const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : her
           title={title}
           description={description}
           date={date}
+          updated={updated}
           wordCount={wordCount}
           readingTime={readingTime}
           tags={tagLinks}

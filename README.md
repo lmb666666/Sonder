@@ -44,6 +44,8 @@ Sonder 是一份以纸面阅读感为核心的个人发布模板：暖白纸底�
 **站点能力**
 
 - **评论** —— giscus / utterances / Waline / Twikoo，可关闭
+- **访问统计** —— 可选 Umami / 51la + 灵雀，适配 `ClientRouter` 换页，可关闭
+- **站点统计** —— 总字数、最后更新、文章/分类/标签与写作热力图
 - **数学公式与图表** —— KaTeX / MathJax、Mermaid、ABC 乐谱
 - **外挂标签** —— `:::note` / `:badge` / `::github-card` 等指令零 import 直写，覆盖提醒块、标签页、媒体、音乐、友链等 20+ 组件
 - **静态输出** —— RSS、Atom、sitemap、llms.txt；构建生成按需字体子集

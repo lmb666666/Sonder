@@ -2,7 +2,7 @@
 import { getSiteConfig } from '../config';
 import Icon from './Icon.astro';
 
-type MetadataKind = 'date' | 'words' | 'reading' | 'tags' | 'categories' | 'default';
+type MetadataKind = 'date' | 'updated' | 'words' | 'reading' | 'tags' | 'categories' | 'default';
 
 interface Props {
   kind?: MetadataKind;
@@ -16,6 +16,7 @@ const metadataSeparator = pages.blog.metadataSeparator;
 const useIconSeparator = metadataSeparator.trim().toLowerCase() === 'icon';
 const iconByKind: Record<MetadataKind, string | undefined> = {
   date: 'pencil-sparkles',
+  updated: 'history',
   words: 'pen-tool',
   reading: 'book-open-check',
   tags: 'tags',
@@ -77,6 +78,10 @@ const iconName = iconByKind[kind];
 
   .metadata-item-date {
     --metadata-icon-color: #d88742;
+  }
+
+  .metadata-item-updated {
+    --metadata-icon-color: #b07a4a;
   }
 
   .metadata-item-words {

@@ -44,6 +44,8 @@ Sonder is a personal publishing template built around a paper-like reading exper
 **Site capabilities**
 
 - **Comments** — giscus / utterances / Waline / Twikoo, or none
+- **Analytics** — optional Umami / 51la + LingQue, aware of `ClientRouter` navigation, disabled by default
+- **Site stats** — total words, last content update, article/category/tag counts and a writing heatmap
 - **Math & diagrams** — KaTeX / MathJax, Mermaid, ABC music scores
 - **Directives (outer tags)** — `:::note` / `:badge` / `::github-card` directives with zero imports, covering callouts, tabs, media, music, friend links and 20+ components
 - **Static output** — RSS, Atom, sitemap, llms.txt; on-demand font subsets at build

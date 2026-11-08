@@ -11,6 +11,11 @@ export interface StickyContentEntry {
   };
 }
 
+/** 只有修改时间比发布时间晚至少 1 天，才值得在文章页单独显示。 */
+export function isMeaningfulUpdate(date: Date, updated?: Date) {
+  return Boolean(updated && updated.getTime() - date.getTime() >= 24 * 60 * 60 * 1000);
+}
+
 export function sortByDateDesc<T extends DatedContentEntry>(entries: T[]) {
   return [...entries].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }

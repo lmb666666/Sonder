@@ -221,6 +221,19 @@ const defaultYoulinConfig: {
   },
 };
 
+const defaultAnalyticsConfig = {
+  sendInDev: false,
+  umami: {
+    websiteId: '',
+    scriptUrl: '',
+    hostUrl: '',
+  },
+  la51: {
+    id: '',
+    lingqueMonitorId: '',
+  },
+};
+
 const youlinBaseUrlSchema = z
   .string()
   .trim()
@@ -434,6 +447,27 @@ export const siteConfigSchema = z.object({
     })
     .optional()
     .default(defaultYoulinConfig),
+  analytics: z
+    .object({
+      sendInDev: z.boolean().optional().default(false),
+      umami: z
+        .object({
+          websiteId: z.string().trim().max(128).optional().default(''),
+          scriptUrl: z.string().trim().max(2048).optional().default(''),
+          hostUrl: z.string().trim().max(2048).optional().default(''),
+        })
+        .optional()
+        .default(defaultAnalyticsConfig.umami),
+      la51: z
+        .object({
+          id: z.string().trim().max(64).optional().default(''),
+          lingqueMonitorId: z.string().trim().max(64).optional().default(''),
+        })
+        .optional()
+        .default(defaultAnalyticsConfig.la51),
+    })
+    .optional()
+    .default(defaultAnalyticsConfig),
   comments: z
     .object({
       enabled: z.boolean().optional().default(false),
@@ -492,6 +526,8 @@ export const siteConfigSchema = z.object({
       program: z.string().optional().default('Sonder'),
       uptime: z.boolean().optional().default(true),
       lastUpdated: z.boolean().optional().default(true),
+      totalWords: z.boolean().optional().default(true),
+      lastContentUpdate: z.boolean().optional().default(true),
       buildPlatform: z.boolean().optional().default(true),
       imageBed: z
         .object({
@@ -508,6 +544,8 @@ export const siteConfigSchema = z.object({
       program: 'Sonder',
       uptime: true,
       lastUpdated: true,
+      totalWords: true,
+      lastContentUpdate: true,
       buildPlatform: true,
       imageBed: { enabled: false, name: '', icon: '' },
     }),

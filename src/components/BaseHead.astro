@@ -4,6 +4,7 @@
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import { ClientRouter } from 'astro:transitions';
+import Analytics from './analytics/Analytics.astro';
 import { getSiteConfig } from '../config';
 import { PALETTE_THEME_COLORS } from '../config/palette';
 import { absoluteUrl, withBase } from '../lib/url';
@@ -117,6 +118,7 @@ html:root{--font-config-en:${enFamily};--font-config-code:${codeFamily};--font-c
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style is:inline set:html={fontVariablesCss}></style>
 <ClientRouter />
+<Analytics />
 <script
   is:inline
   define:vars={{

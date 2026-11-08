@@ -21,8 +21,10 @@ timeEstablished = "2026-10-04"
 title = "站点信息"
 # 站点程序（显示在站点信息卡；留空同时隐藏页脚 Powered by）
 program = "Sonder"
-# 是否显示运行时长、上次构建时间和 CI 构建平台
+# 是否显示运行时长、总字数、内容最后更新、构建时间和 CI 构建平台
 uptime = true
+totalWords = true
+lastContentUpdate = true
 lastUpdated = true
 buildPlatform = true
 
@@ -134,6 +136,26 @@ timeoutMs = 45000
 # 文章指令的默认数据源：auto（配了 baseUrl 用 youlin）| youlin | demo
 friendCircle = "auto"
 friendLinkCard = "auto"
+
+# 访问统计（可选）；留空即关闭，不加载任何第三方脚本。
+# Umami 与 51la 可以同时配置，但两套统计口径不同，数字不会一致。
+[config.analytics]
+# 开发环境是否发送统计；默认 false，避免本地预览污染后台
+sendInDev = false
+
+[config.analytics.umami]
+# Umami 网站 ID；与 scriptUrl 都填写才会启用
+websiteId = ""
+# tracker 脚本地址，例如 https://umami.example.com/script.js
+scriptUrl = ""
+# 数据发送地址；脚本不在 Umami 实例上时填写，例如 https://umami.example.com
+hostUrl = ""
+
+[config.analytics.la51]
+# 51la 统计 ID；留空则关闭
+id = ""
+# 灵雀应用监控 ID；留空则不加载灵雀，填了会额外加载 perf SDK
+lingqueMonitorId = ""
 
 [config.article]
 # 是否显示文章底部分享卡片
