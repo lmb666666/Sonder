@@ -229,4 +229,28 @@ mermaid = true
 
 ## 页面与集合
 
-书影音、动态、朋友页都是普通页面加内容集合，不需要注册：删除 `src/pages/media/` 与 `src/content/media/` 即移除书影音，导航项同步从 `site.config.toml` 删除。项目卡片直接读取 `src/content/projects/`，由关于页展示；没有独立项目页。短记录统一使用 `/moments`。
+书影音与朋友页是普通页面加内容集合，动态页读取 Ech0 或 `src/data/moments.ts`，都不需要注册。删除 `src/pages/media/` 与 `src/content/media/` 即移除书影音，导航项同步从 `site.config.toml` 删除。项目卡片直接读取 `src/content/projects/`，由关于页展示；没有独立项目页。短记录统一使用 `/moments`。
+
+## 动态页与特殊内容
+
+```toml
+[config.pages.moments]
+title = "动态"
+kicker = "Moments"
+subtitle = "记录生活点滴。"
+note = ""
+# Ech0 实例地址；留空使用 src/data/moments.ts 的演示数据
+apiUrl = ""
+pageSize = 20
+showPoweredBy = true
+
+[config.music]
+# ::music 指令与动态页音乐卡共用的 Meting 实例
+meting_api = "https://api.example.com/meting/?server=:server&type=:type&id=:id&r=:r"
+```
+
+- `apiUrl` 留空时展示内置演示数据；填写 Ech0 实例地址后，页面在浏览器里请求 `POST {apiUrl}/api/echo/query`，实例需允许当前站点域名跨域。
+- `pageSize` 同时用于静态演示分页和 Ech0 每次请求的条数。
+- 音乐卡复用 `[config.music].meting_api` 在浏览器解析网易云 / QQ / 酷狗单曲；Meting 或音频不可用时，网易云自动降级为官方外链播放器，其他平台保留原曲链接卡。Meting 实例需允许站点域名跨域（公共实例通常为 `*`）。
+- 视频自动识别 B 站、YouTube、抖音、TikTok；位置扩展带 `latitude` / `longitude` 时生成高德 marker 链接与坐标；GitHub、网站、推文复用文章指令的纸面卡片。
+- 图片按 1–9 张自动布局，点击进入 PhotoSwipe 灯箱；Echo 文本会转义，扩展链接只接受无凭据的 http(s) 地址。

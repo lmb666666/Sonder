@@ -72,13 +72,15 @@ type RawUiText = {
   moments: {
     loading: string;
     count: Message;
-    sourcePrefix: string;
-    sourceSuffix: string;
+    empty: string;
     imageAria: Message;
-    loadMore: string;
+    moreImages: Message;
+    loadMoreCount: Message;
+    loadingMore: string;
     loadFailed: string;
     loadFailedHint: string;
-    ownerFallback: string;
+    loadMoreFailed: string;
+    retry: string;
     extension: {
       github: string;
       website: string;
@@ -334,9 +336,11 @@ export type UiText = Omit<
     circleSummaryTemplate: string;
     feedError: (error: string) => string;
   };
-  moments: Omit<RawUiText['moments'], 'count' | 'imageAria'> & {
+  moments: Omit<RawUiText['moments'], 'count' | 'imageAria' | 'moreImages' | 'loadMoreCount'> & {
     count: (count: number | string) => string;
-    imageAria: (index: number) => string;
+    imageAria: (index: number | string) => string;
+    moreImages: (count: number | string) => string;
+    loadMoreCount: (count: number | string) => string;
   };
   friendApplication: Omit<
     RawUiText['friendApplication'],
@@ -399,6 +403,8 @@ function createUiText(raw: RawUiText): UiText {
       ...raw.moments,
       count: (count) => formatMessage(raw.moments.count, { count }),
       imageAria: (index) => formatMessage(raw.moments.imageAria, { index }),
+      moreImages: (count) => formatMessage(raw.moments.moreImages, { count }),
+      loadMoreCount: (count) => formatMessage(raw.moments.loadMoreCount, { count }),
     },
     friendApplication: {
       ...raw.friendApplication,
