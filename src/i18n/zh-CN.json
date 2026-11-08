@@ -195,6 +195,15 @@
   },
   "about": {
     "kicker": "About / 关于",
+    "avatarLabel": "由粒子组成的像素头像",
+    "avatarControls": "切换头像情绪",
+    "avatarMoods": {
+      "default": "默认",
+      "joy": "喜",
+      "anger": "怒",
+      "sadness": "哀",
+      "delight": "乐"
+    },
     "now": "现在",
     "journey": "经历",
     "journeyTitle": "把时间",
@@ -224,11 +233,14 @@
     "works": "作品",
     "worksTitle": "做过",
     "worksAccent": "一些东西",
-    "viewProject": "查看项目",
+    "gallery": "图像",
+    "galleryTitle": "生活的",
+    "galleryAccent": "切片",
     "contact": "联系",
     "contactTitle": "有个想法？",
     "contactAccent": "一起聊聊。",
     "contactNote": "项目合作、技术交流，或者简单聊聊。",
+    "contactStatus": "开放远程合作",
     "story": "写在后面",
     "since": "Since"
   },

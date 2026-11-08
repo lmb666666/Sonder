@@ -195,6 +195,15 @@
   },
   "about": {
     "kicker": "About / 關於",
+    "avatarLabel": "由粒子組成的像素頭像",
+    "avatarControls": "切換頭像情緒",
+    "avatarMoods": {
+      "default": "預設",
+      "joy": "喜",
+      "anger": "怒",
+      "sadness": "哀",
+      "delight": "樂"
+    },
     "now": "現在",
     "journey": "經歷",
     "journeyTitle": "把時間",
@@ -224,11 +233,14 @@
     "works": "作品",
     "worksTitle": "做過",
     "worksAccent": "一些東西",
-    "viewProject": "查看專案",
+    "gallery": "圖像",
+    "galleryTitle": "生活的",
+    "galleryAccent": "切片",
     "contact": "聯絡",
     "contactTitle": "有個想法？",
     "contactAccent": "一起聊聊。",
     "contactNote": "專案合作、技術交流，或者簡單聊聊。",
+    "contactStatus": "開放遠端合作",
     "story": "寫在後面",
     "since": "Since"
   },

@@ -1,5 +1,5 @@
 ---
-import { ArrowUpRight, Github, Link2, Mail, Rss } from 'lucide-astro';
+import { ArrowUpRight } from 'lucide-astro';
 
 import { withBase } from '../../lib/url';
 
@@ -16,16 +16,11 @@ interface Props {
   title: string;
   accent: string;
   note: string;
+  status: string;
   index: string;
 }
 
-const { links, label, title, accent, note, index } = Astro.props;
-
-const icons = {
-  github: Github,
-  mail: Mail,
-  rss: Rss,
-} as const;
+const { links, label, title, accent, note, status, index } = Astro.props;
 
 const channels = links.map((link) => {
   const isMail = link.icon === 'mail';
@@ -44,14 +39,27 @@ const secondary = channels.filter((channel) => channel.icon !== 'mail');
 ---
 
 <section class="about-contact" id="contact">
-  <div class="about-contact-copy">
-    <p class="about-section-label"><span>{index}</span>{label}</p>
+  <header class="about-contact-top">
+    <p class="about-section-label">
+      <span>{index}</span>
+      {label}
+    </p>
+    {
+      status && (
+        <p class="about-contact-status">
+          <i aria-hidden="true" />
+          {status}
+        </p>
+      )
+    }
+  </header>
+
+  <div class="about-contact-main">
     <h2>
       {title}
       <br />
       <em>{accent}</em>
     </h2>
-    <p class="about-contact-note">{note}</p>
     {
       email && (
         <a class="about-contact-email" href={email.href}>
@@ -62,33 +70,24 @@ const secondary = channels.filter((channel) => channel.icon !== 'mail');
     }
   </div>
 
-  {
-    secondary.length > 0 && (
-      <nav class="about-contact-channels" aria-label={label}>
-        {secondary.map((channel, channelIndex) => {
-          const Icon = icons[channel.icon as keyof typeof icons] ?? Link2;
-          return (
+  <footer class="about-contact-bottom">
+    <p class="about-contact-note">{note}</p>
+    {
+      secondary.length > 0 && (
+        <nav class="about-contact-channels" aria-label={label}>
+          {secondary.map((channel) => (
             <a
               href={channel.href}
               target={channel.isExternal ? '_blank' : undefined}
               rel={channel.isExternal ? 'noreferrer' : undefined}
             >
-              <span class="about-contact-index">{String(channelIndex + 1).padStart(2, '0')}</span>
-              <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
-              <span class="about-contact-channel-copy">
-                <small>{channel.label}</small>
-                <strong>{channel.value}</strong>
-              </span>
-              <ArrowUpRight
-                class="about-contact-channel-arrow"
-                size={14}
-                strokeWidth={1.7}
-                aria-hidden="true"
-              />
+              <span>{channel.label}</span>
+              <small>{channel.value}</small>
+              <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
             </a>
-          );
-        })}
-      </nav>
-    )
-  }
+          ))}
+        </nav>
+      )
+    }
+  </footer>
 </section>

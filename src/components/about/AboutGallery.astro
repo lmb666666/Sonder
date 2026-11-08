@@ -1,0 +1,54 @@
+---
+import { aboutGallery } from '../../data/about-gallery';
+import SmartImage from '../SmartImage.astro';
+
+interface Props {
+  label: string;
+  title: string;
+  accent: string;
+  index: string;
+}
+
+const { label, title, accent, index } = Astro.props;
+---
+
+<section class="about-gallery" id="gallery">
+  <header class="about-section-head">
+    <p class="about-section-label">
+      <span>{index}</span>
+      {label}
+    </p>
+    <h2>
+      {title}
+      <br />
+      <em>{accent}</em>
+    </h2>
+  </header>
+
+  <div class="about-gallery-grid">
+    {
+      aboutGallery.map((item, itemIndex) => (
+        <figure class="about-gallery-item">
+          <div class="about-gallery-frame">
+            <SmartImage
+              src={item.image}
+              alt=""
+              widths={[360, 720, 1080]}
+              sizes="(max-width: 760px) 82vw, (max-width: 1000px) 42vw, 22vw"
+              loading="lazy"
+            />
+          </div>
+          <figcaption>
+            <span class="about-gallery-index" aria-hidden="true">
+              {String(itemIndex + 1).padStart(2, '0')}
+            </span>
+            <span class="about-gallery-copy">
+              <strong>{item.title}</strong>
+              <small>{item.meta}</small>
+            </span>
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</section>

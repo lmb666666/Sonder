@@ -1,3 +1,5 @@
+import { initParticleAvatar } from './about-avatar';
+
 type Point = { x: number; y: number };
 interface PhysicsBody {
   el: HTMLButtonElement;
@@ -105,7 +107,7 @@ export function initAboutPage(): () => void {
 
   const revealTargets = Array.from(
     page.querySelectorAll<HTMLElement>(
-      '.about-manifesto, .about-chapter, .about-story, .about-contact',
+      '.about-manifesto, .about-chapter, .about-gallery, .about-story, .about-contact',
     ),
   );
   if (revealTargets.length > 0) {
@@ -128,6 +130,9 @@ export function initAboutPage(): () => void {
       cleanups.push(() => observer.disconnect());
     }
   }
+
+  const avatar = page.querySelector<HTMLElement>('[data-avatar]');
+  if (avatar) cleanups.push(initParticleAvatar(avatar));
 
   initJourney(page, controller, cleanups);
   initWorks(page, controller, cleanups);
@@ -345,16 +350,17 @@ function initTechPhysics(
 
   const wall = (body: PhysicsBody) => {
     const extent = projectedExtents(body);
-    if (body.x - extent.x < 0) {
-      body.x = extent.x;
+    const inset = 3;
+    if (body.x - extent.x < inset) {
+      body.x = extent.x + inset;
       if (body.vx < 0) body.vx *= -0.32;
-    } else if (body.x + extent.x > width) {
-      body.x = width - extent.x;
+    } else if (body.x + extent.x > width - inset) {
+      body.x = width - extent.x - inset;
       if (body.vx > 0) body.vx *= -0.32;
     }
 
-    if (body.y + extent.y > height) {
-      body.y = height - extent.y;
+    if (body.y + extent.y > height - inset) {
+      body.y = height - extent.y - inset;
       if (body.vy > 110) {
         body.vy *= -0.2;
       } else {
@@ -362,8 +368,8 @@ function initTechPhysics(
       }
       body.vx *= 0.86;
       body.va *= 0.82;
-    } else if (body.y - extent.y < 0 && body.vy < 0) {
-      body.y = extent.y;
+    } else if (body.y - extent.y < inset && body.vy < 0) {
+      body.y = extent.y + inset;
       body.vy *= -0.2;
     }
   };
@@ -523,8 +529,8 @@ function initTechPhysics(
     const y = event.clientY - rect.top;
     const body = drag.body;
     const extent = projectedExtents(body);
-    body.x = clamp(x - drag.offsetX, extent.x, width - extent.x);
-    body.y = clamp(y - drag.offsetY, extent.y, height - extent.y);
+    body.x = clamp(x - drag.offsetX, extent.x + 3, width - extent.x - 3);
+    body.y = clamp(y - drag.offsetY, extent.y + 3, height - extent.y - 3);
     const dt = Math.max(8, event.timeStamp - drag.lastTime) / 1000;
     body.vx = clamp((body.x - (drag.lastX - drag.offsetX)) / dt, -1800, 1800);
     body.vy = clamp((body.y - (drag.lastY - drag.offsetY)) / dt, -1800, 1800);
@@ -560,8 +566,8 @@ function initTechPhysics(
     const body = bodies[Number(pill.dataset.index)];
     if (!body) return;
     const extent = projectedExtents(body);
-    body.x = clamp(body.x + vector.x, extent.x, width - extent.x);
-    body.y = clamp(body.y + vector.y, extent.y, height - extent.y);
+    body.x = clamp(body.x + vector.x, extent.x + 3, width - extent.x - 3);
+    body.y = clamp(body.y + vector.y, extent.y + 3, height - extent.y - 3);
     body.vx = vector.x * 4;
     body.vy = vector.y * 4;
     renderBody(body);
@@ -612,9 +618,9 @@ function initTechPhysics(
 
     if (!reducedMotion) {
       board.addEventListener('pointerdown', onPointerDown, { signal: controller.signal });
-      board.addEventListener('pointermove', onPointerMove, { signal: controller.signal });
-      board.addEventListener('pointerup', onPointerUp, { signal: controller.signal });
-      board.addEventListener('pointercancel', onPointerUp, { signal: controller.signal });
+      window.addEventListener('pointermove', onPointerMove, { signal: controller.signal });
+      window.addEventListener('pointerup', onPointerUp, { signal: controller.signal });
+      window.addEventListener('pointercancel', onPointerUp, { signal: controller.signal });
       board.addEventListener('keydown', onKeyDown, { signal: controller.signal });
     }
     resetButton?.addEventListener(

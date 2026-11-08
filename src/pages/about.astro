@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 
 import AboutContact from '../components/about/AboutContact.astro';
+import AboutGallery from '../components/about/AboutGallery.astro';
 import AboutHero from '../components/about/AboutHero.astro';
 import AboutJourney from '../components/about/AboutJourney.astro';
 import AboutManifesto from '../components/about/AboutManifesto.astro';
@@ -13,12 +14,8 @@ import { getSiteConfig } from '../config';
 import { tokenUsage } from '../data/token-usage';
 import Base from '../layouts/Base.astro';
 import { sortBlogPostsForArchive } from '../lib/content-dates';
-import { getAllCategories, getAllTags } from '../lib/content-groups';
-import { collectSiteStats } from '../lib/site-stats';
-import { elapsedParts } from '../lib/time';
 import { buildTokenCalendar, expandTokenUsage, summarizeTokenUsage } from '../lib/token-usage';
 import { getUiText } from '../lib/ui-text';
-import { formatCount } from '../lib/word-count';
 import '../styles/about.css';
 
 import cocoaCover from '../assets/figure/covers/cover-08-cocoa.png';
@@ -35,32 +32,19 @@ const siteConfig = await getSiteConfig();
 const { home, profile, site } = siteConfig;
 const ui = getUiText(siteConfig);
 
-const posts = await getCollection('blog', ({ data }) => !data.draft);
 const projects = sortBlogPostsForArchive(
   await getCollection('projects', ({ data }) => !data.draft),
 );
-const siteStats = collectSiteStats(posts);
 
 const established = site.timeEstablished ? new Date(site.timeEstablished) : null;
 const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf()));
 const since = hasEstablished ? String((established as Date).getFullYear()) : '';
 
-const stats = [
-  { label: ui.homeStats.posts, value: String(posts.length) },
-  { label: ui.homeStats.categories, value: String(getAllCategories(posts).length) },
-  { label: ui.homeStats.tags, value: String(getAllTags(posts).length) },
-  { label: ui.siteInfo.totalWords, value: formatCount(siteStats.totalWords, ui.locale) },
-];
-
-if (hasEstablished) {
-  stats.push({
-    label: ui.siteInfo.uptime,
-    value: ui.siteInfo.timeElapsed(elapsedParts(established as Date)),
-  });
-}
-
 const manifesto = about.data.manifesto.length > 0 ? about.data.manifesto : [about.data.description];
 const hasStory = typeof about.body === 'string' && about.body.trim().length > 0;
+
+const moodKeys = ['default', 'joy', 'anger', 'sadness', 'delight'] as const;
+const moods = moodKeys.map((key) => ({ key, label: ui.about.avatarMoods[key] }));
 
 const tokenDays = expandTokenUsage(tokenUsage);
 const tokenSummary = summarizeTokenUsage(tokenDays);
@@ -80,7 +64,9 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
       since={since}
       sinceLabel={ui.about.since}
       kicker={ui.about.kicker}
-      stats={stats}
+      avatarLabel={ui.about.avatarLabel}
+      avatarControls={ui.about.avatarControls}
+      moods={moods}
     />
 
     <AboutManifesto lines={manifesto} now={about.data.now} nowLabel={ui.about.now} />
@@ -143,6 +129,13 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
       index="05"
     />
 
+    <AboutGallery
+      label={ui.about.gallery}
+      title={ui.about.galleryTitle}
+      accent={ui.about.galleryAccent}
+      index="06"
+    />
+
     {
       hasStory && (
         <section class="about-story" aria-labelledby="about-story-title">
@@ -162,7 +155,8 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
       title={ui.about.contactTitle}
       accent={ui.about.contactAccent}
       note={ui.about.contactNote}
-      index="06"
+      status={ui.about.contactStatus}
+      index="07"
     />
   </main>
 </Base>

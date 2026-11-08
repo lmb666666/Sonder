@@ -213,6 +213,15 @@
   },
   "about": {
     "kicker": "About",
+    "avatarLabel": "A pixel portrait made of particles",
+    "avatarControls": "Change portrait mood",
+    "avatarMoods": {
+      "default": "Neutral",
+      "joy": "Joy",
+      "anger": "Anger",
+      "sadness": "Sad",
+      "delight": "Delight"
+    },
     "now": "Now",
     "journey": "Experience",
     "journeyTitle": "Making time",
@@ -242,11 +251,14 @@
     "works": "Projects",
     "worksTitle": "Things I've",
     "worksAccent": "made",
-    "viewProject": "View project",
+    "gallery": "Images",
+    "galleryTitle": "Slices of",
+    "galleryAccent": "everyday life",
     "contact": "Contact",
     "contactTitle": "Got an idea?",
     "contactAccent": "Let's talk.",
     "contactNote": "A project, a technical chat, or just hello.",
+    "contactStatus": "Open to remote work",
     "story": "A note",
     "since": "Since"
   },

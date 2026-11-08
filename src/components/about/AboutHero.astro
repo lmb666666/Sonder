@@ -1,14 +1,15 @@
 ---
 import { ArrowDown, ArrowUpRight } from 'lucide-astro';
-import { withBase } from '../../lib/url';
 
-interface StatItem {
+import AboutAvatar from './AboutAvatar.astro';
+
+interface Mood {
+  key: string;
   label: string;
-  value: string;
 }
 
 interface Props {
-  profile: { name: string; role: string; avatar: string };
+  profile: { name: string; role: string };
   title: string;
   description: string;
   lede: string[];
@@ -18,7 +19,9 @@ interface Props {
   since?: string;
   sinceLabel: string;
   kicker: string;
-  stats: StatItem[];
+  avatarLabel: string;
+  avatarControls: string;
+  moods: Mood[];
 }
 
 const {
@@ -32,7 +35,9 @@ const {
   since = '',
   sinceLabel,
   kicker,
-  stats,
+  avatarLabel,
+  avatarControls,
+  moods,
 } = Astro.props;
 
 const meta = [profile.role, location].map((item) => item.trim()).filter(Boolean);
@@ -86,54 +91,13 @@ const ledeLines = lede.length > 0 ? lede : [description];
           写信给我
           <ArrowUpRight size={15} strokeWidth={1.8} aria-hidden="true" />
         </a>
-        <a class="about-button about-button-quiet" href="#works">
-          看看作品
+        <a class="about-button about-button-quiet" href="#gallery">
+          看看生活
           <ArrowDown size={15} strokeWidth={1.8} aria-hidden="true" />
         </a>
       </div>
     </div>
 
-    <div class="about-seal" aria-hidden="true">
-      <svg class="about-seal-ring" viewBox="0 0 220 220" focusable="false">
-        <defs>
-          <path id="about-seal-path" d="M 110,110 m -84,0 a 84,84 0 1,1 168,0 a 84,84 0 1,1 -168,0"
-          ></path>
-        </defs>
-        <text>
-          <textPath href="#about-seal-path" startOffset="0">
-            SONDER · RECORD &amp; CREATE · {since || '2026'} · SONDER · RECORD &amp; CREATE · {
-              since || '2026'
-            } ·
-          </textPath>
-        </text>
-      </svg>
-      <span class="about-seal-orbit about-seal-orbit-a"></span>
-      <span class="about-seal-orbit about-seal-orbit-b"></span>
-      <span class="about-seal-orbit about-seal-orbit-c"></span>
-      <div class="about-seal-core">
-        <img
-          src={withBase(profile.avatar)}
-          alt=""
-          width="160"
-          height="160"
-          loading="eager"
-          decoding="async"
-        />
-      </div>
-      {subtitle && <p class="about-seal-note">{subtitle}</p>}
-    </div>
+    <AboutAvatar moods={moods} label={avatarLabel} controlsLabel={avatarControls} note={subtitle} />
   </div>
-
-  {
-    stats.length > 0 && (
-      <dl class="about-hero-stats" aria-label="站点统计">
-        {stats.map((item) => (
-          <div>
-            <dt>{item.label}</dt>
-            <dd>{item.value}</dd>
-          </div>
-        ))}
-      </dl>
-    )
-  }
 </header>

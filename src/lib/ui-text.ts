@@ -43,6 +43,15 @@ type RawUiText = {
   };
   about: {
     kicker: string;
+    avatarLabel: string;
+    avatarControls: string;
+    avatarMoods: {
+      default: string;
+      joy: string;
+      anger: string;
+      sadness: string;
+      delight: string;
+    };
     now: string;
     journey: string;
     journeyTitle: string;
@@ -72,11 +81,14 @@ type RawUiText = {
     works: string;
     worksTitle: string;
     worksAccent: string;
-    viewProject: string;
+    gallery: string;
+    galleryTitle: string;
+    galleryAccent: string;
     contact: string;
     contactTitle: string;
     contactAccent: string;
     contactNote: string;
+    contactStatus: string;
     story: string;
     since: string;
   };
