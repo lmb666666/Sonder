@@ -444,13 +444,15 @@ function initTechPhysics(
         wall(body);
       }
 
-      for (let i = 0; i < bodies.length; i += 1) {
-        for (let j = i + 1; j < bodies.length; j += 1) {
-          const a = bodies[i];
-          const b = bodies[j];
-          if (!a || !b) continue;
-          if (elapsed < a.dropDelay || elapsed < b.dropDelay) continue;
-          collide(a, b);
+      for (let pass = 0; pass < 2; pass += 1) {
+        for (let i = 0; i < bodies.length; i += 1) {
+          for (let j = i + 1; j < bodies.length; j += 1) {
+            const a = bodies[i];
+            const b = bodies[j];
+            if (!a || !b) continue;
+            if (elapsed < a.dropDelay || elapsed < b.dropDelay) continue;
+            collide(a, b);
+          }
         }
       }
     }

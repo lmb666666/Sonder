@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 import AboutContact from '../components/about/AboutContact.astro';
 import AboutGallery from '../components/about/AboutGallery.astro';
@@ -27,7 +27,6 @@ if (!about) {
   throw new Error('Missing src/content/about.md content entry.');
 }
 
-const { Content } = await render(about);
 const siteConfig = await getSiteConfig();
 const { home, profile, site } = siteConfig;
 const ui = getUiText(siteConfig);
@@ -41,7 +40,6 @@ const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf(
 const since = hasEstablished ? String((established as Date).getFullYear()) : '';
 
 const manifesto = about.data.manifesto.length > 0 ? about.data.manifesto : [about.data.description];
-const hasStory = typeof about.body === 'string' && about.body.trim().length > 0;
 
 const moodKeys = ['default', 'joy', 'anger', 'sadness', 'delight'] as const;
 const moods = moodKeys.map((key) => ({ key, label: ui.about.avatarMoods[key] }));
@@ -135,19 +133,6 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
       accent={ui.about.galleryAccent}
       index="06"
     />
-
-    {
-      hasStory && (
-        <section class="about-story" aria-labelledby="about-story-title">
-          <h2 class="about-section-label" id="about-story-title">
-            {ui.about.story}
-          </h2>
-          <div class="about-story-prose">
-            <Content />
-          </div>
-        </section>
-      )
-    }
 
     <AboutContact
       links={home.links}

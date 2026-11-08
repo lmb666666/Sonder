@@ -1,6 +1,6 @@
 ---
 title: 'Youlin'
-description: '自托管的友链与朋友圈服务：Hono + SQLite，把朋友页的数据留在自己的服务器。'
+description: '自托管的友链与朋友圈服务。'
 date: '2026-10-20T00:00:00+08:00'
 draft: false
 showHeroImage: false
