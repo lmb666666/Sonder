@@ -10,7 +10,6 @@ interface Props {
   locale: string;
   label: string;
   title: string;
-  accent: string;
   index: string;
   cardTitle: string;
   cardSubtitle: string;
@@ -27,7 +26,7 @@ interface Props {
   };
 }
 
-const { calendar, summary, locale, label, title, accent, index, cardTitle, cardSubtitle, labels } =
+const { calendar, summary, locale, label, title, index, cardTitle, cardSubtitle, labels } =
   Astro.props;
 
 const dayLabel = (index: number) =>
@@ -52,11 +51,7 @@ const dayUnit = locale.startsWith('zh') ? '天' : 'days';
           <span>{index}</span>
           {label}
         </p>
-        <h2>
-          {title}
-          <br />
-          <em>{accent}</em>
-        </h2>
+        <h2>{title}</h2>
       </header>
 
       <article class="about-token-card" aria-labelledby="about-token-title">

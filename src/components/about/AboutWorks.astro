@@ -7,52 +7,55 @@ import SmartImage from '../SmartImage.astro';
 
 interface Props {
   projects: CollectionEntry<'projects'>[];
-  covers: (ImageMetadata | string)[];
+  images: Record<string, ImageMetadata | string>;
   label: string;
   title: string;
-  accent: string;
   index: string;
 }
 
-const { projects, covers, label, title, accent, index } = Astro.props;
+const { projects, images, label, title, index } = Astro.props;
 ---
 
 {
   projects.length > 0 && (
-    <section class="about-chapter about-works" id="works" data-about-works>
+    <section class="about-chapter about-works" id="works">
       <header class="about-section-head">
         <p class="about-section-label">
           <span>{index}</span>
           {label}
         </p>
-        <h2>
-          {title}
-          <br />
-          <em>{accent}</em>
-        </h2>
+        <h2>{title}</h2>
       </header>
 
-      <div class="about-works-list">
-        {projects.map((project, projectIndex) => {
+      <div class="about-works-grid">
+        {projects.map((project) => {
           const link = project.data.links[0]?.href;
-          const year = project.data.date.getFullYear();
-          const cover = covers[projectIndex % covers.length] ?? covers[0];
+          const image = images[project.id];
           return (
             <a
-              class="about-work"
+              class="about-work-card"
               href={link}
               target={link?.startsWith('http') ? '_blank' : undefined}
               rel={link?.startsWith('http') ? 'noreferrer' : undefined}
-              data-work-index={projectIndex}
             >
-              <span class="about-work-index" aria-hidden="true">
-                {String(projectIndex + 1).padStart(2, '0')}
-              </span>
-              <span class="about-work-year" aria-hidden="true">
-                {year}
-              </span>
-              <div class="about-work-copy">
-                <h3>{project.data.title}</h3>
+              {image && (
+                <div class="about-work-media">
+                  <SmartImage
+                    src={image}
+                    alt=""
+                    widths={[640, 960, 1200]}
+                    sizes="(max-width: 760px) 100vw, 50vw"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div class="about-work-body">
+                <div class="about-work-title">
+                  <h3>{project.data.title}</h3>
+                  <span aria-hidden="true">
+                    <ArrowUpRight size={17} strokeWidth={1.7} />
+                  </span>
+                </div>
                 <p>{project.data.description}</p>
                 {project.data.tags.length > 0 && (
                   <ul class="about-work-tags">
@@ -62,33 +65,8 @@ const { projects, covers, label, title, accent, index } = Astro.props;
                   </ul>
                 )}
               </div>
-              <span class="about-work-arrow" aria-hidden="true">
-                <ArrowUpRight size={17} strokeWidth={1.7} />
-              </span>
-              {cover && (
-                <span class="about-work-thumb" aria-hidden="true">
-                  <SmartImage
-                    src={cover}
-                    alt=""
-                    widths={[360, 720]}
-                    sizes="(max-width: 760px) 100vw, 320px"
-                    loading="lazy"
-                  />
-                </span>
-              )}
             </a>
           );
-        })}
-      </div>
-
-      <div class="about-works-preview" aria-hidden="true">
-        {projects.map((_, projectIndex) => {
-          const cover = covers[projectIndex % covers.length] ?? covers[0];
-          return cover ? (
-            <div class="about-works-preview-item" data-work-preview={projectIndex}>
-              <SmartImage src={cover} alt="" widths={[420, 720]} sizes="340px" loading="lazy" />
-            </div>
-          ) : null;
         })}
       </div>
     </section>

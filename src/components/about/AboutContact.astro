@@ -14,13 +14,12 @@ interface Props {
   links: ContactLink[];
   label: string;
   title: string;
-  accent: string;
   note: string;
   status: string;
   index: string;
 }
 
-const { links, label, title, accent, note, status, index } = Astro.props;
+const { links, label, title, note, status, index } = Astro.props;
 
 const channels = links.map((link) => {
   const isMail = link.icon === 'mail';
@@ -55,11 +54,7 @@ const secondary = channels.filter((channel) => channel.icon !== 'mail');
   </header>
 
   <div class="about-contact-main">
-    <h2>
-      {title}
-      <br />
-      <em>{accent}</em>
-    </h2>
+    <h2>{title}</h2>
     {
       email && (
         <a class="about-contact-email" href={email.href}>

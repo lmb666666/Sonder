@@ -1,27 +1,21 @@
 ---
 import { ArrowDown, ArrowUpRight } from 'lucide-astro';
 
-import AboutAvatar from './AboutAvatar.astro';
-
-interface Mood {
-  key: string;
-  label: string;
-}
+import AboutAvatar from './AboutAvatar';
 
 interface Props {
   profile: { name: string; role: string };
   title: string;
   description: string;
   lede: string[];
-  subtitle?: string;
+  avatarUrl: string;
+  avatarIcon: string;
+  handle: string;
   location?: string;
   status?: string;
   since?: string;
   sinceLabel: string;
   kicker: string;
-  avatarLabel: string;
-  avatarControls: string;
-  moods: Mood[];
 }
 
 const {
@@ -29,15 +23,14 @@ const {
   title,
   description,
   lede,
-  subtitle = '',
+  avatarUrl,
+  avatarIcon,
+  handle,
   location = '',
   status = '',
   since = '',
   sinceLabel,
   kicker,
-  avatarLabel,
-  avatarControls,
-  moods,
 } = Astro.props;
 
 const meta = [profile.role, location].map((item) => item.trim()).filter(Boolean);
@@ -98,6 +91,15 @@ const ledeLines = lede.length > 0 ? lede : [description];
       </div>
     </div>
 
-    <AboutAvatar moods={moods} label={avatarLabel} controlsLabel={avatarControls} note={subtitle} />
+    <AboutAvatar
+      name={profile.name}
+      title={profile.role}
+      handle={handle}
+      status={location || status}
+      avatarUrl={avatarUrl}
+      iconUrl={avatarIcon}
+      miniAvatarUrl={avatarIcon}
+      client:visible
+    />
   </div>
 </header>
