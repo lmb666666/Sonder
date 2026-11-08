@@ -730,6 +730,7 @@
 
 .about-tech-board:not(.is-physics) .about-tech-pill,
 .about-tech-board:not(.is-physics) .about-tech-reset {
+  visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
@@ -737,6 +738,7 @@
 @media (scripting: none) {
   .about-tech-board:not(.is-physics) .about-tech-pill,
   .about-tech-board:not(.is-physics) .about-tech-reset {
+    visibility: visible;
     opacity: 1;
     pointer-events: auto;
   }

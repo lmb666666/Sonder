@@ -13,6 +13,8 @@ interface PhysicsBody {
   va: number;
   dropDelay: number;
   dragging: boolean;
+  sleeping: boolean;
+  restFrames: number;
 }
 
 interface DragState {
@@ -291,6 +293,7 @@ function initTechPhysics(
   let drag: DragState | null = null;
   let resizeFrame = 0;
   let activated = false;
+  let settleDeadline = Number.POSITIVE_INFINITY;
 
   const measure = () => {
     width = board.clientWidth;
@@ -299,6 +302,25 @@ function initTechPhysics(
       body.w = pillEls[index]?.offsetWidth ?? body.w;
       body.h = pillEls[index]?.offsetHeight ?? body.h;
     });
+  };
+
+  const wake = (body: PhysicsBody) => {
+    body.sleeping = false;
+    body.restFrames = 0;
+  };
+
+  const wakeAll = () => bodies.forEach(wake);
+
+  const freezeAll = () => {
+    bodies.forEach((body) => {
+      if (body.dragging) return;
+      body.vx = 0;
+      body.vy = 0;
+      body.va = 0;
+      body.sleeping = true;
+      renderBody(body);
+    });
+    idleFrames = 0;
   };
 
   const resetLayout = () => {
@@ -314,6 +336,8 @@ function initTechPhysics(
       body.vy = 0;
       body.va = 0;
       body.dragging = false;
+      body.sleeping = false;
+      body.restFrames = 0;
       if (cursorX + body.w > width - margin) {
         cursorX = margin;
         cursorY -= rowHeight + gap;
@@ -326,6 +350,7 @@ function initTechPhysics(
       renderBody(body);
     });
     idleFrames = 0;
+    settleDeadline = performance.now() + 900;
   };
 
   const drop = () => {
@@ -334,6 +359,7 @@ function initTechPhysics(
     const usable = Math.max(1, width - margin * 2);
     elapsed = 0;
     idleFrames = 0;
+    settleDeadline = performance.now() + 3200;
     bodies.forEach((body, index) => {
       body.vx = ((index % 3) - 1) * 28;
       body.vy = 0;
@@ -343,6 +369,8 @@ function initTechPhysics(
       body.y = -body.h / 2 - (index % 5) * 38 - 24;
       body.dropDelay = index * 0.045;
       body.dragging = false;
+      body.sleeping = false;
+      body.restFrames = 0;
       renderBody(body);
     });
     start();
@@ -375,6 +403,7 @@ function initTechPhysics(
   };
 
   const collide = (a: PhysicsBody, b: PhysicsBody) => {
+    if (a.sleeping && b.sleeping) return;
     if (a.y < -a.h || b.y < -b.h) return;
     const [a0, a1] = capsuleEnds(a);
     const [b0, b1] = capsuleEnds(b);
@@ -393,8 +422,8 @@ function initTechPhysics(
     nx /= distance;
     ny /= distance;
     const overlap = minDistance - distance;
-    const invA = a.dragging ? 0 : 1 / a.w;
-    const invB = b.dragging ? 0 : 1 / b.w;
+    const invA = a.dragging || a.sleeping ? 0 : 1 / a.w;
+    const invB = b.dragging || b.sleeping ? 0 : 1 / b.w;
     const invSum = invA + invB || 1;
 
     a.x -= nx * overlap * (invA / invSum);
@@ -411,18 +440,16 @@ function initTechPhysics(
       a.vy -= impulse * ny * invA;
       b.vx += impulse * nx * invB;
       b.vy += impulse * ny * invB;
-
-      const rax = pa.x - a.x;
-      const ray = pa.y - a.y;
-      const rbx = pb.x - b.x;
-      const rby = pb.y - b.y;
-      a.va += (rax * (impulse * ny) - ray * (impulse * nx)) * 0.00035;
-      b.va -= (rbx * (impulse * ny) - rby * (impulse * nx)) * 0.00035;
     }
   };
 
   const step = (time: number) => {
     raf = 0;
+    if (!drag && performance.now() > settleDeadline) {
+      freezeAll();
+      lastTime = 0;
+      return;
+    }
     if (!lastTime) lastTime = time;
     const dt = Math.min((time - lastTime) / 1000, 0.025);
     lastTime = time;
@@ -433,7 +460,7 @@ function initTechPhysics(
 
     for (let sub = 0; sub < substeps; sub += 1) {
       for (const body of bodies) {
-        if (body.dragging || elapsed < body.dropDelay) continue;
+        if (body.sleeping || body.dragging || elapsed < body.dropDelay) continue;
         body.vy += 1480 * subDt;
         body.vx *= Math.pow(0.995, 60 * subDt);
         body.va *= Math.pow(0.986, 60 * subDt);
@@ -458,8 +485,24 @@ function initTechPhysics(
     }
 
     bodies.forEach((body) => {
+      if (!body.sleeping && !body.dragging && elapsed > body.dropDelay) {
+        const speed = Math.hypot(body.vx, body.vy);
+        if (speed < 14 && Math.abs(body.va) < 0.025) {
+          body.restFrames += 1;
+          if (body.restFrames > 16) {
+            body.sleeping = true;
+            body.vx = 0;
+            body.vy = 0;
+            body.va = 0;
+          }
+        } else {
+          body.restFrames = 0;
+        }
+      }
+
       renderBody(body);
       if (
+        !body.sleeping &&
         !body.dragging &&
         elapsed > body.dropDelay &&
         (Math.abs(body.vx) > 8 || Math.abs(body.vy) > 8 || Math.abs(body.va) > 0.035)
@@ -499,6 +542,8 @@ function initTechPhysics(
     const index = Number(pill.dataset.index);
     const body = bodies[index];
     if (!body) return;
+    wakeAll();
+    settleDeadline = Number.POSITIVE_INFINITY;
     const rect = board.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
@@ -550,6 +595,7 @@ function initTechPhysics(
     drag.body.dragging = false;
     pillEls.forEach((pill) => pill.classList.remove('is-dragging'));
     drag = null;
+    settleDeadline = performance.now() + 2200;
     start();
   };
 
@@ -572,6 +618,8 @@ function initTechPhysics(
     body.y = clamp(body.y + vector.y, extent.y + 3, height - extent.y - 3);
     body.vx = vector.x * 4;
     body.vy = vector.y * 4;
+    wake(body);
+    settleDeadline = performance.now() + 1800;
     renderBody(body);
     start();
   };
@@ -603,6 +651,8 @@ function initTechPhysics(
       va: 0,
       dropDelay: index * 0.045,
       dragging: false,
+      sleeping: false,
+      restFrames: 0,
     });
   });
 
