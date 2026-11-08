@@ -297,7 +297,7 @@ const momentsPageSchema = z.object({
   subtitle: z.string().optional().default('记录生活点滴。'),
   note: z.string().optional().default(''),
   // Ech0 后端地址（可选）。配置后页面在浏览器里从 Ech0 拉取动态；
-  // 留空则展示仓库内置演示数据。
+  // 留空则展示仓库内置演示数据。音乐卡使用 [config.music].meting_api。
   apiUrl: z.string().optional().default(''),
   pageSize: z.number().int().positive().optional().default(20),
   showPoweredBy: z.boolean().optional().default(true),
@@ -384,7 +384,8 @@ export const siteConfigSchema = z.object({
     .default(defaultMarkdownConfig),
   music: z
     .object({
-      // Meting API 实例地址模板，支持 :server/:type/:id/:r 占位符
+      // Meting API 实例地址模板，支持 :server/:type/:id/:r 占位符；
+      // ::music 指令与动态页音乐卡共用（动态页额外支持酷狗单曲）。
       meting_api: z.string().optional().default(''),
     })
     .optional()

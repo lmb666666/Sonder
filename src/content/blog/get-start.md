@@ -65,6 +65,8 @@ src/content/
 
 动态页的演示数据在 `src/data/moments.ts`；朋友页的友链与朋友圈演示数据在 `src/data/`。
 
+动态页会自动把音乐、视频、GitHub、网站、位置与推文渲染成对应卡片；音乐播放依赖 `[config.music].meting_api`，留空或不可达时保留平台链接卡，网易云音频失败会降级官方外链播放器。
+
 ## 构建与部署
 
 ```bash

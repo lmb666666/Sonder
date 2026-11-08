@@ -1,18 +1,4 @@
-export interface MomentItem {
-  id: string;
-  content: string;
-  /** ISO 日期 */
-  date: string;
-  tags?: string[];
-  images?: string[];
-  video?: { provider: 'bilibili' | 'youtube'; id: string };
-  extension?: {
-    type: 'github' | 'website' | 'music' | 'location';
-    title: string;
-    description?: string;
-    url?: string;
-  };
-}
+import type { MomentItem } from '../lib/moments';
 
 /**
  * 动态页内置演示数据。配置 Ech0 后端（site.toml [config.pages.moments].apiUrl）
@@ -42,8 +28,12 @@ export const demoMoments: MomentItem[] = [
     id: 'demo-7',
     content: '傍晚的江边，风把云吹成了鱼鳞的样子。',
     date: '2026-10-15T18:47:00+08:00',
-    // 演示数据不引用不存在的图片（原先是 3 个死链）；需要演示图片时放文件到 public/images 后再填路径
     tags: ['生活'],
+    images: [
+      '/images/moments/river-sage.png',
+      '/images/moments/river-ink.png',
+      '/images/moments/river-sand.png',
+    ],
   },
   {
     id: 'demo-6',
@@ -59,17 +49,17 @@ export const demoMoments: MomentItem[] = [
     tags: ['音乐'],
     extension: {
       type: 'music',
-      title: 'Another Love',
-      description: 'Tom Odell',
-      url: 'https://music.163.com/#/song?id=27919318',
+      title: 'Baby Blue',
+      description: 'Badfinger',
+      url: 'https://music.163.com/#/song?id=36668690',
     },
   },
   {
     id: 'demo-4',
     content: '新键盘到了。轴体是静音红的，深夜写东西再也不吵到人。',
     date: '2026-09-19T23:40:00+08:00',
-    // 同上：避免死链
     tags: ['数码'],
+    images: ['/images/moments/keyboard-apricot.png'],
   },
   {
     id: 'demo-3',
@@ -80,6 +70,13 @@ export const demoMoments: MomentItem[] = [
       title: '老城区',
     },
     tags: ['生活', '出差'],
+    images: [
+      '/images/moments/oldtown-cocoa.png',
+      '/images/moments/oldtown-steel.png',
+      '/images/moments/river-sage.png',
+      '/images/moments/river-sand.png',
+      '/images/moments/river-ink.png',
+    ],
   },
   {
     id: 'demo-2',

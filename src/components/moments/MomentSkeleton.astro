@@ -1,0 +1,18 @@
+---
+const rows = [0, 1, 2];
+---
+
+<div class="moments-skeleton" data-moments-skeleton aria-hidden="true">
+  {
+    rows.map(() => (
+      <div class="moments-skeleton-row">
+        <div class="moments-skeleton-date" />
+        <div class="moments-skeleton-body">
+          <span class="moments-skeleton-line moments-skeleton-line--short" />
+          <span class="moments-skeleton-line" />
+          <span class="moments-skeleton-line moments-skeleton-line--medium" />
+        </div>
+      </div>
+    ))
+  }
+</div>

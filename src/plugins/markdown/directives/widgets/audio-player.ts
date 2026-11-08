@@ -1,5 +1,8 @@
 /** 音乐播放器：原生 audio 控制与跑马灯测量（对应播放器指令输出）。 */
 
+/** 同页互斥：同一时间只允许一个播放器出声（v1 行为）。 */
+let activeAudio: HTMLAudioElement | null = null;
+
 const formatTime = (seconds: number) => {
   if (!Number.isFinite(seconds)) return '0:00';
   return `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
@@ -98,7 +101,11 @@ export function initAudioPlayers() {
       );
     audio.addEventListener('loadedmetadata', sync);
     audio.addEventListener('timeupdate', sync);
-    audio.addEventListener('play', syncButton);
+    audio.addEventListener('play', () => {
+      if (activeAudio && activeAudio !== audio) activeAudio.pause();
+      activeAudio = audio;
+      syncButton();
+    });
     audio.addEventListener('pause', syncButton);
     audio.addEventListener('ended', syncButton);
     window.addEventListener('resize', marquee);
@@ -112,5 +119,6 @@ export function initAudioPlayers() {
 export function pauseAudioPlayers() {
   document.querySelectorAll('[data-sonder-audio-player] [data-audio]').forEach((audio) => {
     (audio as HTMLAudioElement).pause();
+    if (activeAudio === audio) activeAudio = null;
   });
 }

@@ -3,6 +3,11 @@ import { musicThemeStyle, type MusicThemeName } from './music-theme.js';
 import type { AttributeValue, MdastNode } from './handlers.js';
 import { buildLinkCard, wrapHast } from './handlers.js';
 import { icon } from './icons.js';
+import {
+  parseNeteaseMusicUrl,
+  parseTencentMusicUrl,
+  type MusicType,
+} from '../../../lib/music-url.js';
 
 /**
  * 音乐指令渲染：构建期输出原生播放器 / 官方 embed / 曲目卡片 / 链接卡片。
@@ -246,26 +251,12 @@ export function buildAudioPlayerNode(options: AudioPlayerOptions): MdastNode {
 // ─── 平台目标解析 ─────────────────────────────────────────
 
 export type MusicServer = 'netease' | 'tencent';
-export type MusicType = 'song' | 'playlist' | 'album' | 'radio';
 export type MetingType = Exclude<MusicType, 'radio'>;
 export type EmbedProvider = 'spotify' | 'soundcloud' | 'apple-music' | 'bandcamp';
 
 export type MusicTarget =
   | { kind: 'meting'; server: MusicServer; type: MusicType; id: string; pageUrl: string }
   | { kind: 'embed'; provider: EmbedProvider; url: string; embedUrl: string };
-
-const NETEASE_PATH_TYPES: Record<string, MusicType> = {
-  song: 'song',
-  playlist: 'playlist',
-  album: 'album',
-  program: 'radio',
-};
-
-const TENCENT_PATH_TYPES: Record<string, MusicType> = {
-  songdetail: 'song',
-  playlist: 'playlist',
-  album: 'album',
-};
 
 const NETEASE_OUTCHAIN: Record<MusicType, { type: string; height: string }> = {
   song: { type: '2', height: '86' },
@@ -297,40 +288,6 @@ function normalizeMusicType(value: string | undefined): MusicType | undefined {
   return value === 'song' || value === 'playlist' || value === 'album' || value === 'radio'
     ? value
     : undefined;
-}
-
-/** 从 music.163.com 链接识别类型与 ID（兼容 /#/song?id=… 旧式 hash 路由）。 */
-export function parseNeteaseUrl(value: string): { type: MusicType; id: string } | undefined {
-  try {
-    const parsed = new URL(value);
-    if (!/(^|\.)music\.163\.com$/i.test(parsed.hostname)) return undefined;
-    const source = parsed.hash.startsWith('#/')
-      ? parsed.hash.slice(1)
-      : `${parsed.pathname}${parsed.search}`;
-    const [path, query = ''] = source.split('?');
-    const id = new URLSearchParams(query).get('id') ?? '';
-    const segment = path.split('/').filter(Boolean)[0] ?? '';
-    const type = NETEASE_PATH_TYPES[segment];
-    if (!type || !/^\d+$/.test(id)) return undefined;
-    return { type, id };
-  } catch {
-    return undefined;
-  }
-}
-
-/** 从 y.qq.com 链接识别类型与 ID（歌曲/专辑 mid 为字母数字）。 */
-export function parseTencentUrl(value: string): { type: MusicType; id: string } | undefined {
-  try {
-    const parsed = new URL(value);
-    if (!/(^|\.)y\.qq\.com$/i.test(parsed.hostname)) return undefined;
-    const match = parsed.pathname.match(/\/(songDetail|playlist|album)\/([\w-]+)/i);
-    if (!match) return undefined;
-    const type = TENCENT_PATH_TYPES[match[1]!.toLowerCase()];
-    if (!type) return undefined;
-    return { type, id: match[2]! };
-  } catch {
-    return undefined;
-  }
 }
 
 function isHost(value: string, hosts: string[]): boolean {
@@ -389,8 +346,8 @@ export function resolveMusicTarget(
       url === undefined
         ? undefined
         : targetServer === 'netease'
-          ? parseNeteaseUrl(url)
-          : parseTencentUrl(url);
+          ? parseNeteaseMusicUrl(url)
+          : parseTencentMusicUrl(url);
     const targetId = id ?? parsed?.id;
     if (!targetId) return undefined;
     const type = requestedType ?? parsed?.type ?? 'playlist';
@@ -422,8 +379,8 @@ export function resolveMusicTarget(
     return id ? resolveMeting('netease') : undefined;
   }
 
-  if (parseNeteaseUrl(url)) return resolveMeting('netease');
-  if (parseTencentUrl(url)) return resolveMeting('tencent');
+  if (parseNeteaseMusicUrl(url)) return resolveMeting('netease');
+  if (parseTencentMusicUrl(url)) return resolveMeting('tencent');
 
   const embedProvider = embedProviderForUrl(url);
   if (embedProvider) {
