@@ -13,12 +13,13 @@ interface Props {
   tools: Tool[];
   label: string;
   title: string;
+  accent: string;
   index: string;
   hint: string;
   resetLabel: string;
 }
 
-const { tools, label, title, index, hint, resetLabel } = Astro.props;
+const { tools, label, title, accent, index, hint, resetLabel } = Astro.props;
 
 const [primary, secondary, language, writer] = tools;
 ---
@@ -31,7 +32,11 @@ const [primary, secondary, language, writer] = tools;
           <span>{index}</span>
           {label}
         </p>
-        <h2>{title}</h2>
+        <h2>
+          {title}
+          <br />
+          <em>{accent}</em>
+        </h2>
       </header>
 
       <div class="about-tech-body">

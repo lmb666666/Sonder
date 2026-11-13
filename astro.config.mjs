@@ -4,7 +4,6 @@ import fs from 'node:fs';
 import { unified } from '@astrojs/markdown-remark';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
-import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import expressiveCode, { defineEcConfig, setAlpha } from 'astro-expressive-code';
@@ -198,10 +197,5 @@ export default defineConfig({
       rehypePlugins: markdown.rehypePlugins,
     }),
   },
-  integrations: [
-    ...markdown.integrations,
-    react(),
-    expressiveCode(expressiveCodeConfig),
-    sitemap(),
-  ],
+  integrations: [...markdown.integrations, expressiveCode(expressiveCodeConfig), sitemap()],
 });

@@ -1,0 +1,35 @@
+---
+interface Mood {
+  key: string;
+  label: string;
+}
+
+interface Props {
+  moods: Mood[];
+  label: string;
+  controlsLabel: string;
+  note?: string;
+}
+
+const { moods, label, controlsLabel, note = '' } = Astro.props;
+---
+
+<div class="about-avatar" data-avatar>
+  <div class="about-avatar-portrait" data-avatar-portrait>
+    <canvas data-avatar-canvas role="img" aria-label={label}></canvas>
+  </div>
+  <div class="about-avatar-controls" role="group" aria-label={controlsLabel}>
+    {
+      moods.map((mood, index) => (
+        <button
+          type="button"
+          data-avatar-mood={mood.key}
+          aria-pressed={index === 0 ? 'true' : 'false'}
+        >
+          {mood.label}
+        </button>
+      ))
+    }
+  </div>
+  {note && <p class="about-avatar-note">{note}</p>}
+</div>

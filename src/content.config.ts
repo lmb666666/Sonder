@@ -47,14 +47,21 @@ const aboutSchema = z.object({
   title: z.string(),
   description: z.string(),
   lede: z.array(z.string()).optional().default([]),
+  subtitle: z.string().optional().default(''),
   location: z.string().optional().default(''),
   status: z.string().optional().default(''),
+  manifesto: z.array(z.string()).optional().default([]),
+  now: z
+    .array(z.object({ label: z.string(), value: z.string() }))
+    .optional()
+    .default([]),
   journey: z
     .array(
       z.object({
         year: z.string(),
         label: z.string(),
         meta: z.string().optional().default(''),
+        description: z.string().optional().default(''),
         color: aboutColorSchema.optional(),
       }),
     )
@@ -64,6 +71,8 @@ const aboutSchema = z.object({
     .array(
       z.object({
         title: z.string(),
+        description: z.string(),
+        glyph: z.string().optional().default(''),
         tags: z.array(z.string()).optional().default([]),
       }),
     )

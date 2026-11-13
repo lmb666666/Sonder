@@ -1,3 +1,5 @@
+import { initParticleAvatar } from './about-avatar';
+
 type Point = { x: number; y: number };
 interface PhysicsBody {
   el: HTMLButtonElement;
@@ -106,7 +108,9 @@ export function initAboutPage(): () => void {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const revealTargets = Array.from(
-    page.querySelectorAll<HTMLElement>('.about-chapter, .about-gallery, .about-contact'),
+    page.querySelectorAll<HTMLElement>(
+      '.about-manifesto, .about-chapter, .about-gallery, .about-story, .about-contact',
+    ),
   );
   if (revealTargets.length > 0) {
     if (reducedMotion || !('IntersectionObserver' in window)) {
@@ -129,12 +133,141 @@ export function initAboutPage(): () => void {
     }
   }
 
+  const avatar = page.querySelector<HTMLElement>('[data-avatar]');
+  if (avatar) cleanups.push(initParticleAvatar(avatar));
+
+  initJourney(page, controller, cleanups);
+  initWorks(page, controller, cleanups);
   initTechPhysics(page, controller, cleanups, reducedMotion);
 
   return () => {
     controller.abort();
     cleanups.forEach((cleanup) => cleanup());
   };
+}
+
+function initJourney(page: HTMLElement, controller: AbortController, cleanups: Array<() => void>) {
+  const section = page.querySelector<HTMLElement>('[data-about-journey]');
+  if (!section) return;
+
+  const items = Array.from(section.querySelectorAll<HTMLElement>('[data-journey-item]'));
+  const yearDisplay = section.querySelector<HTMLElement>('[data-journey-year]');
+  const countDisplay = section.querySelector<HTMLElement>('[data-journey-count]');
+  if (items.length === 0 || !yearDisplay || !countDisplay) return;
+
+  let activeIndex = 0;
+  const setActive = (index: number) => {
+    const item = items[index];
+    if (!item) return;
+    activeIndex = index;
+    yearDisplay.textContent = item.dataset.year ?? '';
+    countDisplay.textContent = `${String(index + 1).padStart(2, '0')} / ${String(
+      items.length,
+    ).padStart(2, '0')}`;
+    section.style.setProperty('--journey-accent', item.dataset.color || 'var(--paper-accent)');
+    items.forEach((entry, entryIndex) => {
+      entry.classList.toggle('is-active', entryIndex === index);
+    });
+  };
+
+  items.forEach((item, index) => {
+    item.addEventListener('pointerenter', () => setActive(index), {
+      signal: controller.signal,
+    });
+    item.addEventListener('focusin', () => setActive(index), { signal: controller.signal });
+  });
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const index = items.indexOf(entry.target as HTMLElement);
+          if (index >= 0) setActive(index);
+        });
+      },
+      { rootMargin: '-38% 0px -42% 0px', threshold: 0 },
+    );
+    items.forEach((item) => observer.observe(item));
+    cleanups.push(() => observer.disconnect());
+  } else {
+    setActive(activeIndex);
+  }
+}
+
+function initWorks(page: HTMLElement, controller: AbortController, cleanups: Array<() => void>) {
+  const section = page.querySelector<HTMLElement>('[data-about-works]');
+  if (!section) return;
+
+  const list = section.querySelector<HTMLElement>('.about-works-list');
+  const items = Array.from(section.querySelectorAll<HTMLElement>('[data-work-index]'));
+  const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-work-preview]'));
+  if (!list || items.length === 0 || previews.length === 0) return;
+
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let active = -1;
+
+  const setActive = (index: number) => {
+    active = index;
+    section.dataset.active = index >= 0 ? String(index) : '';
+    section.classList.toggle('is-previewing', index >= 0);
+    previews.forEach((preview, previewIndex) => {
+      preview.classList.toggle('is-active', previewIndex === index);
+    });
+  };
+
+  if (finePointer) {
+    list.addEventListener(
+      'pointermove',
+      (event) => {
+        if (active < 0) return;
+        const rect = section.getBoundingClientRect();
+        section.style.setProperty(
+          '--preview-x',
+          `${clamp(event.clientX - rect.left, 160, rect.width - 160)}px`,
+        );
+        section.style.setProperty(
+          '--preview-y',
+          `${clamp(event.clientY - rect.top, 140, rect.height - 140)}px`,
+        );
+      },
+      { signal: controller.signal },
+    );
+    list.addEventListener(
+      'pointerleave',
+      (event) => {
+        if (event.pointerType === 'mouse') setActive(-1);
+      },
+      { signal: controller.signal },
+    );
+    items.forEach((item, index) => {
+      item.addEventListener('pointerenter', () => setActive(index), {
+        signal: controller.signal,
+      });
+    });
+  }
+
+  list.addEventListener(
+    'focusin',
+    (event) => {
+      const item = (event.target as HTMLElement).closest<HTMLElement>('[data-work-index]');
+      if (!item) return;
+      const index = items.indexOf(item);
+      if (index < 0) return;
+      section.style.setProperty('--preview-x', '78%');
+      section.style.setProperty('--preview-y', '50%');
+      setActive(index);
+    },
+    { signal: controller.signal },
+  );
+  list.addEventListener(
+    'focusout',
+    (event) => {
+      if (!list.contains(event.relatedTarget as Node | null)) setActive(-1);
+    },
+    { signal: controller.signal },
+  );
+  cleanups.push(() => setActive(-1));
 }
 
 function initTechPhysics(

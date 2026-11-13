@@ -5,6 +5,7 @@ import AboutContact from '../components/about/AboutContact.astro';
 import AboutGallery from '../components/about/AboutGallery.astro';
 import AboutHero from '../components/about/AboutHero.astro';
 import AboutJourney from '../components/about/AboutJourney.astro';
+import AboutManifesto from '../components/about/AboutManifesto.astro';
 import AboutSkills from '../components/about/AboutSkills.astro';
 import AboutTechStack from '../components/about/AboutTechStack.astro';
 import AboutTokens from '../components/about/AboutTokens.astro';
@@ -12,14 +13,13 @@ import AboutWorks from '../components/about/AboutWorks.astro';
 import { getSiteConfig } from '../config';
 import { tokenUsage } from '../data/token-usage';
 import Base from '../layouts/Base.astro';
-import { sortBlogPostsForArchive, sortByDateDesc } from '../lib/content-dates';
+import { sortBlogPostsForArchive } from '../lib/content-dates';
 import { buildTokenCalendar, expandTokenUsage, summarizeTokenUsage } from '../lib/token-usage';
 import { getUiText } from '../lib/ui-text';
-import { withBase } from '../lib/url';
 import '../styles/about.css';
 
-import sonderShot from '../assets/figure/projects/sonder.png';
-import youlinShot from '../assets/figure/projects/youlin.png';
+import cocoaCover from '../assets/figure/covers/cover-08-cocoa.png';
+import steelCover from '../assets/figure/covers/cover-13-steel.png';
 
 const [about] = await getCollection('about');
 
@@ -34,14 +34,15 @@ const ui = getUiText(siteConfig);
 const projects = sortBlogPostsForArchive(
   await getCollection('projects', ({ data }) => !data.draft),
 );
-const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft))
-  .filter((post) => Boolean(post.data.heroImage))
-  .slice(0, 3);
 
 const established = site.timeEstablished ? new Date(site.timeEstablished) : null;
 const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf()));
 const since = hasEstablished ? String((established as Date).getFullYear()) : '';
-const siteHost = (site.url || 'sonder.liang.one').replace(/^https?:\/\//i, '').replace(/\/$/, '');
+
+const manifesto = about.data.manifesto.length > 0 ? about.data.manifesto : [about.data.description];
+
+const moodKeys = ['default', 'joy', 'anger', 'sadness', 'delight'] as const;
+const moods = moodKeys.map((key) => ({ key, label: ui.about.avatarMoods[key] }));
 
 const tokenDays = expandTokenUsage(tokenUsage);
 const tokenSummary = summarizeTokenUsage(tokenDays);
@@ -55,24 +56,40 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
       title={about.data.title}
       description={about.data.description}
       lede={about.data.lede}
-      avatarUrl={withBase('/images/about-avatar.png')}
-      avatarIcon={withBase(profile.avatar)}
-      handle={siteHost}
+      subtitle={about.data.subtitle}
       location={about.data.location}
       status={about.data.status}
       since={since}
       sinceLabel={ui.about.since}
       kicker={ui.about.kicker}
+      avatarLabel={ui.about.avatarLabel}
+      avatarControls={ui.about.avatarControls}
+      moods={moods}
     />
 
-    <AboutJourney items={about.data.journey} label="" title={ui.about.journeyTitle} index="01" />
+    <AboutManifesto lines={manifesto} now={about.data.now} nowLabel={ui.about.now} />
 
-    <AboutSkills items={about.data.skills} label="" title={ui.about.skillsTitle} index="02" />
+    <AboutJourney
+      items={about.data.journey}
+      label={ui.about.journey}
+      title={ui.about.journeyTitle}
+      accent={ui.about.journeyAccent}
+      index="01"
+    />
+
+    <AboutSkills
+      items={about.data.skills}
+      label={ui.about.skills}
+      title={ui.about.skillsTitle}
+      accent={ui.about.skillsAccent}
+      index="02"
+    />
 
     <AboutTechStack
       tools={about.data.tools}
-      label=""
+      label={ui.about.tech}
       title={ui.about.techTitle}
+      accent={ui.about.techAccent}
       hint={ui.about.techHint}
       resetLabel={ui.about.techReset}
       index="03"
@@ -82,8 +99,9 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
       calendar={tokenCalendar}
       summary={tokenSummary}
       locale={ui.locale}
-      label=""
+      label={ui.about.tokens}
       title={ui.about.tokenTitle}
+      accent={ui.about.tokenAccent}
       index="04"
       cardTitle={ui.about.tokenCardTitle}
       cardSubtitle={ui.about.tokenCardSubtitle}
@@ -102,18 +120,25 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
 
     <AboutWorks
       projects={projects}
-      images={{ youlin: youlinShot, sonder: sonderShot }}
-      label=""
+      covers={[steelCover, cocoaCover]}
+      label={ui.about.works}
       title={ui.about.worksTitle}
+      accent={ui.about.worksAccent}
       index="05"
     />
 
-    <AboutGallery posts={posts} label="" title={ui.about.galleryTitle} index="06" />
+    <AboutGallery
+      label={ui.about.gallery}
+      title={ui.about.galleryTitle}
+      accent={ui.about.galleryAccent}
+      index="06"
+    />
 
     <AboutContact
       links={home.links}
-      label=""
+      label={ui.about.contact}
       title={ui.about.contactTitle}
+      accent={ui.about.contactAccent}
       note={ui.about.contactNote}
       status={ui.about.contactStatus}
       index="07"
