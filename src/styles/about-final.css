@@ -136,7 +136,7 @@
 .about-final .about-mbti {
   display: grid;
   grid-template-columns: minmax(240px, 300px) minmax(150px, 190px);
-  justify-content: space-between;
+  justify-content: start;
   gap: clamp(18px, 3vw, 32px);
   align-items: center;
   min-width: 0;
