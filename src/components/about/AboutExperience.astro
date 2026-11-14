@@ -1,0 +1,43 @@
+---
+interface CareerItem {
+  track: 'study' | 'blog';
+  start: number;
+  end: number;
+  period: string;
+  title: string;
+  description?: string;
+  current?: boolean;
+}
+
+interface Props {
+  items: CareerItem[];
+  labels: { study: string; blog: string };
+}
+
+const { items, labels } = Astro.props;
+const sorted = [...items].sort((a, b) => a.start - b.start || a.end - b.end);
+---
+
+<div class="about-experience">
+  <div class="about-experience-legend" aria-hidden="true">
+    <span data-track="study">{labels.study}</span>
+    <span data-track="blog">{labels.blog}</span>
+  </div>
+
+  <ol>
+    {
+      sorted.map((item) => (
+        <li data-track={item.track}>
+          <time>{item.period}</time>
+          <span class="about-experience-dot" aria-hidden="true" />
+          <div class="about-experience-copy">
+            <strong>{item.title}</strong>
+            {item.description && <p>{item.description}</p>}
+            {item.current && <em>现在</em>}
+          </div>
+          <span class="about-experience-tag">{labels[item.track]}</span>
+        </li>
+      ))
+    }
+  </ol>
+</div>

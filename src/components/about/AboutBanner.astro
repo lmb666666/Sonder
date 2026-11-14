@@ -1,0 +1,33 @@
+---
+import type { AvatarMood } from '../../lib/pixel-avatar';
+import AboutAvatar from './AboutAvatar';
+
+interface Props {
+  name: string;
+  lede: string[];
+  tags: string[];
+  location: string;
+  moods: { key: AvatarMood; label: string }[];
+  avatarLabel: string;
+  avatarControls: string;
+}
+
+const { name, lede, tags, location, moods, avatarLabel, avatarControls } = Astro.props;
+---
+
+<header class="about-banner">
+  <div class="about-banner-avatar">
+    <AboutAvatar moods={moods} label={avatarLabel} controlsLabel={avatarControls} client:visible />
+  </div>
+  <div class="about-banner-copy">
+    <p class="about-banner-kicker">About</p>
+    <h1>关于 {name}</h1>
+    <p class="about-banner-lede">
+      {lede.map((line) => <span>{line}</span>)}
+    </p>
+    <ul class="about-banner-tags">
+      {tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+    {location && <p class="about-banner-location">{location}</p>}
+  </div>
+</header>

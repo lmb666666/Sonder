@@ -24,7 +24,7 @@ interface Props {
 const { mbti, now, nowLabel } = Astro.props;
 ---
 
-<div class="proto-facts">
+<div class="about-facts">
   {
     mbti && (
       <article class="about-mbti">
@@ -61,4 +61,6 @@ const { mbti, now, nowLabel } = Astro.props;
       </article>
     )
   }
+
+  <slot />
 </div>

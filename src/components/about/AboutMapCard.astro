@@ -1,0 +1,23 @@
+---
+import { withBase } from '../../lib/url';
+
+interface Props {
+  location: string;
+}
+
+const { location } = Astro.props;
+---
+
+<figure class="about-map-card">
+  <img
+    class="about-map-light"
+    src={withBase('/images/about-map-light.webp')}
+    alt=""
+    loading="lazy"
+  />
+  <img class="about-map-dark" src={withBase('/images/about-map-dark.webp')} alt="" loading="lazy" />
+  <figcaption>
+    <span>位置</span>
+    <strong>{location}</strong>
+  </figcaption>
+</figure>

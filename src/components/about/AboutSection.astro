@@ -9,8 +9,8 @@ interface Props {
 const { index, label, title, class: className } = Astro.props;
 ---
 
-<section class:list={['proto-block', className]}>
-  <header class="proto-block-head">
+<section class:list={['about-section', className]} data-about-section>
+  <header class="about-section-head">
     <span>{index}</span>
     <p>{label}</p>
     <h2>{title}</h2>

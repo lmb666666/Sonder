@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="800" viewBox="0 0 640 800" role="img" aria-label="自拍照占位图">
+  <rect width="640" height="800" fill="#f2ede3"/>
+  <rect x="28" y="28" width="584" height="744" rx="18" fill="#f7f3ea" stroke="#d8d1c3"/>
+  <circle cx="320" cy="300" r="96" fill="none" stroke="#b9b1a3" stroke-width="3"/>
+  <path d="M174 654c14-112 68-168 146-168s132 56 146 168" fill="none" stroke="#b9b1a3" stroke-width="3" stroke-linecap="round"/>
+  <path d="M292 292c10-14 46-14 56 0M292 326c10 10 46 10 56 0" fill="none" stroke="#b9b1a3" stroke-width="3" stroke-linecap="round"/>
+  <text x="320" y="716" text-anchor="middle" fill="#9d9487" font-family="ui-monospace, monospace" font-size="15" letter-spacing="4">SELF PORTRAIT</text>
+  <text x="320" y="742" text-anchor="middle" fill="#b3aa9c" font-family="ui-sans-serif, sans-serif" font-size="12" letter-spacing="2">替换为你的自拍照</text>
+</svg>
