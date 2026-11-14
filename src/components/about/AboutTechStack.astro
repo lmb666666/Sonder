@@ -1,0 +1,64 @@
+---
+import { RotateCcw } from 'lucide-astro';
+
+interface Tool {
+  name: string;
+  note: string;
+  short: string;
+  color?: string;
+  text: 'light' | 'dark';
+}
+
+interface Props {
+  tools: Tool[];
+  hint: string;
+  resetLabel: string;
+}
+
+const { tools, hint, resetLabel } = Astro.props;
+
+const [primary, secondary, language, writer] = tools;
+---
+
+{
+  tools.length > 0 && (
+    <div class="about-tech-body">
+      <div class="about-tech-copy">
+        <p class="about-tech-statement">
+          <span class="about-tech-outline">
+            {primary?.name}、{secondary?.name}
+          </span>
+          <br />和 <em>{language?.name}</em>。
+          <br />
+          写作靠 <em>{writer?.name}</em>。
+        </p>
+        <p class="about-tech-hint">{hint}</p>
+      </div>
+
+      <div class="about-tech-board-shell">
+        <div class="about-tech-board" data-tech-board role="group" aria-label="可拖动的技术栈标签">
+          <button class="about-tech-reset" type="button" data-tech-reset aria-label={resetLabel}>
+            <RotateCcw size={17} strokeWidth={1.8} aria-hidden="true" />
+          </button>
+          {tools.map((tool, toolIndex) => (
+            <button
+              class="about-tech-pill"
+              type="button"
+              data-tech-pill
+              data-index={toolIndex}
+              aria-label={`${tool.name}${tool.note ? `：${tool.note}` : ''}`}
+              style={`--pill-bg:${tool.color ?? 'var(--paper-ink)'};--pill-ink:${
+                tool.text === 'dark' ? '#171d19' : '#fffdf7'
+              }`}
+            >
+              <span class="about-tech-pill-icon" aria-hidden="true">
+                {tool.short || tool.name.slice(0, 2).toUpperCase()}
+              </span>
+              <b>{tool.name}</b>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}

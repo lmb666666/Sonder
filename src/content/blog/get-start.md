@@ -63,6 +63,8 @@ src/content/
 
 文章 frontmatter 的 `date` 是发布时间；需要显示修改时间时，再加一行 `updated: 2026-11-08`。文章页只会在修改时间比发布时间晚至少一天时显示「修改于」，站点信息卡的「最后更新」也会取两者的最大值。
 
+关于页的内容在 `src/content/about.md`。`lede` 是首屏的两行引语；`manifesto` 是简介长句；`now`、`journey`、`skills` 和 `tools` 分别控制近况、经历、技能与技术栈。`tools` 的 `short` 是胶囊里的缩写，`color` 与 `text` 控制底色和文字颜色。图片展位在 `src/data/about-gallery.ts`，AI Token 数据在 `src/data/token-usage.ts`。
+
 动态页的演示数据在 `src/data/moments.ts`；朋友页的友链与朋友圈演示数据在 `src/data/`。
 
 动态页会自动把音乐、视频、GitHub、网站、位置与推文渲染成对应卡片；音乐播放依赖 `[config.music].meting_api`，留空或不可达时保留平台链接卡，网易云音频失败会降级官方外链播放器。

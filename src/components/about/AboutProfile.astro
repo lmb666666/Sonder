@@ -1,0 +1,94 @@
+---
+import { ArrowUpRight, MapPin } from 'lucide-astro';
+
+interface Mbti {
+  type: string;
+  label: string;
+  quote?: string;
+  quoteAuthor?: string;
+  link?: string;
+  linkText?: string;
+}
+
+interface NowItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  bio: string[];
+  tags: string[];
+  location: string;
+  mbti?: Mbti;
+  now: NowItem[];
+  nowLabel: string;
+}
+
+const { bio, tags, location, mbti, now, nowLabel } = Astro.props;
+---
+
+<div class="about-profile">
+  <div class="about-profile-main">
+    <p class="about-profile-bio">
+      {bio.map((line) => <span>{line}</span>)}
+    </p>
+
+    {
+      tags.length > 0 && (
+        <ul class="about-profile-tags" aria-label="个人标签">
+          {tags.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      location && (
+        <p class="about-profile-location">
+          <MapPin size={15} strokeWidth={1.7} aria-hidden="true" />
+          {location}
+        </p>
+      )
+    }
+  </div>
+
+  <div class="about-profile-aside">
+    {
+      mbti && (
+        <article class="about-mbti">
+          <p class="about-mbti-type">{mbti.type}</p>
+          <p class="about-mbti-label">{mbti.label}</p>
+          {mbti.quote && (
+            <blockquote>
+              {mbti.quote}
+              {mbti.quoteAuthor && <cite>——{mbti.quoteAuthor}</cite>}
+            </blockquote>
+          )}
+          {mbti.link && (
+            <a href={mbti.link} target="_blank" rel="noreferrer">
+              {mbti.linkText || '了解更多'}
+              <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+            </a>
+          )}
+        </article>
+      )
+    }
+
+    {
+      now.length > 0 && (
+        <article class="about-now-card">
+          <p class="about-now-label">{nowLabel}</p>
+          <dl>
+            {now.map((item) => (
+              <div>
+                <dt>{item.label}</dt>
+                <dd>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </article>
+      )
+    }
+  </div>
+</div>

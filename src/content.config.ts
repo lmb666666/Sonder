@@ -39,6 +39,70 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     sidebar: sidebarSchema,
   });
 
+const aboutColorSchema = z
+  .string()
+  .regex(/^(#[0-9a-f]{3,8}|var\(--[a-z0-9-]+\))$/i, 'Use a CSS color, hex color, or CSS variable.');
+
+const aboutSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  lede: z.array(z.string()).optional().default([]),
+  bio: z.array(z.string()).optional().default([]),
+  location: z.string().optional().default(''),
+  status: z.string().optional().default(''),
+  tags: z.array(z.string()).optional().default([]),
+  mbti: z
+    .object({
+      type: z.string(),
+      label: z.string(),
+      quote: z.string().optional().default(''),
+      quoteAuthor: z.string().optional().default(''),
+      link: z.string().optional().default(''),
+      linkText: z.string().optional().default(''),
+    })
+    .optional(),
+  now: z
+    .array(z.object({ label: z.string(), value: z.string() }))
+    .optional()
+    .default([]),
+  career: z
+    .array(
+      z.object({
+        track: z.enum(['study', 'blog']),
+        start: z.number().int(),
+        end: z.number().int(),
+        period: z.string(),
+        title: z.string(),
+        description: z.string().optional().default(''),
+        current: z.boolean().optional().default(false),
+      }),
+    )
+    .optional()
+    .default([]),
+  skillLevels: z
+    .array(
+      z.object({
+        name: z.string(),
+        percent: z.number().min(0).max(100),
+      }),
+    )
+    .optional()
+    .default([]),
+  focus: z.array(z.string()).optional().default([]),
+  tools: z
+    .array(
+      z.object({
+        name: z.string(),
+        note: z.string().optional().default(''),
+        short: z.string().optional().default(''),
+        color: aboutColorSchema.optional(),
+        text: z.enum(['light', 'dark']).optional().default('light'),
+      }),
+    )
+    .optional()
+    .default([]),
+});
+
 const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
   articleSchema(context).extend({
     sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
@@ -68,7 +132,7 @@ const blog = defineCollection({
 
 const about = defineCollection({
   loader: glob({ base: contentBase, pattern: 'about.md' }),
-  schema: articleSchema,
+  schema: aboutSchema,
 });
 
 const projects = defineCollection({

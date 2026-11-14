@@ -1,22 +1,28 @@
 ---
-import {
-  Box,
-  Code2,
-  Database,
-  ExternalLink,
-  FileCode2,
-  Github,
-  Globe2,
-  Layers3,
-  Palette,
-  Rocket,
-  Sparkles,
-  Terminal,
-  WandSparkles,
-} from 'lucide-astro';
-import { getCollection, render } from 'astro:content';
-import Article from '../layouts/Article.astro';
-import { sortByDateDesc } from '../lib/content-dates';
+import { getCollection } from 'astro:content';
+
+import AboutContact from '../components/about/AboutContact.astro';
+import AboutGallery from '../components/about/AboutGallery.astro';
+import AboutHero from '../components/about/AboutHero.astro';
+import AboutIndexRail from '../components/about/AboutIndexRail.astro';
+import AboutProfile from '../components/about/AboutProfile.astro';
+import AboutRecord from '../components/about/AboutRecord.astro';
+import AboutSkills from '../components/about/AboutSkills.astro';
+import AboutTechStack from '../components/about/AboutTechStack.astro';
+import AboutTimeline from '../components/about/AboutTimeline.astro';
+import AboutTokens from '../components/about/AboutTokens.astro';
+import AboutWorks from '../components/about/AboutWorks.astro';
+import { getSiteConfig } from '../config';
+import { tokenUsage } from '../data/token-usage';
+import Base from '../layouts/Base.astro';
+import { sortBlogPostsForArchive } from '../lib/content-dates';
+import type { AvatarMood } from '../lib/pixel-avatar';
+import { buildTokenCalendar, expandTokenUsage, summarizeTokenUsage } from '../lib/token-usage';
+import { getUiText } from '../lib/ui-text';
+import '../styles/about.css';
+
+import cocoaCover from '../assets/figure/covers/cover-08-cocoa.png';
+import steelCover from '../assets/figure/covers/cover-13-steel.png';
 
 const [about] = await getCollection('about');
 
@@ -24,220 +30,153 @@ if (!about) {
   throw new Error('Missing src/content/about.md content entry.');
 }
 
-const { Content, headings } = await render(about);
+const siteConfig = await getSiteConfig();
+const { home, profile, site } = siteConfig;
+const ui = getUiText(siteConfig);
 
-// 项目卡片：链接指向项目外部地址
-const projects = sortByDateDesc(await getCollection('projects', ({ data }) => !data.draft));
+const projects = sortBlogPostsForArchive(
+  await getCollection('projects', ({ data }) => !data.draft),
+);
 
-const projectIcons = {
-  github: Github,
-  box: Box,
-  'code-2': Code2,
-  database: Database,
-  'file-code-2': FileCode2,
-  'globe-2': Globe2,
-  'layers-3': Layers3,
-  palette: Palette,
-  rocket: Rocket,
-  sparkles: Sparkles,
-  terminal: Terminal,
-  'wand-sparkles': WandSparkles,
-};
+const established = site.timeEstablished ? new Date(site.timeEstablished) : null;
+const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf()));
+const since = hasEstablished ? String((established as Date).getFullYear()) : '';
+
+const avatarMoods = (Object.entries(ui.about.avatarMoods) as [AvatarMood, string][]).map(
+  ([key, label]) => ({ key, label }),
+);
+
+const bio = about.data.bio.length > 0 ? about.data.bio : about.data.lede;
+
+const contactLinks = [
+  {
+    label: 'Bilibili',
+    icon: 'bilibili',
+    tooltip: 'https://space.bilibili.com/477296514',
+    copy: false,
+  },
+  ...home.links,
+];
+
+const indexItems = [
+  { id: 'profile', index: '01', label: ui.about.profile },
+  { id: 'timeline', index: '02', label: ui.about.journey },
+  { id: 'skills', index: '03', label: ui.about.skills },
+  { id: 'stack', index: '04', label: ui.about.tech },
+  { id: 'tokens', index: '05', label: ui.about.tokens },
+  { id: 'works', index: '06', label: ui.about.works },
+  { id: 'gallery', index: '07', label: ui.about.gallery },
+  { id: 'contact', index: '08', label: ui.about.contact },
+];
+
+const tokenDays = expandTokenUsage(tokenUsage);
+const tokenSummary = summarizeTokenUsage(tokenDays);
+const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
 ---
 
-<Article
-  post={about}
-  headings={headings}
-  sidebar={{ enable: false, ...about.data.sidebar }}
-  contentFont="ui"
->
-  <Content />
+<Base title={about.data.title} description={about.data.description}>
+  <main class="about-page" data-pagefind-body data-about-page>
+    <AboutHero
+      profile={profile}
+      title={about.data.title}
+      description={about.data.description}
+      lede={about.data.lede}
+      moods={avatarMoods}
+      avatarLabel={ui.about.avatarLabel}
+      avatarControls={ui.about.avatarControls}
+      location={about.data.location}
+      status={about.data.status}
+      since={since}
+      sinceLabel={ui.about.since}
+      kicker={ui.about.kicker}
+    />
 
-  {
-    projects.length > 0 && (
-      <section class="about-projects" aria-label="项目">
-        <h2>项目</h2>
-        <div class="project-grid">
-          {projects.map((project) => {
-            const ProjectIcon = projectIcons[project.data.icon] ?? Github;
-            const primaryLink = project.data.links[0];
-            const cardTitle = primaryLink ? (
-              <a href={primaryLink.href} target="_blank" rel="noopener noreferrer">
-                {project.data.title}
-              </a>
-            ) : (
-              <span>{project.data.title}</span>
-            );
+    <div class="about-dossier">
+      <AboutIndexRail items={indexItems} label={ui.about.index} />
 
-            return (
-              <article
-                class="project-card"
-                style={
-                  project.data.iconColor
-                    ? `--project-icon-color: ${project.data.iconColor}`
-                    : undefined
-                }
-              >
-                <div class="project-card-heading">
-                  <ProjectIcon
-                    class="project-icon"
-                    size={22}
-                    strokeWidth={1.55}
-                    aria-hidden="true"
-                  />
-                  <h3>{cardTitle}</h3>
-                </div>
-                <p>{project.data.description}</p>
-                {project.data.authors.length > 0 && (
-                  <p class="project-authors">
-                    {project.data.authors.map((author, index) => (
-                      <>
-                        {index > 0 && <span aria-hidden="true"> · </span>}
-                        {author.url ? (
-                          <a href={author.url} target="_blank" rel="noopener noreferrer">
-                            {author.name}
-                          </a>
-                        ) : (
-                          author.name
-                        )}
-                      </>
-                    ))}
-                  </p>
-                )}
-                {project.data.links.length > 0 && (
-                  <footer class="project-links" aria-label="项目链接">
-                    {project.data.links.map((link) => (
-                      <a href={link.href} target="_blank" rel="noopener noreferrer">
-                        {link.kind === 'github' ? (
-                          <Github size={13} strokeWidth={1.8} aria-hidden="true" />
-                        ) : (
-                          <ExternalLink size={13} strokeWidth={1.8} aria-hidden="true" />
-                        )}
-                        {link.label}
-                      </a>
-                    ))}
-                  </footer>
-                )}
-              </article>
-            );
-          })}
-        </div>
-      </section>
-    )
-  }
-</Article>
+      <div class="about-records">
+        <AboutRecord
+          id="profile"
+          index="01"
+          label={ui.about.profile}
+          title={`${ui.about.profileGreeting} ${profile.name}`}
+        >
+          <AboutProfile
+            bio={bio}
+            tags={about.data.tags}
+            location={about.data.location}
+            mbti={about.data.mbti}
+            now={about.data.now}
+            nowLabel={ui.about.now}
+          />
+        </AboutRecord>
 
-<style>
-  .about-projects {
-    margin-top: 44px;
-    padding-top: 28px;
-    border-top: 1px solid var(--paper-line);
-  }
+        <AboutRecord
+          id="timeline"
+          index="02"
+          label={ui.about.journey}
+          title={ui.about.journeyTitle}
+        >
+          <AboutTimeline
+            items={about.data.career}
+            labels={{ study: ui.about.trackStudy, blog: ui.about.trackBlog }}
+          />
+        </AboutRecord>
 
-  .about-projects h2 {
-    margin: 0 0 6px;
-    color: var(--paper-ink);
-    font-family: var(--font-ui-label);
-    font-size: 1.32rem;
-  }
+        <AboutRecord id="skills" index="03" label={ui.about.skills} title={ui.about.skillsTitle}>
+          <AboutSkills levels={about.data.skillLevels} focus={about.data.focus} />
+        </AboutRecord>
 
-  .project-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(12px, 2vw, 22px);
-    margin-top: 22px;
-  }
+        <AboutRecord id="stack" index="04" label={ui.about.tech} title={ui.about.techTitle}>
+          <AboutTechStack
+            tools={about.data.tools}
+            hint={ui.about.techHint}
+            resetLabel={ui.about.techReset}
+          />
+        </AboutRecord>
 
-  .project-card {
-    display: grid;
-    gap: 12px;
-    align-content: start;
-    padding: 16px;
-    border-radius: 8px;
-    color: var(--paper-ink);
-    font-family: var(--font-ui-label);
-    transition:
-      transform 180ms ease,
-      background 180ms ease;
-  }
+        <AboutRecord id="tokens" index="05" label={ui.about.tokens} title={ui.about.tokenTitle}>
+          <AboutTokens
+            calendar={tokenCalendar}
+            summary={tokenSummary}
+            locale={ui.locale}
+            cardTitle={ui.about.tokenCardTitle}
+            cardSubtitle={ui.about.tokenCardSubtitle}
+            labels={{
+              today: ui.about.tokenToday,
+              total: ui.about.tokenTotal,
+              peak: ui.about.tokenPeak,
+              current: ui.about.tokenCurrent,
+              longest: ui.about.tokenLongest,
+              less: ui.about.tokenLess,
+              more: ui.about.tokenMore,
+              hint: ui.about.tokenHint,
+              weekdays: ui.about.tokenWeekdays,
+            }}
+          />
+        </AboutRecord>
 
-  .project-card:hover {
-    background: var(--paper-control-hover);
-    transform: translateY(-1px);
-  }
+        <AboutRecord id="works" index="06" label={ui.about.works} title={ui.about.worksTitle}>
+          <AboutWorks projects={projects} covers={[steelCover, cocoaCover]} />
+        </AboutRecord>
 
-  .project-card-heading {
-    display: flex;
-    gap: 11px;
-    align-items: center;
-  }
+        <AboutRecord id="gallery" index="07" label={ui.about.gallery} title={ui.about.galleryTitle}>
+          <AboutGallery />
+        </AboutRecord>
 
-  .project-icon {
-    flex: none;
-    color: var(--project-icon-color, var(--paper-accent));
-  }
+        <AboutRecord id="contact" index="08" label={ui.about.contact} title={ui.about.contactTitle}>
+          <AboutContact
+            links={contactLinks}
+            label={ui.about.contact}
+            note={ui.about.contactNote}
+            status={ui.about.contactStatus}
+          />
+        </AboutRecord>
+      </div>
+    </div>
+  </main>
+</Base>
 
-  .project-card h3 {
-    margin: 0;
-    font-size: 1.12rem;
-    line-height: 1.3;
-  }
-
-  .project-card h3 a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .project-card h3 a:hover {
-    color: var(--paper-accent);
-  }
-
-  .project-card p {
-    margin: 0;
-    max-width: 58ch;
-    color: var(--paper-ink-soft);
-    font-size: 0.92rem;
-    line-height: 1.7;
-  }
-
-  .project-authors {
-    color: var(--paper-ink-faint);
-    font-family: var(--font-meta);
-    font-size: 0.76rem;
-  }
-
-  .project-authors a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .project-authors a:hover {
-    color: var(--paper-accent);
-  }
-
-  .project-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 14px;
-    color: var(--paper-ink-faint);
-    font-size: 0.74rem;
-  }
-
-  .project-links a {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .project-links a:hover {
-    color: var(--paper-accent);
-  }
-
-  @media (max-width: 720px) {
-    .project-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+<script>
+  import '../lib/about-page';
+</script>

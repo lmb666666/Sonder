@@ -1,0 +1,64 @@
+---
+import { ArrowUpRight } from 'lucide-astro';
+
+interface Mbti {
+  type: string;
+  label: string;
+  quote?: string;
+  quoteAuthor?: string;
+  link?: string;
+  linkText?: string;
+}
+
+interface NowItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  mbti?: Mbti;
+  now: NowItem[];
+  nowLabel: string;
+}
+
+const { mbti, now, nowLabel } = Astro.props;
+---
+
+<div class="proto-facts">
+  {
+    mbti && (
+      <article class="about-mbti">
+        <p class="about-mbti-type">{mbti.type}</p>
+        <p class="about-mbti-label">{mbti.label}</p>
+        {mbti.quote && (
+          <blockquote>
+            {mbti.quote}
+            {mbti.quoteAuthor && <cite>——{mbti.quoteAuthor}</cite>}
+          </blockquote>
+        )}
+        {mbti.link && (
+          <a href={mbti.link} target="_blank" rel="noreferrer">
+            {mbti.linkText || '了解更多'}
+            <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+          </a>
+        )}
+      </article>
+    )
+  }
+
+  {
+    now.length > 0 && (
+      <article class="about-now-card">
+        <p class="about-now-label">{nowLabel}</p>
+        <dl>
+          {now.map((item) => (
+            <div>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </article>
+    )
+  }
+</div>

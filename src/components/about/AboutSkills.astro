@@ -1,0 +1,41 @@
+---
+interface SkillLevel {
+  name: string;
+  percent: number;
+}
+
+interface Props {
+  levels: SkillLevel[];
+  focus: string[];
+}
+
+const { levels, focus } = Astro.props;
+---
+
+<div class="about-skills">
+  <div class="about-skill-levels">
+    {
+      levels.map((item) => (
+        <div class="about-skill-level" style={`--level:${item.percent}%`}>
+          <div class="about-skill-level-head">
+            <span>{item.name}</span>
+            <span>{item.percent}%</span>
+          </div>
+          <div class="about-skill-track" aria-hidden="true">
+            <span />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  {
+    focus.length > 0 && (
+      <ul class="about-skill-focus" aria-label="关注方向">
+        {focus.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    )
+  }
+</div>

@@ -1,0 +1,76 @@
+---
+import { ArrowUpRight } from 'lucide-astro';
+
+import { withBase } from '../../lib/url';
+
+interface ContactLink {
+  label: string;
+  icon: string;
+  tooltip: string;
+  copy: boolean;
+}
+
+interface Props {
+  links: ContactLink[];
+  label: string;
+  note: string;
+  status: string;
+}
+
+const { links, label, note, status } = Astro.props;
+
+const channels = links.map((link) => {
+  const isMail = link.icon === 'mail';
+  const isExternal = /^https?:\/\//i.test(link.tooltip);
+  const href = isMail
+    ? `mailto:${link.tooltip}`
+    : isExternal
+      ? link.tooltip
+      : withBase(link.tooltip);
+  const value = link.tooltip.replace(/^mailto:/i, '').replace(/^https?:\/\//i, '');
+  return { ...link, href, value, isExternal };
+});
+
+const email = channels.find((channel) => channel.icon === 'mail');
+const secondary = channels.filter((channel) => channel.icon !== 'mail');
+---
+
+<div class="about-contact">
+  <div class="about-contact-main">
+    {
+      status && (
+        <p class="about-contact-status">
+          <i aria-hidden="true" />
+          {status}
+        </p>
+      )
+    }
+    <p class="about-contact-note">{note}</p>
+    {
+      email && (
+        <a class="about-contact-email" href={email.href}>
+          <span>{email.value}</span>
+          <ArrowUpRight size={20} strokeWidth={1.6} aria-hidden="true" />
+        </a>
+      )
+    }
+  </div>
+
+  {
+    secondary.length > 0 && (
+      <nav class="about-contact-channels" aria-label={label}>
+        {secondary.map((channel) => (
+          <a
+            href={channel.href}
+            target={channel.isExternal ? '_blank' : undefined}
+            rel={channel.isExternal ? 'noreferrer' : undefined}
+          >
+            <span>{channel.label}</span>
+            <small>{channel.value}</small>
+            <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+          </a>
+        ))}
+      </nav>
+    )
+  }
+</div>

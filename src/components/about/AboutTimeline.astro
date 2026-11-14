@@ -1,0 +1,82 @@
+---
+interface CareerItem {
+  track: 'study' | 'blog';
+  start: number;
+  end: number;
+  period: string;
+  title: string;
+  description?: string;
+  current?: boolean;
+}
+
+interface Props {
+  items: CareerItem[];
+  labels: { study: string; blog: string };
+}
+
+const { items, labels } = Astro.props;
+
+const startYear = Math.min(...items.map((item) => item.start));
+const endYear = Math.max(...items.map((item) => item.end));
+const span = Math.max(1, endYear - startYear);
+const years: number[] = [];
+for (let year = startYear; year <= endYear; year += 2) years.push(year);
+if (years.at(-1) !== endYear) years.push(endYear);
+
+const tracks = (['study', 'blog'] as const)
+  .map((track) => ({
+    key: track,
+    label: labels[track],
+    items: items.filter((item) => item.track === track),
+  }))
+  .filter((track) => track.items.length > 0);
+
+const position = (value: number) => ((value - startYear) / span) * 100;
+---
+
+<div class="about-timeline" data-about-timeline>
+  <div class="about-timeline-scale" aria-hidden="true">
+    <span class="about-timeline-scale-line"></span>
+    {
+      years.map((year) => (
+        <span class="about-timeline-year" style={`--pos:${position(year)}%`}>
+          {year}
+        </span>
+      ))
+    }
+  </div>
+
+  <div class="about-timeline-tracks">
+    {
+      tracks.map((track) => (
+        <section class="about-timeline-track" data-track={track.key}>
+          <header class="about-timeline-track-head">
+            <span aria-hidden="true" />
+            <h3>{track.label}</h3>
+          </header>
+          <div class="about-timeline-axis" aria-hidden="true">
+            {track.items.map((item, itemIndex) => (
+              <span
+                class:list={['about-timeline-bar', { 'is-current': item.current }]}
+                data-timeline-bar={`${track.key}-${itemIndex}`}
+                style={`--start:${position(item.start)}%;--width:${Math.max(
+                  2,
+                  position(item.end) - position(item.start),
+                )}%`}
+              />
+            ))}
+          </div>
+          <ol class="about-timeline-events">
+            {track.items.map((item, itemIndex) => (
+              <li data-timeline-event={`${track.key}-${itemIndex}`}>
+                <time>{item.period}</time>
+                <strong>{item.title}</strong>
+                {item.description && <p>{item.description}</p>}
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</div>

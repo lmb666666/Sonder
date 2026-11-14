@@ -1,37 +1,128 @@
 ---
 title: '关于 Sonder'
-description: 'Sonder 是一份以纸面阅读感为核心的个人发布模板，用 Astro 与 Bun 把长文、书影音、动态和朋友页收在一处。'
-date: '2026-05-01T00:00:00+08:00'
-draft: false
-showHeroImage: false
-comments: false
-sidebar:
-  enable: false
-  toc: false
+description: 'Sonder 的个人资料、经历和正在做的事。'
+lede:
+  - '高中生，博主，数码科技爱好者。'
+  - '写博客、折腾网站，也剪点视频。'
+bio:
+  - '我是 Sonder，一个还在读书的博主。'
+  - '平时写博客、折腾网站，也剪点视频。对数码科技和网络上的新东西一直很好奇。'
+location: '北京'
+status: '在读高中生'
+tags:
+  - 数码科技
+  - 网络冲浪
+  - 热心帮助
+mbti:
+  type: 'INFP'
+  label: '调停者'
+  quote: '真金未必璀璨，徘徊之人未必迷失。'
+  quoteAuthor: 'J·R·R·托尔金'
+  link: 'https://www.16personalities.com/ch/infp-%E4%BA%BA%E6%A0%BC'
+  linkText: '了解更多'
+now:
+  - label: '在做'
+    value: '整理关于页'
+  - label: '在读'
+    value: '《玻璃球游戏》'
+  - label: '在听'
+    value: '坂本龍一'
+career:
+  - track: 'study'
+    start: 2016
+    end: 2025
+    period: '2016 — 2025'
+    title: '小学、初中'
+    description: '北京市日坛中学实验学校'
+  - track: 'study'
+    start: 2025
+    end: 2026
+    period: '2025 — 至今'
+    title: '高中'
+    description: '北京市第八十中学'
+    current: true
+  - track: 'blog'
+    start: 2024
+    end: 2026
+    period: '2024 — 2026'
+    title: '旧 Firefly 博客'
+    description: '页面和文章自己写'
+  - track: 'blog'
+    start: 2026
+    end: 2026
+    period: '2026 — 至今'
+    title: '重写 Sonder'
+    description: 'Astro、内容和样式'
+    current: true
+skillLevels:
+  - name: '网站搭建'
+    percent: 80
+  - name: 'AI 使用'
+    percent: 60
+  - name: '视频剪辑'
+    percent: 60
+  - name: '博客写作'
+    percent: 50
+  - name: '服务器运维'
+    percent: 50
+  - name: '前端开发'
+    percent: 30
+  - name: 'UI 设计'
+    percent: 30
+focus:
+  - 写作
+  - 设计
+  - 开发
+  - 研究
+tools:
+  - name: 'Astro'
+    note: '静态构建'
+    short: 'A'
+    color: '#c17850'
+    text: 'dark'
+  - name: 'Bun'
+    note: '运行时'
+    short: 'B'
+    color: '#bd9158'
+    text: 'dark'
+  - name: 'TypeScript'
+    note: '类型与组件'
+    short: 'TS'
+    color: '#557f9d'
+  - name: 'Markdown'
+    note: '写作格式'
+    short: 'MD'
+    color: '#6f8165'
+  - name: 'CSS'
+    note: '纸面与排版'
+    short: 'CSS'
+    color: '#a66d7d'
+  - name: 'Git'
+    note: '版本与发布'
+    short: 'GIT'
+    color: '#686b70'
+  - name: 'Node.js'
+    note: '接口与脚本'
+    short: 'N'
+    color: '#5b7c5a'
+  - name: 'Vite'
+    note: '构建工具'
+    short: 'V'
+    color: '#8b6fb0'
+  - name: 'SQLite'
+    note: '本地数据'
+    short: 'DB'
+    color: '#527f8a'
+  - name: 'Vercel'
+    note: '部署'
+    short: 'VC'
+    color: '#2f3430'
+  - name: 'Figma'
+    note: '界面草图'
+    short: 'F'
+    color: '#b65c5c'
+  - name: 'Docker'
+    note: '容器部署'
+    short: 'DK'
+    color: '#4f7fa3'
 ---
-
-
-Sonder 是一份安静的个人发布模板。它不把首页做成营销落地页，而是把身份、近况、写作和阅读痕迹放在同一张纸面上：左侧是正文与最新文章，右侧是身份、统计、热力图和站点信息。
-
-模板基于 Astro 静态构建，使用 Bun 运行脚本，内容由 Markdown 管理。没有后端依赖，也没有复杂的状态管理；所有页面在构建时生成，适合部署到 GitHub Pages、Vercel、Netlify、Cloudflare Pages 或任意静态托管平台。
-
-## 这里有什么
-
-- **文章**：文章卡片使用 16:9 封面和磨砂文字条，支持分类、标签、目录、上下篇、更多文章和深色模式。
-- **书影音**：书籍、电影、剧集、专辑与播客的媒体架，按类型分区浏览。
-- **动态**：按时间排列的短记录，可切换为 Ech0 数据源。
-- **朋友**：友链分组与朋友圈聚合，支持 RSS 同步和友链申请。
-- **个人资料**：头像、身份、社交链接和站点信息都可以在 `site.config.toml` 中维护。
-
-## 从哪里开始
-
-1. 阅读 [Sonder 快速开始](/blog/get-start/)。
-2. 在 `site.config.toml` 里替换站点标题、作者资料、导航和首页文案。
-3. 在 `src/content/` 下编辑或删除示例内容。
-4. 运行 `bun run build`，把 `dist/` 部署到你的托管平台。
-
-视觉上，模板尽量保持克制：纸面底色、发丝线、低饱和色盘和轻量动效。需要调整时，优先改主题色盘与 CSS 变量，而不是在每个页面里单独覆盖样式。
-
-## 相关链接
-
-::friend-link-card{src="demo" columns="3"}

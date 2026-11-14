@@ -211,6 +211,54 @@
     "categories": "Categories",
     "tags": "Tags"
   },
+  "about": {
+    "kicker": "About",
+    "avatarLabel": "A pixel portrait made of particles",
+    "avatarControls": "Change portrait mood",
+    "avatarMoods": {
+      "default": "Neutral",
+      "joy": "Joy",
+      "anger": "Anger",
+      "sadness": "Sad",
+      "delight": "Delight"
+    },
+    "index": "Index",
+    "profile": "Profile",
+    "profileGreeting": "Hi, I'm",
+    "now": "Now",
+    "journey": "Experience",
+    "journeyTitle": "2016 to now",
+    "trackStudy": "School",
+    "trackBlog": "Blog",
+    "skills": "Skills",
+    "skillsTitle": "Still learning",
+    "tech": "Stack",
+    "techTitle": "Tools I use",
+    "techHint": "Drag a pill and let it fall",
+    "techReset": "Reset stack",
+    "tokens": "Tokens",
+    "tokenTitle": "AI usage",
+    "tokenCardTitle": "AI token usage",
+    "tokenCardSubtitle": "A running count of what I use each day.",
+    "tokenToday": "Today",
+    "tokenTotal": "Total",
+    "tokenPeak": "Peak day",
+    "tokenCurrent": "Current streak",
+    "tokenLongest": "Longest streak",
+    "tokenLess": "Less",
+    "tokenMore": "More",
+    "tokenHint": "Swipe to see the full year",
+    "tokenWeekdays": ["Mon", "Wed", "Fri"],
+    "works": "Projects",
+    "worksTitle": "Things I've built",
+    "gallery": "Images",
+    "galleryTitle": "Covers and palettes",
+    "contact": "Contact",
+    "contactTitle": "Say hello",
+    "contactNote": "A project, a technical question, or just a hello.",
+    "contactStatus": "Open to remote work",
+    "since": "Since"
+  },
   "notFound": {
     "title": "Page not found",
     "description": "The requested page does not exist.",
@@ -323,12 +371,30 @@
     "buildPlatform": "Build platform",
     "justNow": "just now",
     "units": {
-      "year": { "one": "{count} year", "other": "{count} years" },
-      "month": { "one": "{count} month", "other": "{count} months" },
-      "day": { "one": "{count} day", "other": "{count} days" },
-      "hour": { "one": "{count} hour", "other": "{count} hours" },
-      "minute": { "one": "{count} minute", "other": "{count} minutes" },
-      "second": { "one": "{count} second", "other": "{count} seconds" }
+      "year": {
+        "one": "{count} year",
+        "other": "{count} years"
+      },
+      "month": {
+        "one": "{count} month",
+        "other": "{count} months"
+      },
+      "day": {
+        "one": "{count} day",
+        "other": "{count} days"
+      },
+      "hour": {
+        "one": "{count} hour",
+        "other": "{count} hours"
+      },
+      "minute": {
+        "one": "{count} minute",
+        "other": "{count} minutes"
+      },
+      "second": {
+        "one": "{count} second",
+        "other": "{count} seconds"
+      }
     }
   },
   "connect": {

@@ -1,0 +1,47 @@
+---
+import type { AvatarMood } from '../../../lib/pixel-avatar';
+import AboutProfile from '../AboutProfile.astro';
+import ProtoAvatar from './ProtoAvatar.astro';
+
+interface Mbti {
+  type: string;
+  label: string;
+  quote?: string;
+  quoteAuthor?: string;
+  link?: string;
+  linkText?: string;
+}
+
+interface Props {
+  name: string;
+  role: string;
+  bio: string[];
+  tags: string[];
+  location: string;
+  mbti?: Mbti;
+  now: { label: string; value: string }[];
+  nowLabel: string;
+  moods: { key: AvatarMood; label: string }[];
+  avatarLabel: string;
+  avatarControls: string;
+}
+
+const { name, role, bio, tags, location, mbti, now, nowLabel, moods, avatarLabel, avatarControls } =
+  Astro.props;
+---
+
+<div class="proto-profile-card">
+  <ProtoAvatar moods={moods} label={avatarLabel} controlsLabel={avatarControls} />
+  <div class="proto-profile-copy">
+    <p class="proto-profile-name">{name}</p>
+    <p class="proto-profile-role">{role}</p>
+  </div>
+  <AboutProfile
+    bio={bio}
+    tags={tags}
+    location={location}
+    mbti={mbti}
+    now={now}
+    nowLabel={nowLabel}
+  />
+</div>

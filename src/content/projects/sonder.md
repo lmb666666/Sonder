@@ -1,6 +1,6 @@
 ---
 title: 'Sonder'
-description: '纸面质感的个人出版物模板：Astro + Bun，包含文章、书影音、动态、朋友页和可配置的主题系统。'
+description: '纸面质感的个人出版物模板。'
 date: '2026-05-18T00:00:00+08:00'
 draft: false
 showHeroImage: false

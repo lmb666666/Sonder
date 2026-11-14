@@ -41,6 +41,54 @@ type RawUiText = {
     categories: string;
     tags: string;
   };
+  about: {
+    kicker: string;
+    avatarLabel: string;
+    avatarControls: string;
+    avatarMoods: {
+      default: string;
+      joy: string;
+      anger: string;
+      sadness: string;
+      delight: string;
+    };
+    index: string;
+    profile: string;
+    profileGreeting: string;
+    now: string;
+    journey: string;
+    journeyTitle: string;
+    trackStudy: string;
+    trackBlog: string;
+    skills: string;
+    skillsTitle: string;
+    tech: string;
+    techTitle: string;
+    techHint: string;
+    techReset: string;
+    tokens: string;
+    tokenTitle: string;
+    tokenCardTitle: string;
+    tokenCardSubtitle: string;
+    tokenToday: string;
+    tokenTotal: string;
+    tokenPeak: string;
+    tokenCurrent: string;
+    tokenLongest: string;
+    tokenLess: string;
+    tokenMore: string;
+    tokenHint: string;
+    tokenWeekdays: string[];
+    works: string;
+    worksTitle: string;
+    gallery: string;
+    galleryTitle: string;
+    contact: string;
+    contactTitle: string;
+    contactNote: string;
+    contactStatus: string;
+    since: string;
+  };
   notFound: {
     title: string;
     description: string;
@@ -389,6 +437,7 @@ function createUiText(raw: RawUiText): UiText {
     locale: raw.locale,
     nav: raw.nav,
     homeStats: raw.homeStats,
+    about: raw.about,
     notFound: raw.notFound,
     links: {
       ...raw.links,
