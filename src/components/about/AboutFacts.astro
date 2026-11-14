@@ -1,11 +1,14 @@
 ---
 import { ArrowUpRight } from 'lucide-astro';
 
+import { withBase } from '../../lib/url';
+
 interface Mbti {
   type: string;
   label: string;
   quote?: string;
   quoteAuthor?: string;
+  image?: string;
   link?: string;
   linkText?: string;
 }
@@ -28,19 +31,26 @@ const { mbti, now, nowLabel } = Astro.props;
   {
     mbti && (
       <article class="about-mbti">
-        <p class="about-mbti-type">{mbti.type}</p>
-        <p class="about-mbti-label">{mbti.label}</p>
-        {mbti.quote && (
-          <blockquote>
-            {mbti.quote}
-            {mbti.quoteAuthor && <cite>——{mbti.quoteAuthor}</cite>}
-          </blockquote>
-        )}
-        {mbti.link && (
-          <a href={mbti.link} target="_blank" rel="noreferrer">
-            {mbti.linkText || '了解更多'}
-            <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
-          </a>
+        <div class="about-mbti-copy">
+          <p class="about-mbti-type">{mbti.type}</p>
+          <p class="about-mbti-label">{mbti.label}</p>
+          {mbti.quote && (
+            <blockquote>
+              {mbti.quote}
+              {mbti.quoteAuthor && <cite>——{mbti.quoteAuthor}</cite>}
+            </blockquote>
+          )}
+          {mbti.link && (
+            <a href={mbti.link} target="_blank" rel="noreferrer">
+              {mbti.linkText || '了解更多'}
+              <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+            </a>
+          )}
+        </div>
+        {mbti.image && (
+          <figure class="about-mbti-image">
+            <img src={withBase(mbti.image)} alt={`${mbti.type} ${mbti.label}`} loading="lazy" />
+          </figure>
         )}
       </article>
     )

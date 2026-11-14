@@ -13,21 +13,24 @@ const { levels, focus } = Astro.props;
 ---
 
 <div class="about-skills">
-  <div class="about-skill-levels">
+  <ol class="about-skill-list">
     {
-      levels.map((item) => (
-        <div class="about-skill-level" style={`--level:${item.percent}%`}>
-          <div class="about-skill-level-head">
-            <span>{item.name}</span>
-            <span>{item.percent}%</span>
-          </div>
-          <div class="about-skill-track" aria-hidden="true">
-            <span />
-          </div>
-        </div>
-      ))
+      levels.map((item) => {
+        const filled = Math.round(item.percent / 10);
+        return (
+          <li>
+            <span class="about-skill-name">{item.name}</span>
+            <span class="about-skill-ticks" aria-hidden="true">
+              {Array.from({ length: 10 }, (_, index) => (
+                <i class={index < filled ? 'is-filled' : undefined} />
+              ))}
+            </span>
+            <span class="about-skill-percent">{item.percent}%</span>
+          </li>
+        );
+      })
     }
-  </div>
+  </ol>
 
   {
     focus.length > 0 && (

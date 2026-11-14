@@ -127,17 +127,27 @@
 /* Profile */
 .about-facts {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(20px, 3vw, 32px);
-  min-height: 210px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.7fr);
+  gap: clamp(24px, 4vw, 48px);
+  align-items: stretch;
+  min-height: 300px;
 }
 
 .about-final .about-mbti {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(150px, 190px);
+  justify-content: space-between;
+  gap: clamp(18px, 3vw, 32px);
+  align-items: center;
   min-width: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+.about-mbti-copy {
+  min-width: 0;
 }
 
 .about-final .about-mbti-type {
@@ -151,10 +161,22 @@
   line-height: 1.75;
 }
 
+.about-mbti-image {
+  margin: 0;
+  align-self: center;
+}
+
+.about-mbti-image img {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+}
+
 .about-photo-card {
   position: relative;
   height: 100%;
-  min-height: 210px;
+  min-height: 300px;
   margin: 0;
   overflow: hidden;
   border-radius: 18px;
@@ -245,134 +267,168 @@
   background: transparent;
 }
 
-.about-experience-legend {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 12px;
-}
-
-.about-experience-legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--paper-ink-faint);
-  font-family: var(--font-meta);
-  font-size: 0.52rem;
-}
-
-.about-experience-legend span::before {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--paper-accent);
-  content: '';
-}
-
-.about-experience-legend span[data-track='blog']::before {
-  background: #6f8165;
-}
-
 .about-experience ol {
   position: relative;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 0.85rem;
   list-style: none;
 }
 
 .about-experience ol::before {
   position: absolute;
-  top: 12px;
-  bottom: 12px;
-  left: 131px;
-  width: 1px;
+  top: 0.5em;
+  bottom: 0;
+  left: 0;
+  width: 2px;
   background: var(--paper-line);
   content: '';
 }
 
 .about-experience li {
+  position: relative;
   display: grid;
-  grid-template-columns: 110px 14px minmax(0, 1fr) auto;
-  gap: 14px;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
   align-items: start;
-  padding: 15px 0;
+  padding: 0.6rem 0;
 }
 
-.about-experience li + li {
-  border-top: 1px solid var(--paper-line);
+.about-experience li::before {
+  position: absolute;
+  top: 0.95rem;
+  left: -0.85rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 2px solid var(--paper-bg);
+  border-radius: 999px;
+  background: var(--paper-accent);
+  content: '';
+  transform: translateX(-50%);
+}
+
+.about-experience li.current::before {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--paper-accent) 14%, transparent);
 }
 
 .about-experience time {
-  padding-top: 2px;
-  color: var(--paper-accent-text);
+  color: var(--paper-ink-soft);
   font-family: var(--font-meta);
-  font-size: 0.55rem;
+  font-size: 0.58rem;
   line-height: 1.5;
 }
 
-.about-experience-dot {
-  width: 8px;
-  height: 8px;
-  margin: 5px auto 0;
-  border-radius: 50%;
-  background: var(--paper-surface);
-  box-shadow: inset 0 0 0 1.5px var(--paper-accent);
-}
-
-.about-experience li[data-track='blog'] .about-experience-dot {
-  box-shadow: inset 0 0 0 1.5px #6f8165;
-}
-
 .about-experience-copy {
+  display: grid;
+  gap: 3px;
   min-width: 0;
 }
 
 .about-experience-copy strong {
-  display: block;
   color: var(--paper-ink);
   font-family: var(--about-display);
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.35;
 }
 
-.about-experience-copy p {
-  margin: 3px 0 0;
-  color: var(--paper-ink-faint);
-  font-size: 0.74rem;
-  line-height: 1.6;
+.about-experience-copy span {
+  color: var(--paper-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.65;
 }
 
-.about-experience-copy em {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--paper-accent) 12%, transparent);
-  color: var(--paper-accent-text);
-  font-family: var(--font-meta);
-  font-size: 0.48rem;
-  font-style: normal;
-  line-height: 1.4;
-}
-
-.about-experience-tag {
-  align-self: start;
-  padding: 3px 8px;
-  border: 1px solid var(--paper-line);
-  border-radius: 999px;
-  color: var(--paper-ink-faint);
-  font-family: var(--font-meta);
-  font-size: 0.5rem;
-  line-height: 1.4;
-}
-
-/* Skills: keep the liked ruler bars, drop the card shell */
-.about-final .about-skills {
+/* Skills: ten-step ruler */
+.about-skills {
+  display: grid;
+  gap: 14px;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+.about-skill-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--paper-line-strong);
+  list-style: none;
+}
+
+.about-skill-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  grid-template-areas:
+    'name percent'
+    'ticks ticks';
+  gap: 6px 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.about-skill-name {
+  grid-area: name;
+  color: var(--paper-ink);
+  font-family: var(--about-display);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.about-skill-ticks {
+  grid-area: ticks;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.about-skill-ticks i {
+  height: 8px;
+  border-radius: 1px;
+  background: var(--paper-surface-muted);
+  opacity: 1;
+  transform: scaleY(1);
+  transition:
+    opacity 500ms ease,
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-skill-ticks i.is-filled {
+  background: var(--paper-accent);
+}
+
+.about-section.about-reveal:not(.is-in) .about-skill-ticks i {
+  opacity: 0;
+  transform: scaleY(0.2);
+}
+
+.about-skill-percent {
+  grid-area: percent;
+  color: var(--paper-accent-text);
+  font-family: var(--font-meta);
+  font-size: 0.56rem;
+  text-align: right;
+}
+
+.about-skill-focus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-skill-focus li {
+  padding: 4px 9px;
+  border: 1px solid var(--paper-line);
+  border-radius: 999px;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.52rem;
+  line-height: 1.4;
 }
 
 /* Works: flat two-up project rows */
@@ -533,35 +589,13 @@
     aspect-ratio: 16 / 9;
   }
 
-  .about-experience ol::before {
-    left: 5px;
-  }
-
   .about-experience li {
-    grid-template-columns: 12px minmax(0, 1fr);
-    gap: 6px 14px;
+    grid-template-columns: 1fr;
+    gap: 2px;
   }
 
-  .about-experience time {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .about-experience-dot {
-    grid-column: 1;
-    grid-row: 1 / span 3;
-    margin-top: 7px;
-  }
-
-  .about-experience-copy {
-    grid-column: 2;
-    grid-row: 2;
-  }
-
-  .about-experience-tag {
-    grid-column: 2;
-    grid-row: 3;
-    justify-self: start;
+  .about-experience li::before {
+    top: 0.55rem;
   }
 
   .about-works-wide .about-works {
@@ -583,30 +617,12 @@
   }
 }
 
-.about-section.about-reveal:not(.is-in) .about-skill-track span {
-  transform: scaleX(0);
-}
-
-.about-section.is-in .about-skill-track span {
-  transform: scaleX(1);
-}
-
-/* Keep the interactive surfaces, remove their card shells */
-.about-final .about-tech-board {
-  border: 0;
-  border-radius: 0;
-  background-color: transparent;
-}
-
+/* Token stays flat; the capsule board keeps its frame. */
 .about-final .about-token-card {
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
-}
-
-.about-final .about-tech-board {
-  height: clamp(300px, 27vw, 360px);
 }
 
 .about-works-wide .about-work-arrow {
@@ -615,4 +631,38 @@
   bottom: auto;
   background: color-mix(in srgb, var(--paper-surface) 84%, transparent);
   backdrop-filter: blur(6px);
+}
+
+@media (max-width: 760px) {
+  .about-facts {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    min-height: 0;
+  }
+
+  .about-final .about-mbti {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .about-mbti-image img {
+    max-height: 220px;
+    margin: 0 auto;
+  }
+
+  .about-photo-card {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+
+  .about-experience li {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .about-skill-list {
+    grid-template-columns: 1fr;
+  }
 }

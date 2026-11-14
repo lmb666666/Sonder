@@ -11,31 +11,22 @@ interface CareerItem {
 
 interface Props {
   items: CareerItem[];
-  labels: { study: string; blog: string };
 }
 
-const { items, labels } = Astro.props;
+const { items } = Astro.props;
 const sorted = [...items].sort((a, b) => a.start - b.start || a.end - b.end);
 ---
 
 <div class="about-experience">
-  <div class="about-experience-legend" aria-hidden="true">
-    <span data-track="study">{labels.study}</span>
-    <span data-track="blog">{labels.blog}</span>
-  </div>
-
   <ol>
     {
       sorted.map((item) => (
-        <li data-track={item.track}>
+        <li class:list={{ current: item.current }}>
           <time>{item.period}</time>
-          <span class="about-experience-dot" aria-hidden="true" />
           <div class="about-experience-copy">
             <strong>{item.title}</strong>
-            {item.description && <p>{item.description}</p>}
-            {item.current && <em>现在</em>}
+            {item.description && <span>{item.description}</span>}
           </div>
-          <span class="about-experience-tag">{labels[item.track]}</span>
         </li>
       ))
     }

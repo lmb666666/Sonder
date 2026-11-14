@@ -18,6 +18,7 @@ mbti:
   label: '调停者'
   quote: '真金未必璀璨，徘徊之人未必迷失。'
   quoteAuthor: 'J·R·R·托尔金'
+  image: '/images/about-mbti.webp'
   link: 'https://www.16personalities.com/ch/infp-%E4%BA%BA%E6%A0%BC'
   linkText: '了解更多'
 now:

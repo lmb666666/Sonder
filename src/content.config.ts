@@ -57,6 +57,7 @@ const aboutSchema = z.object({
       label: z.string(),
       quote: z.string().optional().default(''),
       quoteAuthor: z.string().optional().default(''),
+      image: z.string().optional().default(''),
       link: z.string().optional().default(''),
       linkText: z.string().optional().default(''),
     })
