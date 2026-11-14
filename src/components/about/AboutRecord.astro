@@ -1,0 +1,25 @@
+---
+interface Props {
+  id: string;
+  index: string;
+  label: string;
+  title: string;
+  description?: string;
+}
+
+const { id, index, label, title, description = '' } = Astro.props;
+---
+
+<section class="about-record" id={id} data-about-record aria-labelledby={`${id}-title`}>
+  <header class="about-record-head">
+    <p class="about-record-kicker">
+      <span>{index}</span>
+      {label}
+    </p>
+    <h2 id={`${id}-title`}>{title}</h2>
+    {description && <p class="about-record-description">{description}</p>}
+  </header>
+  <div class="about-record-body">
+    <slot />
+  </div>
+</section>

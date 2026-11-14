@@ -1,64 +1,79 @@
 ---
 title: '关于 Sonder'
-description: '一个安静写字的地方。长文、碎片、书影音各归其位。'
+description: 'Sonder 的个人资料、经历和正在做的事。'
 lede:
-  - '一个安静写字的地方。'
-  - '长文、碎片、书影音各归其位。'
-subtitle: '纸面、文字与一点点光。'
-location: '杭州'
-status: '正在整理这座小站'
-manifesto:
-  - '不把首页做成营销落地页。'
-  - '让内容各归其位。'
+  - '高中生，博主，数码科技爱好者。'
+  - '写博客、折腾网站，也剪点视频。'
+bio:
+  - '我是 Sonder，一个还在读书的博主。'
+  - '平时写博客、折腾网站，也剪点视频。对数码科技和网络上的新东西一直很好奇。'
+location: '北京'
+status: '在读高中生'
+tags:
+  - 数码科技
+  - 网络冲浪
+  - 热心帮助
+mbti:
+  type: 'INFP'
+  label: '调停者'
+  quote: '真金未必璀璨，徘徊之人未必迷失。'
+  quoteAuthor: 'J·R·R·托尔金'
+  link: 'https://www.16personalities.com/ch/infp-%E4%BA%BA%E6%A0%BC'
+  linkText: '了解更多'
 now:
   - label: '在做'
-    value: '关于页重构'
+    value: '整理关于页'
   - label: '在读'
     value: '《玻璃球游戏》'
   - label: '在听'
     value: '坂本龍一'
-journey:
-  - year: '2024 — 2026'
-    label: '旧 Firefly 博客'
-    meta: '独立写作 / 前端'
-    color: '#a06f4b'
-  - year: '2026 — 至今'
-    label: '重写 Sonder'
-    meta: 'Astro / 内容与视觉'
-    color: '#6f8165'
-  - year: '今天'
-    label: '继续整理'
-    meta: '阅读 / 设计 / 长期主义'
-    color: '#557f9d'
-skills:
-  - title: '写作'
-    glyph: '写'
-    description: '把复杂的事讲清楚，也把模糊的感受写具体。'
-    tags:
-      - 长文
-      - 文档
-      - 随笔
-  - title: '设计'
-    glyph: '设'
-    description: '喜欢纸面、留白和低饱和的层次。'
-    tags:
-      - 版式
-      - 视觉
-      - 交互
-  - title: '开发'
-    glyph: '开'
-    description: '用 Astro、TypeScript 和 CSS 把想法落到页面。'
-    tags:
-      - Astro
-      - TypeScript
-      - CSS
-  - title: '研究'
-    glyph: '研'
-    description: '对 AI、产品与长期主义保持好奇。'
-    tags:
-      - AI
-      - 产品
-      - 长期主义
+career:
+  - track: 'study'
+    start: 2016
+    end: 2025
+    period: '2016 — 2025'
+    title: '小学、初中'
+    description: '北京市日坛中学实验学校'
+  - track: 'study'
+    start: 2025
+    end: 2026
+    period: '2025 — 至今'
+    title: '高中'
+    description: '北京市第八十中学'
+    current: true
+  - track: 'blog'
+    start: 2024
+    end: 2026
+    period: '2024 — 2026'
+    title: '旧 Firefly 博客'
+    description: '页面和文章自己写'
+  - track: 'blog'
+    start: 2026
+    end: 2026
+    period: '2026 — 至今'
+    title: '重写 Sonder'
+    description: 'Astro、内容和样式'
+    current: true
+skillLevels:
+  - name: '网站搭建'
+    percent: 80
+  - name: 'AI 使用'
+    percent: 60
+  - name: '视频剪辑'
+    percent: 60
+  - name: '博客写作'
+    percent: 50
+  - name: '服务器运维'
+    percent: 50
+  - name: '前端开发'
+    percent: 30
+  - name: 'UI 设计'
+    percent: 30
+focus:
+  - 写作
+  - 设计
+  - 开发
+  - 研究
 tools:
   - name: 'Astro'
     note: '静态构建'

@@ -4,16 +4,19 @@ import { getCollection } from 'astro:content';
 import AboutContact from '../components/about/AboutContact.astro';
 import AboutGallery from '../components/about/AboutGallery.astro';
 import AboutHero from '../components/about/AboutHero.astro';
-import AboutJourney from '../components/about/AboutJourney.astro';
-import AboutManifesto from '../components/about/AboutManifesto.astro';
+import AboutIndexRail from '../components/about/AboutIndexRail.astro';
+import AboutProfile from '../components/about/AboutProfile.astro';
+import AboutRecord from '../components/about/AboutRecord.astro';
 import AboutSkills from '../components/about/AboutSkills.astro';
 import AboutTechStack from '../components/about/AboutTechStack.astro';
+import AboutTimeline from '../components/about/AboutTimeline.astro';
 import AboutTokens from '../components/about/AboutTokens.astro';
 import AboutWorks from '../components/about/AboutWorks.astro';
 import { getSiteConfig } from '../config';
 import { tokenUsage } from '../data/token-usage';
 import Base from '../layouts/Base.astro';
 import { sortBlogPostsForArchive } from '../lib/content-dates';
+import type { AvatarMood } from '../lib/pixel-avatar';
 import { buildTokenCalendar, expandTokenUsage, summarizeTokenUsage } from '../lib/token-usage';
 import { getUiText } from '../lib/ui-text';
 import '../styles/about.css';
@@ -39,10 +42,32 @@ const established = site.timeEstablished ? new Date(site.timeEstablished) : null
 const hasEstablished = Boolean(established && !Number.isNaN(established.valueOf()));
 const since = hasEstablished ? String((established as Date).getFullYear()) : '';
 
-const manifesto = about.data.manifesto.length > 0 ? about.data.manifesto : [about.data.description];
+const avatarMoods = (Object.entries(ui.about.avatarMoods) as [AvatarMood, string][]).map(
+  ([key, label]) => ({ key, label }),
+);
 
-const moodKeys = ['default', 'joy', 'anger', 'sadness', 'delight'] as const;
-const moods = moodKeys.map((key) => ({ key, label: ui.about.avatarMoods[key] }));
+const bio = about.data.bio.length > 0 ? about.data.bio : about.data.lede;
+
+const contactLinks = [
+  {
+    label: 'Bilibili',
+    icon: 'bilibili',
+    tooltip: 'https://space.bilibili.com/477296514',
+    copy: false,
+  },
+  ...home.links,
+];
+
+const indexItems = [
+  { id: 'profile', index: '01', label: ui.about.profile },
+  { id: 'timeline', index: '02', label: ui.about.journey },
+  { id: 'skills', index: '03', label: ui.about.skills },
+  { id: 'stack', index: '04', label: ui.about.tech },
+  { id: 'tokens', index: '05', label: ui.about.tokens },
+  { id: 'works', index: '06', label: ui.about.works },
+  { id: 'gallery', index: '07', label: ui.about.gallery },
+  { id: 'contact', index: '08', label: ui.about.contact },
+];
 
 const tokenDays = expandTokenUsage(tokenUsage);
 const tokenSummary = summarizeTokenUsage(tokenDays);
@@ -56,93 +81,99 @@ const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
       title={about.data.title}
       description={about.data.description}
       lede={about.data.lede}
-      subtitle={about.data.subtitle}
+      moods={avatarMoods}
+      avatarLabel={ui.about.avatarLabel}
+      avatarControls={ui.about.avatarControls}
       location={about.data.location}
       status={about.data.status}
       since={since}
       sinceLabel={ui.about.since}
       kicker={ui.about.kicker}
-      avatarLabel={ui.about.avatarLabel}
-      avatarControls={ui.about.avatarControls}
-      moods={moods}
     />
 
-    <AboutManifesto lines={manifesto} now={about.data.now} nowLabel={ui.about.now} />
+    <div class="about-dossier">
+      <AboutIndexRail items={indexItems} label={ui.about.index} />
 
-    <AboutJourney
-      items={about.data.journey}
-      label={ui.about.journey}
-      title={ui.about.journeyTitle}
-      accent={ui.about.journeyAccent}
-      index="01"
-    />
+      <div class="about-records">
+        <AboutRecord
+          id="profile"
+          index="01"
+          label={ui.about.profile}
+          title={`${ui.about.profileGreeting} ${profile.name}`}
+        >
+          <AboutProfile
+            bio={bio}
+            tags={about.data.tags}
+            location={about.data.location}
+            mbti={about.data.mbti}
+            now={about.data.now}
+            nowLabel={ui.about.now}
+          />
+        </AboutRecord>
 
-    <AboutSkills
-      items={about.data.skills}
-      label={ui.about.skills}
-      title={ui.about.skillsTitle}
-      accent={ui.about.skillsAccent}
-      index="02"
-    />
+        <AboutRecord
+          id="timeline"
+          index="02"
+          label={ui.about.journey}
+          title={ui.about.journeyTitle}
+        >
+          <AboutTimeline
+            items={about.data.career}
+            labels={{ study: ui.about.trackStudy, blog: ui.about.trackBlog }}
+          />
+        </AboutRecord>
 
-    <AboutTechStack
-      tools={about.data.tools}
-      label={ui.about.tech}
-      title={ui.about.techTitle}
-      accent={ui.about.techAccent}
-      hint={ui.about.techHint}
-      resetLabel={ui.about.techReset}
-      index="03"
-    />
+        <AboutRecord id="skills" index="03" label={ui.about.skills} title={ui.about.skillsTitle}>
+          <AboutSkills levels={about.data.skillLevels} focus={about.data.focus} />
+        </AboutRecord>
 
-    <AboutTokens
-      calendar={tokenCalendar}
-      summary={tokenSummary}
-      locale={ui.locale}
-      label={ui.about.tokens}
-      title={ui.about.tokenTitle}
-      accent={ui.about.tokenAccent}
-      index="04"
-      cardTitle={ui.about.tokenCardTitle}
-      cardSubtitle={ui.about.tokenCardSubtitle}
-      labels={{
-        today: ui.about.tokenToday,
-        total: ui.about.tokenTotal,
-        peak: ui.about.tokenPeak,
-        current: ui.about.tokenCurrent,
-        longest: ui.about.tokenLongest,
-        less: ui.about.tokenLess,
-        more: ui.about.tokenMore,
-        hint: ui.about.tokenHint,
-        weekdays: ui.about.tokenWeekdays,
-      }}
-    />
+        <AboutRecord id="stack" index="04" label={ui.about.tech} title={ui.about.techTitle}>
+          <AboutTechStack
+            tools={about.data.tools}
+            hint={ui.about.techHint}
+            resetLabel={ui.about.techReset}
+          />
+        </AboutRecord>
 
-    <AboutWorks
-      projects={projects}
-      covers={[steelCover, cocoaCover]}
-      label={ui.about.works}
-      title={ui.about.worksTitle}
-      accent={ui.about.worksAccent}
-      index="05"
-    />
+        <AboutRecord id="tokens" index="05" label={ui.about.tokens} title={ui.about.tokenTitle}>
+          <AboutTokens
+            calendar={tokenCalendar}
+            summary={tokenSummary}
+            locale={ui.locale}
+            cardTitle={ui.about.tokenCardTitle}
+            cardSubtitle={ui.about.tokenCardSubtitle}
+            labels={{
+              today: ui.about.tokenToday,
+              total: ui.about.tokenTotal,
+              peak: ui.about.tokenPeak,
+              current: ui.about.tokenCurrent,
+              longest: ui.about.tokenLongest,
+              less: ui.about.tokenLess,
+              more: ui.about.tokenMore,
+              hint: ui.about.tokenHint,
+              weekdays: ui.about.tokenWeekdays,
+            }}
+          />
+        </AboutRecord>
 
-    <AboutGallery
-      label={ui.about.gallery}
-      title={ui.about.galleryTitle}
-      accent={ui.about.galleryAccent}
-      index="06"
-    />
+        <AboutRecord id="works" index="06" label={ui.about.works} title={ui.about.worksTitle}>
+          <AboutWorks projects={projects} covers={[steelCover, cocoaCover]} />
+        </AboutRecord>
 
-    <AboutContact
-      links={home.links}
-      label={ui.about.contact}
-      title={ui.about.contactTitle}
-      accent={ui.about.contactAccent}
-      note={ui.about.contactNote}
-      status={ui.about.contactStatus}
-      index="07"
-    />
+        <AboutRecord id="gallery" index="07" label={ui.about.gallery} title={ui.about.galleryTitle}>
+          <AboutGallery />
+        </AboutRecord>
+
+        <AboutRecord id="contact" index="08" label={ui.about.contact} title={ui.about.contactTitle}>
+          <AboutContact
+            links={contactLinks}
+            label={ui.about.contact}
+            note={ui.about.contactNote}
+            status={ui.about.contactStatus}
+          />
+        </AboutRecord>
+      </div>
+    </div>
   </main>
 </Base>
 

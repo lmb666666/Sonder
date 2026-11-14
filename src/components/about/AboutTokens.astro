@@ -8,10 +8,6 @@ interface Props {
   calendar: TokenCalendar;
   summary: TokenSummary;
   locale: string;
-  label: string;
-  title: string;
-  accent: string;
-  index: string;
   cardTitle: string;
   cardSubtitle: string;
   labels: {
@@ -27,8 +23,7 @@ interface Props {
   };
 }
 
-const { calendar, summary, locale, label, title, accent, index, cardTitle, cardSubtitle, labels } =
-  Astro.props;
+const { calendar, summary, locale, cardTitle, cardSubtitle, labels } = Astro.props;
 
 const dayLabel = (index: number) =>
   index === 1
@@ -46,97 +41,83 @@ const dayUnit = locale.startsWith('zh') ? '天' : 'days';
 
 {
   calendar.weeks.length > 0 && (
-    <section class="about-chapter about-tokens" id="tokens">
-      <header class="about-section-head">
-        <p class="about-section-label">
-          <span>{index}</span>
-          {label}
-        </p>
-        <h2>
-          {title}
-          <br />
-          <em>{accent}</em>
-        </h2>
+    <article class="about-token-card" aria-labelledby="about-token-title">
+      <header class="about-token-head">
+        <div>
+          <h3 id="about-token-title">{cardTitle}</h3>
+          <p>{cardSubtitle}</p>
+        </div>
       </header>
 
-      <article class="about-token-card" aria-labelledby="about-token-title">
-        <header class="about-token-head">
-          <div>
-            <h3 id="about-token-title">{cardTitle}</h3>
-            <p>{cardSubtitle}</p>
-          </div>
-        </header>
-
-        <div class="about-token-chart" aria-label={cardTitle}>
-          <div class="about-token-daylabels" aria-hidden="true">
-            {Array.from({ length: 7 }, (_, dayIndex) => (
-              <span>{dayLabel(dayIndex)}</span>
-            ))}
-          </div>
-          <div class="about-token-scroll">
-            <div class="about-token-calendar" style={`--token-weeks:${calendar.weeks.length}`}>
-              <div class="about-token-months" aria-hidden="true">
-                {calendar.months.map((month) => (
-                  <span style={`grid-column:span ${month.span}`}>{month.label}</span>
-                ))}
-              </div>
-              <div class="about-token-weeks" aria-hidden="true">
-                {calendar.weeks.map((week) => (
-                  <div class="about-token-week">
-                    {week.days.map((day) => (
-                      <span
-                        class="about-token-cell"
-                        data-level={day.future ? 0 : day.level}
-                        data-future={day.future ? 'true' : undefined}
-                        title={
-                          day.future ? undefined : `${day.dateKey} · ${compact(day.tokens)} tokens`
-                        }
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
+      <div class="about-token-chart" aria-label={cardTitle}>
+        <div class="about-token-daylabels" aria-hidden="true">
+          {Array.from({ length: 7 }, (_, dayIndex) => (
+            <span>{dayLabel(dayIndex)}</span>
+          ))}
+        </div>
+        <div class="about-token-scroll">
+          <div class="about-token-calendar" style={`--token-weeks:${calendar.weeks.length}`}>
+            <div class="about-token-months" aria-hidden="true">
+              {calendar.months.map((month) => (
+                <span style={`grid-column:span ${month.span}`}>{month.label}</span>
+              ))}
+            </div>
+            <div class="about-token-weeks" aria-hidden="true">
+              {calendar.weeks.map((week) => (
+                <div class="about-token-week">
+                  {week.days.map((day) => (
+                    <span
+                      class="about-token-cell"
+                      data-level={day.future ? 0 : day.level}
+                      data-future={day.future ? 'true' : undefined}
+                      title={
+                        day.future ? undefined : `${day.dateKey} · ${compact(day.tokens)} tokens`
+                      }
+                    />
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
-          <p class="about-token-hint">{labels.hint}</p>
         </div>
+        <p class="about-token-hint">{labels.hint}</p>
+      </div>
 
-        <dl class="about-token-stats">
-          <div>
-            <dt>{labels.today}</dt>
-            <dd>{compact(summary.today)}</dd>
-          </div>
-          <div>
-            <dt>{labels.total}</dt>
-            <dd>{compact(summary.total)}</dd>
-          </div>
-          <div>
-            <dt>{labels.peak}</dt>
-            <dd>{compact(summary.peak?.tokens ?? 0)}</dd>
-            {peakDate && <small>{peakDate}</small>}
-          </div>
-          <div>
-            <dt>{labels.current}</dt>
-            <dd>{summary.currentStreak}</dd>
-            <small>{dayUnit}</small>
-          </div>
-          <div>
-            <dt>{labels.longest}</dt>
-            <dd>{summary.longestStreak}</dd>
-            <small>{dayUnit}</small>
-          </div>
-        </dl>
-
-        <div class="about-token-legend" aria-hidden="true">
-          <span>{labels.less}</span>
-          <i data-level="0" />
-          <i data-level="1" />
-          <i data-level="2" />
-          <i data-level="3" />
-          <i data-level="4" />
-          <span>{labels.more}</span>
+      <dl class="about-token-stats">
+        <div>
+          <dt>{labels.today}</dt>
+          <dd>{compact(summary.today)}</dd>
         </div>
-      </article>
-    </section>
+        <div>
+          <dt>{labels.total}</dt>
+          <dd>{compact(summary.total)}</dd>
+        </div>
+        <div>
+          <dt>{labels.peak}</dt>
+          <dd>{compact(summary.peak?.tokens ?? 0)}</dd>
+          {peakDate && <small>{peakDate}</small>}
+        </div>
+        <div>
+          <dt>{labels.current}</dt>
+          <dd>{summary.currentStreak}</dd>
+          <small>{dayUnit}</small>
+        </div>
+        <div>
+          <dt>{labels.longest}</dt>
+          <dd>{summary.longestStreak}</dd>
+          <small>{dayUnit}</small>
+        </div>
+      </dl>
+
+      <div class="about-token-legend" aria-hidden="true">
+        <span>{labels.less}</span>
+        <i data-level="0" />
+        <i data-level="1" />
+        <i data-level="2" />
+        <i data-level="3" />
+        <i data-level="4" />
+        <span>{labels.more}</span>
+      </div>
+    </article>
   )
 }
