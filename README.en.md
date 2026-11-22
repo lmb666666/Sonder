@@ -30,7 +30,7 @@ Sonder is a personal publishing template built around a paper-like reading exper
 **Content & layout**
 
 - **Two list layouts** — `media` covers or `rows` list, switchable in config
-- **Media / moments / friends** — media shelf, timeline and friend circle out of the box
+- **Media / moments / friends** — media shelf, timeline and friend circle; moments include an Ech0 timeline, music player and rich cards
 - **8 palettes + dark mode** — warm orange by default, recolor the whole site
 - **Two navigations** — `pill` or `bar`
 
@@ -48,6 +48,7 @@ Sonder is a personal publishing template built around a paper-like reading exper
 - **Site stats** — total words, last content update, article/category/tag counts and a writing heatmap
 - **Math & diagrams** — KaTeX / MathJax, Mermaid, ABC music scores
 - **Directives (outer tags)** — `:::note` / `:badge` / `::github-card` directives with zero imports, covering callouts, tabs, media, music, friend links and 20+ components
+- **Rich moments** — music cards (Meting + NetEase outchain fallback), Bilibili / YouTube / Douyin / TikTok, GitHub / website / location / tweet cards
 - **Static output** — RSS, Atom, sitemap, llms.txt; on-demand font subsets at build
 
 ## 🚀 Quick start

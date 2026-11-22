@@ -138,13 +138,13 @@ const momentSchema = z.object({
   images: z.array(z.string()).optional().default([]),
   video: z
     .object({
-      provider: z.enum(['bilibili', 'youtube']),
+      provider: z.enum(['bilibili', 'youtube', 'douyin', 'tiktok']),
       id: z.string(),
     })
     .optional(),
   extension: z
     .object({
-      type: z.enum(['github', 'website', 'music', 'location']),
+      type: z.enum(['github', 'website', 'music', 'location', 'tweet']),
       title: z.string(),
       description: z.string().optional().default(''),
       url: z.string().optional().default(''),

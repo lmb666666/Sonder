@@ -69,6 +69,8 @@ src/data/
 
 关于页的数据在 `src/data/about.yml`：`profile` 控制简介、地址、身份、学校、自拍照和性格，`experience` 控制经历，`techStatement` 控制技能区左侧文案，`skills` 控制技能胶囊，`works` 控制作品卡片，`contact.links` 控制关于页联系方式。AI Token 数据在 `src/data/token-usage.yml`，本地动态在 `src/data/moments.yml`，本地友链在 `src/data/friends.yml`。
 
+动态页会自动把音乐、视频、GitHub、网站、位置与推文渲染成对应卡片；音乐播放依赖 `[config.music].meting_api`，留空或不可达时保留平台链接卡，网易云音频失败会降级官方外链播放器。
+
 ## 构建与部署
 
 ```bash

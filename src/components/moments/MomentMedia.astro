@@ -1,0 +1,36 @@
+---
+import type { MomentItem } from '../../lib/moments';
+import { withBase } from '../../lib/url';
+
+interface Props {
+  moment: MomentItem;
+  imageAria: (index: number) => string;
+  moreImages: (count: number) => string;
+}
+
+const { moment, imageAria, moreImages } = Astro.props;
+const images = (moment.images ?? []).slice(0, 9);
+const extra = Math.max(0, (moment.images?.length ?? 0) - 9);
+const resolve = (src: string) =>
+  src.startsWith('/') && !src.startsWith('//') ? withBase(src) : src;
+---
+
+{
+  images.length > 0 && (
+    <div class="moment-gallery" data-count={images.length}>
+      {images.map((src, index) => (
+        <a
+          class="moment-image"
+          href={resolve(src)}
+          data-moment-image
+          aria-label={imageAria(index + 1)}
+        >
+          <img src={resolve(src)} alt="" loading="lazy" decoding="async" data-moment-thumb />
+          {extra > 0 && index === images.length - 1 && (
+            <span class="moment-image-more">{moreImages(extra)}</span>
+          )}
+        </a>
+      ))}
+    </div>
+  )
+}

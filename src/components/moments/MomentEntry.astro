@@ -1,0 +1,52 @@
+---
+import { escapeHtml, momentDateInfo, type MomentItem } from '../../lib/moments';
+import { renderMomentSpecial, type MomentSpecialLabels } from '../../lib/moment-special';
+import MomentMedia from './MomentMedia.astro';
+
+interface Props {
+  moment: MomentItem;
+  locale: string;
+  hidden?: boolean;
+  specialLabels: MomentSpecialLabels;
+  imageAria: (index: number) => string;
+  moreImages: (count: number) => string;
+}
+
+const { moment, locale, hidden = false, specialLabels, imageAria, moreImages } = Astro.props;
+
+const info = momentDateInfo(moment.date, locale);
+const contentHtml = moment.content
+  ? escapeHtml(moment.content.replace(/\r\n?/g, '\n')).replace(/\n/g, '<br />')
+  : '';
+const specialHtml = renderMomentSpecial(moment, specialLabels);
+---
+
+{
+  info && (
+    <article
+      class:list={['moment', { 'is-hidden': hidden }]}
+      id={`moment-${moment.id}`}
+      data-moment
+    >
+      <div class="moment-date" aria-hidden="true">
+        <span class="moment-day">{info.day}</span>
+        <span class="moment-weekday">{info.weekday}</span>
+      </div>
+      <div class="moment-body">
+        <p class="moment-time">
+          <time datetime={moment.date}>{info.time}</time>
+        </p>
+        {contentHtml && <p class="moment-content" set:html={contentHtml} />}
+        <MomentMedia moment={moment} imageAria={imageAria} moreImages={moreImages} />
+        <Fragment set:html={specialHtml} />
+        {moment.tags && moment.tags.length > 0 && (
+          <footer class="moment-tags">
+            {moment.tags.map((tag) => (
+              <span>#{tag}</span>
+            ))}
+          </footer>
+        )}
+      </div>
+    </article>
+  )
+}

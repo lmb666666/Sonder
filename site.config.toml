@@ -81,9 +81,9 @@ mathRenderer = "katex"
 mermaid = true
 
 [config.music]
-# Meting API 实例地址，供 ::music 指令构建期解析网易云 / QQ 曲目。
+# Meting API 实例地址：::music 指令解析网易云 / QQ；动态页音乐卡解析网易云 / QQ / 酷狗。
 # 支持 :server/:type/:id/:r 占位符；默认使用社区公共实例，可换成自建实例。
-# 实例不可达时组件自动降级为打开歌单的链接卡片。
+# 实例或音频不可达时：::music 按降级链回退；动态页网易云音乐降级为官方外链播放器。
 meting_api = "https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=:r"
 
 [config.friendCircle]
