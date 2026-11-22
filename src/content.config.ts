@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { siteConfigSchema } from './config/schema';
+import { normalizePostId, POST_ID_PATTERN, RESERVED_POST_IDS } from './lib/post-id';
 
 type CollectionSchemaFactory = Extract<
   Parameters<typeof defineCollection>[0]['schema'],
@@ -22,10 +23,25 @@ const remoteImageSchema = z
 const contentImageSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
   z.union([image(), remoteImageSchema]);
 
+const postIdSchema = z.preprocess(
+  (value) =>
+    typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? String(value) : value,
+  z
+    .string()
+    .trim()
+    .min(1, 'postid 不能为空')
+    .regex(POST_ID_PATTERN, 'postid 只能包含字母、数字、下划线和连字符')
+    .refine(
+      (value) => !RESERVED_POST_IDS.has(value.toLowerCase()),
+      'postid 与 /blog 下的静态路由冲突',
+    ),
+);
+
 const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
   z.object({
     title: z.string(),
     description: z.string(),
+    postid: postIdSchema,
     // Creation date. Accepts ISO 8601 strings and plain dates such as YYYY-MM-DD.
     date: z.coerce.date(),
     // Last meaningful edit. Optional; sorting still uses date.
@@ -202,7 +218,12 @@ const siteConfig = defineCollection({
 });
 
 const blog = defineCollection({
-  loader: glob({ base: `${contentBase}/blog`, pattern: '**/*.md' }),
+  loader: glob({
+    base: `${contentBase}/blog`,
+    pattern: '**/*.md',
+    generateId: ({ entry, data }) =>
+      normalizePostId(data.postid) ?? entry.replace(/\\/g, '/').replace(/\.md$/i, ''),
+  }),
   // Type-check frontmatter using a schema
   schema: blogArticleSchema,
 });

@@ -2,6 +2,7 @@
 title: <%= title | yaml %>
 description: ''
 date: <%= isoDate | yaml %>
+postid: <%= postid | yaml %>
 draft: true
 sticky: false
 heroImage: ''

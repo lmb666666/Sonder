@@ -29,7 +29,9 @@ bun run build          # 完整构建 + Pagefind
 
 ## 代码与样式约定
 
-- 站点级配置集中在根目录 `site.config.toml`，字段结构由 `src/config/schema.ts` 的 Zod schema 校验；新增字段需要同步 schema 默认值与[站点配置指南](https://sonder.liang.one/blog/site-config-guide/)
+- 站点级配置集中在根目录 `site.config.toml`，字段结构由 `src/config/schema/` 的 Zod schema 校验；新增字段需要同步 schema 默认值与[站点配置指南](https://sonder.liang.one/blog/4c7380c1/)
+- 文章 `postid` 决定永久链接 `/blog/<postid>/`：已发布文章不要修改；新文章用 `bun run post:new` 自动生成，手写文章用 `bun run postid:fill` 回填；自定义值必须满足 `^[\w-]+$`、全局唯一，且不能使用 `archives` / `categories` / `page` / `tags`。确需修改时在 `redirects.json` 补旧地址映射
+- 修改文章 frontmatter、`postid` 或 `redirects.json` 后运行 `bun run content:check`
 - 颜色使用主题 token（`--paper-*`、`--accent`），不要在页面里写死色值
 - 新增交互优先使用原生 HTML 与轻量脚本，保持无框架依赖；深色模式、移动端断点与键盘焦点状态需要一起检查
 - 修改导航、文章底部等界面文案时，同步 `src/i18n/` 的 en / zh-CN / zh-TW 三份文案

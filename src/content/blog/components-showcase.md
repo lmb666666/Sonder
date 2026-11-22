@@ -2,6 +2,7 @@
 title: '文章组件速览'
 description: 'Sonder 全部外挂标签的语法与真实渲染效果：徽标、按键、剧透、提醒块、标签页、分栏、时间线、折叠、诗歌、聊天、卡片、轮播、长图、媒体架、链接卡、GitHub 卡、视频、音乐、乐谱与友链。'
 date: '2026-10-25T00:00:00+08:00'
+postid: "fb5d4736"
 draft: false
 heroImage: '/src/assets/figure/covers/cover-09-ink.png'
 showHeroImage: false
@@ -16,7 +17,7 @@ sidebar:
   toc: true
 ---
 
-Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期渲染成组件，零 import，直接写在 `.md` 里。标准 Markdown 语法见 [Markdown 语法](/blog/markdown-style-guide/)，本文只讲模板扩展的组件能力。
+Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期渲染成组件，零 import，直接写在 `.md` 里。标准 Markdown 语法见 [Markdown 语法](/blog/0346b25d/)，本文只讲模板扩展的组件能力。
 
 ## 语法速查
 
@@ -139,7 +140,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 ```md
 ::::btns{layout="grid-2"}
 :btn[GitHub 仓库]{href="https://github.com/lmb666666/Sonder"}
-:btn[组件速览]{href="/blog/components-showcase/"}
+:btn[组件速览]{href="/blog/fb5d4736/"}
 :btn[Astro]{href="https://astro.build"}
 :btn[Pagefind]{href="https://pagefind.app"}
 ::::
@@ -147,7 +148,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 
 ::::btns{layout="grid-2"}
 :btn[GitHub 仓库]{href="https://github.com/lmb666666/Sonder"}
-:btn[组件速览]{href="/blog/components-showcase/"}
+:btn[组件速览]{href="/blog/fb5d4736/"}
 :btn[Astro]{href="https://astro.build"}
 :btn[Pagefind]{href="https://pagefind.app"}
 ::::

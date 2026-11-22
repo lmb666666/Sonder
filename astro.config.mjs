@@ -15,6 +15,7 @@ import { getCodeCollapseLabels, paperCodeThemes } from './src/config/code-theme'
 import { siteConfigSchema } from './src/config/schema';
 import { resolveApplyProvider, resolveYoulinConfig } from './src/config/youlin';
 import { getMarkdownConfig } from './src/plugins/markdown';
+import { getRedirectSources, validateRedirects } from './src/lib/redirects';
 
 /**
  * @param {unknown} value
@@ -33,6 +34,24 @@ if (!parsedSiteConfig.success) {
   throw new Error(`Invalid site.config.toml:\n${issues}`);
 }
 const siteConfig = parsedSiteConfig.data;
+
+const redirectsFile = new URL('./redirects.json', import.meta.url);
+/** @type {Record<string, string>} */
+let redirects = {};
+if (fs.existsSync(redirectsFile)) {
+  try {
+    redirects = JSON.parse(fs.readFileSync(redirectsFile, 'utf8'));
+  } catch (error) {
+    throw new Error(
+      `Invalid redirects.json: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+const redirectIssues = validateRedirects(redirects);
+if (redirectIssues.length > 0) {
+  throw new Error(`Invalid redirects.json:\n${redirectIssues.join('\n')}`);
+}
+const redirectSources = getRedirectSources(redirects);
 
 /**
  * @param {unknown} value
@@ -191,11 +210,19 @@ export default defineConfig({
     inlineStylesheets: 'always',
   },
   base: resolvedBase,
+  redirects,
   markdown: {
     processor: unified({
       remarkPlugins: markdown.remarkPlugins,
       rehypePlugins: markdown.rehypePlugins,
     }),
   },
-  integrations: [...markdown.integrations, expressiveCode(expressiveCodeConfig), sitemap()],
+  integrations: [
+    ...markdown.integrations,
+    expressiveCode(expressiveCodeConfig),
+    sitemap({
+      filter: (page) =>
+        !redirectSources.has(new URL(page, resolvedSite).pathname.replace(/\/+$/, '') || '/'),
+    }),
+  ],
 });

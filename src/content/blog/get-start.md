@@ -2,6 +2,7 @@
 title: 'Sonder 快速开始'
 description: '从本地运行到部署上线：准备环境、修改站点配置、替换示例内容，并生成可发布的静态站点。'
 date: 2026-07-05T08:13:22.188Z
+postid: "89bf75ce"
 heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 draft: false
 sticky: true
@@ -45,7 +46,7 @@ bun run dev
 - `[config.appearance.theme]`：默认色盘、界面语言和导航样式
 - `[config.home]`：首页引语、介绍、最新文章数量和联系方式
 
-每项的完整说明见 [站点配置指南](/blog/site-config-guide/)。
+每项的完整说明见 [站点配置指南](/blog/4c7380c1/)。
 
 ## 替换内容
 
@@ -66,6 +67,14 @@ src/data/
 示例文章可以直接编辑或删除。删除文章后，记得把文章里的 `heroImage` 对应的封面一起清理，避免残留未使用的图片。
 
 文章 frontmatter 的 `date` 是发布时间；需要显示修改时间时，再加一行 `updated: 2026-11-08`。文章页只会在修改时间比发布时间晚至少一天时显示「修改于」，站点信息卡的「最后更新」也会取两者的最大值。
+
+每篇文章的 `postid` 决定永久链接 `/blog/<postid>/`。`bun run post:new` 会自动生成 8 位十六进制 ID；手写文章缺少 postid 时运行 `bun run postid:fill` 回填。也可以自定义，但只能包含字母、数字、下划线和连字符，必须全局唯一，且不能使用 `archives`、`categories`、`page`、`tags`；纯数字或带前导零的值请加引号。发布后不要修改；确需修改时同步更新引用该文章的站内链接，并在根目录 `redirects.json` 里补旧地址到新地址的映射：
+
+```json
+{
+  "/blog/old-postid": "/blog/new-postid/"
+}
+```
 
 关于页的数据在 `src/data/about.yml`：`profile` 控制简介、地址、身份、学校、自拍照和性格，`experience` 控制经历，`techStatement` 控制技能区左侧文案，`skills` 控制技能胶囊，`works` 控制作品卡片，`contact.links` 控制关于页联系方式。AI Token 数据在 `src/data/token-usage.yml`，本地动态在 `src/data/moments.yml`，本地友链在 `src/data/friends.yml`。
 
@@ -106,6 +115,6 @@ SITE_URL=https://example.com SITE_BASE=/my-site bun run build
 
 ## 接下来
 
-- 阅读 [主题色与深色模式](/blog/theme-palettes/)，调整默认色盘与导航样式。
-- 阅读 [内容组件速览](/blog/components-showcase/)，了解文章里可以使用的全部外挂指令。
-- 阅读 [书影音页面](/blog/media-page-guide/)、[站内搜索](/blog/site-search-guide/) 和 [朋友页与友链卡片](/blog/friend-links-guide/) 的配置方式。
+- 阅读 [主题色与深色模式](/blog/4ead6a22/)，调整默认色盘与导航样式。
+- 阅读 [内容组件速览](/blog/fb5d4736/)，了解文章里可以使用的全部外挂指令。
+- 阅读 [书影音页面](/blog/4c945f27/)、[站内搜索](/blog/88ac35b7/) 和 [朋友页与友链卡片](/blog/a465cfe3/) 的配置方式。

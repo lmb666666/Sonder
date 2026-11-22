@@ -2,6 +2,7 @@
 title: '站内搜索'
 description: 'Sonder 使用 Pagefind 生成静态全文索引，支持顶部搜索按钮与 Ctrl+K / Cmd+K 快捷键。'
 date: '2026-05-21'
+postid: "88ac35b7"
 draft: false
 heroImage: '/src/assets/figure/covers/cover-13-steel.png'
 showHeroImage: false

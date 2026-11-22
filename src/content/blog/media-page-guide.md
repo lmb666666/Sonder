@@ -2,6 +2,7 @@
 title: '书影音页面'
 description: '用 Sonder 的媒体架展示书籍、电影、剧集、专辑与播客，并配置分区导航和阅读长评。'
 date: '2026-07-20T16:30:00+08:00'
+postid: "4c945f27"
 draft: false
 heroImage: '/src/assets/figure/covers/cover-08-cocoa.png'
 showHeroImage: false

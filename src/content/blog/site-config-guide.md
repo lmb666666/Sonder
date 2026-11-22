@@ -2,6 +2,7 @@
 title: '站点配置指南'
 description: 'Sonder 的站点级信息集中在根目录的 site.config.toml：站点、作者、导航、页面文案、首页、外观、搜索、评论和朋友圈。'
 date: '2026-05-19T18:00:00+08:00'
+postid: "4c7380c1"
 draft: false
 heroImage: '/src/assets/figure/covers/cover-07-teal.png'
 showHeroImage: false

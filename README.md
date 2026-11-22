@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://sonder.liang.one">在线预览</a> ·
-  <a href="https://sonder.liang.one/blog/get-start/">使用指南</a> ·
+  <a href="https://sonder.liang.one/blog/89bf75ce/">使用指南</a> ·
   <a href="./CONTRIBUTING.md">参与贡献</a> ·
   <a href="./README.en.md">English</a>
 </p>
@@ -72,25 +72,28 @@ bun run dev
 title: 我的第一篇文章
 description: 一句话摘要，会出现在列表与分享卡上。
 date: 2026-10-31
+postid: 4f2a9c1e
 tags: [随笔]
 categories: [生活]
 heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 ```
 
+`postid` 决定永久链接 `/blog/<postid>/`；`post:new` 会自动生成 8 位十六进制 ID，也可以自定义为字母、数字、下划线和连字符，发布后不要修改。
+
 ## 📖 使用指南
 
 完整的配置与写作文档直接读演示站上的指南，与模板一同发布、始终同步：
 
-| 指南                                                                 | 内容                             |
-| -------------------------------------------------------------------- | -------------------------------- |
-| [快速开始](https://sonder.liang.one/blog/get-start/)                 | 替换站点信息、写文章、构建与部署 |
-| [站点配置](https://sonder.liang.one/blog/site-config-guide/)         | `site.config.toml` 全部字段说明  |
-| [主题与色盘](https://sonder.liang.one/blog/theme-palettes/)          | 8 套色盘与深色模式               |
-| [组件速览](https://sonder.liang.one/blog/components-showcase/)       | 全部外挂标签的语法与真实演示     |
-| [Markdown 风格](https://sonder.liang.one/blog/markdown-style-guide/) | 排版规范与扩展语法               |
-| [站内搜索](https://sonder.liang.one/blog/site-search-guide/)         | Pagefind 配置                    |
-| [书影音页面](https://sonder.liang.one/blog/media-page-guide/)        | 条目格式与媒体架                 |
-| [友链与朋友圈](https://sonder.liang.one/blog/friend-links-guide/)    | 友链、朋友圈与申请表单           |
+| 指南                                                     | 内容                             |
+| -------------------------------------------------------- | -------------------------------- |
+| [快速开始](https://sonder.liang.one/blog/89bf75ce/)      | 替换站点信息、写文章、构建与部署 |
+| [站点配置](https://sonder.liang.one/blog/4c7380c1/)      | `site.config.toml` 全部字段说明  |
+| [主题与色盘](https://sonder.liang.one/blog/4ead6a22/)    | 8 套色盘与深色模式               |
+| [组件速览](https://sonder.liang.one/blog/fb5d4736/)      | 全部外挂标签的语法与真实演示     |
+| [Markdown 风格](https://sonder.liang.one/blog/0346b25d/) | 排版规范与扩展语法               |
+| [站内搜索](https://sonder.liang.one/blog/88ac35b7/)      | Pagefind 配置                    |
+| [书影音页面](https://sonder.liang.one/blog/4c945f27/)    | 条目格式与媒体架                 |
+| [友链与朋友圈](https://sonder.liang.one/blog/a465cfe3/)  | 友链、朋友圈与申请表单           |
 
 ## ☁️ 部署
 
@@ -100,6 +103,8 @@ heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 SITE_URL=https://example.com SITE_BASE=/my-site bun run build
 ```
 
+需要修改已发布文章的 `postid` 时，在根目录 `redirects.json` 添加旧地址到新地址的映射。纯静态构建会生成客户端跳转页；真正的 301/308 由托管平台规则处理。
+
 ## 🛠 常用命令
 
 ```bash
@@ -107,6 +112,8 @@ bun run dev           # 本地开发
 bun run build         # 构建（含字体子集）+ Pagefind 索引
 bun run preview       # 预览构建产物
 bun run post:new      # 新建文章
+bun run postid:fill   # 为缺失的文章回填 postid
+bun run content:check # 校验 postid 与 redirects.json
 bun run media:new     # 新建书影音条目
 bun run format:check  # 格式检查（ESLint + Prettier）
 bun test              # 单元测试

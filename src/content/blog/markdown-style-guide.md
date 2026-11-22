@@ -2,6 +2,7 @@
 title: 'Markdown 语法'
 description: '标准 Markdown 与 GFM 语法在 Sonder 中的渲染效果对照：标题、段落、列表、表格、代码、引用、图片、数学公式与行内元素。'
 date: '2026-05-19T00:00:00+08:00'
+postid: "0346b25d"
 draft: false
 heroImage: '/src/assets/figure/covers/cover-11-sand.png'
 showHeroImage: false
@@ -17,7 +18,7 @@ sidebar:
 ---
 
 这篇文章用于集中展示**标准 Markdown / GFM 语法**的渲染效果，便于你写作时快速对照。
-模板扩展的组件能力见[文章组件速览](/blog/components-showcase/)，本文不涉及。
+模板扩展的组件能力见[文章组件速览](/blog/fb5d4736/)，本文不涉及。
 
 ## 标题
 
