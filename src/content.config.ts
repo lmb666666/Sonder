@@ -2,7 +2,7 @@ import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { siteConfigSchema } from './config/schema';
-import { normalizePostId, POST_ID_PATTERN, RESERVED_POST_IDS } from './lib/post-id';
+import { createBlogEntryId, POST_ID_PATTERN, RESERVED_POST_IDS } from './lib/post-id';
 
 type CollectionSchemaFactory = Extract<
   Parameters<typeof defineCollection>[0]['schema'],
@@ -221,8 +221,7 @@ const blog = defineCollection({
   loader: glob({
     base: `${contentBase}/blog`,
     pattern: '**/*.md',
-    generateId: ({ entry, data }) =>
-      normalizePostId(data.postid) ?? entry.replace(/\\/g, '/').replace(/\.md$/i, ''),
+    generateId: ({ entry, data }) => createBlogEntryId(entry, data.postid),
   }),
   // Type-check frontmatter using a schema
   schema: blogArticleSchema,

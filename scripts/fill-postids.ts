@@ -79,4 +79,11 @@ function main() {
   console.log(`✓ 已为 ${missing.length} 篇文章生成 postid。`);
 }
 
-if (import.meta.main) main();
+if (import.meta.main) {
+  try {
+    main();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}

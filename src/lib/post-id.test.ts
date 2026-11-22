@@ -1,11 +1,22 @@
 import { describe, expect, test } from 'bun:test';
 
-import { allocatePostId, createPostId, normalizePostId } from './post-id';
+import { allocatePostId, createBlogEntryId, createPostId, normalizePostId } from './post-id';
 
 describe('createPostId', () => {
   test('按标题与日期生成固定的 8 位十六进制', () => {
     expect(createPostId('Markdown 语法', '2026-05-19T00:00:00+08:00')).toBe('0346b25d');
     expect(createPostId('Sonder 快速开始', '2026-07-05T08:13:22.188Z')).toBe('89bf75ce');
+  });
+});
+
+describe('createBlogEntryId', () => {
+  test('合法 postid 直接作为内容 ID', () => {
+    expect(createBlogEntryId('post.md', 'fb5d4736')).toBe('fb5d4736');
+  });
+
+  test('缺失或非法 postid 使用不会与合法 ID 冲突的占位值', () => {
+    expect(createBlogEntryId('nested\\post.md', undefined)).toBe('__invalid__/nested/post.md');
+    expect(createBlogEntryId('post.md', 'tags')).toBe('__invalid__/post.md');
   });
 });
 

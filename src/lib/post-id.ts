@@ -44,6 +44,14 @@ export function createPostId(title: string, date: string): string {
   return value.toString(16).padStart(8, '0');
 }
 
+/**
+ * 合法 postid 直接作为内容 ID；缺失或非法时使用含斜杠的占位 ID，
+ * 避免与任何合法 postid 冲突，并让 schema 继续给出字段级错误。
+ */
+export function createBlogEntryId(entry: string, postid: unknown): string {
+  return normalizePostId(postid) ?? `__invalid__/${entry.replace(/\\/g, '/')}`;
+}
+
 /** 碰撞时按数值递增；used 必须是已小写化的 ID 集合。 */
 export function allocatePostId(base: string, used: ReadonlySet<string>): string {
   const start = Number.parseInt(base, 16);
