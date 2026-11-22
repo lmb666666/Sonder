@@ -2,6 +2,7 @@
 title: '主题色与深色模式'
 description: 'Sonder 的内置色盘、导航样式，以及文章卡片在深色模式下的封面配色与磨砂玻璃效果。'
 date: '2026-05-20T16:07:19.299Z'
+postid: "4ead6a22"
 draft: false
 heroImage: '/src/assets/figure/covers/cover-04-lavender.png'
 showHeroImage: false

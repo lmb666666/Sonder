@@ -2,6 +2,7 @@
 title: '朋友页与友链卡片'
 description: '维护友链分组、朋友圈聚合与友链申请：Sonder 的朋友页由数据文件和外挂标签卡片组成。'
 date: '2026-05-19T00:00:00+08:00'
+postid: "a465cfe3"
 draft: false
 heroImage: '/src/assets/figure/covers/cover-14-apricot.png'
 showHeroImage: false
@@ -93,7 +94,7 @@ sources = ["youlin", "local"]
 limit = 0
 ```
 
-`baseUrl` 留空时不会请求友邻，行为与纯本地模式一致；但 `friends.provider = "youlin"` 时构建会要求填写 `baseUrl`。朋友圈始终请求 `{baseUrl}/api/circle`，不做构建期抓取。完整配置、`apply.provider` 与文章指令的 `src="youlin"` 用法见[站点配置指南](/blog/site-config-guide/)。
+`baseUrl` 留空时不会请求友邻，行为与纯本地模式一致；但 `friends.provider = "youlin"` 时构建会要求填写 `baseUrl`。朋友圈始终请求 `{baseUrl}/api/circle`，不做构建期抓取。完整配置、`apply.provider` 与文章指令的 `src="youlin"` 用法见[站点配置指南](/blog/4c7380c1/)。
 
 ## 友链申请
 

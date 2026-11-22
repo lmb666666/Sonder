@@ -1,13 +1,17 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-type ScaffoldTemplateVariable = 'title' | 'slug' | 'isoDate' | 'date';
+import { allocatePostId, createPostId, normalizePostId } from '../src/lib/post-id';
+import { readPostFiles } from './post-files';
+
+type ScaffoldTemplateVariable = 'title' | 'slug' | 'isoDate' | 'date' | 'postid';
 
 interface ScaffoldTemplateContext {
   title: string;
   slug: string;
   isoDate: string;
   date: string;
+  postid: string;
 }
 
 interface ContentScaffold {
@@ -17,7 +21,7 @@ interface ContentScaffold {
   template: URL;
 }
 
-const templateVariablePattern = /<%=\s*(title|slug|isoDate|date)(?:\s*\|\s*(yaml))?\s*%>/g;
+const templateVariablePattern = /<%=\s*(title|slug|isoDate|date|postid)(?:\s*\|\s*(yaml))?\s*%>/g;
 const unresolvedTemplateExpressionPattern = /<%=[\s\S]*?%>/;
 
 const scaffolds: ContentScaffold[] = [
@@ -73,11 +77,13 @@ if (!slug) {
 const now = new Date();
 const isoDate = now.toISOString();
 const title = slug;
+const postid = scaffold.collection === 'blog' ? createUniquePostId(title, isoDate) : '';
 const templateContext: ScaffoldTemplateContext = {
   title,
   slug,
   isoDate,
   date: isoDate.slice(0, 10),
+  postid,
 };
 const outputDirectory = outputDirectoryArg ?? scaffold.directory;
 const relativePath = path.join(outputDirectory, `${slug}.md`);
@@ -96,6 +102,18 @@ writeFileSync(targetPath, `${content.trimEnd()}\n`, 'utf8');
 
 console.log(`Created new ${scaffold.collection} file:`);
 console.log(relativePath);
+if (postid) console.log(`Permalink: /blog/${postid}/`);
+
+function createUniquePostId(title: string, date: string): string {
+  const used = new Set<string>();
+
+  for (const post of readPostFiles()) {
+    const postid = normalizePostId(post.frontmatter.postid);
+    if (postid) used.add(postid.toLowerCase());
+  }
+
+  return allocatePostId(createPostId(title, date), used);
+}
 
 function renderScaffoldTemplate(template: string, context: ScaffoldTemplateContext): string {
   const rendered = template.replace(
@@ -112,7 +130,7 @@ function renderScaffoldTemplate(template: string, context: ScaffoldTemplateConte
   if (unresolvedExpression) {
     throw new Error(
       `Unsupported scaffold template expression ${JSON.stringify(unresolvedExpression)}. ` +
-        'Supported variables are title, slug, isoDate, and date; the only supported filter is yaml.',
+        'Supported variables are title, slug, isoDate, date, and postid; the only supported filter is yaml.',
     );
   }
 

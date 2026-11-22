@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://sonder.liang.one">Live site</a> ·
-  <a href="https://sonder.liang.one/blog/get-start/">Guide</a> ·
+  <a href="https://sonder.liang.one/blog/89bf75ce/">Guide</a> ·
   <a href="./CONTRIBUTING.md">Contributing</a> ·
   <a href="./README.md">简体中文</a>
 </p>
@@ -72,25 +72,28 @@ Create a post with `bun run post:new my-post`. Common frontmatter:
 title: My first post
 description: A one-line summary for lists and share cards.
 date: 2026-10-31
+postid: 4f2a9c1e
 tags: [essay]
 categories: [life]
 heroImage: '/src/assets/figure/covers/cover-01-sage.png'
 ```
 
+`postid` determines the permalink `/blog/<postid>/`. `post:new` generates an 8-character hex ID automatically; you can also use letters, numbers, underscores, and hyphens. Do not change it after publishing.
+
 ## 📖 Guide
 
 The full documentation ships with the demo site and stays in sync with the template:
 
-| Guide                                                                 | Covers                                   |
-| --------------------------------------------------------------------- | ---------------------------------------- |
-| [Quick start](https://sonder.liang.one/blog/get-start/)               | Site info, writing, build & deploy       |
-| [Site config](https://sonder.liang.one/blog/site-config-guide/)       | Every field in `site.config.toml`        |
-| [Palettes](https://sonder.liang.one/blog/theme-palettes/)             | 8 palettes and dark mode                 |
-| [Components](https://sonder.liang.one/blog/components-showcase/)      | Every directive, live                    |
-| [Markdown style](https://sonder.liang.one/blog/markdown-style-guide/) | Typographic rules and extensions         |
-| [Search](https://sonder.liang.one/blog/site-search-guide/)            | Pagefind configuration                   |
-| [Media page](https://sonder.liang.one/blog/media-page-guide/)         | Entry format and media shelf             |
-| [Friends](https://sonder.liang.one/blog/friend-links-guide/)          | Friends, friend circle, application form |
+| Guide                                                     | Covers                                   |
+| --------------------------------------------------------- | ---------------------------------------- |
+| [Quick start](https://sonder.liang.one/blog/89bf75ce/)    | Site info, writing, build & deploy       |
+| [Site config](https://sonder.liang.one/blog/4c7380c1/)    | Every field in `site.config.toml`        |
+| [Palettes](https://sonder.liang.one/blog/4ead6a22/)       | 8 palettes and dark mode                 |
+| [Components](https://sonder.liang.one/blog/fb5d4736/)     | Every directive, live                    |
+| [Markdown style](https://sonder.liang.one/blog/0346b25d/) | Typographic rules and extensions         |
+| [Search](https://sonder.liang.one/blog/88ac35b7/)         | Pagefind configuration                   |
+| [Media page](https://sonder.liang.one/blog/4c945f27/)     | Entry format and media shelf             |
+| [Friends](https://sonder.liang.one/blog/a465cfe3/)        | Friends, friend circle, application form |
 
 ## ☁️ Deploy
 
@@ -100,6 +103,8 @@ The build output in `dist/` deploys to GitHub Pages, Vercel, Netlify, Cloudflare
 SITE_URL=https://example.com SITE_BASE=/my-site bun run build
 ```
 
+To change the `postid` of a published post, add an old-to-new mapping in `redirects.json`. Static builds emit a client-side redirect page; real 301/308 responses belong in the host's redirect rules.
+
 ## 🛠 Commands
 
 ```bash
@@ -107,6 +112,8 @@ bun run dev           # local dev server
 bun run build         # build (font subsets) + Pagefind index
 bun run preview       # preview the build
 bun run post:new      # new article
+bun run postid:fill   # backfill missing postids
+bun run content:check # validate postids and redirects.json
 bun run media:new     # new media entry
 bun run format:check  # formatting check (ESLint + Prettier)
 bun test              # unit tests
