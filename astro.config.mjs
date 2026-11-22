@@ -70,17 +70,17 @@ const resolvedSite =
 const resolvedBase =
   customBase || (isGitHubActions && isProjectPage && repositoryName ? `/${repositoryName}` : '/');
 
-const code = siteConfig.code;
-const youlin = resolveYoulinConfig(siteConfig.youlin);
+const code = siteConfig.appearance.code;
+const youlin = resolveYoulinConfig(siteConfig.integrations.youlin);
 const applyProvider = resolveApplyProvider(
   youlin.apply.provider,
   youlin.baseUrl,
   siteConfig.site.repository,
 );
 const markdown = getMarkdownConfig({
-  ...siteConfig.markdown,
-  metingApi: siteConfig.music.meting_api,
-  lang: siteConfig.theme.lang,
+  ...siteConfig.appearance.markdown,
+  metingApi: siteConfig.integrations.music.meting_api,
+  lang: siteConfig.appearance.theme.lang,
   youlin,
   applyProvider,
   youlinBaseUrl: youlin.baseUrl,
@@ -99,12 +99,12 @@ const expressiveCodeConfig = defineEcConfig({
             lineThreshold: code.collapseLines,
             previewLines: code.previewLines,
             defaultCollapsed: true,
-            ...getCodeCollapseLabels(siteConfig.theme.lang),
+            ...getCodeCollapseLabels(siteConfig.appearance.theme.lang),
           }),
         ]
       : []),
   ],
-  defaultLocale: siteConfig.theme.lang,
+  defaultLocale: siteConfig.appearance.theme.lang,
   themes: [paperCodeThemes.dark, paperCodeThemes.light],
   themeCssRoot: ':root',
   themeCssSelector: (theme) =>

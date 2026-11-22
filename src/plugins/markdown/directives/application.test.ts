@@ -101,6 +101,6 @@ describe('friendLinkApplicationHandler', () => {
     });
 
     expect(nodes).toEqual([]);
-    expect(messages[0]).toContain('youlin.baseUrl');
+    expect(messages[0]).toContain('integrations.youlin].baseUrl');
   });
 });

@@ -160,7 +160,8 @@ export function mapYoulinCircle(value: unknown): MappedYoulinCircle | null {
     const link = text(rawArticle.link);
     if (!title || !isHttpUrl(link)) continue;
 
-    const author = text(rawArticle.author) || '朋友';
+    // 缺作者时用文章域名，避免把中文占位写死在多语言页面里。
+    const author = text(rawArticle.author) || new URL(link).hostname;
     const avatar = httpUrlOrNull(rawArticle.avatar);
     const publishedAt = text(rawArticle.publishedAt);
 

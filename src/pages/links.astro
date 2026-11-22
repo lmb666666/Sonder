@@ -1,20 +1,12 @@
 ---
 import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
 import FriendLinkApplication from '../components/links/FriendLinkApplication.astro';
 import FriendLinkCard from '../components/links/FriendLinkCard.astro';
 import '../styles/friend-link-card.css';
 import '../styles/links-page.css';
-import { crawlFriendPosts, type FriendCircleFeed } from '../lib/friend-data';
-import {
-  resolveFriendCircle,
-  resolveFriendLinkGroups,
-  type FriendSourceDeps,
-} from '../lib/friend-sources';
-import { buildYoulinClientConfig, toDisplayDate } from '../lib/youlin';
+import { resolveFriendLinkGroups, type FriendSourceDeps } from '../lib/friend-sources';
+import { buildYoulinClientConfig } from '../lib/youlin';
 import { getSiteConfig } from '../config';
 import {
   resolveApplyProvider,
@@ -28,7 +20,6 @@ import { parseGitHubRepository } from '../lib/github';
 import { getUiText } from '../lib/ui-text';
 import { withBase } from '../lib/url';
 import PageHero from '../components/PageHero.astro';
-import demoFeed from '../data/friend-circle-demo.json';
 
 const friendsEntry = await getEntry('friends', 'friends');
 if (!friendsEntry) {
@@ -37,42 +28,34 @@ if (!friendsEntry) {
 const friendLinkGroups = friendsEntry.data.groups;
 
 const siteConfig = await getSiteConfig();
-const { site, profile, pages } = siteConfig;
+const { site, pages } = siteConfig;
+const profile = site.profile;
 const pageMeta = pages.links;
 const ui = getUiText(siteConfig);
-const youlin = resolveYoulinConfig(siteConfig.youlin);
+const youlin = resolveYoulinConfig(siteConfig.integrations.youlin);
 const applyProvider = resolveApplyProvider(youlin.apply.provider, youlin.baseUrl, site.repository);
 const issueRepository = applyProvider === 'github' ? parseGitHubRepository(site.repository) : null;
 
-const readPublic = async (file: string) => {
-  const path = resolve(process.cwd(), 'public', file.replace(/^\/+/, ''));
-  return existsSync(path) ? readFile(path, 'utf8') : null;
-};
-
 const sourceDeps: FriendSourceDeps = {
   localGroups: friendLinkGroups,
-  demo: demoFeed as unknown as FriendCircleFeed,
-  readPublic,
-  crawl: crawlFriendPosts,
 };
 
+const friendCircle = siteConfig.integrations.friends;
+const circleEnabled = friendCircle.enable && friendCircle.provider !== 'none';
+const circleProvider = circleEnabled ? friendCircle.provider : null;
+const useYoulinCircle = circleProvider === 'youlin';
+const useFclCircle = circleProvider === 'fcl';
+const fclUrl = useFclCircle ? friendCircle.fcl.apiUrl.trim() : '';
+const clientFeedSrc = useFclCircle && fclUrl ? fclUrl : '';
+
 const clientLinks = shouldFetchYoulinFirst(youlin.links.mode, youlin.links.sources, youlin.baseUrl);
-const clientCircle = shouldFetchYoulinFirst(
-  youlin.circle.mode,
-  youlin.circle.sources,
-  youlin.baseUrl,
-);
+const clientCircle = useYoulinCircle && Boolean(youlin.baseUrl);
 
 const linksResolved = await resolveFriendLinkGroups(youlin, sourceDeps, {
   skipYoulin: clientLinks,
 });
-const circleResolved = await resolveFriendCircle(youlin, sourceDeps, {
-  links: linksResolved.groups,
-  feedSrc: siteConfig.friendCircle.feed_src,
-  skipYoulin: clientCircle,
-});
 
-for (const error of [...linksResolved.errors, ...circleResolved.errors]) {
+for (const error of linksResolved.errors) {
   console.warn(`[sonder friends] ${error}`);
 }
 
@@ -83,13 +66,9 @@ const rssCount = groups.reduce(
   0,
 );
 
-const circlePosts = circleResolved.posts;
-const activeCount =
-  circleResolved.stats?.active ?? new Set(circlePosts.map((post) => post.author)).size;
-const circleFriendsCount = circleResolved.friendsCount;
-const pageSize = siteConfig.friendCircle.pageSize;
-const initialCount = Math.min(circlePosts.length, pageSize);
-const shortDate = (post: { date?: string }) => toDisplayDate(post.date);
+const pageSize = friendCircle.pageSize;
+const circleSummaryText =
+  clientFeedSrc || clientCircle ? ui.links.circleLoading : ui.links.circleSummary(0, 0, 0);
 
 const linksUrl = clientLinks ? youlinLinksUrl(youlin.baseUrl, youlin.links.group) : null;
 const circleUrl = clientCircle ? youlinCircleUrl(youlin.baseUrl, youlin.circle.limit) : null;
@@ -114,19 +93,11 @@ if (linksResolved.youlinTried && linksResolved.source !== 'youlin') {
 const linksNotice = linksNotices.join(' ');
 
 const circleNotices: string[] = [];
-if (circleResolved.youlinTried && circleResolved.source !== 'youlin') {
-  circleNotices.push(ui.links.youlinCircleFallback);
+if (circleEnabled && useFclCircle && !fclUrl) {
+  circleNotices.push(ui.links.circleLoadFailed);
 }
-if (circleResolved.source === 'demo') {
-  const feedError = circleResolved.errors.find((error) => error.startsWith('friendcircle:'));
-  const rssError = circleResolved.errors.find((error) => error.startsWith('rss:'));
-  circleNotices.push(
-    feedError
-      ? ui.links.feedError(feedError.replace(/^friendcircle:\s*/, ''))
-      : rssError
-        ? ui.links.feedUnavailable
-        : ui.links.feedDemo,
-  );
+if (circleEnabled && useYoulinCircle && !youlin.baseUrl) {
+  circleNotices.push(ui.links.youlinUnavailable);
 }
 const circleNotice = circleNotices.join(' ');
 ---
@@ -157,73 +128,56 @@ const circleNotice = circleNotices.join(' ');
       }
     </div>
 
-    <section class="links-circle" aria-label={ui.links.circleAria}>
-      <div class="links-group-heading">
-        <h2>{ui.links.circleTitle}</h2>
-        <p data-circle-summary>
-          {ui.links.circleSummary(circleFriendsCount, activeCount, circlePosts.length)}
-        </p>
-      </div>
+    {
+      circleEnabled && (
+        <section class="links-circle" aria-label={ui.links.circleAria}>
+          <div class="links-group-heading">
+            <h2>{ui.links.circleTitle}</h2>
+            <p data-circle-summary>{circleSummaryText}</p>
+          </div>
 
-      <p class="links-source-note" data-circle-notice hidden={!circleNotice}>{circleNotice}</p>
+          <p class="links-source-note" data-circle-notice hidden={!circleNotice}>
+            {circleNotice}
+          </p>
 
-      <div class="circle-grid" data-circle-list data-circle-size={pageSize}>
-        {circlePosts.length === 0 && <p class="links-empty">{ui.links.emptyCircle}</p>}
-        {
-          circlePosts.map((post, index) => (
-            <article
-              class:list={['circle-card', { 'circle-card--hidden': index >= initialCount }]}
-              data-circle-card
+          <div class="circle-grid" data-circle-list data-circle-size={pageSize}>
+            <p
+              class="links-empty"
+              data-circle-empty
+              hidden={Boolean(clientFeedSrc || clientCircle)}
             >
-              <a
-                class="circle-card__author"
-                href={post.authorUrl || post.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span class="circle-card__avatar" aria-hidden="true">
-                  {post.avatar ? (
-                    <img src={post.avatar} alt="" loading="lazy" decoding="async" />
-                  ) : (
-                    <span>{(post.author[0] || '?').toUpperCase()}</span>
-                  )}
-                </span>
-                <span class="circle-card__name">{post.author}</span>
-              </a>
-              <a
-                class="circle-card__title"
-                href={post.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {post.title}
-              </a>
-              <footer class="circle-card__meta">
-                {post.tags?.length ? (
-                  <span class="circle-card__tags">
-                    {post.tags.slice(0, 3).map((tag) => (
-                      <span>#{tag}</span>
-                    ))}
-                  </span>
-                ) : null}
-                {post.date && <time datetime={shortDate(post)}>{shortDate(post)}</time>}
-              </footer>
-            </article>
-          ))
-        }
-      </div>
+              {ui.links.emptyCircle}
+            </p>
+          </div>
 
-      <div class="circle-actions" hidden={circlePosts.length <= pageSize}>
-        <button
-          class="circle-more"
-          type="button"
-          data-circle-more
-          hidden={circlePosts.length <= pageSize}
-        >
-          {ui.links.expandMore}
-        </button>
-      </div>
-    </section>
+          <div class="circle-actions" hidden>
+            <button class="circle-more" type="button" data-circle-more hidden>
+              {ui.links.expandMore}
+            </button>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      clientFeedSrc && (
+        <script
+          type="application/json"
+          data-circle-feed-config
+          set:html={JSON.stringify({
+            src: clientFeedSrc,
+            pageSize,
+            messages: {
+              summary: ui.links.circleSummaryTemplate,
+              loading: ui.links.circleLoading,
+              empty: ui.links.emptyCircle,
+              loadMore: ui.links.expandMore,
+              error: ui.links.circleLoadFailed,
+            },
+          }).replace(/</g, '\\u003c')}
+        />
+      )
+    }
 
     {
       applyProvider === 'youlin' && (
@@ -282,9 +236,11 @@ const circleNotice = circleNotices.join(' ');
 
   <script>
     import { bindCircleMore } from '../lib/circle-more';
+    import { initCircleFeed } from '../lib/circle-feed';
 
     const boot = () => {
       bindCircleMore();
+      initCircleFeed();
       if (document.querySelector('script[data-youlin-client-config]')) {
         void import('../lib/youlin-client').then(({ initYoulinClient }) => initYoulinClient());
       }

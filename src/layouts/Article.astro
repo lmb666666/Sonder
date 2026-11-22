@@ -22,13 +22,10 @@ import { countWords, readingMinutes as estimateReadingMinutes } from '../lib/wor
 import '../styles/blog-article.css';
 
 const siteConfig = await getSiteConfig();
-const {
-  comments: rawComments,
-  site,
-  profile,
-  article: articleConfig,
-  markdown: markdownConfig,
-} = siteConfig;
+const { integrations, site, article: articleConfig, appearance } = siteConfig;
+const rawComments = integrations.comments;
+const profile = site.profile;
+const markdownConfig = appearance.markdown;
 const comments = resolveCommentsConfig(rawComments);
 const ui = getUiText(siteConfig);
 const profileAvatar = withBase(profile.avatar);
@@ -161,7 +158,7 @@ const posterCover = heroImage ? (typeof heroImage === 'string' ? heroImage : her
   <Fragment slot="head">
     {needsKatexCss && <link rel="stylesheet" href={katexCssUrl} />}
     {
-      comments.provider === 'waline' && comments.enabled && (
+      comments.provider === 'waline' && comments.enable && (
         <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
       )
     }

@@ -131,7 +131,7 @@ describe('mapYoulinCircle', () => {
       avatar: 'https://blog.liang.one/avatar.webp',
       date: '2026-09-20T12:04:00Z',
     });
-    expect(mapped?.posts[1]?.author).toBe('朋友');
+    expect(mapped?.posts[1]?.author).toBe('example.com');
   });
 
   test('跳过非法文章，顶层形状错误返回 null', () => {

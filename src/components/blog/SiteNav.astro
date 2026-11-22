@@ -13,7 +13,10 @@ interface Props {
 
 const { showTocIcon = false, tocItems = [] } = Astro.props;
 const siteConfig = await getSiteConfig();
-const { site, search, theme, profile } = siteConfig;
+const { site } = siteConfig;
+const search = siteConfig.nav.search;
+const theme = siteConfig.appearance.theme;
+const profile = site.profile;
 const ui = getUiText(siteConfig);
 const links = await getTopNavLinks();
 const navStyle = theme.navStyle;
@@ -1294,7 +1297,7 @@ const paletteOptions = [
     }
   }
 
-  /* ===== pill 模式：居中胶囊导航（config.theme.navStyle = "pill"） ===== */
+  /* ===== pill 模式：居中胶囊导航（[config.appearance.theme].navStyle = "pill"） ===== */
   .blog-top-nav.nav-pill {
     display: flex;
     align-items: center;

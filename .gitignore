@@ -34,7 +34,7 @@ AGENT-PROMPT.md
 scripts/fonts/ui-chars.txt
 scripts/fonts/content-chars.txt
 public/fonts/*-subset.woff2
-public/friend-circle.json
+public/friend.json
 
 # baseline comparison screenshots (internal, not published)
 screenshots/

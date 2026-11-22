@@ -13,7 +13,8 @@
     "tokens:sync": "bun scripts/sync-token-usage.ts",
     "tokens:sync:auto": "bun scripts/sync-token-usage.ts --source auto",
     "tokens:sync:zcode": "bun scripts/sync-token-usage.ts --source zcode",
-    "build": "bun run tokens:sync:zcode && bun run fonts:subsets && astro build && bun scripts/check-assets.ts && pagefind --site dist --output-subdir pagefind --root-selector main --exclude-selectors \"[data-pagefind-ignore]\"",
+    "friends:json": "bun scripts/generate-friend-json.ts",
+    "build": "bun run friends:json && bun run fonts:subsets && astro build && bun scripts/check-assets.ts && pagefind --site dist --output-subdir pagefind --root-selector main --exclude-selectors \"[data-pagefind-ignore]\"",
     "preview": "astro preview",
     "astro": "astro",
     "content:new": "bun scripts/new-content.ts",
@@ -41,7 +42,6 @@
     "date-fns": "^4.4.0",
     "expressive-code-collapsible": "^0.1.0",
     "expressive-code-language-badge": "^1.1.0",
-    "fast-xml-parser": "^5.3.3",
     "github-slugger": "^2.0.0",
     "hast-util-to-html": "^9.0.6",
     "hastscript": "^9.0.3",
@@ -71,7 +71,8 @@
     "pagefind": "^1.5.2",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "yaml": "^2.9.0"
   },
   "lint-staged": {
     "*": "bun run format:check"

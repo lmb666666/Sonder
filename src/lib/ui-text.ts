@@ -81,12 +81,10 @@ type RawUiText = {
     circleAria: string;
     circleTitle: string;
     circleSummary: Message;
+    circleLoading: string;
+    circleLoadFailed: string;
     expandMore: string;
-    feedError: Message;
-    feedUnavailable: string;
-    feedDemo: string;
     youlinLinksFallback: string;
-    youlinCircleFallback: string;
     youlinUnavailable: string;
     emptyLinks: string;
     emptyCircle: string;
@@ -357,12 +355,11 @@ export type UiText = Omit<
   share: Omit<RawUiText['share'], 'copyTitle'> & {
     copyTitle: (title: string) => string;
   };
-  links: Omit<RawUiText['links'], 'note' | 'circleSummary' | 'feedError'> & {
+  links: Omit<RawUiText['links'], 'note' | 'circleSummary'> & {
     note: (total: number, rss: number) => string;
     noteTemplate: string;
     circleSummary: (friends: number, active: number, posts: number) => string;
     circleSummaryTemplate: string;
-    feedError: (error: string) => string;
   };
   moments: Omit<RawUiText['moments'], 'count' | 'imageAria' | 'moreImages' | 'loadMoreCount'> & {
     count: (count: number | string) => string;
@@ -426,7 +423,6 @@ function createUiText(raw: RawUiText): UiText {
       circleSummary: (friends, active, posts) =>
         formatMessage(raw.links.circleSummary, { friends, active, posts }),
       circleSummaryTemplate: templateOf(raw.links.circleSummary),
-      feedError: (error) => formatMessage(raw.links.feedError, { error }),
     },
     moments: {
       ...raw.moments,
@@ -504,7 +500,7 @@ export function normalizeUiLanguage(value: string | undefined): UiLanguage {
 }
 
 export function getUiLanguage(config: SiteConfig): UiLanguage {
-  return normalizeUiLanguage(config.theme.lang);
+  return normalizeUiLanguage(config.appearance.theme.lang);
 }
 
 export function getUiText(config: SiteConfig): UiText {

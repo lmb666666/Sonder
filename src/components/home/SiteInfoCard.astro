@@ -14,7 +14,8 @@ interface Props {
 
 const { totalWords, lastUpdatedAt } = Astro.props;
 const siteConfig = await getSiteConfig();
-const { site, siteInfo } = siteConfig;
+const { site } = siteConfig;
+const siteInfo = site.info;
 const ui = getUiText(siteConfig);
 
 interface Row {

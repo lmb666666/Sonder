@@ -15,7 +15,7 @@ export async function GET(context) {
   const siteConfig = await getSiteConfig();
   const { site } = siteConfig;
   const origin = context.site ?? new URL(site.url);
-  const youlin = resolveYoulinConfig(siteConfig.youlin);
+  const youlin = resolveYoulinConfig(siteConfig.integrations.youlin);
   const resolved = await resolveFriendLinkGroups(youlin, {
     localGroups: friendsEntry.data.groups,
   });

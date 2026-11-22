@@ -16,14 +16,16 @@ import '../styles/moments-page.css';
 const siteConfig = await getSiteConfig();
 const { site } = siteConfig;
 const pageMeta = siteConfig.pages.moments;
+const momentsConfig = siteConfig.integrations.moments;
+const ech0Url = momentsConfig.ech0.apiUrl.trim();
 const ui = getUiText(siteConfig);
 
 const localItems: MomentItem[] = (await getCollection('moments'))
   .map((entry) => entry.data)
   .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
-const ech0Mode = pageMeta.apiUrl.trim().length > 0;
-const pageSize = pageMeta.pageSize;
+const ech0Mode = momentsConfig.provider === 'ech0' && ech0Url.length > 0;
+const pageSize = momentsConfig.pageSize;
 const items: MomentItem[] = ech0Mode ? [] : localItems;
 const groups = groupMomentsByMonth(items, ui.locale);
 const initialCount = Math.min(items.length, pageSize);
@@ -129,7 +131,7 @@ const clientMessages = {
     </p>
 
     {
-      pageMeta.showPoweredBy && ech0Mode && (
+      momentsConfig.showPoweredBy && ech0Mode && (
         <p class="moments-powered">
           Powered by{' '}
           <a href="https://github.com/lin-snow/Ech0" target="_blank" rel="noopener noreferrer">
@@ -144,8 +146,8 @@ const clientMessages = {
       data-moments-config
       set:html={JSON.stringify({
         ech0: ech0Mode,
-        apiUrl: pageMeta.apiUrl.trim(),
-        metingApi: siteConfig.music.meting_api,
+        apiUrl: ech0Url,
+        metingApi: siteConfig.integrations.music.meting_api,
         pageSize,
         locale: ui.locale,
         messages: clientMessages,

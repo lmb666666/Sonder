@@ -16,7 +16,7 @@ interface Props {
 
 const { frontmatter, pathname } = Astro.props;
 const siteConfig = await getSiteConfig();
-const { comments: rawComments } = siteConfig;
+const rawComments = siteConfig.integrations.comments;
 const ui = getUiText(siteConfig);
 const comments = resolveCommentsConfig(rawComments);
 const provider = frontmatter.comments === false ? null : getCommentProvider(comments);

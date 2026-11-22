@@ -1,11 +1,11 @@
 ---
 import { getSiteConfig } from '../config';
 
-const { site, profile } = await getSiteConfig();
+const { site } = await getSiteConfig();
 const year = new Date().getFullYear();
 ---
 
-<p class="colophon">&copy; {year} {profile.name}.</p>
+<p class="colophon">&copy; {year} {site.profile.name}.</p>
 {site.footerNote && <p class="colophon-license">{site.footerNote}</p>}
 
 <style>

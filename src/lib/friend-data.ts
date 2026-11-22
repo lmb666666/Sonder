@@ -1,5 +1,3 @@
-import { XMLParser } from 'fast-xml-parser';
-
 export type FriendLinkItem = {
   name?: string;
   url?: string;
@@ -38,15 +36,10 @@ export type FriendLinkFieldMap = Partial<{
   sticky: string;
 }>;
 
-export type FriendCircleFeed = {
-  friends: FriendLinkItem[];
-  posts: FriendPost[];
-};
-
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-/** 模板内置的示例友链不应进入朋友圈抓取或 OPML 导出。 */
+/** 模板内置的示例友链不应进入 OPML 导出或 FCL friend.json。 */
 export const isPlaceholderFeed = (value: string | null | undefined) =>
   /^https?:\/\/(?:www\.)?example\.(?:com|org|net|dev)(?:\/|$)/i.test(value ?? '');
 
@@ -151,100 +144,4 @@ export const orderFriendLinks = (items: FriendLinkItem[], shuffle = false) => {
     }
   }
   return [...sticky, ...ordinary].map(({ item }) => item);
-};
-
-const asArray = (value: unknown) => (Array.isArray(value) ? value : value ? [value] : []);
-const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
-const firstText = (...values: unknown[]) => values.map(text).find(Boolean) ?? '';
-const toTags = (value: unknown) =>
-  asArray(value)
-    .map((tag) => (isRecord(tag) ? firstText(tag['#text'], tag.term, tag.label) : text(tag)))
-    .filter(Boolean);
-
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '@_',
-  textNodeName: '#text',
-  trimValues: true,
-});
-
-export const parseFeed = (xml: string, friend: FriendLinkItem): FriendPost[] => {
-  const feed = parser.parse(xml) as Record<string, unknown>;
-  const rss = isRecord(feed.rss) && isRecord(feed.rss.channel) ? feed.rss.channel : undefined;
-  const atom = isRecord(feed.feed) ? feed.feed : undefined;
-  const entries = rss ? asArray(rss.item) : atom ? asArray(atom.entry) : [];
-
-  return entries.flatMap((entry): FriendPost[] => {
-    if (!isRecord(entry)) return [];
-    const title = firstText(entry.title);
-    const atomLink = asArray(entry.link).find((link) => isRecord(link) && text(link['@_href']));
-    const url = firstText(entry.link, isRecord(atomLink) ? atomLink['@_href'] : '');
-    if (!title || !url) return [];
-    const authorRecord = isRecord(entry.author) ? entry.author : undefined;
-    return [
-      {
-        title,
-        url,
-        date: firstText(entry.pubDate, entry.published, entry.updated, entry.date),
-        tags: toTags(entry.category),
-        author: firstText(authorRecord?.name, rss?.title, atom?.title, friend.name),
-        authorUrl: friend.url,
-        avatar: friend.avatar,
-      },
-    ];
-  });
-};
-
-export const crawlFriendPosts = async (
-  items: FriendLinkItem[],
-  perFeed = 12,
-): Promise<FriendPost[]> => {
-  const results = await Promise.all(
-    items
-      .filter((item) => item.rss?.trim())
-      .map(async (friend) => {
-        try {
-          const response = await fetch(friend.rss!.trim(), {
-            signal: AbortSignal.timeout(8000),
-          });
-          if (!response.ok) return [];
-          return parseFeed(await response.text(), friend).slice(0, perFeed);
-        } catch (error) {
-          console.warn(`Unable to read friend RSS for ${friend.name ?? friend.url}:`, error);
-          return [];
-        }
-      }),
-  );
-  return results.flat().sort((a, b) => Date.parse(b.date ?? '') - Date.parse(a.date ?? ''));
-};
-
-export const parseFriendPosts = (value: unknown): FriendPost[] => {
-  if (!Array.isArray(value)) return [];
-  return value.flatMap((item): FriendPost[] => {
-    if (!isRecord(item)) return [];
-    const title = text(item.title);
-    const url = text(item.url);
-    const author = text(item.author);
-    if (!title || !url || !author) return [];
-    return [
-      {
-        title,
-        url,
-        author,
-        date: text(item.date),
-        authorUrl: text(item.authorUrl),
-        avatar: text(item.avatar) || null,
-        tags: toTags(item.tags),
-      },
-    ];
-  });
-};
-
-export const parseFriendCircleFeed = (value: unknown): FriendCircleFeed => {
-  if (Array.isArray(value)) return { friends: [], posts: parseFriendPosts(value) };
-  if (!isRecord(value)) return { friends: [], posts: [] };
-  return {
-    friends: normalizeFriendLinks(value.friends),
-    posts: parseFriendPosts(value.posts),
-  };
 };

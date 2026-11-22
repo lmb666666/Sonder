@@ -57,7 +57,7 @@ Sonder 提供一套**外挂标签**语法：写作时直接写指令，构建期
 | `friend-circle` | 朋友圈动态；`{src="demo"\|"youlin" limit="10" title="…"}` |
 | `friend-link-application` | 友链申请表单；`{repository="owner/repo"}`；可用 `provider="github"\|"youlin"` 覆盖全局申请入口 |
 
-配置 `[config.youlin]` 后，`src="youlin"` 会读取友邻接口；未配置或接口不可用时回退内置演示数据。
+配置 `[config.integrations.youlin]` 后，`src="youlin"` 会读取友邻接口；未配置或接口不可用时回退内置演示数据。
 
 | 行内指令 | 说明 |
 | --- | --- |

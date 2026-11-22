@@ -10,7 +10,7 @@ const config: ResolvedYoulinConfig = {
   baseUrl: 'https://youlin.test',
   timeoutMs: 8000,
   links: { mode: 'build', sources: ['youlin', 'local'], group: '' },
-  circle: { mode: 'build', sources: ['youlin', 'demo'], limit: 0 },
+  circle: { limit: 0 },
   apply: { provider: 'auto', turnstileSiteKey: '', timeoutMs: 45000 },
   directives: { friendCircle: 'auto', friendLinkCard: 'auto' },
 };
@@ -162,7 +162,7 @@ describe('prefetchYoulinDirectives', () => {
     expect(data).toEqual({
       links: null,
       circle: null,
-      error: 'youlin.baseUrl 未配置，已回退演示数据',
+      error: '[config.integrations.youlin].baseUrl 未配置，已回退演示数据',
     });
   });
 

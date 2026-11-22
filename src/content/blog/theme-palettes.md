@@ -35,7 +35,7 @@ Sonder 的颜色系统围绕纸面底色、墨色文字和低饱和强调色展�
 在 `site.config.toml` 中选默认色盘：
 
 ```toml
-[config.theme]
+[config.appearance.theme]
 palette = "orange-soft"
 lang = "zh-CN"
 navStyle = "pill"

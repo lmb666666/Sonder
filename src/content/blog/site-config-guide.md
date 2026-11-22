@@ -17,7 +17,7 @@ sidebar:
   toc: true
 ---
 
-Sonder 把站点级信息集中在根目录的 `site.config.toml`，而不是散落在组件里。配置结构由 `src/config/schema.ts` 中的 Zod schema 校验；字段缺失或类型不对时，`bun run build` 会直接报错。
+Sonder 把站点级信息集中在根目录的 `site.config.toml`，而不是散落在组件里。配置结构由 `src/config/schema/` 中的 Zod schema 校验；字段缺失、类型不对或出现未知键时，`bun run build` 会直接报错。
 
 ## 站点与作者
 
@@ -30,18 +30,18 @@ url = "https://sonder.liang.one"
 repository = "https://github.com/lmb666666/Sonder"
 timeEstablished = "2026-10-04"
 
-[config.profile]
+[config.site.profile]
 name = "Sonder"
 role = "写博客的人"
 avatar = "/images/logo.svg"
 ```
 
-页脚与桌面首页署名读取 `profile.name`；站点程序名读取 `siteInfo.program`。关于页的自拍照、资料、作品和联系方式都在 `src/data/about.yml` 中维护；`home.links` 只用于首页联系卡。
+页脚与桌面首页署名读取 `site.profile.name`；站点程序名读取 `site.info.program`。关于页的自拍照、资料、作品和联系方式都在 `src/data/about.yml` 中维护；`home.links` 只用于首页联系卡。
 
 ## 站点信息卡
 
 ```toml
-[config.siteInfo]
+[config.site.info]
 title = "站点信息"
 program = "Sonder"
 uptime = true
@@ -56,7 +56,7 @@ buildPlatform = true
 ## 导航与外观
 
 ```toml
-[config.theme]
+[config.appearance.theme]
 palette = "orange-soft"
 lang = "zh-CN"
 navStyle = "pill"
@@ -66,18 +66,18 @@ navStyle = "pill"
 - `lang`：`zh-CN`、`zh-TW` 或 `en`
 - `navStyle`：`pill` 胶囊导航或 `bar` 通栏工具条
 
-顶部导航由 `[[config.topNav.links]]` 控制，每项填写 `label` 与 `href`。
+顶部导航由 `[[config.nav.links]]` 控制，每项填写 `label` 与 `href`。
 
 ## 字体与代码块
 
 ```toml
-[config.fonts]
+[config.appearance.fonts]
 en = "Maple Mono"
 code = "Monaco"
 zh = "ChillRoundF"
 file = "assets/fonts/ChillRoundFRegular.woff2"
 
-[config.code]
+[config.appearance.code]
 lineNumbers = true
 wrap = false
 preserveIndent = true
@@ -139,50 +139,58 @@ showHeatmapLatest = true
 ## 搜索、评论与朋友圈
 
 ```toml
-[config.search]
+[config.nav.search]
 enabled = true
 placeholder = "搜索文章…"
 maxResults = 6
 
-[config.comments]
-enabled = false
+[config.integrations.comments]
+enable = false
 
-[config.friendCircle]
-feed_src = ""
+[config.integrations.friends]
+enable = false
+provider = "fcl"
 pageSize = 20
+
+[config.integrations.friends.fcl]
+apiUrl = ""
 ```
 
-评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.comments.*]` 区块中填写。朋友页的 `feed_src` 可以指向 Friend-Circle-Lite 订阅源，也可以留空使用 `public/friend-circle.json` 或构建期 RSS 聚合。
+评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.integrations.comments.*]` 区块中填写。朋友圈通过 `enable` 控制显示，`provider` 选择 `fcl`、`youlin` 或 `none`；选 `fcl` 时填写 FCL 的 `all.json`，选 `youlin` 时在 `[config.integrations.youlin].baseUrl` 填写实例地址。
 
 ## 友邻（Youlin）
 
-可选接入 [友邻](https://github.com/lmb666666/youlin)：友链和朋友圈改由 Youlin 接口提供，本地数据与 `friendCircle` 配置保留为回退。
+可选接入 [友邻](https://github.com/lmb666666/youlin)：友链和朋友圈改由 Youlin 接口提供。朋友圈始终在浏览器请求 `{baseUrl}/api/circle`。
 
 ```toml
-[config.youlin]
+[config.integrations.friends]
+enable = true
+provider = "youlin"
+
+[config.integrations.youlin]
 baseUrl = "https://youlin.example.com"
 timeoutMs = 8000
-mode = "build" # build | client
+mode = "build" # 只影响友链；build | client
 
-[config.youlin.links]
+[config.integrations.youlin.links]
 sources = ["youlin", "local"]
 
-[config.youlin.circle]
-sources = ["youlin", "friendcircle", "public", "rss", "demo"]
+[config.integrations.youlin.circle]
+limit = 0
 
-[config.youlin.apply]
+[config.integrations.youlin.apply]
 provider = "auto" # auto | youlin | github | none
 # Youlin 开启 Turnstile 时填写它的公开 site key
 turnstileSiteKey = ""
 
-[config.youlin.directives]
+[config.integrations.youlin.directives]
 friendCircle = "auto"
 friendLinkCard = "auto"
 ```
 
-- `baseUrl` 为空时完全沿用原有本地链路，不会发出任何 Youlin 请求。
+- `baseUrl` 为空时不会发出任何 Youlin 请求；但 `friends.provider = "youlin"` 时构建会要求填写 `baseUrl`。
 - `sources` 按顺序尝试：只有网络/HTTP/解析失败才继续下一个源；Youlin 返回 200 且 JSON 合法即采用（空结果也有效）。
-- `mode = "build"` 在构建期 SSR，SEO 与 Pagefind 覆盖最好；`mode = "client"` 先渲染构建期回退，浏览器再请求 Youlin 替换 DOM。可在 `links` / `circle` 下单独覆盖。client 刷新只在 `youlin` 位于对应 `sources` 第一位时生效；把 `local` 放前面会退回构建期行为。
+- `mode` 只影响友链：`build` 在构建期取数，`client` 由浏览器请求并替换 DOM。朋友圈始终客户端请求 `{baseUrl}/api/circle`，不受 `mode` 影响。
 - `apply.provider = "auto"` 时，配了 `baseUrl` 就用 Youlin 的 `/apply` 接口：表单在当前页面直接 POST，不跳转；开启 Turnstile 时把公开 site key 填到 `turnstileSiteKey`。也可强制 `github` / `none`。
 - 浏览器内提交与 client 刷新都要求 Youlin 的 `api.corsOrigin` 允许博客域名；启用 Turnstile 时 site key 也要允许该域名。
 - 文章里的 `::friend-circle{src="youlin"}` 与 `::friend-link-card{src="youlin"}` 同样可用；不写 `src` 时取 `directives.*` 的默认值。
@@ -194,15 +202,15 @@ friendLinkCard = "auto"
 访问统计是可选的，所有 ID 留空就不会加载任何第三方脚本。
 
 ```toml
-[config.analytics]
+[config.integrations.analytics]
 sendInDev = false
 
-[config.analytics.umami]
+[config.integrations.analytics.umami]
 websiteId = ""
 scriptUrl = ""
 hostUrl = ""
 
-[config.analytics.la51]
+[config.integrations.analytics.la51]
 id = ""
 lingqueMonitorId = ""
 ```
@@ -216,10 +224,10 @@ lingqueMonitorId = ""
 
 ## Markdown 开关
 
-`[config.markdown]` 控制数学公式与 Mermaid 图表：
+`[config.appearance.markdown]` 控制数学公式与 Mermaid 图表：
 
 ```toml
-[config.markdown]
+[config.appearance.markdown]
 math = true
 mathRenderer = "katex" # "katex" | "mathjax"
 mermaid = true
@@ -239,18 +247,22 @@ title = "动态"
 kicker = "Moments"
 subtitle = "记录生活点滴。"
 note = ""
-# Ech0 实例地址；留空使用 src/data/moments.yml 的本地数据
-apiUrl = ""
+
+[config.integrations.moments]
+provider = "local" # local | ech0
 pageSize = 20
 showPoweredBy = true
 
-[config.music]
+[config.integrations.moments.ech0]
+apiUrl = ""
+
+[config.integrations.music]
 # ::music 指令与动态页音乐卡共用的 Meting 实例
 meting_api = "https://api.example.com/meting/?server=:server&type=:type&id=:id&r=:r"
 ```
 
-- `apiUrl` 留空时展示 `src/data/moments.yml` 的本地数据；填写 Ech0 实例地址后，页面在浏览器里请求 `POST {apiUrl}/api/echo/query`，实例需允许当前站点域名跨域。
+- `provider = "local"` 时展示 `src/data/moments.yml`；`provider = "ech0"` 时必须填写 `ech0.apiUrl`，页面会在浏览器里请求 `POST {apiUrl}/api/echo/query`，实例需允许当前站点域名跨域。
 - `pageSize` 同时用于本地分页和 Ech0 每次请求的条数。
-- 音乐卡复用 `[config.music].meting_api` 在浏览器解析网易云 / QQ / 酷狗单曲；Meting 或音频不可用时，网易云自动降级为官方外链播放器，其他平台保留原曲链接卡。Meting 实例需允许站点域名跨域（公共实例通常为 `*`）。
+- 音乐卡复用 `[config.integrations.music].meting_api` 在浏览器解析网易云 / QQ / 酷狗单曲；Meting 或音频不可用时，网易云自动降级为官方外链播放器，其他平台保留原曲链接卡。Meting 实例需允许站点域名跨域（公共实例通常为 `*`）。
 - 视频自动识别 B 站、YouTube、抖音、TikTok；位置扩展带 `latitude` / `longitude` 时生成高德 marker 链接与坐标；GitHub、网站、推文复用文章指令的纸面卡片。
 - 图片按 1–9 张自动布局，点击进入 PhotoSwipe 灯箱；Echo 文本会转义，扩展链接只接受无凭据的 http(s) 地址。

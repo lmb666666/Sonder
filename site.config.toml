@@ -1,4 +1,8 @@
-# Sonder 站点配置；字段结构由 src/content.config.ts 校验。
+# Sonder 站点配置；字段结构由 src/config/schema/ 校验。
+# 分区：站点身份 / 导航 / 外观 / 页面 / 内容 / 第三方集成。
+
+# ── 站点身份 ─────────────────────────────────────
+
 [config.site]
 # 站点标题：导航、页脚和页面标题的公共名称
 title = "Sonder"
@@ -16,7 +20,7 @@ footerNote = "署名-非商业性使用-相同方式共享 4.0 国际（CC BY-NC
 # 站点建立日期（站点信息卡的运行时长；留空隐藏该行）
 timeEstablished = "2026-10-04"
 
-[config.siteInfo]
+[config.site.info]
 # 站点信息卡标题
 title = "站点信息"
 # 站点程序（显示在站点信息卡；留空同时隐藏页脚 Powered by）
@@ -29,14 +33,53 @@ lastUpdated = true
 buildPlatform = true
 
 # 可选图床信息；关闭时整行隐藏
-[config.siteInfo.imageBed]
+[config.site.info.imageBed]
 enabled = false
 # 图床显示名称
 name = ""
-# Lucide 图标名称
-icon = ""
 
-[config.theme]
+# 作者资料；头像支持 /public 路径或远程 URL
+[config.site.profile]
+name = "Sonder"
+role = "写博客的人"
+avatar = "/images/logo.svg"
+
+# ── 导航与搜索 ───────────────────────────────────
+
+[[config.nav.links]]
+label = "首页"
+href = "/"
+
+[[config.nav.links]]
+label = "文章"
+href = "/blog"
+
+[[config.nav.links]]
+label = "书影音"
+href = "/media"
+
+[[config.nav.links]]
+label = "动态"
+href = "/moments"
+
+[[config.nav.links]]
+label = "朋友"
+href = "/links"
+
+[[config.nav.links]]
+label = "关于"
+href = "/about"
+
+[config.nav.search]
+# 是否启用 Pagefind 搜索
+enabled = true
+# 搜索框占位与最大结果数
+placeholder = "搜索文章…"
+maxResults = 6
+
+# ── 外观与排版 ───────────────────────────────────
+
+[config.appearance.theme]
 # 可用色盘：
 # green-soft, green-vivid, rose-soft, pink-soft, purple-soft, blue-soft, orange-soft, brown-soft
 # 项目默认使用暖橙。
@@ -47,7 +90,7 @@ lang = "zh-CN"
 # "pill" 居中胶囊导航（品牌移除，头像与导航同基线，跨页时头像与首页大头像交换）。
 navStyle = "pill"
 
-[config.fonts]
+[config.appearance.fonts]
 # UI 英文字体名称（CSS font-family，不是文件路径）
 en = "Maple Mono"
 # 代码字体名称
@@ -58,7 +101,7 @@ zh = "ChillRoundF"
 # 源文件不会部署到站点，可放在 public 之外的任意项目路径。
 file = "assets/fonts/ChillRoundFRegular.woff2"
 
-[config.code]
+[config.appearance.code]
 # 代码块显示行号、自动换行、保留缩进
 lineNumbers = true
 # 桌面端不自动换行（横向滚动），移动端仍由样式强制换行
@@ -72,7 +115,7 @@ languageBadge = true
 collapseLines = 15
 previewLines = 8
 
-[config.markdown]
+[config.appearance.markdown]
 # 数学公式：关闭后不注入 KaTeX / MathJax
 math = true
 # 数学渲染器："katex" | "mathjax"
@@ -80,112 +123,7 @@ mathRenderer = "katex"
 # Mermaid 图表：关闭后不打包 mermaid
 mermaid = true
 
-[config.music]
-# Meting API 实例地址：::music 指令解析网易云 / QQ；动态页音乐卡解析网易云 / QQ / 酷狗。
-# 支持 :server/:type/:id/:r 占位符；默认使用社区公共实例，可换成自建实例。
-# 实例或音频不可达时：::music 按降级链回退；动态页网易云音乐降级为官方外链播放器。
-meting_api = "https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=:r"
-
-[config.friendCircle]
-# Friend-Circle-Lite 订阅源（URL 或 public/ 下的文件路径）。
-# 留空时优先读取 public/friend-circle.json；否则抓取真实友链 RSS（示例域名跳过），最后回退内置演示数据。
-# feed_src = "https://fcl.example.com/api"
-feed_src = ""
-# 朋友圈每次展示的条数
-pageSize = 20
-
-[config.youlin]
-# 可选：友邻（Youlin）实例地址。留空时所有 source 链都会跳过 youlin，
-# 完全沿用上面的本地友链与 friendCircle 配置。
-# baseUrl = "https://youlin.example.com"
-baseUrl = ""
-# 构建期 / 浏览器请求超时（毫秒）
-timeoutMs = 8000
-# 仅影响 /links 页的友链与朋友圈：build 构建期取数，client 浏览器刷新。
-# client 刷新只在 youlin 位于对应 sources 第一位时生效；文章指令始终构建期取数。
-mode = "build"
-
-[config.youlin.links]
-# 依次尝试：youlin（/api/links）-> local（src/data/friends.yml）
-# 把 local 放前面即可强制使用本地数据。
-sources = ["youlin", "local"]
-# 只取 Youlin 的某个分组，对应 /api/links?group=
-group = ""
-# 覆盖全局 mode
-# mode = "client"
-
-[config.youlin.circle]
-# 依次尝试：youlin（/api/circle）-> friendcircle（feed_src）-> public（public/friend-circle.json）
-#          -> rss（抓取友链 RSS）-> demo（内置演示数据）
-sources = ["youlin", "friendcircle", "public", "rss", "demo"]
-# 0 表示不传 limit，使用 Youlin 默认上限
-limit = 0
-# mode = "client"
-
-[config.youlin.apply]
-# auto：配了 baseUrl 时表单直接提交到 Youlin /apply（页面不跳转），否则用 GitHub Issue；
-# 也可强制 youlin / github / none
-# 浏览器提交要求 Youlin 的 api.corsOrigin 允许本站域名
-provider = "auto"
-# Youlin 开启 Turnstile 人机验证时，填它的公开 site key；关闭时留空
-turnstileSiteKey = ""
-# 提交申请的超时（毫秒）；Youlin 会同步做反链检测，默认留足 45 秒
-timeoutMs = 45000
-
-[config.youlin.directives]
-# 文章指令的默认数据源：auto（配了 baseUrl 用 youlin）| youlin | demo
-friendCircle = "auto"
-friendLinkCard = "auto"
-
-# 访问统计（可选）；留空即关闭，不加载任何第三方脚本。
-# Umami 与 51la 可以同时配置，但两套统计口径不同，数字不会一致。
-[config.analytics]
-# 开发环境是否发送统计；默认 false，避免本地预览污染后台
-sendInDev = false
-
-[config.analytics.umami]
-# Umami 网站 ID；与 scriptUrl 都填写才会启用
-websiteId = ""
-# tracker 脚本地址，例如 https://umami.example.com/script.js
-scriptUrl = ""
-# 数据发送地址；脚本不在 Umami 实例上时填写，例如 https://umami.example.com
-hostUrl = ""
-
-[config.analytics.la51]
-# 51la 统计 ID；留空则关闭
-id = ""
-# 灵雀应用监控 ID；留空则不加载灵雀，填了会额外加载 perf SDK
-lingqueMonitorId = ""
-
-[config.article]
-# 是否显示文章底部分享卡片
-share = true
-# 是否显示上一篇 / 下一篇
-navigation = true
-# 是否显示更多文章（最多 3 条）
-morePosts = true
-
-[config.comments]
-# 评论总开关；provider 可选 giscus / utterances / waline / twikoo / none
-enabled = false
-# 默认评论提供方
-provider = "none"
-# 是否在文章页显示评论
-show_on_posts = true
-
-[config.comments.twikoo]
-# Twikoo 环境地址（自部署或云托管实例的 URL）
-env_id = ""
-# 客户端脚本地址；留空使用 jsDelivr 默认源
-script_src = ""
-lang = "zh-CN"
-
-[config.search]
-# 是否启用 Pagefind 搜索
-enabled = true
-# 搜索框占位与最大结果数
-placeholder = "搜索文章…"
-maxResults = 6
+# ── 页面文案 ─────────────────────────────────────
 
 # 文章归档页文案；note 留空时不显示
 [config.pages.blog]
@@ -204,18 +142,12 @@ coverImageStyle = "mask"
 # 文章列表布局："rows" 行式列表（标题 + 序号 + 摘要 + 小缩略图），"media" 媒体布局（标题 + 元信息 + 大图，仿 krisyan.dev）。
 listLayout = "media"
 
-# 动态页文案
+# 动态页文案；数据源在 [config.integrations.moments]
 [config.pages.moments]
 title = "动态"
 kicker = "Moments"
 subtitle = "记录生活点滴。"
 note = ""
-# Ech0 后端地址（可选）。配置后动态页改为在浏览器里拉取真实动态；留空使用内置演示数据。
-apiUrl = ""
-# 每页动态数量
-pageSize = 20
-# 是否显示 Powered by
-showPoweredBy = true
 
 # 书影音页文案
 [config.pages.media]
@@ -230,70 +162,15 @@ title = "朋友"
 kicker = "Friends"
 subtitle = "那些人，那些事。"
 
-# Giscus 配置；repo_id 和 category_id 可在 giscus.app 生成
-[config.comments.giscus]
-repo = ""
-repo_id = ""
-category = ""
-category_id = ""
-mapping = "pathname"
-strict = "0"
-reactions_enabled = "1"
-emit_metadata = "0"
-input_position = "top"
-light_theme = "light"
-dark_theme = "dark"
-lang = "zh-CN"
-loading = "lazy"
+# ── 内容展示 ─────────────────────────────────────
 
-# Utterances 配置；repo 为 GitHub 仓库，issue_term 默认按路径匹配
-[config.comments.utterances]
-repo = ""
-issue_term = "pathname"
-label = "comment"
-theme = "github-light"
-
-# Waline 配置；server_url 留空时评论不可用
-[config.comments.waline]
-server_url = ""
-lang = "zh-CN"
-# 深色模式选择器
-dark = "html.dark"
-# 是否启用评论
-comment = true
-
-# 作者资料；头像支持 /public 路径或远程 URL
-[config.profile]
-name = "Sonder"
-role = "写博客的人"
-avatar = "/images/logo.svg"
-
-# 顶部导航；href 为普通链接，module 引用已启用的页面模块
-[[config.topNav.links]]
-label = "首页"
-href = "/"
-
-[[config.topNav.links]]
-label = "文章"
-href = "/blog"
-
-
-[[config.topNav.links]]
-label = "书影音"
-href = "/media"
-
-[[config.topNav.links]]
-label = "动态"
-href = "/moments"
-
-
-[[config.topNav.links]]
-label = "朋友"
-href = "/links"
-
-[[config.topNav.links]]
-label = "关于"
-href = "/about"
+[config.article]
+# 是否显示文章底部分享卡片
+share = true
+# 是否显示上一篇 / 下一篇
+navigation = true
+# 是否显示更多文章（最多 3 条）
+morePosts = true
 
 # 首页内容
 [config.home]
@@ -344,3 +221,108 @@ label = "RSS"
 icon = "rss"
 tooltip = "/rss.xml"
 copy = false
+
+# ── 第三方集成 ───────────────────────────────────
+
+# 动态数据源：local 使用 src/data/moments.yml；ech0 在浏览器请求 Ech0 接口
+[config.integrations.moments]
+provider = "local"
+pageSize = 20
+showPoweredBy = true
+
+[config.integrations.moments.ech0]
+# provider = "ech0" 时必填
+apiUrl = ""
+
+# 评论总开关；provider 可选 giscus / utterances / waline / twikoo / none
+[config.integrations.comments]
+enable = false
+provider = "none"
+show_on_posts = true
+
+[config.integrations.comments.twikoo]
+env_id = ""
+script_src = ""
+lang = "zh-CN"
+
+[config.integrations.comments.giscus]
+repo = ""
+repo_id = ""
+category = ""
+category_id = ""
+mapping = "pathname"
+strict = "0"
+reactions_enabled = "1"
+emit_metadata = "0"
+input_position = "top"
+light_theme = "light"
+dark_theme = "dark"
+lang = "zh-CN"
+loading = "lazy"
+
+[config.integrations.comments.utterances]
+repo = ""
+issue_term = "pathname"
+label = "comment"
+theme = "github-light"
+
+[config.integrations.comments.waline]
+server_url = ""
+lang = "zh-CN"
+dark = "html.dark"
+comment = true
+
+# 访问统计（可选）；留空即关闭，不加载任何第三方脚本。
+# Umami 与 51la 可以同时配置，但两套统计口径不同，数字不会一致。
+[config.integrations.analytics]
+sendInDev = false
+
+[config.integrations.analytics.umami]
+websiteId = ""
+scriptUrl = ""
+hostUrl = ""
+
+[config.integrations.analytics.la51]
+id = ""
+lingqueMonitorId = ""
+
+# Meting API 实例地址：::music 指令与动态页音乐卡共用。
+[config.integrations.music]
+meting_api = "https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=:r"
+
+# 朋友圈外部渠道：fcl（Friend-Circle-Lite）| youlin（友邻）| none
+[config.integrations.friends]
+enable = false
+provider = "fcl"
+pageSize = 20
+
+[config.integrations.friends.fcl]
+# provider = "fcl" 时必填：Friend-Circle-Lite 的 all.json 地址
+apiUrl = ""
+
+# provider = "youlin" 时，在 [config.integrations.youlin].baseUrl 填写友邻实例地址。
+# 朋友圈始终由浏览器请求 {baseUrl}/api/circle。
+
+[config.integrations.youlin]
+# 可选：友邻（Youlin）实例地址。
+baseUrl = ""
+timeoutMs = 8000
+# 仅影响 /links 页的友链取数；朋友圈始终客户端请求。
+mode = "build"
+
+[config.integrations.youlin.links]
+sources = ["youlin", "local"]
+group = ""
+
+[config.integrations.youlin.circle]
+# 0 表示不传 limit
+limit = 0
+
+[config.integrations.youlin.apply]
+provider = "auto"
+turnstileSiteKey = ""
+timeoutMs = 45000
+
+[config.integrations.youlin.directives]
+friendCircle = "auto"
+friendLinkCard = "auto"

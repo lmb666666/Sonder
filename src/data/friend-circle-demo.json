@@ -23,7 +23,7 @@
       "tags": ["travel"]
     },
     {
-      "title": "示例动态：配置 feed_src 后会显示真实订阅内容",
+      "title": "示例动态：配置 youlin 数据源后会显示真实订阅内容",
       "url": "https://example.org/demo",
       "author": "南山客",
       "authorUrl": "https://example.org",

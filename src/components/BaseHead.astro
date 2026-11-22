@@ -26,7 +26,8 @@ const {
   fallbackImage = '/og-default.png',
   type = 'website',
 } = Astro.props;
-const { site, fonts, theme } = await getSiteConfig();
+const { site, appearance } = await getSiteConfig();
+const { fonts, theme } = appearance;
 const themeColors = PALETTE_THEME_COLORS[theme.palette];
 const resolvedImage = image ?? fallbackImage;
 const imagePath = typeof resolvedImage === 'string' ? resolvedImage : resolvedImage.src;

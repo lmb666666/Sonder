@@ -1,7 +1,7 @@
 import type { SiteConfig } from '../config';
 
-export type CommentProvider = SiteConfig['comments']['provider'];
-export type CommentsConfig = SiteConfig['comments'];
+export type CommentProvider = SiteConfig['integrations']['comments']['provider'];
+export type CommentsConfig = SiteConfig['integrations']['comments'];
 
 const giscusRequiredFields = ['repo', 'repo_id', 'category', 'category_id'] as const;
 const commentProviders = ['giscus', 'utterances', 'waline', 'twikoo', 'none'] as const;
@@ -48,7 +48,7 @@ function withEnvString<T extends Record<string, unknown>, K extends keyof T>(
 }
 
 export function resolveCommentsConfig(config: CommentsConfig): CommentsConfig {
-  const enabled = envBoolean('SONDER_COMMENTS_ENABLED') ?? config.enabled;
+  const enabled = envBoolean('SONDER_COMMENTS_ENABLED') ?? config.enable;
   const provider = envProvider('SONDER_COMMENTS_PROVIDER') ?? config.provider;
   let giscus = withEnvString(config.giscus, 'repo', 'SONDER_GISCUS_REPO');
   giscus = withEnvString(giscus, 'repo_id', 'SONDER_GISCUS_REPO_ID');
@@ -58,7 +58,7 @@ export function resolveCommentsConfig(config: CommentsConfig): CommentsConfig {
 
   return {
     ...config,
-    enabled,
+    enable: enabled,
     provider,
     giscus,
     twikoo,
@@ -78,7 +78,7 @@ export function warnMissingCommentConfig(provider: CommentProvider, fields: stri
 }
 
 export function getCommentProvider(config: CommentsConfig): CommentProvider | null {
-  if (!config.enabled || !config.show_on_posts || config.provider === 'none') {
+  if (!config.enable || !config.show_on_posts || config.provider === 'none') {
     return null;
   }
 
