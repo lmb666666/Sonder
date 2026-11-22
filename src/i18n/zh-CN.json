@@ -233,6 +233,8 @@
     "circleAria": "朋友圈",
     "circleTitle": "朋友圈",
     "circleSummary": "{friends} 位朋友 · {active} 位活跃 · {posts} 篇动态",
+    "circleLoading": "正在获取朋友们的动态…",
+    "circleLoadFailed": "朋友圈加载失败，请稍后重试。",
     "expandMore": "展开更多",
     "feedError": "feed 解析失败（{error}），回退演示数据。",
     "feedUnavailable": "友链 RSS 暂不可用，当前展示内置演示数据。",

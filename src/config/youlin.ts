@@ -11,7 +11,6 @@ import { parseGitHubRepository } from '../lib/github';
 
 export type YoulinMode = SiteConfig['youlin']['mode'];
 export type YoulinLinkSource = SiteConfig['youlin']['links']['sources'][number];
-export type YoulinCircleSource = SiteConfig['youlin']['circle']['sources'][number];
 export type YoulinApplyProvider = SiteConfig['youlin']['apply']['provider'];
 export type YoulinDirectiveSource = SiteConfig['youlin']['directives']['friendCircle'];
 export type ApplyProvider = 'youlin' | 'github' | 'none';
@@ -25,8 +24,6 @@ export interface ResolvedYoulinConfig {
     group: string;
   };
   circle: {
-    mode: YoulinMode;
-    sources: YoulinCircleSource[];
     limit: number;
   };
   apply: {
@@ -112,8 +109,6 @@ export function resolveYoulinConfig(raw: SiteConfig['youlin']): ResolvedYoulinCo
       group: raw.links.group,
     },
     circle: {
-      mode: envMode ?? raw.circle.mode ?? globalMode,
-      sources: [...raw.circle.sources],
       limit: raw.circle.limit,
     },
     apply: {

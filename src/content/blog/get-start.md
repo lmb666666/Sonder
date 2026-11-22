@@ -78,9 +78,9 @@ bun run build
 bun run preview
 ```
 
-构建会把静态页面输出到 `dist/`。构建前会运行 `tokens:sync:zcode`，使用 ZCode 的本地用量；ZCode 不可用时保留现有 `src/data/token-usage.yml`，可手动编辑。
+构建会把静态页面输出到 `dist/`。启用 FCL 时，构建会运行 `friends:json`，从 `src/data/friends.yml` 生成 `public/friend.json`；未启用 FCL 时跳过。**构建不会请求 Token 数据**，Token 需要手动同步。
 
-手动同步时可以交互选择数据源：
+手动同步 Token 时可以交互选择数据源：
 
 ```bash
 bun run tokens:sync

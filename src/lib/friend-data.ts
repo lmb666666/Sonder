@@ -223,15 +223,16 @@ export const parseFriendPosts = (value: unknown): FriendPost[] => {
   return value.flatMap((item): FriendPost[] => {
     if (!isRecord(item)) return [];
     const title = text(item.title);
-    const url = text(item.url);
-    const author = text(item.author);
+    // Friend-Circle-Lite 的 all.json 使用 link / created，其他聚合源通常用 url / date。
+    const url = firstText(item.url, item.link);
+    const author = firstText(item.author, item.name);
     if (!title || !url || !author) return [];
     return [
       {
         title,
         url,
         author,
-        date: text(item.date),
+        date: firstText(item.date, item.created),
         authorUrl: text(item.authorUrl),
         avatar: text(item.avatar) || null,
         tags: toTags(item.tags),
@@ -245,6 +246,7 @@ export const parseFriendCircleFeed = (value: unknown): FriendCircleFeed => {
   if (!isRecord(value)) return { friends: [], posts: [] };
   return {
     friends: normalizeFriendLinks(value.friends),
-    posts: parseFriendPosts(value.posts),
+    // Friend-Circle-Lite 的 all.json 把文章放在 article_data。
+    posts: parseFriendPosts(value.posts ?? value.article_data),
   };
 };

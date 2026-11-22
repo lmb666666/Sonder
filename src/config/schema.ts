@@ -19,7 +19,6 @@ const commentProviderSchema = z.enum(['giscus', 'utterances', 'waline', 'twikoo'
 const mathRendererSchema = z.enum(['katex', 'mathjax']);
 const youlinModeSchema = z.enum(['build', 'client']);
 const youlinLinkSourceSchema = z.enum(['youlin', 'local']);
-const youlinCircleSourceSchema = z.enum(['youlin', 'friendcircle', 'public', 'rss', 'demo']);
 const youlinApplyProviderSchema = z.enum(['auto', 'youlin', 'github', 'none']);
 const youlinDirectiveSourceSchema = z.enum(['auto', 'youlin', 'demo']);
 const paletteSchema = z.enum([
@@ -177,7 +176,6 @@ const defaultPagesConfig = {
 } as const;
 
 type YoulinLinkSource = z.infer<typeof youlinLinkSourceSchema>;
-type YoulinCircleSource = z.infer<typeof youlinCircleSourceSchema>;
 type YoulinMode = z.infer<typeof youlinModeSchema>;
 type YoulinDirectiveSource = z.infer<typeof youlinDirectiveSourceSchema>;
 
@@ -186,7 +184,7 @@ const defaultYoulinConfig: {
   timeoutMs: number;
   mode: YoulinMode;
   links: { sources: YoulinLinkSource[]; group: string };
-  circle: { sources: YoulinCircleSource[]; limit: number };
+  circle: { limit: number };
   apply: {
     provider: 'auto' | 'youlin' | 'github' | 'none';
     turnstileSiteKey: string;
@@ -202,7 +200,6 @@ const defaultYoulinConfig: {
     group: '',
   },
   circle: {
-    sources: ['youlin', 'friendcircle', 'public', 'rss', 'demo'],
     limit: 0,
   },
   apply: {
@@ -296,306 +293,340 @@ const linksPageSchema = z.object({
   subtitle: z.string().optional().default(defaultPagesConfig.links.subtitle),
 });
 
-export const siteConfigSchema = z.object({
-  site: z.object({
-    title: z.string(),
-    description: z.string(),
-    pageTitle: z.string(),
-    pageDescription: z.string(),
-    url: siteUrlSchema,
-    repository: z.url(),
-    footerNote: z.string(),
-    // 站点建立日期（站点信息卡的运行时长；留空隐藏该行）
-    timeEstablished: z
-      .string()
-      .optional()
-      .refine(
-        (value) => !value || !Number.isNaN(Date.parse(value)),
-        'timeEstablished 必须是可解析的日期字符串。',
-      ),
-  }),
-  theme: z
-    .object({
-      palette: paletteSchema.optional().default('orange-soft'),
-      lang: z.string().optional().default('en'),
-      // 导航栏样式："bar" 通栏工具条，"pill" 居中胶囊（带头像交接）
-      navStyle: z.enum(['bar', 'pill']).optional().default('bar'),
-    })
-    .optional()
-    .default({
-      palette: 'orange-soft',
-      lang: 'en',
-      navStyle: 'bar',
-    }),
-  article: z
-    .object({
-      share: z.boolean().optional().default(true),
-      navigation: z.boolean().optional().default(true),
-      morePosts: z.boolean().optional().default(true),
-    })
-    .optional()
-    .default({ share: true, navigation: true, morePosts: true }),
-  fonts: z
-    .object({
-      en: nonEmptyStringSchema(defaultFontConfig.en),
-      code: nonEmptyStringSchema(defaultFontConfig.code),
-      zh: nonEmptyStringSchema(defaultFontConfig.zh),
-      file: nonEmptyStringSchema(defaultFontConfig.file),
-    })
-    .optional()
-    .default(defaultFontConfig),
-  code: z
-    .object({
-      lineNumbers: z.boolean().optional().default(defaultCodeConfig.lineNumbers),
-      wrap: z.boolean().optional().default(defaultCodeConfig.wrap),
-      preserveIndent: z.boolean().optional().default(defaultCodeConfig.preserveIndent),
-      collapseStyle: collapseStyleSchema.optional().default(defaultCodeConfig.collapseStyle),
-      languageBadge: z.boolean().optional().default(defaultCodeConfig.languageBadge),
-      collapseLines: z
-        .number()
-        .int()
-        .positive()
-        .optional()
-        .default(defaultCodeConfig.collapseLines),
-      previewLines: z.number().int().positive().optional().default(defaultCodeConfig.previewLines),
-    })
-    .optional()
-    .default(defaultCodeConfig),
-  markdown: z
-    .object({
-      math: z.boolean().optional().default(defaultMarkdownConfig.math),
-      mathRenderer: mathRendererSchema.optional().default(defaultMarkdownConfig.mathRenderer),
-      mermaid: z.boolean().optional().default(defaultMarkdownConfig.mermaid),
-    })
-    .optional()
-    .default(defaultMarkdownConfig),
-  music: z
-    .object({
-      // Meting API 实例地址模板，支持 :server/:type/:id/:r 占位符；
-      // ::music 指令与动态页音乐卡共用（动态页额外支持酷狗单曲）。
-      meting_api: z.string().optional().default(''),
-    })
-    .optional()
-    .default({ meting_api: '' }),
-  friendCircle: z
-    .object({
-      // Friend-Circle-Lite 订阅源（URL 或 public/ 下的文件路径）；
-      // 留空时回退到仓库内置演示数据
-      feed_src: z.string().optional().default(''),
-      pageSize: z.number().int().positive().optional().default(20),
-    })
-    .optional()
-    .default({ feed_src: '', pageSize: 20 }),
-  youlin: z
-    .object({
-      // 友邻实例地址；留空时所有 source 链都会跳过 youlin，保持原有本地行为
-      baseUrl: youlinBaseUrlSchema,
-      timeoutMs: z.number().int().min(500).max(30_000).optional().default(8000),
-      // 仅影响 /links 页的友链与朋友圈；文章内指令始终构建期取数
-      mode: youlinModeSchema.optional().default('build'),
-      links: z
-        .object({
-          mode: youlinModeSchema.optional(),
-          sources: z.array(youlinLinkSourceSchema).optional().default(['youlin', 'local']),
-          group: z.string().trim().max(100).optional().default(''),
-        })
-        .optional()
-        .default({ sources: ['youlin', 'local'], group: '' }),
-      circle: z
-        .object({
-          mode: youlinModeSchema.optional(),
-          sources: z
-            .array(youlinCircleSourceSchema)
-            .optional()
-            .default(['youlin', 'friendcircle', 'public', 'rss', 'demo']),
-          limit: z.number().int().min(0).max(5000).optional().default(0),
-        })
-        .optional()
-        .default({
-          sources: ['youlin', 'friendcircle', 'public', 'rss', 'demo'],
-          limit: 0,
-        }),
-      apply: z
-        .object({
-          provider: youlinApplyProviderSchema.optional().default('auto'),
-          // Youlin 的 Turnstile 公开 site key；开启人机验证时填写
-          turnstileSiteKey: z.string().trim().max(200).optional().default(''),
-          // 提交是同步反链检测 + 可选 Turnstile，给足服务端处理时间
-          timeoutMs: z.number().int().min(5_000).max(120_000).optional().default(45_000),
-        })
-        .optional()
-        .default({ provider: 'auto', turnstileSiteKey: '', timeoutMs: 45_000 }),
-      directives: z
-        .object({
-          friendCircle: youlinDirectiveSourceSchema.optional().default('auto'),
-          friendLinkCard: youlinDirectiveSourceSchema.optional().default('auto'),
-        })
-        .optional()
-        .default({ friendCircle: 'auto', friendLinkCard: 'auto' }),
-    })
-    .optional()
-    .default(defaultYoulinConfig),
-  analytics: z
-    .object({
-      sendInDev: z.boolean().optional().default(false),
-      umami: z
-        .object({
-          websiteId: z.string().trim().max(128).optional().default(''),
-          scriptUrl: z.string().trim().max(2048).optional().default(''),
-          hostUrl: z.string().trim().max(2048).optional().default(''),
-        })
-        .optional()
-        .default(defaultAnalyticsConfig.umami),
-      la51: z
-        .object({
-          id: z.string().trim().max(64).optional().default(''),
-          lingqueMonitorId: z.string().trim().max(64).optional().default(''),
-        })
-        .optional()
-        .default(defaultAnalyticsConfig.la51),
-    })
-    .optional()
-    .default(defaultAnalyticsConfig),
-  comments: z
-    .object({
-      enabled: z.boolean().optional().default(false),
-      provider: commentProviderSchema.optional().default('none'),
-      show_on_posts: z.boolean().optional().default(true),
-      giscus: z
-        .object({
-          repo: z.string().optional().default(''),
-          repo_id: z.string().optional().default(''),
-          category: z.string().optional().default(''),
-          category_id: z.string().optional().default(''),
-          mapping: z.string().optional().default('pathname'),
-          strict: z.string().optional().default('0'),
-          reactions_enabled: z.string().optional().default('1'),
-          emit_metadata: z.string().optional().default('0'),
-          input_position: z.string().optional().default('bottom'),
-          light_theme: z.string().optional().default('light'),
-          dark_theme: z.string().optional().default('dark'),
-          lang: z.string().optional().default('zh-CN'),
-          loading: z.string().optional().default('lazy'),
-        })
-        .optional()
-        .default(defaultGiscusConfig),
-      utterances: z
-        .object({
-          repo: z.string().optional().default(''),
-          issue_term: z.string().optional().default('pathname'),
-          label: z.string().optional().default('comment'),
-          theme: z.string().optional().default('github-light'),
-        })
-        .optional()
-        .default(defaultUtterancesConfig),
-      waline: z
-        .object({
-          server_url: z.string().optional().default(''),
-          lang: z.string().optional().default('zh-CN'),
-          dark: z.string().optional().default('html.dark'),
-          comment: z.boolean().optional().default(true),
-        })
-        .optional()
-        .default(defaultWalineConfig),
-      twikoo: z
-        .object({
-          env_id: z.string().optional().default(''),
-          script_src: z.string().optional().default(''),
-          lang: z.string().optional().default('zh-CN'),
-        })
-        .optional()
-        .default(defaultTwikooConfig),
-    })
-    .optional()
-    .default(defaultCommentsConfig),
-  siteInfo: z
-    .object({
-      title: z.string().optional().default('站点信息'),
-      program: z.string().optional().default('Sonder'),
-      uptime: z.boolean().optional().default(true),
-      lastUpdated: z.boolean().optional().default(true),
-      totalWords: z.boolean().optional().default(true),
-      lastContentUpdate: z.boolean().optional().default(true),
-      buildPlatform: z.boolean().optional().default(true),
-      imageBed: z
-        .object({
-          enabled: z.boolean().optional().default(false),
-          name: z.string().optional().default(''),
-          icon: z.string().optional().default(''),
-        })
-        .optional()
-        .default({ enabled: false, name: '', icon: '' }),
-    })
-    .optional()
-    .default({
-      title: '站点信息',
-      program: 'Sonder',
-      uptime: true,
-      lastUpdated: true,
-      totalWords: true,
-      lastContentUpdate: true,
-      buildPlatform: true,
-      imageBed: { enabled: false, name: '', icon: '' },
-    }),
-  profile: z.object({
-    name: z.string(),
-    role: z.string(),
-    avatar: z.string(),
-  }),
-  topNav: z.object({
-    links: z.array(topNavLinkSchema),
-  }),
-  search: z
-    .object({
-      enabled: z.boolean().optional().default(true),
-      placeholder: z.string().optional().default('Search notes...'),
-      maxResults: z.number().int().positive().optional().default(6),
-    })
-    .optional()
-    .default({
-      enabled: true,
-      placeholder: 'Search notes...',
-      maxResults: 6,
-    }),
-  pages: z
-    .object({
-      blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
-      media: mediaPageSchema.optional().default(defaultPagesConfig.media),
-      moments: momentsPageSchema.optional().default(defaultPagesConfig.moments),
-      links: linksPageSchema.optional().default(defaultPagesConfig.links),
-    })
-    .optional()
-    .default(defaultPagesConfig),
-  home: z.object({
-    // 首页引语可整段省略；不配置时 IntroCard 不渲染引语区
-    quote: z
-      .object({
-        text: z.array(z.string()).min(1),
-      })
-      .optional(),
-    intro: z.object({
+export const siteConfigSchema = z
+  .object({
+    site: z.object({
       title: z.string(),
-      name: z.string(),
-      body: z.array(z.string()).min(1),
+      description: z.string(),
+      pageTitle: z.string(),
+      pageDescription: z.string(),
+      url: siteUrlSchema,
+      repository: z.url(),
+      footerNote: z.string(),
+      // 站点建立日期（站点信息卡的运行时长；留空隐藏该行）
+      timeEstablished: z
+        .string()
+        .optional()
+        .refine(
+          (value) => !value || !Number.isNaN(Date.parse(value)),
+          'timeEstablished 必须是可解析的日期字符串。',
+        ),
     }),
-    latest: z
+    theme: z
       .object({
-        count: z.number().int().positive().default(2),
-        heatmapWeeks: z.number().int().positive().default(24),
-        showHeatmapLatest: z.boolean().optional().default(true),
-        excludeDraft: z.boolean().optional().default(true),
-        startDate: z.string().optional().default(''),
+        palette: paletteSchema.optional().default('orange-soft'),
+        lang: z.string().optional().default('en'),
+        // 导航栏样式："bar" 通栏工具条，"pill" 居中胶囊（带头像交接）
+        navStyle: z.enum(['bar', 'pill']).optional().default('bar'),
       })
       .optional()
       .default({
-        count: 2,
-        heatmapWeeks: 24,
-        showHeatmapLatest: true,
-        excludeDraft: true,
-        startDate: '',
+        palette: 'orange-soft',
+        lang: 'en',
+        navStyle: 'bar',
       }),
-    links: z.array(homeLinkSchema).optional().default([]),
-  }),
-});
+    article: z
+      .object({
+        share: z.boolean().optional().default(true),
+        navigation: z.boolean().optional().default(true),
+        morePosts: z.boolean().optional().default(true),
+      })
+      .optional()
+      .default({ share: true, navigation: true, morePosts: true }),
+    fonts: z
+      .object({
+        en: nonEmptyStringSchema(defaultFontConfig.en),
+        code: nonEmptyStringSchema(defaultFontConfig.code),
+        zh: nonEmptyStringSchema(defaultFontConfig.zh),
+        file: nonEmptyStringSchema(defaultFontConfig.file),
+      })
+      .optional()
+      .default(defaultFontConfig),
+    code: z
+      .object({
+        lineNumbers: z.boolean().optional().default(defaultCodeConfig.lineNumbers),
+        wrap: z.boolean().optional().default(defaultCodeConfig.wrap),
+        preserveIndent: z.boolean().optional().default(defaultCodeConfig.preserveIndent),
+        collapseStyle: collapseStyleSchema.optional().default(defaultCodeConfig.collapseStyle),
+        languageBadge: z.boolean().optional().default(defaultCodeConfig.languageBadge),
+        collapseLines: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .default(defaultCodeConfig.collapseLines),
+        previewLines: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .default(defaultCodeConfig.previewLines),
+      })
+      .optional()
+      .default(defaultCodeConfig),
+    markdown: z
+      .object({
+        math: z.boolean().optional().default(defaultMarkdownConfig.math),
+        mathRenderer: mathRendererSchema.optional().default(defaultMarkdownConfig.mathRenderer),
+        mermaid: z.boolean().optional().default(defaultMarkdownConfig.mermaid),
+      })
+      .optional()
+      .default(defaultMarkdownConfig),
+    music: z
+      .object({
+        // Meting API 实例地址模板，支持 :server/:type/:id/:r 占位符；
+        // ::music 指令与动态页音乐卡共用（动态页额外支持酷狗单曲）。
+        meting_api: z.string().optional().default(''),
+      })
+      .optional()
+      .default({ meting_api: '' }),
+    friendCircle: z
+      .object({
+        // 是否显示朋友圈
+        enable: z.boolean().optional().default(false),
+        // 获取渠道：fcl（Friend-Circle-Lite）| youlin（友邻）| none
+        provider: z.enum(['fcl', 'youlin', 'none']).optional().default('none'),
+        // 每次展示条数
+        pageSize: z.number().int().positive().optional().default(20),
+        fcl: z
+          .object({
+            // FCL all.json 地址；provider = "fcl" 时必填
+            apiUrl: z.string().trim().optional().default(''),
+          })
+          .strict()
+          .optional()
+          .default({ apiUrl: '' }),
+      })
+      .strict()
+      .optional()
+      .default({ enable: false, provider: 'none', pageSize: 20, fcl: { apiUrl: '' } }),
+    youlin: z
+      .object({
+        // 友邻实例地址；留空时所有 source 链都会跳过 youlin，保持原有本地行为
+        baseUrl: youlinBaseUrlSchema,
+        timeoutMs: z.number().int().min(500).max(30_000).optional().default(8000),
+        // 仅影响 /links 页的友链取数；朋友圈始终客户端请求，文章指令始终构建期取数
+        mode: youlinModeSchema.optional().default('build'),
+        links: z
+          .object({
+            mode: youlinModeSchema.optional(),
+            sources: z.array(youlinLinkSourceSchema).optional().default(['youlin', 'local']),
+            group: z.string().trim().max(100).optional().default(''),
+          })
+          .optional()
+          .default({ sources: ['youlin', 'local'], group: '' }),
+        circle: z
+          .object({
+            limit: z.number().int().min(0).max(5000).optional().default(0),
+          })
+          .optional()
+          .default({ limit: 0 }),
+        apply: z
+          .object({
+            provider: youlinApplyProviderSchema.optional().default('auto'),
+            // Youlin 的 Turnstile 公开 site key；开启人机验证时填写
+            turnstileSiteKey: z.string().trim().max(200).optional().default(''),
+            // 提交是同步反链检测 + 可选 Turnstile，给足服务端处理时间
+            timeoutMs: z.number().int().min(5_000).max(120_000).optional().default(45_000),
+          })
+          .optional()
+          .default({ provider: 'auto', turnstileSiteKey: '', timeoutMs: 45_000 }),
+        directives: z
+          .object({
+            friendCircle: youlinDirectiveSourceSchema.optional().default('auto'),
+            friendLinkCard: youlinDirectiveSourceSchema.optional().default('auto'),
+          })
+          .optional()
+          .default({ friendCircle: 'auto', friendLinkCard: 'auto' }),
+      })
+      .optional()
+      .default(defaultYoulinConfig),
+    analytics: z
+      .object({
+        sendInDev: z.boolean().optional().default(false),
+        umami: z
+          .object({
+            websiteId: z.string().trim().max(128).optional().default(''),
+            scriptUrl: z.string().trim().max(2048).optional().default(''),
+            hostUrl: z.string().trim().max(2048).optional().default(''),
+          })
+          .optional()
+          .default(defaultAnalyticsConfig.umami),
+        la51: z
+          .object({
+            id: z.string().trim().max(64).optional().default(''),
+            lingqueMonitorId: z.string().trim().max(64).optional().default(''),
+          })
+          .optional()
+          .default(defaultAnalyticsConfig.la51),
+      })
+      .optional()
+      .default(defaultAnalyticsConfig),
+    comments: z
+      .object({
+        enabled: z.boolean().optional().default(false),
+        provider: commentProviderSchema.optional().default('none'),
+        show_on_posts: z.boolean().optional().default(true),
+        giscus: z
+          .object({
+            repo: z.string().optional().default(''),
+            repo_id: z.string().optional().default(''),
+            category: z.string().optional().default(''),
+            category_id: z.string().optional().default(''),
+            mapping: z.string().optional().default('pathname'),
+            strict: z.string().optional().default('0'),
+            reactions_enabled: z.string().optional().default('1'),
+            emit_metadata: z.string().optional().default('0'),
+            input_position: z.string().optional().default('bottom'),
+            light_theme: z.string().optional().default('light'),
+            dark_theme: z.string().optional().default('dark'),
+            lang: z.string().optional().default('zh-CN'),
+            loading: z.string().optional().default('lazy'),
+          })
+          .optional()
+          .default(defaultGiscusConfig),
+        utterances: z
+          .object({
+            repo: z.string().optional().default(''),
+            issue_term: z.string().optional().default('pathname'),
+            label: z.string().optional().default('comment'),
+            theme: z.string().optional().default('github-light'),
+          })
+          .optional()
+          .default(defaultUtterancesConfig),
+        waline: z
+          .object({
+            server_url: z.string().optional().default(''),
+            lang: z.string().optional().default('zh-CN'),
+            dark: z.string().optional().default('html.dark'),
+            comment: z.boolean().optional().default(true),
+          })
+          .optional()
+          .default(defaultWalineConfig),
+        twikoo: z
+          .object({
+            env_id: z.string().optional().default(''),
+            script_src: z.string().optional().default(''),
+            lang: z.string().optional().default('zh-CN'),
+          })
+          .optional()
+          .default(defaultTwikooConfig),
+      })
+      .optional()
+      .default(defaultCommentsConfig),
+    siteInfo: z
+      .object({
+        title: z.string().optional().default('站点信息'),
+        program: z.string().optional().default('Sonder'),
+        uptime: z.boolean().optional().default(true),
+        lastUpdated: z.boolean().optional().default(true),
+        totalWords: z.boolean().optional().default(true),
+        lastContentUpdate: z.boolean().optional().default(true),
+        buildPlatform: z.boolean().optional().default(true),
+        imageBed: z
+          .object({
+            enabled: z.boolean().optional().default(false),
+            name: z.string().optional().default(''),
+            icon: z.string().optional().default(''),
+          })
+          .optional()
+          .default({ enabled: false, name: '', icon: '' }),
+      })
+      .optional()
+      .default({
+        title: '站点信息',
+        program: 'Sonder',
+        uptime: true,
+        lastUpdated: true,
+        totalWords: true,
+        lastContentUpdate: true,
+        buildPlatform: true,
+        imageBed: { enabled: false, name: '', icon: '' },
+      }),
+    profile: z.object({
+      name: z.string(),
+      role: z.string(),
+      avatar: z.string(),
+    }),
+    topNav: z.object({
+      links: z.array(topNavLinkSchema),
+    }),
+    search: z
+      .object({
+        enabled: z.boolean().optional().default(true),
+        placeholder: z.string().optional().default('Search notes...'),
+        maxResults: z.number().int().positive().optional().default(6),
+      })
+      .optional()
+      .default({
+        enabled: true,
+        placeholder: 'Search notes...',
+        maxResults: 6,
+      }),
+    pages: z
+      .object({
+        blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
+        media: mediaPageSchema.optional().default(defaultPagesConfig.media),
+        moments: momentsPageSchema.optional().default(defaultPagesConfig.moments),
+        links: linksPageSchema.optional().default(defaultPagesConfig.links),
+      })
+      .optional()
+      .default(defaultPagesConfig),
+    home: z.object({
+      // 首页引语可整段省略；不配置时 IntroCard 不渲染引语区
+      quote: z
+        .object({
+          text: z.array(z.string()).min(1),
+        })
+        .optional(),
+      intro: z.object({
+        title: z.string(),
+        name: z.string(),
+        body: z.array(z.string()).min(1),
+      }),
+      latest: z
+        .object({
+          count: z.number().int().positive().default(2),
+          heatmapWeeks: z.number().int().positive().default(24),
+          showHeatmapLatest: z.boolean().optional().default(true),
+          excludeDraft: z.boolean().optional().default(true),
+          startDate: z.string().optional().default(''),
+        })
+        .optional()
+        .default({
+          count: 2,
+          heatmapWeeks: 24,
+          showHeatmapLatest: true,
+          excludeDraft: true,
+          startDate: '',
+        }),
+      links: z.array(homeLinkSchema).optional().default([]),
+    }),
+  })
+  .strict()
+  .superRefine((config, ctx) => {
+    const circle = config.friendCircle;
+    if (!circle.enable) return;
+
+    if (circle.provider === 'fcl' && !circle.fcl.apiUrl) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['friendCircle', 'fcl', 'apiUrl'],
+        message: 'friendCircle.provider = "fcl" 时必须填写 friendCircle.fcl.apiUrl',
+      });
+    }
+
+    const youlinBase =
+      config.youlin.baseUrl ||
+      (typeof process !== 'undefined' ? process.env.SONDER_YOULIN_BASE_URL?.trim() : '') ||
+      '';
+    if (circle.provider === 'youlin' && !youlinBase) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['friendCircle', 'provider'],
+        message: 'friendCircle.provider = "youlin" 时必须填写 youlin.baseUrl',
+      });
+    }
+  });
 
 export type SiteConfig = z.infer<typeof siteConfigSchema>;

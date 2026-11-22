@@ -1,4 +1,5 @@
-# Sonder 站点配置；字段结构由 src/content.config.ts 校验。
+# Sonder 站点配置；字段结构由 src/config/schema.ts 校验。
+# 分区：站点身份 → 导航与搜索 → 外观 → 页面文案 → 第三方集成。
 [config.site]
 # 站点标题：导航、页脚和页面标题的公共名称
 title = "Sonder"
@@ -35,6 +36,50 @@ enabled = false
 name = ""
 # Lucide 图标名称
 icon = ""
+
+# ── 站点身份 ─────────────────────────────────────
+
+# 作者资料；头像支持 /public 路径或远程 URL
+[config.profile]
+name = "Sonder"
+role = "写博客的人"
+avatar = "/images/logo.svg"
+
+# 顶部导航；href 为普通链接，module 引用已启用的页面模块
+[[config.topNav.links]]
+label = "首页"
+href = "/"
+
+[[config.topNav.links]]
+label = "文章"
+href = "/blog"
+
+
+[[config.topNav.links]]
+label = "书影音"
+href = "/media"
+
+[[config.topNav.links]]
+label = "动态"
+href = "/moments"
+
+
+[[config.topNav.links]]
+label = "朋友"
+href = "/links"
+
+[[config.topNav.links]]
+label = "关于"
+href = "/about"
+
+[config.search]
+# 是否启用 Pagefind 搜索
+enabled = true
+# 搜索框占位与最大结果数
+placeholder = "搜索文章…"
+maxResults = 6
+
+# ── 外观与排版 ───────────────────────────────────
 
 [config.theme]
 # 可用色盘：
@@ -80,6 +125,8 @@ mathRenderer = "katex"
 # Mermaid 图表：关闭后不打包 mermaid
 mermaid = true
 
+# ── 第三方集成 ───────────────────────────────────
+
 [config.music]
 # Meting API 实例地址：::music 指令解析网易云 / QQ；动态页音乐卡解析网易云 / QQ / 酷狗。
 # 支持 :server/:type/:id/:r 占位符；默认使用社区公共实例，可换成自建实例。
@@ -87,12 +134,19 @@ mermaid = true
 meting_api = "https://api.qijieya.cn/meting/?server=:server&type=:type&id=:id&r=:r"
 
 [config.friendCircle]
-# Friend-Circle-Lite 订阅源（URL 或 public/ 下的文件路径）。
-# 留空时优先读取 public/friend-circle.json；否则抓取真实友链 RSS（示例域名跳过），最后回退内置演示数据。
-# feed_src = "https://fcl.example.com/api"
-feed_src = ""
-# 朋友圈每次展示的条数
+# 是否显示朋友圈
+enable = false
+# 获取渠道：fcl（Friend-Circle-Lite）| youlin（友邻）| none
+provider = "fcl"
+# 每次展示条数
 pageSize = 20
+
+[config.friendCircle.fcl]
+# provider = "fcl" 时必填：Friend-Circle-Lite 的 all.json 地址
+apiUrl = ""
+
+# provider = "youlin" 时，在 [config.youlin].baseUrl 填写友邻实例地址。
+# 朋友圈始终由浏览器请求 {baseUrl}/api/circle。
 
 [config.youlin]
 # 可选：友邻（Youlin）实例地址。留空时所有 source 链都会跳过 youlin，
@@ -101,8 +155,8 @@ pageSize = 20
 baseUrl = ""
 # 构建期 / 浏览器请求超时（毫秒）
 timeoutMs = 8000
-# 仅影响 /links 页的友链与朋友圈：build 构建期取数，client 浏览器刷新。
-# client 刷新只在 youlin 位于对应 sources 第一位时生效；文章指令始终构建期取数。
+# 仅影响 /links 页的友链取数；朋友圈始终由浏览器请求。
+# client 刷新只在 youlin 位于 links.sources 第一位时生效；文章指令始终构建期取数。
 mode = "build"
 
 [config.youlin.links]
@@ -115,12 +169,9 @@ group = ""
 # mode = "client"
 
 [config.youlin.circle]
-# 依次尝试：youlin（/api/circle）-> friendcircle（feed_src）-> public（public/friend-circle.json）
-#          -> rss（抓取友链 RSS）-> demo（内置演示数据）
-sources = ["youlin", "friendcircle", "public", "rss", "demo"]
+# 朋友圈由浏览器请求 {baseUrl}/api/circle。
 # 0 表示不传 limit，使用 Youlin 默认上限
 limit = 0
-# mode = "client"
 
 [config.youlin.apply]
 # auto：配了 baseUrl 时表单直接提交到 Youlin /apply（页面不跳转），否则用 GitHub Issue；
@@ -180,12 +231,38 @@ env_id = ""
 script_src = ""
 lang = "zh-CN"
 
-[config.search]
-# 是否启用 Pagefind 搜索
-enabled = true
-# 搜索框占位与最大结果数
-placeholder = "搜索文章…"
-maxResults = 6
+[config.comments.giscus]
+repo = ""
+repo_id = ""
+category = ""
+category_id = ""
+mapping = "pathname"
+strict = "0"
+reactions_enabled = "1"
+emit_metadata = "0"
+input_position = "top"
+light_theme = "light"
+dark_theme = "dark"
+lang = "zh-CN"
+loading = "lazy"
+
+# Utterances 配置；repo 为 GitHub 仓库，issue_term 默认按路径匹配
+[config.comments.utterances]
+repo = ""
+issue_term = "pathname"
+label = "comment"
+theme = "github-light"
+
+# Waline 配置；server_url 留空时评论不可用
+[config.comments.waline]
+server_url = ""
+lang = "zh-CN"
+# 深色模式选择器
+dark = "html.dark"
+# 是否启用评论
+comment = true
+
+# ── 页面文案 ─────────────────────────────────────
 
 # 文章归档页文案；note 留空时不显示
 [config.pages.blog]
@@ -229,71 +306,6 @@ note = ""
 title = "朋友"
 kicker = "Friends"
 subtitle = "那些人，那些事。"
-
-# Giscus 配置；repo_id 和 category_id 可在 giscus.app 生成
-[config.comments.giscus]
-repo = ""
-repo_id = ""
-category = ""
-category_id = ""
-mapping = "pathname"
-strict = "0"
-reactions_enabled = "1"
-emit_metadata = "0"
-input_position = "top"
-light_theme = "light"
-dark_theme = "dark"
-lang = "zh-CN"
-loading = "lazy"
-
-# Utterances 配置；repo 为 GitHub 仓库，issue_term 默认按路径匹配
-[config.comments.utterances]
-repo = ""
-issue_term = "pathname"
-label = "comment"
-theme = "github-light"
-
-# Waline 配置；server_url 留空时评论不可用
-[config.comments.waline]
-server_url = ""
-lang = "zh-CN"
-# 深色模式选择器
-dark = "html.dark"
-# 是否启用评论
-comment = true
-
-# 作者资料；头像支持 /public 路径或远程 URL
-[config.profile]
-name = "Sonder"
-role = "写博客的人"
-avatar = "/images/logo.svg"
-
-# 顶部导航；href 为普通链接，module 引用已启用的页面模块
-[[config.topNav.links]]
-label = "首页"
-href = "/"
-
-[[config.topNav.links]]
-label = "文章"
-href = "/blog"
-
-
-[[config.topNav.links]]
-label = "书影音"
-href = "/media"
-
-[[config.topNav.links]]
-label = "动态"
-href = "/moments"
-
-
-[[config.topNav.links]]
-label = "朋友"
-href = "/links"
-
-[[config.topNav.links]]
-label = "关于"
-href = "/about"
 
 # 首页内容
 [config.home]

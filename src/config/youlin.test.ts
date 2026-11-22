@@ -16,7 +16,7 @@ const rawConfig: SiteConfig['youlin'] = {
   timeoutMs: 8000,
   mode: 'build',
   links: { sources: ['youlin', 'local'], group: '' },
-  circle: { sources: ['youlin', 'friendcircle', 'public', 'rss', 'demo'], limit: 0 },
+  circle: { limit: 0 },
   apply: { provider: 'auto', turnstileSiteKey: '', timeoutMs: 45000 },
   directives: { friendCircle: 'auto', friendLinkCard: 'auto' },
 };
@@ -63,7 +63,6 @@ describe('resolveYoulinConfig', () => {
       const resolved = resolveYoulinConfig(rawConfig);
       expect(resolved.baseUrl).toBe('https://youlin.example.com');
       expect(resolved.links.mode).toBe('build');
-      expect(resolved.circle.mode).toBe('build');
     });
   });
 
@@ -77,12 +76,11 @@ describe('resolveYoulinConfig', () => {
         const resolved = resolveYoulinConfig(rawConfig);
         expect(resolved.baseUrl).toBe('http://127.0.0.1:8799');
         expect(resolved.links.mode).toBe('client');
-        expect(resolved.circle.mode).toBe('client');
       },
     );
   });
 
-  test('各功能可以单独覆盖 mode', () => {
+  test('友链可以单独覆盖 mode', () => {
     withEnv({ SONDER_YOULIN_BASE_URL: undefined, SONDER_YOULIN_MODE: undefined }, () => {
       const resolved = resolveYoulinConfig({
         ...rawConfig,
@@ -90,20 +88,17 @@ describe('resolveYoulinConfig', () => {
         links: { ...rawConfig.links, mode: 'build' },
       });
       expect(resolved.links.mode).toBe('build');
-      expect(resolved.circle.mode).toBe('client');
     });
   });
 
-  test('环境变量 mode 是覆盖层，连 per-feature mode 一起覆盖', () => {
+  test('环境变量 mode 是覆盖层，连 links.mode 一起覆盖', () => {
     withEnv({ SONDER_YOULIN_BASE_URL: undefined, SONDER_YOULIN_MODE: 'client' }, () => {
       const resolved = resolveYoulinConfig({
         ...rawConfig,
         mode: 'build',
         links: { ...rawConfig.links, mode: 'build' },
-        circle: { ...rawConfig.circle, mode: 'build' },
       });
       expect(resolved.links.mode).toBe('client');
-      expect(resolved.circle.mode).toBe('client');
     });
   });
 });

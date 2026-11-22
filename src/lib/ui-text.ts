@@ -81,6 +81,8 @@ type RawUiText = {
     circleAria: string;
     circleTitle: string;
     circleSummary: Message;
+    circleLoading: string;
+    circleLoadFailed: string;
     expandMore: string;
     feedError: Message;
     feedUnavailable: string;

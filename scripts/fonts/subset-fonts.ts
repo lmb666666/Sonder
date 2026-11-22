@@ -277,7 +277,6 @@ async function collectYoulinChars(chars: Set<string>) {
     config.links.sources.includes('youlin') ||
     resolveDirectiveSource(config.directives.friendLinkCard, config.baseUrl) === 'youlin';
   const needsCircle =
-    config.circle.sources.includes('youlin') ||
     resolveDirectiveSource(config.directives.friendCircle, config.baseUrl) === 'youlin';
   if (!needsLinks && !needsCircle) return;
 

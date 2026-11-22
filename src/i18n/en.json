@@ -251,6 +251,8 @@
     "circleAria": "Friend circle",
     "circleTitle": "Friend circle",
     "circleSummary": "{friends} friends · {active} active · {posts} posts",
+    "circleLoading": "Loading friend posts…",
+    "circleLoadFailed": "Friend circle failed to load. Please try again later.",
     "expandMore": "Show more",
     "feedError": "Feed parsing failed ({error}); showing demo data.",
     "feedUnavailable": "Friend RSS is unavailable; showing built-in demo data.",

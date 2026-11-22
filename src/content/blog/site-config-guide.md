@@ -148,27 +148,36 @@ maxResults = 6
 enabled = false
 
 [config.friendCircle]
-feed_src = ""
+enable = false
+provider = "fcl"
 pageSize = 20
+
+[config.friendCircle.fcl]
+apiUrl = ""
+mode = "client"
 ```
 
-评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.comments.*]` 区块中填写。朋友页的 `feed_src` 可以指向 Friend-Circle-Lite 订阅源，也可以留空使用 `public/friend-circle.json` 或构建期 RSS 聚合。
+评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.comments.*]` 区块中填写。朋友圈通过 `enable` 控制显示，`provider` 选择 `fcl` 或 `youlin`；选 `fcl` 时填写 FCL 的 `all.json`，选 `youlin` 时在 `[config.youlin].baseUrl` 填写实例地址。
 
 ## 友邻（Youlin）
 
-可选接入 [友邻](https://github.com/lmb666666/youlin)：友链和朋友圈改由 Youlin 接口提供，本地数据与 `friendCircle` 配置保留为回退。
+可选接入 [友邻](https://github.com/lmb666666/youlin)：友链和朋友圈改由 Youlin 接口提供。朋友圈始终在浏览器请求 `{baseUrl}/api/circle`。
 
 ```toml
+[config.friendCircle]
+enable = true
+provider = "youlin"
+
 [config.youlin]
 baseUrl = "https://youlin.example.com"
 timeoutMs = 8000
-mode = "build" # build | client
+mode = "build" # 只影响友链；build | client
 
 [config.youlin.links]
 sources = ["youlin", "local"]
 
 [config.youlin.circle]
-sources = ["youlin", "friendcircle", "public", "rss", "demo"]
+limit = 0
 
 [config.youlin.apply]
 provider = "auto" # auto | youlin | github | none
