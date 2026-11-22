@@ -1,4 +1,5 @@
 ---
+import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -28,7 +29,12 @@ import { getUiText } from '../lib/ui-text';
 import { withBase } from '../lib/url';
 import PageHero from '../components/PageHero.astro';
 import demoFeed from '../data/friend-circle-demo.json';
-import { friendLinkGroups } from '../data/friends';
+
+const friendsEntry = await getEntry('friends', 'friends');
+if (!friendsEntry) {
+  throw new Error('Missing src/data/friends.yml content entry.');
+}
+const friendLinkGroups = friendsEntry.data.groups;
 
 const siteConfig = await getSiteConfig();
 const { site, profile, pages } = siteConfig;

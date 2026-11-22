@@ -39,6 +39,147 @@ const articleSchema = ({ image }: Parameters<CollectionSchemaFactory>[0]) =>
     sidebar: sidebarSchema,
   });
 
+const aboutColorSchema = z
+  .string()
+  .regex(/^(#[0-9a-f]{3,8}|var\(--[a-z0-9-]+\))$/i, 'Use a CSS color, hex color, or CSS variable.');
+
+const aboutLinkSchema = z.object({
+  label: z.string(),
+  icon: z.string().optional().default('link'),
+  tooltip: z.string().trim(),
+  copy: z.boolean().optional().default(false),
+});
+
+const aboutMbtiSchema = z.object({
+  type: z.string(),
+  label: z.string(),
+  quote: z.string().optional().default(''),
+  quoteAuthor: z.string().optional().default(''),
+  image: z.string().optional().default(''),
+  link: z.string().optional().default(''),
+  linkText: z.string().optional().default(''),
+});
+
+const aboutCareerSchema = z.object({
+  track: z.enum(['study', 'blog']),
+  start: z.number().int(),
+  end: z.number().int(),
+  period: z.string(),
+  title: z.string(),
+  description: z.string().optional().default(''),
+  current: z.boolean().optional().default(false),
+});
+
+const aboutSkillSchema = z.object({
+  name: z.string(),
+  note: z.string().optional().default(''),
+  short: z.string().optional().default(''),
+  color: aboutColorSchema.optional(),
+  text: z.enum(['light', 'dark']).optional().default('light'),
+});
+
+const aboutWorkSchema = z.object({
+  title: z.string(),
+  description: z.string().optional().default(''),
+  date: z.coerce.date(),
+  tags: z.array(z.string()).optional().default([]),
+  cover: z.string().optional().default(''),
+  links: z
+    .array(
+      z.object({
+        label: z.string(),
+        href: z.string(),
+      }),
+    )
+    .optional()
+    .default([]),
+});
+
+const aboutSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  banner: z
+    .object({
+      tags: z.array(z.string()).optional().default([]),
+    })
+    .optional()
+    .default({ tags: [] }),
+  profile: z
+    .object({
+      bio: z.array(z.string()).optional().default([]),
+      location: z.string().optional().default(''),
+      status: z.string().optional().default(''),
+      school: z.string().optional().default(''),
+      photo: z.string().optional().default(''),
+      mbti: aboutMbtiSchema.optional(),
+    })
+    .optional()
+    .default({ bio: [], location: '', status: '', school: '', photo: '' }),
+  experience: z.array(aboutCareerSchema).optional().default([]),
+  techStatement: z.string().optional().default(''),
+  skills: z.array(aboutSkillSchema).optional().default([]),
+  works: z.array(aboutWorkSchema).optional().default([]),
+  contact: z
+    .object({
+      links: z.array(aboutLinkSchema).optional().default([]),
+    })
+    .optional()
+    .default({ links: [] }),
+});
+
+const momentSchema = z.object({
+  id: z.string().min(1),
+  content: z.string().optional().default(''),
+  date: z
+    .union([z.string(), z.date()])
+    .transform((value) => (value instanceof Date ? value.toISOString() : value))
+    .refine((value) => !Number.isNaN(Date.parse(value)), 'date must be a parseable ISO date'),
+  tags: z.array(z.string()).optional().default([]),
+  images: z.array(z.string()).optional().default([]),
+  video: z
+    .object({
+      provider: z.enum(['bilibili', 'youtube', 'douyin', 'tiktok']),
+      id: z.string(),
+    })
+    .optional(),
+  extension: z
+    .object({
+      type: z.enum(['github', 'website', 'music', 'location', 'tweet']),
+      title: z.string(),
+      description: z.string().optional().default(''),
+      url: z.string().optional().default(''),
+    })
+    .optional(),
+});
+
+const friendLinkItemSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  bio: z.string().optional().default(''),
+  avatar: z.string().nullable().optional().default(null),
+  backgroundImage: z.string().nullable().optional().default(null),
+  rss: z.string().nullable().optional().default(null),
+  sticky: z.union([z.boolean(), z.number()]).nullable().optional().default(null),
+});
+
+const friendsSchema = z.object({
+  groups: z
+    .array(
+      z.object({
+        title: z.string(),
+        description: z.string().optional().default(''),
+        items: z.array(friendLinkItemSchema).optional().default([]),
+      }),
+    )
+    .optional()
+    .default([]),
+});
+
+const tokenUsageSchema = z.object({
+  start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'start must be YYYY-MM-DD'),
+  values: z.array(z.number().int().nonnegative()),
+});
+
 const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
   articleSchema(context).extend({
     sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
@@ -67,62 +208,23 @@ const blog = defineCollection({
 });
 
 const about = defineCollection({
-  loader: glob({ base: contentBase, pattern: 'about.md' }),
-  schema: articleSchema,
+  loader: file('./src/data/about.yml'),
+  schema: aboutSchema,
 });
 
-const projects = defineCollection({
-  loader: glob({ base: `${contentBase}/projects`, pattern: '**/*.md' }),
-  schema: (context) =>
-    articleSchema(context).extend({
-      sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
-      icon: z
-        .enum([
-          'github',
-          'box',
-          'code-2',
-          'database',
-          'file-code-2',
-          'globe-2',
-          'layers-3',
-          'palette',
-          'rocket',
-          'sparkles',
-          'terminal',
-          'wand-sparkles',
-        ])
-        .optional()
-        .default('github'),
-      iconColor: z
-        .string()
-        .regex(
-          /^(#[0-9a-f]{3,8}|var\(--[a-z0-9-]+\)|[a-z]+)$/i,
-          'Use a CSS color, hex color, or CSS variable.',
-        )
-        .optional(),
-      authors: z
-        .array(
-          z.object({
-            name: z.string(),
-            url: z.url().optional(),
-          }),
-        )
-        .optional()
-        .default([]),
-      links: z
-        .array(
-          z.object({
-            label: z.string(),
-            href: z.url(),
-            kind: z
-              .enum(['github', 'website', 'platform', 'docs', 'demo'])
-              .optional()
-              .default('website'),
-          }),
-        )
-        .optional()
-        .default([]),
-    }),
+const moments = defineCollection({
+  loader: file('./src/data/moments.yml'),
+  schema: momentSchema,
+});
+
+const friends = defineCollection({
+  loader: file('./src/data/friends.yml'),
+  schema: friendsSchema,
+});
+
+const tokenUsage = defineCollection({
+  loader: file('./src/data/token-usage.yml'),
+  schema: tokenUsageSchema,
 });
 
 const media = defineCollection({
@@ -147,8 +249,9 @@ const media = defineCollection({
 export const collections = {
   about,
   blog,
+  friends,
+  moments,
   siteConfig,
-  // projects 集合与页面模块解耦：项目卡片现由关于页展示
-  projects,
+  tokenUsage,
   media,
 };

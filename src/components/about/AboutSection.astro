@@ -1,0 +1,17 @@
+---
+interface Props {
+  index: string;
+  label: string;
+  class?: string;
+}
+
+const { index, label, class: className } = Astro.props;
+---
+
+<section class:list={['about-section', className]} data-about-section>
+  <header class="about-section-head">
+    <span>{index}</span>
+    <h2>{label}</h2>
+  </header>
+  <slot />
+</section>

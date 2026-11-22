@@ -1,0 +1,34 @@
+---
+interface CareerItem {
+  track: 'study' | 'blog';
+  start: number;
+  end: number;
+  period: string;
+  title: string;
+  description?: string;
+  current?: boolean;
+}
+
+interface Props {
+  items: CareerItem[];
+}
+
+const { items } = Astro.props;
+const sorted = [...items].sort((a, b) => a.start - b.start || a.end - b.end);
+---
+
+<div class="about-experience">
+  <ol>
+    {
+      sorted.map((item) => (
+        <li class:list={{ current: item.current }}>
+          <time>{item.period}</time>
+          <div class="about-experience-copy">
+            <strong>{item.title}</strong>
+            {item.description && <span>{item.description}</span>}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>

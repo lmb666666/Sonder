@@ -1,0 +1,34 @@
+---
+interface Props {
+  title: string;
+  tags: string[];
+  avatar: string;
+  avatarLabel: string;
+}
+
+const { title, tags, avatar, avatarLabel } = Astro.props;
+const heroTags = [...new Set(tags.filter(Boolean))];
+---
+
+<header class="about-banner">
+  <div class="about-banner-stage">
+    <div class="about-banner-avatar" data-avatar-slot>
+      <img
+        class="about-banner-portrait"
+        src={avatar}
+        alt={avatarLabel}
+        width="640"
+        height="640"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+
+    <div class="about-banner-copy">
+      <h1>{title}</h1>
+      <ul class="about-banner-tags">
+        {heroTags.map((tag) => <li>{tag}</li>)}
+      </ul>
+    </div>
+  </div>
+</header>

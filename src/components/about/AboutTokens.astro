@@ -1,0 +1,86 @@
+---
+import type { TokenDay, TokenSummary } from '../../lib/token-usage';
+import { formatCount } from '../../lib/word-count';
+
+interface Props {
+  days: TokenDay[];
+  summary: TokenSummary;
+  locale: string;
+  cardTitle: string;
+  labels: {
+    today: string;
+    total: string;
+    peak: string;
+    current: string;
+    longest: string;
+    range: string;
+    dayUnit: string;
+  };
+}
+
+const { days, summary, locale, cardTitle, labels } = Astro.props;
+
+const rangeDays = days.slice(-30);
+const compact = (value: number) => formatCount(value, locale);
+const peakDate = summary.peak
+  ? new Intl.DateTimeFormat(locale, { month: 'numeric', day: 'numeric' }).format(summary.peak.date)
+  : '';
+const dateFormatter = new Intl.DateTimeFormat(locale, { month: 'numeric', day: 'numeric' });
+const startLabel = rangeDays[0] ? dateFormatter.format(rangeDays[0].date) : '';
+const endLabel = rangeDays[rangeDays.length - 1]
+  ? dateFormatter.format(rangeDays[rangeDays.length - 1]!.date)
+  : '';
+const rangeLabel = labels.range.replace('{count}', String(rangeDays.length));
+const maxTokens = Math.max(1, ...rangeDays.map((day) => day.tokens));
+const barHeight = (tokens: number) => Math.max(4, Math.round((tokens / maxTokens) * 100));
+---
+
+{
+  rangeDays.length > 0 && (
+    <article class="about-token-card" aria-label={cardTitle} data-token-card>
+      <div class="about-token-range-head">
+        <p>{rangeLabel}</p>
+        <span>
+          {startLabel} — {endLabel}
+        </span>
+      </div>
+
+      <div class="about-token-bars" aria-label={`${rangeLabel} ${startLabel} — ${endLabel}`}>
+        {rangeDays.map((day) => (
+          <span
+            class="about-token-bar"
+            data-level={day.level}
+            style={`--token-height:${barHeight(day.tokens)}%`}
+            title={`${day.dateKey} · ${compact(day.tokens)} tokens`}
+          />
+        ))}
+      </div>
+
+      <dl class="about-token-stats">
+        <div>
+          <dt>{labels.today}</dt>
+          <dd>{compact(summary.today)}</dd>
+        </div>
+        <div>
+          <dt>{labels.total}</dt>
+          <dd>{compact(summary.total)}</dd>
+        </div>
+        <div>
+          <dt>{labels.peak}</dt>
+          <dd>{compact(summary.peak?.tokens ?? 0)}</dd>
+          {peakDate && <small>{peakDate}</small>}
+        </div>
+        <div>
+          <dt>{labels.current}</dt>
+          <dd>{summary.currentStreak}</dd>
+          <small>{labels.dayUnit}</small>
+        </div>
+        <div>
+          <dt>{labels.longest}</dt>
+          <dd>{summary.longestStreak}</dd>
+          <small>{labels.dayUnit}</small>
+        </div>
+      </dl>
+    </article>
+  )
+}

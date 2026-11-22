@@ -40,7 +40,7 @@ bun run dev
 打开根目录的 `site.config.toml`，优先替换这些值：
 
 - `[config.site]`：站点标题、描述、线上地址、仓库地址和页脚说明
-- `[config.profile]`：作者名、身份、头像、邮箱、网站和 GitHub
+- `[config.profile]`：全站作者名、身份和头像
 - `[[config.topNav.links]]`：顶部导航链接
 - `[config.theme]`：默认色盘、界面语言和导航样式
 - `[config.home]`：首页引语、介绍、最新文章数量和联系方式
@@ -49,21 +49,25 @@ bun run dev
 
 ## 替换内容
 
-内容都在 `src/content/` 下：
+内容分成 `src/content/` 与 `src/data/`：
 
 ```text
 src/content/
-  about.md         关于页
   blog/            长文与教程
   media/           书、影、音条目
-  projects/        关于页的项目卡片
+
+src/data/
+  about.yml        关于页：资料、经历、技能、作品、联系方式
+  moments.yml      本地动态
+  friends.yml      本地友链
+  token-usage.yml  AI Token 日用量
 ```
 
 示例文章可以直接编辑或删除。删除文章后，记得把文章里的 `heroImage` 对应的封面一起清理，避免残留未使用的图片。
 
 文章 frontmatter 的 `date` 是发布时间；需要显示修改时间时，再加一行 `updated: 2026-11-08`。文章页只会在修改时间比发布时间晚至少一天时显示「修改于」，站点信息卡的「最后更新」也会取两者的最大值。
 
-动态页的演示数据在 `src/data/moments.ts`；朋友页的友链与朋友圈演示数据在 `src/data/`。
+关于页的数据在 `src/data/about.yml`：`profile` 控制简介、地址、身份、学校、自拍照和性格，`experience` 控制经历，`techStatement` 控制技能区左侧文案，`skills` 控制技能胶囊，`works` 控制作品卡片，`contact.links` 控制关于页联系方式。AI Token 数据在 `src/data/token-usage.yml`，本地动态在 `src/data/moments.yml`，本地友链在 `src/data/friends.yml`。
 
 动态页会自动把音乐、视频、GitHub、网站、位置与推文渲染成对应卡片；音乐播放依赖 `[config.music].meting_api`，留空或不可达时保留平台链接卡，网易云音频失败会降级官方外链播放器。
 
@@ -74,7 +78,25 @@ bun run build
 bun run preview
 ```
 
-构建会把静态页面输出到 `dist/`。部署时只需要把 `dist/` 交给任意静态托管平台；仓库内置的 `vercel.json` 可以在推送到 `main` 时自动构建；其他平台直接发布 `dist/` 即可。
+构建会把静态页面输出到 `dist/`。构建前会运行 `tokens:sync:zcode`，使用 ZCode 的本地用量；ZCode 不可用时保留现有 `src/data/token-usage.yml`，可手动编辑。
+
+手动同步时可以交互选择数据源：
+
+```bash
+bun run tokens:sync
+```
+
+也可以直接指定：
+
+```bash
+bun run tokens:sync:auto
+bun scripts/sync-token-usage.ts --source magpie
+bun scripts/sync-token-usage.ts --source opencode
+bun scripts/sync-token-usage.ts --source claude
+bun scripts/sync-token-usage.ts --source codex
+```
+
+部署时只需要把 `dist/` 交给任意静态托管平台；仓库内置的 `vercel.json` 可以在推送到 `main` 时自动构建；其他平台直接发布 `dist/` 即可。
 
 如果站点部署在子路径，可以在构建时设置：
 

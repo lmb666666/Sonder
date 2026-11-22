@@ -1,10 +1,10 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import MomentEntry from '../components/moments/MomentEntry.astro';
 import MomentSkeleton from '../components/moments/MomentSkeleton.astro';
 import PageHero from '../components/PageHero.astro';
 import { getSiteConfig } from '../config';
-import { demoMoments } from '../data/moments';
 import { formatMomentRange, groupMomentsByMonth, type MomentItem } from '../lib/moments';
 import { getUiText } from '../lib/ui-text';
 // 动态页特殊内容复用文章指令的纸面卡片、视频与播放器样式，保持同一套 DOM。
@@ -18,9 +18,13 @@ const { site } = siteConfig;
 const pageMeta = siteConfig.pages.moments;
 const ui = getUiText(siteConfig);
 
+const localItems: MomentItem[] = (await getCollection('moments'))
+  .map((entry) => entry.data)
+  .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+
 const ech0Mode = pageMeta.apiUrl.trim().length > 0;
 const pageSize = pageMeta.pageSize;
-const items: MomentItem[] = ech0Mode ? [] : demoMoments;
+const items: MomentItem[] = ech0Mode ? [] : localItems;
 const groups = groupMomentsByMonth(items, ui.locale);
 const initialCount = Math.min(items.length, pageSize);
 const visibleIds = new Set(items.slice(0, initialCount).map((item) => item.id));
