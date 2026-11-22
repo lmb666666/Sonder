@@ -12,7 +12,7 @@ interface CircleFeedConfig {
   };
 }
 
-interface CirclePost {
+export interface CirclePost {
   title: string;
   url: string;
   author: string;
@@ -22,7 +22,7 @@ interface CirclePost {
   tags: string[];
 }
 
-interface CircleData {
+export interface CircleData {
   posts: CirclePost[];
   friends: number;
   active: number;
@@ -40,23 +40,23 @@ const escapeHtml = (value: string) =>
     (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!,
   );
 
-function safeUrl(value: string) {
+/** 朋友圈数据里的相对链接按 JSON 地址解析，而不是按当前页面。 */
+function safeUrl(value: string, baseUrl: string) {
   if (!value) return '';
   try {
-    const url = new URL(value, window.location.href);
+    const url = new URL(value, baseUrl);
     return /^https?:$/.test(url.protocol) ? url.toString() : '';
   } catch {
     return '';
   }
 }
 
-function safeImage(value: string) {
-  if (!value) return '';
-  if (value.startsWith('/')) return value;
-  return safeUrl(value);
+function count(value: unknown) {
+  const parsed = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(parsed) ? Math.max(0, Math.trunc(parsed)) : 0;
 }
 
-function normalizePosts(data: unknown): CircleData {
+export function normalizeCircleFeed(data: unknown, baseUrl: string): CircleData {
   if (!isRecord(data)) return { posts: [], friends: 0, active: 0, total: 0 };
 
   const rawPosts = Array.isArray(data.article_data)
@@ -69,7 +69,7 @@ function normalizePosts(data: unknown): CircleData {
 
   const posts = rawPosts.flatMap((value): CirclePost[] => {
     if (!isRecord(value)) return [];
-    const url = safeUrl(text(value.link) || text(value.url));
+    const url = safeUrl(text(value.link) || text(value.url), baseUrl);
     const title = text(value.title);
     const author = text(value.author) || text(value.name);
     if (!url || !title || !author) return [];
@@ -83,9 +83,9 @@ function normalizePosts(data: unknown): CircleData {
         title,
         url,
         author,
-        authorUrl: safeUrl(text(value.authorUrl)),
+        authorUrl: safeUrl(text(value.authorUrl), baseUrl),
         date: text(value.created) || text(value.date),
-        avatar: safeImage(text(value.avatar)),
+        avatar: safeUrl(text(value.avatar), baseUrl),
         tags,
       },
     ];
@@ -94,9 +94,9 @@ function normalizePosts(data: unknown): CircleData {
   const active = new Set(posts.map((post) => post.author)).size;
   return {
     posts,
-    friends: Number(stats.friends_num) || rawFriends.length || active,
-    active: Number(stats.active_num) || active,
-    total: Number(stats.article_num) || posts.length,
+    friends: count(stats.friends_num) || rawFriends.length || active,
+    active: count(stats.active_num) || active,
+    total: count(stats.article_num) || posts.length,
   };
 }
 
@@ -151,10 +151,19 @@ export function initCircleFeed(): void {
   summary.textContent = config.messages.loading;
   list.setAttribute('aria-busy', 'true');
 
-  void fetch(config.src, { headers: { accept: 'application/json' } })
+  // FCL 可以配置同源相对地址；解析成绝对地址后再作为数据内相对链接的基准。
+  let feedUrl: string;
+  try {
+    feedUrl = new URL(config.src, window.location.href).toString();
+  } catch {
+    summary.textContent = config.messages.error;
+    return;
+  }
+
+  void fetch(feedUrl, { headers: { accept: 'application/json' } })
     .then(async (response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return normalizePosts(await response.json());
+      return normalizeCircleFeed(await response.json(), feedUrl);
     })
     .then((data) => {
       list.removeAttribute('aria-busy');

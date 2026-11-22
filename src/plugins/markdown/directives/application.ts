@@ -81,7 +81,7 @@ export function friendLinkApplicationHandler(
     const baseUrl = apply.baseUrl.trim().replace(/\/+$/, '');
     if (provider === 'youlin' && !baseUrl) {
       file.message(
-        '::friend-link-application 需要配置 youlin.baseUrl 才能提交申请。',
+        '::friend-link-application 需要配置 [config.integrations.youlin].baseUrl 才能提交申请。',
         undefined,
         'sonder-directives',
       );

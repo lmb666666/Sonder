@@ -17,7 +17,7 @@ sidebar:
   toc: true
 ---
 
-Sonder 把站点级信息集中在根目录的 `site.config.toml`，而不是散落在组件里。配置结构由 `src/config/schema/` 中的 Zod schema 校验；字段缺失或类型不对时，`bun run build` 会直接报错。
+Sonder 把站点级信息集中在根目录的 `site.config.toml`，而不是散落在组件里。配置结构由 `src/config/schema/` 中的 Zod schema 校验；字段缺失、类型不对或出现未知键时，`bun run build` 会直接报错。
 
 ## 站点与作者
 
@@ -156,7 +156,7 @@ pageSize = 20
 apiUrl = ""
 ```
 
-评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.integrations.comments.*]` 区块中填写。朋友圈通过 `enable` 控制显示，`provider` 选择 `fcl` 或 `youlin`；选 `fcl` 时填写 FCL 的 `all.json`，选 `youlin` 时在 `[config.integrations.youlin].baseUrl` 填写实例地址。
+评论支持 giscus、utterances、Waline、Twikoo 或关闭；具体凭据在对应的 `[config.integrations.comments.*]` 区块中填写。朋友圈通过 `enable` 控制显示，`provider` 选择 `fcl`、`youlin` 或 `none`；选 `fcl` 时填写 FCL 的 `all.json`，选 `youlin` 时在 `[config.integrations.youlin].baseUrl` 填写实例地址。
 
 ## 友邻（Youlin）
 
@@ -188,7 +188,7 @@ friendCircle = "auto"
 friendLinkCard = "auto"
 ```
 
-- `baseUrl` 为空时完全沿用原有本地链路，不会发出任何 Youlin 请求。
+- `baseUrl` 为空时不会发出任何 Youlin 请求；但 `friends.provider = "youlin"` 时构建会要求填写 `baseUrl`。
 - `sources` 按顺序尝试：只有网络/HTTP/解析失败才继续下一个源；Youlin 返回 200 且 JSON 合法即采用（空结果也有效）。
 - `mode` 只影响友链：`build` 在构建期取数，`client` 由浏览器请求并替换 DOM。朋友圈始终客户端请求 `{baseUrl}/api/circle`，不受 `mode` 影响。
 - `apply.provider = "auto"` 时，配了 `baseUrl` 就用 Youlin 的 `/apply` 接口：表单在当前页面直接 POST，不跳转；开启 Turnstile 时把公开 site key 填到 `turnstileSiteKey`。也可强制 `github` / `none`。
@@ -261,7 +261,7 @@ apiUrl = ""
 meting_api = "https://api.example.com/meting/?server=:server&type=:type&id=:id&r=:r"
 ```
 
-- `provider = "local"` 时展示 `src/data/moments.yml`；`provider = "ech0"` 时页面在浏览器里请求 `POST {apiUrl}/api/echo/query`，实例需允许当前站点域名跨域。
+- `provider = "local"` 时展示 `src/data/moments.yml`；`provider = "ech0"` 时必须填写 `ech0.apiUrl`，页面会在浏览器里请求 `POST {apiUrl}/api/echo/query`，实例需允许当前站点域名跨域。
 - `pageSize` 同时用于本地分页和 Ech0 每次请求的条数。
 - 音乐卡复用 `[config.integrations.music].meting_api` 在浏览器解析网易云 / QQ / 酷狗单曲；Meting 或音频不可用时，网易云自动降级为官方外链播放器，其他平台保留原曲链接卡。Meting 实例需允许站点域名跨域（公共实例通常为 `*`）。
 - 视频自动识别 B 站、YouTube、抖音、TikTok；位置扩展带 `latitude` / `longitude` 时生成高德 marker 链接与坐标；GitHub、网站、推文复用文章指令的纸面卡片。

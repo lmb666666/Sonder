@@ -69,4 +69,22 @@ describe('site config', () => {
 
     expect(siteConfigSchema.safeParse(config).success).toBe(false);
   });
+
+  test('嵌套配置不接受拼错的键', () => {
+    const config = structuredClone(rawConfig.config);
+    const site = config.site as Record<string, Record<string, unknown>>;
+    site.info!.uptimee = true;
+
+    const result = siteConfigSchema.safeParse(config);
+    expect(result.success).toBe(false);
+  });
+
+  test('旧 comments.enabled 键会直接报错', () => {
+    const config = structuredClone(rawConfig.config);
+    const comments = integrations(config).comments!;
+    comments.enabled = comments.enable;
+    delete comments.enable;
+
+    expect(siteConfigSchema.safeParse(config).success).toBe(false);
+  });
 });

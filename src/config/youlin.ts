@@ -95,7 +95,9 @@ export function resolveYoulinConfig(
   if (!baseUrl) {
     baseUrl = normalizeBaseUrl(raw.baseUrl);
     if (raw.baseUrl && !baseUrl) {
-      console.warn(`[sonder youlin] 忽略无效的 youlin.baseUrl：${redact(raw.baseUrl)}`);
+      console.warn(
+        `[sonder youlin] 忽略无效的 [config.integrations.youlin].baseUrl：${redact(raw.baseUrl)}`,
+      );
     }
   }
 

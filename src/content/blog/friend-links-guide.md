@@ -93,7 +93,7 @@ sources = ["youlin", "local"]
 limit = 0
 ```
 
-`baseUrl` 留空时不会请求友邻，行为与纯本地模式一致。朋友圈始终请求 `{baseUrl}/api/circle`，不做构建期抓取。完整配置、`apply.provider` 与文章指令的 `src="youlin"` 用法见[站点配置指南](/blog/site-config-guide/)。
+`baseUrl` 留空时不会请求友邻，行为与纯本地模式一致；但 `friends.provider = "youlin"` 时构建会要求填写 `baseUrl`。朋友圈始终请求 `{baseUrl}/api/circle`，不做构建期抓取。完整配置、`apply.provider` 与文章指令的 `src="youlin"` 用法见[站点配置指南](/blog/site-config-guide/)。
 
 ## 友链申请
 

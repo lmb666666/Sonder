@@ -63,12 +63,12 @@ const defaultCommentsConfig = {
 };
 
 const commentsSchema = z
-  .object({
+  .strictObject({
     enable: z.boolean().optional().default(false),
     provider: commentProviderSchema.optional().default('none'),
     show_on_posts: z.boolean().optional().default(true),
     giscus: z
-      .object({
+      .strictObject({
         repo: z.string().optional().default(''),
         repo_id: z.string().optional().default(''),
         category: z.string().optional().default(''),
@@ -86,7 +86,7 @@ const commentsSchema = z
       .optional()
       .default(defaultGiscusConfig),
     utterances: z
-      .object({
+      .strictObject({
         repo: z.string().optional().default(''),
         issue_term: z.string().optional().default('pathname'),
         label: z.string().optional().default('comment'),
@@ -95,7 +95,7 @@ const commentsSchema = z
       .optional()
       .default(defaultUtterancesConfig),
     waline: z
-      .object({
+      .strictObject({
         server_url: z.string().optional().default(''),
         lang: z.string().optional().default('zh-CN'),
         dark: z.string().optional().default('html.dark'),
@@ -104,7 +104,7 @@ const commentsSchema = z
       .optional()
       .default(defaultWalineConfig),
     twikoo: z
-      .object({
+      .strictObject({
         env_id: z.string().optional().default(''),
         script_src: z.string().optional().default(''),
         lang: z.string().optional().default('zh-CN'),
@@ -129,10 +129,10 @@ const defaultAnalyticsConfig = {
 };
 
 const analyticsSchema = z
-  .object({
+  .strictObject({
     sendInDev: z.boolean().optional().default(false),
     umami: z
-      .object({
+      .strictObject({
         websiteId: z.string().trim().max(128).optional().default(''),
         scriptUrl: z.string().trim().max(2048).optional().default(''),
         hostUrl: z.string().trim().max(2048).optional().default(''),
@@ -140,7 +140,7 @@ const analyticsSchema = z
       .optional()
       .default(defaultAnalyticsConfig.umami),
     la51: z
-      .object({
+      .strictObject({
         id: z.string().trim().max(64).optional().default(''),
         lingqueMonitorId: z.string().trim().max(64).optional().default(''),
       })
@@ -151,7 +151,7 @@ const analyticsSchema = z
   .default(defaultAnalyticsConfig);
 
 const musicSchema = z
-  .object({
+  .strictObject({
     // ::music 指令与动态页音乐卡共用
     meting_api: z.string().optional().default(''),
   })
@@ -159,13 +159,13 @@ const musicSchema = z
   .default({ meting_api: '' });
 
 const momentsSchema = z
-  .object({
+  .strictObject({
     // local：src/data/moments.yml；ech0：浏览器请求 all.json
     provider: z.enum(['local', 'ech0']).optional().default('local'),
     pageSize: z.number().int().positive().optional().default(20),
     showPoweredBy: z.boolean().optional().default(true),
     ech0: z
-      .object({
+      .strictObject({
         apiUrl: z.string().trim().optional().default(''),
       })
       .optional()
@@ -175,19 +175,17 @@ const momentsSchema = z
   .default({ provider: 'local', pageSize: 20, showPoweredBy: true, ech0: { apiUrl: '' } });
 
 const friendsSchema = z
-  .object({
+  .strictObject({
     enable: z.boolean().optional().default(false),
     provider: z.enum(['fcl', 'youlin', 'none']).optional().default('none'),
     pageSize: z.number().int().positive().optional().default(20),
     fcl: z
-      .object({
+      .strictObject({
         apiUrl: z.string().trim().optional().default(''),
       })
-      .strict()
       .optional()
       .default({ apiUrl: '' }),
   })
-  .strict()
   .optional()
   .default({ enable: false, provider: 'none', pageSize: 20, fcl: { apiUrl: '' } });
 
@@ -212,16 +210,16 @@ const youlinBaseUrlSchema = z
     } catch {
       return false;
     }
-  }, 'youlin.baseUrl 必须是 http(s) URL，且不能包含账号密码、查询参数或 hash。');
+  }, '[config.integrations.youlin].baseUrl 必须是 http(s) URL，且不能包含账号密码、查询参数或 hash。');
 
 const youlinSchema = z
-  .object({
+  .strictObject({
     baseUrl: youlinBaseUrlSchema,
     timeoutMs: z.number().int().min(500).max(30_000).optional().default(8000),
     // 仅影响 /links 页的友链取数；朋友圈始终客户端请求
     mode: youlinModeSchema.optional().default('build'),
     links: z
-      .object({
+      .strictObject({
         mode: youlinModeSchema.optional(),
         sources: z.array(youlinLinkSourceSchema).optional().default(['youlin', 'local']),
         group: z.string().trim().max(100).optional().default(''),
@@ -229,13 +227,13 @@ const youlinSchema = z
       .optional()
       .default({ sources: ['youlin', 'local'], group: '' }),
     circle: z
-      .object({
+      .strictObject({
         limit: z.number().int().min(0).max(5000).optional().default(0),
       })
       .optional()
       .default({ limit: 0 }),
     apply: z
-      .object({
+      .strictObject({
         provider: youlinApplyProviderSchema.optional().default('auto'),
         turnstileSiteKey: z.string().trim().max(200).optional().default(''),
         timeoutMs: z.number().int().min(5_000).max(120_000).optional().default(45_000),
@@ -243,7 +241,7 @@ const youlinSchema = z
       .optional()
       .default({ provider: 'auto', turnstileSiteKey: '', timeoutMs: 45_000 }),
     directives: z
-      .object({
+      .strictObject({
         friendCircle: youlinDirectiveSourceSchema.optional().default('auto'),
         friendLinkCard: youlinDirectiveSourceSchema.optional().default('auto'),
       })
@@ -261,7 +259,7 @@ const youlinSchema = z
     directives: { friendCircle: 'auto', friendLinkCard: 'auto' },
   });
 
-export const integrationsSchema = z.object({
+export const integrationsSchema = z.strictObject({
   comments: commentsSchema,
   analytics: analyticsSchema,
   music: musicSchema,

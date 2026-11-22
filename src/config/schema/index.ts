@@ -10,7 +10,7 @@ import { appearanceSchema, navSchema, siteSchema } from './site';
  * 运行时由 content collection 用同一份 schema 再校验一次。
  */
 export const siteConfigSchema = z
-  .object({
+  .strictObject({
     site: siteSchema,
     nav: navSchema,
     appearance: appearanceSchema,
@@ -19,7 +19,6 @@ export const siteConfigSchema = z
     home: homeSchema,
     integrations: integrationsSchema,
   })
-  .strict()
   .superRefine((config, ctx) => {
     const circle = config.integrations.friends;
     if (circle.enable) {

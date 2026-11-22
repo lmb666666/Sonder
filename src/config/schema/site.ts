@@ -13,7 +13,7 @@ import {
 } from './shared';
 
 const siteInfoSchema = z
-  .object({
+  .strictObject({
     title: z.string().optional().default('站点信息'),
     program: z.string().optional().default('Sonder'),
     uptime: z.boolean().optional().default(true),
@@ -22,13 +22,12 @@ const siteInfoSchema = z
     lastContentUpdate: z.boolean().optional().default(true),
     buildPlatform: z.boolean().optional().default(true),
     imageBed: z
-      .object({
+      .strictObject({
         enabled: z.boolean().optional().default(false),
         name: z.string().optional().default(''),
-        icon: z.string().optional().default(''),
       })
       .optional()
-      .default({ enabled: false, name: '', icon: '' }),
+      .default({ enabled: false, name: '' }),
   })
   .optional()
   .default({
@@ -39,16 +38,16 @@ const siteInfoSchema = z
     totalWords: true,
     lastContentUpdate: true,
     buildPlatform: true,
-    imageBed: { enabled: false, name: '', icon: '' },
+    imageBed: { enabled: false, name: '' },
   });
 
-const siteProfileSchema = z.object({
+const siteProfileSchema = z.strictObject({
   name: z.string(),
   role: z.string(),
   avatar: z.string(),
 });
 
-export const siteSchema = z.object({
+export const siteSchema = z.strictObject({
   title: z.string(),
   description: z.string(),
   pageTitle: z.string(),
@@ -69,7 +68,7 @@ export const siteSchema = z.object({
 });
 
 export const themeSchema = z
-  .object({
+  .strictObject({
     palette: paletteSchema.optional().default('orange-soft'),
     lang: z.string().optional().default('en'),
     // 导航栏样式："bar" 通栏工具条，"pill" 居中胶囊（带头像交接）
@@ -83,7 +82,7 @@ export const themeSchema = z
   });
 
 export const fontsSchema = z
-  .object({
+  .strictObject({
     en: nonEmptyStringSchema(defaultFontConfig.en),
     code: nonEmptyStringSchema(defaultFontConfig.code),
     zh: nonEmptyStringSchema(defaultFontConfig.zh),
@@ -93,7 +92,7 @@ export const fontsSchema = z
   .default(defaultFontConfig);
 
 export const codeSchema = z
-  .object({
+  .strictObject({
     lineNumbers: z.boolean().optional().default(defaultCodeConfig.lineNumbers),
     wrap: z.boolean().optional().default(defaultCodeConfig.wrap),
     preserveIndent: z.boolean().optional().default(defaultCodeConfig.preserveIndent),
@@ -106,7 +105,7 @@ export const codeSchema = z
   .default(defaultCodeConfig);
 
 export const markdownSchema = z
-  .object({
+  .strictObject({
     math: z.boolean().optional().default(defaultMarkdownConfig.math),
     mathRenderer: mathRendererSchema.optional().default(defaultMarkdownConfig.mathRenderer),
     mermaid: z.boolean().optional().default(defaultMarkdownConfig.mermaid),
@@ -114,7 +113,7 @@ export const markdownSchema = z
   .optional()
   .default(defaultMarkdownConfig);
 
-export const appearanceSchema = z.object({
+export const appearanceSchema = z.strictObject({
   theme: themeSchema,
   fonts: fontsSchema,
   code: codeSchema,
@@ -122,7 +121,7 @@ export const appearanceSchema = z.object({
 });
 
 export const searchSchema = z
-  .object({
+  .strictObject({
     enabled: z.boolean().optional().default(true),
     placeholder: z.string().optional().default('Search notes...'),
     maxResults: z.number().int().positive().optional().default(6),
@@ -134,7 +133,7 @@ export const searchSchema = z
     maxResults: 6,
   });
 
-export const navSchema = z.object({
+export const navSchema = z.strictObject({
   links: z.array(topNavLinkSchema),
   search: searchSchema,
 });

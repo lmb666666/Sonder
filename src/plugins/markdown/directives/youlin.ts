@@ -99,7 +99,7 @@ export async function prefetchYoulinDirectives(
     return {
       links: null,
       circle: null,
-      error: 'youlin.baseUrl 未配置，已回退演示数据',
+      error: '[config.integrations.youlin].baseUrl 未配置，已回退演示数据',
     };
   }
 

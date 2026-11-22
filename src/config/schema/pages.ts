@@ -33,7 +33,7 @@ const defaultPagesConfig = {
   },
 } as const;
 
-const blogPageSchema = z.object({
+const blogPageSchema = z.strictObject({
   title: z.string().optional().default(defaultPagesConfig.blog.title),
   kicker: z.string().optional().default(defaultPagesConfig.blog.kicker),
   subtitle: z.string().optional().default(defaultPagesConfig.blog.subtitle),
@@ -52,28 +52,28 @@ const blogPageSchema = z.object({
   listLayout: z.enum(['rows', 'media']).optional().default(defaultPagesConfig.blog.listLayout),
 });
 
-const mediaPageSchema = z.object({
+const mediaPageSchema = z.strictObject({
   title: z.string().optional().default(defaultPagesConfig.media.title),
   kicker: z.string().optional().default(defaultPagesConfig.media.kicker),
   subtitle: z.string().optional().default(defaultPagesConfig.media.subtitle),
   note: z.string().optional().default(defaultPagesConfig.media.note),
 });
 
-const momentsPageSchema = z.object({
+const momentsPageSchema = z.strictObject({
   title: z.string().optional().default(defaultPagesConfig.moments.title),
   kicker: z.string().optional().default(defaultPagesConfig.moments.kicker),
   subtitle: z.string().optional().default(defaultPagesConfig.moments.subtitle),
   note: z.string().optional().default(defaultPagesConfig.moments.note),
 });
 
-const linksPageSchema = z.object({
+const linksPageSchema = z.strictObject({
   title: z.string().optional().default(defaultPagesConfig.links.title),
   kicker: z.string().optional().default(defaultPagesConfig.links.kicker),
   subtitle: z.string().optional().default(defaultPagesConfig.links.subtitle),
 });
 
 export const pagesSchema = z
-  .object({
+  .strictObject({
     blog: blogPageSchema.optional().default(defaultPagesConfig.blog),
     media: mediaPageSchema.optional().default(defaultPagesConfig.media),
     moments: momentsPageSchema.optional().default(defaultPagesConfig.moments),
@@ -83,7 +83,7 @@ export const pagesSchema = z
   .default(defaultPagesConfig);
 
 export const articleSchema = z
-  .object({
+  .strictObject({
     share: z.boolean().optional().default(true),
     navigation: z.boolean().optional().default(true),
     morePosts: z.boolean().optional().default(true),
@@ -91,20 +91,20 @@ export const articleSchema = z
   .optional()
   .default({ share: true, navigation: true, morePosts: true });
 
-export const homeSchema = z.object({
+export const homeSchema = z.strictObject({
   // 首页引语可整段省略；不配置时 IntroCard 不渲染引语区
   quote: z
-    .object({
+    .strictObject({
       text: z.array(z.string()).min(1),
     })
     .optional(),
-  intro: z.object({
+  intro: z.strictObject({
     title: z.string(),
     name: z.string(),
     body: z.array(z.string()).min(1),
   }),
   latest: z
-    .object({
+    .strictObject({
       count: z.number().int().positive().default(2),
       heatmapWeeks: z.number().int().positive().default(24),
       showHeatmapLatest: z.boolean().optional().default(true),

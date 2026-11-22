@@ -41,13 +41,13 @@ export const nonEmptyStringSchema = (fallback: string) =>
     z.string().trim().min(1).optional().default(fallback),
   );
 
-export const topNavLinkSchema = z.object({
+export const topNavLinkSchema = z.strictObject({
   label: z.string(),
   href: z.string(),
   disabled: z.boolean().optional().default(false),
 });
 
-export const homeLinkSchema = z.object({
+export const homeLinkSchema = z.strictObject({
   label: z.string(),
   icon: z.string(),
   tooltip: z.string().trim(),

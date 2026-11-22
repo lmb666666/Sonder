@@ -213,8 +213,9 @@ function renderCircle(
   const summary = document.querySelector<HTMLElement>('[data-circle-summary]');
   if (summary) {
     const authors = new Set(posts.map((post) => post.author)).size;
-    const friends = stats?.friends ?? authors;
-    const active = stats?.active ?? authors;
+    // 接口未返回统计时 mapYoulinCircle 会给 0，用已加载文章作者数兜底。
+    const friends = stats?.friends || authors;
+    const active = stats?.active || authors;
     summary.textContent = formatMessage(config.messages.circleSummary, {
       friends,
       active,

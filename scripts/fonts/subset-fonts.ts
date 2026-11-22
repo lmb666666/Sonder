@@ -4,7 +4,8 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { dirname, extname, join } from 'node:path';
 import { parse } from 'smol-toml';
 
-import { siteConfigSchema } from '../../src/config/schema';
+import { siteConfigSchema, type SiteConfig } from '../../src/config/schema';
+import { defaultFontConfig } from '../../src/config/schema/shared';
 import { resolveDirectiveSource, resolveYoulinConfig } from '../../src/config/youlin';
 import { loadYoulinCircle, loadYoulinLinks } from '../../src/lib/youlin';
 
@@ -15,11 +16,12 @@ type FontConfig = {
 };
 
 const projectRoot = process.cwd();
+const siteConfigPath = join(projectRoot, 'site.config.toml');
+let parsedSiteConfig: SiteConfig | null | undefined;
 const cachePath = join(projectRoot, 'node_modules/.cache/sonder-font-subsets.json');
 const youlinCharsCachePath = join(projectRoot, 'node_modules/.cache/sonder-youlin-chars.json');
 const forceSubsets = process.argv.includes('--force');
 const uiCharsPath = join(projectRoot, 'scripts/fonts/ui-chars.txt');
-const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
 const fontConfig = readFontConfig();
 // 源字体只是构建期输入（可放在 public 之外）；子集产物固定写到 public/fonts 供站点引用。
 const fontBaseName = getFontBaseName(fontConfig.file);
@@ -89,27 +91,32 @@ const frontmatterKeys = new Set([
 const cjkPattern =
   /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u3000-\u303f\uff00-\uffef]/u;
 
+/** 字体与 Youlin 步骤共用一次 TOML 解析；无效配置留给 astro build 报错。 */
+function readSiteConfig(): SiteConfig | null {
+  if (parsedSiteConfig !== undefined) return parsedSiteConfig;
+  if (!existsSync(siteConfigPath)) {
+    parsedSiteConfig = null;
+    return null;
+  }
+
+  const parsed = parse(readFileSync(siteConfigPath, 'utf8')) as { config?: unknown };
+  const result = siteConfigSchema.safeParse(parsed.config ?? {});
+  if (!result.success) {
+    console.warn('Unable to read site.config.toml for font subsetting; using built-in defaults.');
+    parsedSiteConfig = null;
+    return null;
+  }
+
+  parsedSiteConfig = result.data;
+  return parsedSiteConfig;
+}
+
 function readFontConfig(): FontConfig {
-  const defaults: FontConfig = {
-    en: 'Maple Mono',
-    zh: 'ChillRoundF',
-    file: 'assets/fonts/ChillRoundFRegular.woff2',
-  };
-  const siteConfigPath = join(projectRoot, 'site.config.toml');
-
-  if (!existsSync(siteConfigPath)) return defaults;
-
-  const parsed = parse(readFileSync(siteConfigPath, 'utf8')) as {
-    config?: {
-      fonts?: Partial<Record<keyof FontConfig, unknown>>;
-    };
-  };
-  const fonts = parsed.config?.fonts ?? {};
-
+  const fonts = readSiteConfig()?.appearance.fonts;
   return {
-    en: normalizeConfigString(fonts.en, defaults.en),
-    zh: normalizeConfigString(fonts.zh, defaults.zh),
-    file: normalizeConfigString(fonts.file, defaults.file),
+    en: fonts?.en ?? defaultFontConfig.en,
+    zh: fonts?.zh ?? defaultFontConfig.zh,
+    file: fonts?.file ?? defaultFontConfig.file,
   };
 }
 
@@ -120,10 +127,6 @@ function getFontBaseName(fontPath: string) {
   const extensionIndex = fileName.lastIndexOf('.');
 
   return extensionIndex === -1 ? fileName : fileName.slice(0, extensionIndex);
-}
-
-function normalizeConfigString(value: unknown, fallback: string) {
-  return typeof value === 'string' && value.trim() ? value.trim() : fallback;
 }
 
 function resolveProjectPath(value: string) {
@@ -146,7 +149,7 @@ function resolveProjectPath(value: string) {
 function resolveSourceFontPath(value: string) {
   if (/^https?:\/\//i.test(value)) {
     throw new Error(
-      `Font subsetting needs a local font file, but config.fonts.file received a remote URL: ${value}`,
+      `Font subsetting needs a local font file, but config.appearance.fonts.file received a remote URL: ${value}`,
     );
   }
 
@@ -221,28 +224,9 @@ function collectStrings(chars: Set<string>, value: unknown): void {
   }
 }
 
-function collectFriendCircleChars(chars: Set<string>) {
-  if (!existsSync(friendCirclePath)) return;
-
-  try {
-    collectStrings(chars, JSON.parse(readFileSync(friendCirclePath, 'utf8')) as unknown);
-  } catch (error) {
-    console.warn(`Unable to collect friend-circle characters from ${friendCirclePath}:`, error);
-  }
-}
-
 function readYoulinConfig() {
-  if (!existsSync(siteConfigPath)) return null;
-
-  const parsed = parse(readFileSync(siteConfigPath, 'utf8')) as { config?: unknown };
-  const result = siteConfigSchema.safeParse(parsed.config ?? {});
-  if (!result.success) {
-    console.warn(
-      'Unable to read [config.integrations.youlin] for font subsetting; site.config.toml is invalid.',
-    );
-    return null;
-  }
-  return resolveYoulinConfig(result.data.integrations.youlin);
+  const config = readSiteConfig();
+  return config ? resolveYoulinConfig(config.integrations.youlin) : null;
 }
 
 function readYoulinCharsCache(baseUrl: string): string[] {
@@ -467,7 +451,6 @@ function writeCachedFingerprint(fingerprint: string) {
 }
 
 const chars = new Set<string>();
-const siteConfigPath = join(projectRoot, 'site.config.toml');
 
 for (const dir of sourceDirs) {
   for (const file of walkFiles(join(projectRoot, dir), sourceExtensions)) {
@@ -495,9 +478,6 @@ if (existsSync(siteConfigPath)) {
   collectCjk(chars, readFileSync(siteConfigPath, 'utf8'));
 }
 
-// The sync Action writes RSS-derived display text before this build step.
-collectFriendCircleChars(chars);
-
 // Youlin 的友链名/朋友圈标题也可能含 CJK；取不到就只用现有字符集。
 await collectYoulinChars(chars);
 
@@ -522,7 +502,7 @@ writeFileSync(contentCharsPath, `${contentCharsValue}\n`, 'utf8');
 
 if (!existsSync(sourceFontPath)) {
   throw new Error(
-    `${fontConfig.zh} source font not found. Place the full font at ${sourceFontPath}, or update config.fonts.file in site.config.toml.`,
+    `${fontConfig.zh} source font not found. Place the full font at ${sourceFontPath}, or update config.appearance.fonts.file in site.config.toml.`,
   );
 }
 

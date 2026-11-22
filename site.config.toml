@@ -37,8 +37,6 @@ buildPlatform = true
 enabled = false
 # 图床显示名称
 name = ""
-# Lucide 图标名称
-icon = ""
 
 # 作者资料；头像支持 /public 路径或远程 URL
 [config.site.profile]
