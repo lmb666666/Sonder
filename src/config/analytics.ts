@@ -8,7 +8,7 @@ import type { SiteConfig } from './schema';
  * - 这里不读取环境变量；SONDER_ANALYTICS_DISABLED 由组件在构建期处理。
  */
 
-export type AnalyticsConfig = SiteConfig['analytics'];
+export type AnalyticsConfig = SiteConfig['integrations']['analytics'];
 
 export interface ResolvedUmamiConfig {
   websiteId: string;

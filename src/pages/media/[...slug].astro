@@ -40,8 +40,8 @@ const media = Astro.props as MediaEntry;
 const { Content } = await render(media as never);
 const siteConfig = await getSiteConfig();
 const needsKatexCss =
-  siteConfig.markdown.math &&
-  siteConfig.markdown.mathRenderer === 'katex' &&
+  siteConfig.appearance.markdown.math &&
+  siteConfig.appearance.markdown.mathRenderer === 'katex' &&
   containsMath(typeof media.body === 'string' ? media.body : '');
 const i18n = getI18n(siteConfig);
 const ui = {

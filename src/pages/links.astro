@@ -29,10 +29,11 @@ if (!friendsEntry) {
 const friendLinkGroups = friendsEntry.data.groups;
 
 const siteConfig = await getSiteConfig();
-const { site, profile, pages } = siteConfig;
+const { site, pages } = siteConfig;
+const profile = site.profile;
 const pageMeta = pages.links;
 const ui = getUiText(siteConfig);
-const youlin = resolveYoulinConfig(siteConfig.youlin);
+const youlin = resolveYoulinConfig(siteConfig.integrations.youlin);
 const applyProvider = resolveApplyProvider(youlin.apply.provider, youlin.baseUrl, site.repository);
 const issueRepository = applyProvider === 'github' ? parseGitHubRepository(site.repository) : null;
 
@@ -40,7 +41,7 @@ const sourceDeps: FriendSourceDeps = {
   localGroups: friendLinkGroups,
 };
 
-const friendCircle = siteConfig.friendCircle;
+const friendCircle = siteConfig.integrations.friends;
 const circleEnabled = friendCircle.enable && friendCircle.provider !== 'none';
 const circleProvider = circleEnabled ? friendCircle.provider : null;
 const useYoulinCircle = circleProvider === 'youlin';

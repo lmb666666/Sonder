@@ -1,6 +1,10 @@
 import { getEntry } from 'astro:content';
 
-export async function getSiteConfig() {
+import type { SiteConfig } from './schema';
+
+export type { SiteConfig };
+
+export async function getSiteConfig(): Promise<SiteConfig> {
   const entry = await getEntry('siteConfig', 'config');
 
   if (!entry) {
@@ -22,13 +26,12 @@ export interface ResolvedTopNavLink {
 }
 
 export async function getTopNavLinks() {
-  const { topNav } = await getSiteConfig();
-  return resolveTopNavLinks(topNav.links);
+  const { nav } = await getSiteConfig();
+  return resolveTopNavLinks(nav.links);
 }
 
 function resolveTopNavLinks(links: TopNavLinkConfig[]): ResolvedTopNavLink[] {
   return links.flatMap((link) => (link.disabled ? [] : [{ label: link.label, href: link.href }]));
 }
 
-export type SiteConfig = Awaited<ReturnType<typeof getSiteConfig>>;
-export type SiteSearch = SiteConfig['search'];
+export type SiteSearch = SiteConfig['nav']['search'];

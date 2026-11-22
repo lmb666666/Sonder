@@ -11,7 +11,7 @@ import {
   youlinLinksUrl,
 } from './youlin';
 
-const rawConfig: SiteConfig['youlin'] = {
+const rawConfig: SiteConfig['integrations']['youlin'] = {
   baseUrl: 'https://youlin.example.com/',
   timeoutMs: 8000,
   mode: 'build',

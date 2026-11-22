@@ -106,7 +106,7 @@ function markdownTabsIntegration(): AstroIntegration {
 /**
  * 文章 Markdown 管线。
  * 提醒块、外挂指令、响应式表格始终开启（文章内容依赖它们）；
- * 数学与 Mermaid 由 site.config.toml 的 [config.markdown] 控制。
+ * 数学与 Mermaid 由 site.config.toml 的 [config.appearance.markdown] 控制。
  */
 export function getMarkdownConfig({
   math,

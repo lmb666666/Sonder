@@ -16,7 +16,8 @@ import { getUiText } from '../lib/ui-text';
 import Base from '../layouts/Base.astro';
 
 const siteConfig = await getSiteConfig();
-const { home, profile, site } = siteConfig;
+const { home, site } = siteConfig;
+const profile = site.profile;
 const ui = getUiText(siteConfig);
 
 // 侧栏统计：文章数 / 分类数 / 标签数

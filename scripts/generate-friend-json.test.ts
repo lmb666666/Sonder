@@ -6,17 +6,17 @@ describe('generate-friend-json', () => {
   test('只在启用 FCL 时生成 friend.json', () => {
     expect(
       isFclEnabled({
-        config: { friendCircle: { enable: true, provider: 'fcl' } },
+        config: { integrations: { friends: { enable: true, provider: 'fcl' } } },
       }),
     ).toBe(true);
     expect(
       isFclEnabled({
-        config: { friendCircle: { enable: false, provider: 'fcl' } },
+        config: { integrations: { friends: { enable: false, provider: 'fcl' } } },
       }),
     ).toBe(false);
     expect(
       isFclEnabled({
-        config: { friendCircle: { enable: true, provider: 'youlin' } },
+        config: { integrations: { friends: { enable: true, provider: 'youlin' } } },
       }),
     ).toBe(false);
   });

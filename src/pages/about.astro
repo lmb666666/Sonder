@@ -31,7 +31,7 @@ if (!tokenUsageEntry) {
 
 const about = aboutEntry.data;
 const siteConfig = await getSiteConfig();
-const { profile } = siteConfig;
+const profile = siteConfig.site.profile;
 const ui = getUiText(siteConfig);
 
 const contactLinks = about.contact.links;

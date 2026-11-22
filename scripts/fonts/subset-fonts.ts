@@ -238,11 +238,11 @@ function readYoulinConfig() {
   const result = siteConfigSchema.safeParse(parsed.config ?? {});
   if (!result.success) {
     console.warn(
-      'Unable to read [config.youlin] for font subsetting; site.config.toml is invalid.',
+      'Unable to read [config.integrations.youlin] for font subsetting; site.config.toml is invalid.',
     );
     return null;
   }
-  return resolveYoulinConfig(result.data.youlin);
+  return resolveYoulinConfig(result.data.integrations.youlin);
 }
 
 function readYoulinCharsCache(baseUrl: string): string[] {

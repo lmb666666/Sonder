@@ -5,7 +5,7 @@ import { withBase } from '../lib/url';
 import { sortByDateDesc } from '../lib/content-dates';
 
 export async function GET(context: APIContext) {
-  const { site, profile } = await getSiteConfig();
+  const { site } = await getSiteConfig();
   const origin = context.site ?? new URL(site.url);
   const url = (path: string) => new URL(withBase(path), origin).href;
   const posts = sortByDateDesc(await getCollection('blog', ({ data }) => !data.draft));
@@ -19,7 +19,7 @@ export async function GET(context: APIContext) {
 > ${site.description}
 
 - 站点：${url('/')}
-- 博主：${profile.name}（${profile.role}）
+- 博主：${site.profile.name}（${site.profile.role}）
 - 订阅：${url('atom.xml')}（Atom）、${url('rss.xml')}（RSS 2.0）
 - 友链订阅（OPML）：${url('opml.xml')}
 - 页面：文章 ${url('blog/')}、动态 ${url('moments')}、朋友 ${url('links')}、书影音 ${url('media')}、关于（含项目） ${url('about')}

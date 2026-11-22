@@ -18,7 +18,7 @@ sidebar:
 ---
 
 
-朋友页由三部分组成：友链分组、朋友圈聚合和友链申请。友链默认在 `src/data/friends.yml` 中维护；配置 `[config.youlin]` 后优先使用友邻接口，这份文件保留为回退数据。卡片视觉由主题组件统一渲染。
+朋友页由三部分组成：友链分组、朋友圈聚合和友链申请。友链默认在 `src/data/friends.yml` 中维护；配置 `[config.integrations.youlin]` 后优先使用友邻接口，这份文件保留为回退数据。卡片视觉由主题组件统一渲染。
 
 ## 友链分组
 
@@ -46,7 +46,7 @@ friends:
 朋友圈先打开开关并选择渠道：
 
 ```toml
-[config.friendCircle]
+[config.integrations.friends]
 # 是否显示朋友圈
 enable = true
 # fcl（Friend-Circle-Lite）| youlin（友邻）| none
@@ -54,13 +54,13 @@ provider = "fcl"
 # 每次展示条数
 pageSize = 20
 
-[config.friendCircle.fcl]
+[config.integrations.friends.fcl]
 # provider = "fcl" 时必填：FCL 的 all.json 地址
 apiUrl = "https://fcl.example.com/all.json"
 ```
 
 - `provider = "fcl"`：浏览器请求 FCL 的 `all.json`，支持 `article_data` / `link` / `created` 和 `statistical_data`。
-- `provider = "youlin"`：在 `[config.youlin]` 中填写 `baseUrl`，浏览器请求 `{baseUrl}/api/circle`。
+- `provider = "youlin"`：在 `[config.integrations.youlin]` 中填写 `baseUrl`，浏览器请求 `{baseUrl}/api/circle`。
 - `provider = "none"` 或 `enable = false`：不显示朋友圈区域。
 - FCL 实例需要允许当前站点域名跨域。
 
@@ -77,19 +77,19 @@ spider_settings:
 把友链和朋友圈交给 [友邻](https://github.com/lmb666666/youlin) 管理：
 
 ```toml
-[config.friendCircle]
+[config.integrations.friends]
 enable = true
 provider = "youlin"
 
-[config.youlin]
+[config.integrations.youlin]
 baseUrl = "https://youlin.example.com"
 # 只影响友链取数；朋友圈始终由浏览器请求
 mode = "build"
 
-[config.youlin.links]
+[config.integrations.youlin.links]
 sources = ["youlin", "local"]
 
-[config.youlin.circle]
+[config.integrations.youlin.circle]
 limit = 0
 ```
 
@@ -99,6 +99,6 @@ limit = 0
 
 默认由 `site.repository` 指向的 GitHub 仓库生成 Issue。仓库地址为空或不可解析时，申请区不会显示。提交的 Issue 通过 `friend-link` 标签归档，博主确认后把友链加入 `src/data/friends.yml`。
 
-配置 `[config.youlin].apply.provider = "youlin"`（或 `auto` + `baseUrl`）后，申请表单直接 POST 到 Youlin `/apply`，页面不跳转；开启 Turnstile 时把公开 site key 填到 `turnstileSiteKey`。文章里的 `::friend-link-application` 默认跟随全局 provider，也可以用 `provider="github"` / `provider="youlin"` 单点覆盖。
+配置 `[config.integrations.youlin].apply.provider = "youlin"`（或 `auto` + `baseUrl`）后，申请表单直接 POST 到 Youlin `/apply`，页面不跳转；开启 Turnstile 时把公开 site key 填到 `turnstileSiteKey`。文章里的 `::friend-link-application` 默认跟随全局 provider，也可以用 `provider="github"` / `provider="youlin"` 单点覆盖。
 
 朋友页的标题、kicker 和副标题在 `site.config.toml` 的 `[config.pages.links]` 中配置。

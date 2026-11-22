@@ -9,10 +9,11 @@ import { parseGitHubRepository } from '../lib/github';
  * - 这里只做纯配置计算，不发请求，便于在 astro.config、页面与字体脚本中复用。
  */
 
-export type YoulinMode = SiteConfig['youlin']['mode'];
-export type YoulinLinkSource = SiteConfig['youlin']['links']['sources'][number];
-export type YoulinApplyProvider = SiteConfig['youlin']['apply']['provider'];
-export type YoulinDirectiveSource = SiteConfig['youlin']['directives']['friendCircle'];
+export type YoulinMode = SiteConfig['integrations']['youlin']['mode'];
+export type YoulinLinkSource = SiteConfig['integrations']['youlin']['links']['sources'][number];
+export type YoulinApplyProvider = SiteConfig['integrations']['youlin']['apply']['provider'];
+export type YoulinDirectiveSource =
+  SiteConfig['integrations']['youlin']['directives']['friendCircle'];
 export type ApplyProvider = 'youlin' | 'github' | 'none';
 
 export interface ResolvedYoulinConfig {
@@ -78,7 +79,9 @@ function parseEnvMode(value: string): YoulinMode | null {
   return null;
 }
 
-export function resolveYoulinConfig(raw: SiteConfig['youlin']): ResolvedYoulinConfig {
+export function resolveYoulinConfig(
+  raw: SiteConfig['integrations']['youlin'],
+): ResolvedYoulinConfig {
   const envBase = envValue('SONDER_YOULIN_BASE_URL');
   let baseUrl = '';
 

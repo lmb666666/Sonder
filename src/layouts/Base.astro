@@ -28,7 +28,7 @@ const {
   type = 'website',
 } = Astro.props;
 const siteConfig = await getSiteConfig();
-const palette = siteConfig.theme.palette;
+const palette = siteConfig.appearance.theme.palette;
 const htmlLang = getHtmlLang(siteConfig);
 ---
 

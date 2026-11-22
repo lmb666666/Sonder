@@ -506,7 +506,7 @@ export function normalizeUiLanguage(value: string | undefined): UiLanguage {
 }
 
 export function getUiLanguage(config: SiteConfig): UiLanguage {
-  return normalizeUiLanguage(config.theme.lang);
+  return normalizeUiLanguage(config.appearance.theme.lang);
 }
 
 export function getUiText(config: SiteConfig): UiText {

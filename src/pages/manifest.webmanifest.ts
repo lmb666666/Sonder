@@ -4,8 +4,8 @@ import { getSiteConfig } from '../config';
 import { PALETTE_THEME_COLORS } from '../config/palette';
 
 export const GET: APIRoute = async () => {
-  const { site, theme } = await getSiteConfig();
-  const colors = PALETTE_THEME_COLORS[theme.palette];
+  const { site, appearance } = await getSiteConfig();
+  const colors = PALETTE_THEME_COLORS[appearance.theme.palette];
   const manifest = {
     name: site.title,
     short_name: site.title,

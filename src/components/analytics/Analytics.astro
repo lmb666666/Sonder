@@ -2,7 +2,8 @@
 import { getSiteConfig } from '../../config';
 import { resolveAnalyticsConfig } from '../../config/analytics';
 
-const { analytics } = await getSiteConfig();
+const { integrations } = await getSiteConfig();
+const analytics = integrations.analytics;
 const resolved = resolveAnalyticsConfig(analytics);
 
 // 构建期开关：本地开发默认关闭；Vercel Preview 用环境变量关闭。

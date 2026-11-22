@@ -13,7 +13,10 @@ interface Props {
 
 const { showTocIcon = false, tocItems = [] } = Astro.props;
 const siteConfig = await getSiteConfig();
-const { site, search, theme, profile } = siteConfig;
+const { site } = siteConfig;
+const search = siteConfig.nav.search;
+const theme = siteConfig.appearance.theme;
+const profile = site.profile;
 const ui = getUiText(siteConfig);
 const links = await getTopNavLinks();
 const navStyle = theme.navStyle;

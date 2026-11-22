@@ -21,9 +21,10 @@ interface FriendsFile {
 }
 
 export function isFclEnabled(value: unknown): boolean {
-  const friendCircle = (value as { config?: { friendCircle?: Record<string, unknown> } } | null)
-    ?.config?.friendCircle;
-  return friendCircle?.enable === true && friendCircle?.provider === 'fcl';
+  const friends = (
+    value as { config?: { integrations?: { friends?: Record<string, unknown> } } } | null
+  )?.config?.integrations?.friends;
+  return friends?.enable === true && friends?.provider === 'fcl';
 }
 
 export function buildFriendJson(value: unknown): { friends: [string, string, string][] } {

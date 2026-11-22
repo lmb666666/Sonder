@@ -31,7 +31,7 @@ sidebar:
 ## 配置
 
 ```toml
-[config.search]
+[config.nav.search]
 enabled = true
 placeholder = "搜索文章…"
 maxResults = 6

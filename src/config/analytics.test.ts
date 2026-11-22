@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test';
 import type { SiteConfig } from './schema';
 import { normalizeHostUrl, normalizeScriptUrl, resolveAnalyticsConfig } from './analytics';
 
-const rawConfig: SiteConfig['analytics'] = {
+const rawConfig: SiteConfig['integrations']['analytics'] = {
   sendInDev: false,
   umami: { websiteId: '', scriptUrl: '', hostUrl: '' },
   la51: { id: '', lingqueMonitorId: '' },
