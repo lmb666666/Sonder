@@ -14,10 +14,9 @@ interface Props {
   links: ContactLink[];
   label: string;
   note: string;
-  status: string;
 }
 
-const { links, label, note, status } = Astro.props;
+const { links, label, note } = Astro.props;
 
 const channels = links.map((link) => {
   const isMail = link.icon === 'mail';
@@ -37,14 +36,6 @@ const secondary = channels.filter((channel) => channel.icon !== 'mail');
 
 <div class="about-contact">
   <div class="about-contact-main">
-    {
-      status && (
-        <p class="about-contact-status">
-          <i aria-hidden="true" />
-          {status}
-        </p>
-      )
-    }
     <p class="about-contact-note">{note}</p>
     {
       email && (

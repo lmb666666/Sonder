@@ -1,11 +1,12 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { format } from 'date-fns';
 import { getSiteConfig } from '../config';
+import type { MomentItem } from '../lib/moment-types';
 import { getUiText } from '../lib/ui-text';
 import { withBase } from '../lib/url';
 import PageHero from '../components/PageHero.astro';
-import { demoMoments } from '../data/moments';
 
 const siteConfig = await getSiteConfig();
 const { site, profile } = siteConfig;
@@ -17,19 +18,14 @@ const momentClientMessages = {
   loadFailedHint: ui.moments.loadFailedHint,
   countTemplate: ui.moments.count('{count}'),
 };
-const pageMeta = (siteConfig.pages as Record<string, unknown>).moments as {
-  title: string;
-  kicker: string;
-  subtitle: string;
-  note: string;
-  apiUrl: string;
-  pageSize: number;
-  showPoweredBy: boolean;
-};
+const pageMeta = siteConfig.pages.moments;
+const localItems: MomentItem[] = (await getCollection('moments'))
+  .map((entry) => entry.data)
+  .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
 const ech0Mode = pageMeta.apiUrl.trim().length > 0;
 const pageSize = pageMeta.pageSize;
-const initialItems = ech0Mode ? [] : demoMoments;
+const initialItems = ech0Mode ? [] : localItems;
 const initialCount = Math.min(initialItems.length, pageSize);
 
 const ownerAvatar = withBase(profile.avatar);
@@ -97,12 +93,12 @@ const extensionLabels: Record<string, string> = ui.moments.extension;
                 >
                   {moment.images.slice(0, 9).map((src, imageIndex) => (
                     <a
-                      href={src}
+                      href={withBase(src)}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={ui.moments.imageAria(imageIndex + 1)}
                     >
-                      <img src={src} alt="" loading="lazy" decoding="async" />
+                      <img src={withBase(src)} alt="" loading="lazy" decoding="async" />
                     </a>
                   ))}
                 </div>
@@ -121,7 +117,7 @@ const extensionLabels: Record<string, string> = ui.moments.extension;
                 (moment.extension.url ? (
                   <a
                     class="moment__extension"
-                    href={moment.extension.url}
+                    href={withBase(moment.extension.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

@@ -1,61 +1,43 @@
 ---
-import { getCollection } from 'astro:content';
+import { getEntry } from 'astro:content';
 
 import AboutBanner from '../components/about/AboutBanner.astro';
 import AboutContact from '../components/about/AboutContact.astro';
 import AboutExperience from '../components/about/AboutExperience.astro';
-import AboutFacts from '../components/about/AboutFacts.astro';
-import AboutMapCard from '../components/about/AboutMapCard.astro';
-import AboutPhoto from '../components/about/AboutPhoto.astro';
+import AboutProfile from '../components/about/AboutProfile.astro';
 import AboutSection from '../components/about/AboutSection.astro';
-import AboutSkills from '../components/about/AboutSkills.astro';
 import AboutTechStack from '../components/about/AboutTechStack.astro';
 import AboutTokens from '../components/about/AboutTokens.astro';
 import AboutWorks from '../components/about/AboutWorks.astro';
 import { getSiteConfig } from '../config';
-import { tokenUsage } from '../data/token-usage';
 import Base from '../layouts/Base.astro';
-import { sortBlogPostsForArchive } from '../lib/content-dates';
-import type { AvatarMood } from '../lib/pixel-avatar';
-import { buildTokenCalendar, expandTokenUsage, summarizeTokenUsage } from '../lib/token-usage';
+import { expandTokenUsage, summarizeTokenUsage } from '../lib/token-usage';
 import { getUiText } from '../lib/ui-text';
+import { withBase } from '../lib/url';
 import '../styles/about.css';
 import '../styles/about-final.css';
+import '../styles/about-profile.css';
 
-import cocoaCover from '../assets/figure/covers/cover-08-cocoa.png';
-import steelCover from '../assets/figure/covers/cover-13-steel.png';
+const aboutEntry = await getEntry('about', 'about');
+const tokenUsageEntry = await getEntry('tokenUsage', 'tokenUsage');
 
-const [about] = await getCollection('about');
-
-if (!about) {
-  throw new Error('Missing src/content/about.md content entry.');
+if (!aboutEntry) {
+  throw new Error('Missing src/data/about.yml content entry.');
 }
 
+if (!tokenUsageEntry) {
+  throw new Error('Missing src/data/token-usage.yml content entry.');
+}
+
+const about = aboutEntry.data;
 const siteConfig = await getSiteConfig();
-const { home, profile } = siteConfig;
+const { profile } = siteConfig;
 const ui = getUiText(siteConfig);
 
-const projects = sortBlogPostsForArchive(
-  await getCollection('projects', ({ data }) => !data.draft),
-);
+const contactLinks = about.contact.links;
 
-const moods = (Object.entries(ui.about.avatarMoods) as [AvatarMood, string][]).map(
-  ([key, label]) => ({ key, label }),
-);
-
-const contactLinks = [
-  {
-    label: 'Bilibili',
-    icon: 'bilibili',
-    tooltip: 'https://space.bilibili.com/477296514',
-    copy: false,
-  },
-  ...home.links,
-];
-
-const tokenDays = expandTokenUsage(tokenUsage);
+const tokenDays = expandTokenUsage(tokenUsageEntry.data);
 const tokenSummary = summarizeTokenUsage(tokenDays);
-const tokenCalendar = buildTokenCalendar(tokenUsage, ui.locale);
 
 const tokenLabels = {
   today: ui.about.tokenToday,
@@ -63,76 +45,70 @@ const tokenLabels = {
   peak: ui.about.tokenPeak,
   current: ui.about.tokenCurrent,
   longest: ui.about.tokenLongest,
-  less: ui.about.tokenLess,
-  more: ui.about.tokenMore,
-  hint: ui.about.tokenHint,
-  weekdays: ui.about.tokenWeekdays,
+  range: ui.about.tokenRange,
+  dayUnit: ui.about.tokenDayUnit,
 };
 ---
 
-<Base title={about.data.title} description={about.data.description}>
+<Base title={about.title} description={about.description}>
   <main class="about-page about-final" data-pagefind-body data-about-page>
     <AboutBanner
-      name={profile.name}
-      lede={about.data.lede}
-      tags={about.data.tags}
-      location={about.data.location}
-      moods={moods}
+      title={ui.about.title}
+      tags={about.banner.tags}
+      avatar={withBase(profile.avatar)}
       avatarLabel={ui.about.avatarLabel}
-      avatarControls={ui.about.avatarControls}
     />
 
     <div class="about-final-sections">
-      <AboutSection index="01" label={ui.about.profile} title="性格、照片与位置">
-        <AboutFacts mbti={about.data.mbti} now={[]} nowLabel={ui.about.now}>
-          <AboutPhoto />
-        </AboutFacts>
-        <AboutMapCard location={about.data.location} />
-      </AboutSection>
-
-      <AboutSection index="02" label={ui.about.journey} title={ui.about.journeyTitle}>
-        <AboutExperience items={about.data.career} />
-      </AboutSection>
-
-      <AboutSection index="03" label={ui.about.skills} title={ui.about.skillsTitle}>
-        <AboutSkills levels={about.data.skillLevels} focus={about.data.focus} />
-      </AboutSection>
-
-      <AboutSection index="04" label={ui.about.tech} title={ui.about.techTitle}>
-        <AboutTechStack
-          tools={about.data.tools}
-          hint={ui.about.techHint}
-          resetLabel={ui.about.techReset}
+      <AboutSection index="01" label={ui.about.profile}>
+        <AboutProfile
+          mbti={about.profile.mbti}
+          bio={about.profile.bio}
+          location={about.profile.location}
+          status={about.profile.status}
+          school={about.profile.school}
+          photo={about.profile.photo ? withBase(about.profile.photo) : ''}
+          labels={{
+            bio: ui.about.bioLabel,
+            location: ui.about.location,
+            identity: ui.about.identity,
+            school: ui.about.school,
+            personality: ui.about.personality,
+            learnMore: ui.about.learnMore,
+            photoAlt: ui.about.photoAlt,
+          }}
         />
       </AboutSection>
 
-      <AboutSection index="05" label={ui.about.tokens} title={ui.about.tokenTitle}>
+      <AboutSection index="02" label={ui.about.journey}>
+        <AboutExperience items={about.experience} />
+      </AboutSection>
+
+      <AboutSection index="03" label={ui.about.tech}>
+        <AboutTechStack
+          tools={about.skills}
+          statement={about.techStatement}
+          resetLabel={ui.about.techReset}
+          boardLabel={ui.about.techBoardLabel}
+        />
+      </AboutSection>
+
+      <AboutSection index="04" label={ui.about.tokens}>
         <AboutTokens
-          calendar={tokenCalendar}
+          days={tokenDays}
           summary={tokenSummary}
           locale={ui.locale}
           cardTitle={ui.about.tokenCardTitle}
-          cardSubtitle={ui.about.tokenCardSubtitle}
           labels={tokenLabels}
         />
       </AboutSection>
 
-      <AboutSection
-        class="about-works-wide"
-        index="06"
-        label={ui.about.works}
-        title={ui.about.worksTitle}
-      >
-        <AboutWorks projects={projects} covers={[steelCover, cocoaCover]} />
+      <AboutSection class="about-works-wide" index="05" label={ui.about.works}>
+        <AboutWorks works={about.works} />
       </AboutSection>
 
-      <AboutSection index="07" label={ui.about.contact} title={ui.about.contactTitle}>
-        <AboutContact
-          links={contactLinks}
-          label={ui.about.contact}
-          note={ui.about.contactNote}
-          status={ui.about.contactStatus}
-        />
+      <AboutSection index="06" label={ui.about.contact}>
+        <AboutContact links={contactLinks} label={ui.about.contact} note={ui.about.contactNote} />
       </AboutSection>
     </div>
   </main>

@@ -1,0 +1,135 @@
+about:
+  title: 关于 Sonder
+  description: Sonder 的个人资料、经历和正在做的事。
+
+  banner:
+    tags:
+      - 数码科技
+      - 网络冲浪
+      - 热心帮助
+
+  profile:
+    bio:
+      - 我是 Sonder，一个还在读书的博主。
+      - 平时写博客、折腾网站，也剪点视频。对数码科技和网络上的新东西一直很好奇。
+    location: 北京
+    status: 在读高中生
+    school: ''
+    photo: /images/about-selfie-placeholder.webp
+    mbti:
+      type: INFP
+      label: 调停者
+      quote: 真金未必璀璨，徘徊之人未必迷失。
+      quoteAuthor: J·R·R·托尔金
+      image: /images/about-mbti.webp
+      link: https://www.16personalities.com/ch/infp-%E4%BA%BA%E6%A0%BC
+      linkText: 了解更多
+
+  experience:
+    - track: study
+      start: 2016
+      end: 2025
+      period: 2016 — 2025
+      title: 九年义务教育
+    - track: study
+      start: 2025
+      end: 2026
+      period: 2025 — 至今
+      title: 高中
+      current: true
+
+  techStatement: |-
+    Astro、Bun
+    和 TypeScript。
+    写作靠 Markdown。
+
+  skills:
+    - name: Astro
+      note: 静态构建
+      short: A
+      color: '#c17850'
+      text: dark
+    - name: Bun
+      note: 运行时
+      short: B
+      color: '#bd9158'
+      text: dark
+    - name: TypeScript
+      note: 类型与组件
+      short: TS
+      color: '#557f9d'
+    - name: Markdown
+      note: 写作格式
+      short: MD
+      color: '#6f8165'
+    - name: CSS
+      note: 纸面与排版
+      short: CSS
+      color: '#a66d7d'
+    - name: Git
+      note: 版本与发布
+      short: GIT
+      color: '#686b70'
+    - name: Node.js
+      note: 接口与脚本
+      short: N
+      color: '#5b7c5a'
+    - name: Vite
+      note: 构建工具
+      short: V
+      color: '#8b6fb0'
+    - name: SQLite
+      note: 本地数据
+      short: DB
+      color: '#527f8a'
+    - name: Vercel
+      note: 部署
+      short: VC
+      color: '#2f3430'
+    - name: Figma
+      note: 界面草图
+      short: F
+      color: '#b65c5c'
+    - name: Docker
+      note: 容器部署
+      short: DK
+      color: '#4f7fa3'
+
+  works:
+    - title: Youlin
+      description: 自托管的友链与朋友圈服务。
+      date: 2026-10-20
+      tags:
+        - Hono
+        - SQLite
+        - Docker
+      cover: /images/about-work-youlin.png
+      links:
+        - label: 网站
+          href: https://youlin.liang.one
+    - title: Sonder
+      description: 纸面质感的个人出版物模板。
+      date: 2026-05-18
+      tags:
+        - Astro
+        - Sonder
+        - Template
+      cover: /images/about-work-sonder.png
+      links:
+        - label: GitHub
+          href: https://github.com/lmb666666/Sonder
+
+  contact:
+    links:
+      - label: GitHub
+        icon: github
+        tooltip: https://github.com/lmb666666/Sonder
+        copy: false
+      - label: Email
+        icon: mail
+        tooltip: hello@sonder.liang.one
+        copy: true
+      - label: Bilibili
+        icon: bilibili
+        tooltip: https://example.com
+        copy: false

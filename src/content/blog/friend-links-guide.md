@@ -18,24 +18,19 @@ sidebar:
 ---
 
 
-朋友页由三部分组成：友链分组、朋友圈聚合和友链申请。友链默认在 `src/data/friends.ts` 中维护；配置 `[config.youlin]` 后优先使用友邻接口，这份文件保留为回退数据。卡片视觉由主题组件统一渲染。
+朋友页由三部分组成：友链分组、朋友圈聚合和友链申请。友链默认在 `src/data/friends.yml` 中维护；配置 `[config.youlin]` 后优先使用友邻接口，这份文件保留为回退数据。卡片视觉由主题组件统一渲染。
 
 ## 友链分组
 
-```ts
-export const friendLinkGroups = [
-  {
-    title: '技术伙伴',
-    description: '写代码的人，和他们的博客。',
-    items: [
-      {
-        name: '一叶之秋',
-        url: 'https://example.com/blog',
-        bio: '示例友链：记录折腾与思考',
-      },
-    ],
-  },
-];
+```yaml
+friends:
+  groups:
+    - title: 技术伙伴
+      description: 写代码的人，和他们的博客。
+      items:
+        - name: 一叶之秋
+          url: https://example.com/blog
+          bio: 示例友链：记录折腾与思考
 ```
 
 每项支持 `name`、`url`、`bio`、`avatar`、`rss` 和 `sticky`。没有头像时，卡片会使用名称首字母作为占位。
@@ -84,7 +79,7 @@ sources = ["youlin", "friendcircle", "public", "rss", "demo"]
 
 ## 友链申请
 
-默认由 `site.repository` 指向的 GitHub 仓库生成 Issue。仓库地址为空或不可解析时，申请区不会显示。提交的 Issue 通过 `friend-link` 标签归档，博主确认后把友链加入 `src/data/friends.ts`。
+默认由 `site.repository` 指向的 GitHub 仓库生成 Issue。仓库地址为空或不可解析时，申请区不会显示。提交的 Issue 通过 `friend-link` 标签归档，博主确认后把友链加入 `src/data/friends.yml`。
 
 配置 `[config.youlin].apply.provider = "youlin"`（或 `auto` + `baseUrl`）后，申请表单直接 POST 到 Youlin `/apply`，页面不跳转；开启 Turnstile 时把公开 site key 填到 `turnstileSiteKey`。文章里的 `::friend-link-application` 默认跟随全局 provider，也可以用 `provider="github"` / `provider="youlin"` 单点覆盖。
 

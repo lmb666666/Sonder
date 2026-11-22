@@ -106,7 +106,7 @@ timeoutMs = 8000
 mode = "build"
 
 [config.youlin.links]
-# 依次尝试：youlin（/api/links）-> local（src/data/friends.ts）
+# 依次尝试：youlin（/api/links）-> local（src/data/friends.yml）
 # 把 local 放前面即可强制使用本地数据。
 sources = ["youlin", "local"]
 # 只取 Youlin 的某个分组，对应 /api/links?group=

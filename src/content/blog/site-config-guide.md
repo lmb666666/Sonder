@@ -36,7 +36,7 @@ role = "写博客的人"
 avatar = "/images/logo.svg"
 ```
 
-页脚与桌面首页署名读取 `profile.name`；站点程序名读取 `siteInfo.program`。
+页脚与桌面首页署名读取 `profile.name`；站点程序名读取 `siteInfo.program`。关于页的自拍照、资料、作品和联系方式都在 `src/data/about.yml` 中维护；`home.links` 只用于首页联系卡。
 
 ## 站点信息卡
 
@@ -229,4 +229,4 @@ mermaid = true
 
 ## 页面与集合
 
-书影音、动态、朋友页都是普通页面加内容集合，不需要注册：删除 `src/pages/media/` 与 `src/content/media/` 即移除书影音，导航项同步从 `site.config.toml` 删除。项目卡片直接读取 `src/content/projects/`，由关于页展示；没有独立项目页。短记录统一使用 `/moments`。
+书影音、动态、朋友页都是普通页面加内容集合，不需要注册：删除 `src/pages/media/` 与 `src/content/media/` 即移除书影音，导航项同步从 `site.config.toml` 删除。项目卡片读取 `src/data/about.yml` 的 `works`，由关于页展示；没有独立项目页。短记录统一使用 `/moments`。

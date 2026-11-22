@@ -127,7 +127,6 @@ export function initTechPhysics(
   let drag: DragState | null = null;
   let resizeFrame = 0;
   let activated = false;
-  let settleDeadline = Number.POSITIVE_INFINITY;
 
   const measure = () => {
     width = board.clientWidth;
@@ -145,16 +144,31 @@ export function initTechPhysics(
 
   const wakeAll = () => bodies.forEach(wake);
 
-  const freezeAll = () => {
-    bodies.forEach((body) => {
-      if (body.dragging) return;
-      body.vx = 0;
-      body.vy = 0;
-      body.va = 0;
-      body.sleeping = true;
-      renderBody(body);
-    });
-    idleFrames = 0;
+  const confine = (body: PhysicsBody) => {
+    const extent = projectedExtents(body);
+    const inset = 3;
+    const minX = Math.min(width / 2, extent.x + inset);
+    const maxX = Math.max(width / 2, width - extent.x - inset);
+    const minY = Math.min(height / 2, extent.y + inset);
+    const maxY = Math.max(height / 2, height - extent.y - inset);
+
+    if (body.x < minX) {
+      body.x = minX;
+      if (body.vx < 0) body.vx = 0;
+    } else if (body.x > maxX) {
+      body.x = maxX;
+      if (body.vx > 0) body.vx = 0;
+    }
+
+    if (body.y < minY) {
+      if (body.vy <= 0) {
+        body.y = minY;
+        body.vy = 0;
+      }
+    } else if (body.y > maxY) {
+      body.y = maxY;
+      if (body.vy > 0) body.vy = 0;
+    }
   };
 
   const resetLayout = () => {
@@ -181,25 +195,28 @@ export function initTechPhysics(
       body.y = cursorY - body.h / 2;
       cursorX += body.w + gap;
       rowHeight = Math.max(rowHeight, body.h);
+      confine(body);
       renderBody(body);
     });
     idleFrames = 0;
-    settleDeadline = performance.now() + 900;
   };
 
   const drop = () => {
     measure();
     const margin = 16;
-    const usable = Math.max(1, width - margin * 2);
     elapsed = 0;
     idleFrames = 0;
-    settleDeadline = performance.now() + 3200;
+    drag = null;
     bodies.forEach((body, index) => {
+      body.el.classList.remove('is-dragging');
       body.vx = ((index % 3) - 1) * 28;
       body.vy = 0;
       body.va = 0;
       body.angle = ((index % 5) - 2) * 0.08;
-      body.x = margin + ((index * 137 + 31) % usable);
+      const extent = projectedExtents(body);
+      const minX = Math.min(width / 2, extent.x + margin);
+      const maxX = Math.max(width / 2, width - extent.x - margin);
+      body.x = minX + ((index * 137 + 31) % Math.max(1, maxX - minX));
       body.y = -body.h / 2 - (index % 5) * 38 - 24;
       body.dropDelay = index * 0.045;
       body.dragging = false;
@@ -237,7 +254,6 @@ export function initTechPhysics(
   };
 
   const collide = (a: PhysicsBody, b: PhysicsBody) => {
-    if (a.sleeping && b.sleeping) return;
     if (a.y < -a.h || b.y < -b.h) return;
     const [a0, a1] = capsuleEnds(a);
     const [b0, b1] = capsuleEnds(b);
@@ -245,8 +261,10 @@ export function initTechPhysics(
     let nx = pb.x - pa.x;
     let ny = pb.y - pa.y;
     let distance = Math.hypot(nx, ny);
-    const minDistance = a.h / 2 + b.h / 2;
+    const minDistance = a.h / 2 + b.h / 2 - 0.5;
     if (distance >= minDistance) return;
+    wake(a);
+    wake(b);
 
     if (distance < 0.001) {
       nx = b.x - a.x;
@@ -279,11 +297,6 @@ export function initTechPhysics(
 
   const step = (time: number) => {
     raf = 0;
-    if (!drag && performance.now() > settleDeadline) {
-      freezeAll();
-      lastTime = 0;
-      return;
-    }
     if (!lastTime) lastTime = time;
     const dt = Math.min((time - lastTime) / 1000, 0.025);
     lastTime = time;
@@ -300,9 +313,10 @@ export function initTechPhysics(
         body.va *= Math.pow(0.986, 60 * subDt);
         body.x += body.vx * subDt;
         body.y += body.vy * subDt;
-        body.angle = clamp(body.angle + body.va * subDt, -0.44, 0.44);
+        body.angle = clamp(body.angle + body.va * subDt, -0.28, 0.28);
         body.va = clamp(body.va, -3.2, 3.2);
         wall(body);
+        confine(body);
       }
 
       for (let pass = 0; pass < 2; pass += 1) {
@@ -316,12 +330,16 @@ export function initTechPhysics(
           }
         }
       }
+
+      bodies.forEach(confine);
     }
 
     bodies.forEach((body) => {
       if (!body.sleeping && !body.dragging && elapsed > body.dropDelay) {
         const speed = Math.hypot(body.vx, body.vy);
-        if (speed < 14 && Math.abs(body.va) < 0.025) {
+        const extent = projectedExtents(body);
+        const onBoard = body.y + extent.y > 0 && body.y - extent.y < height;
+        if (onBoard && speed < 14 && Math.abs(body.va) < 0.025) {
           body.restFrames += 1;
           if (body.restFrames > 16) {
             body.sleeping = true;
@@ -377,7 +395,6 @@ export function initTechPhysics(
     const body = bodies[index];
     if (!body) return;
     wakeAll();
-    settleDeadline = Number.POSITIVE_INFINITY;
     const rect = board.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
@@ -416,7 +433,7 @@ export function initTechPhysics(
     body.vx = clamp((body.x - (drag.lastX - drag.offsetX)) / dt, -1800, 1800);
     body.vy = clamp((body.y - (drag.lastY - drag.offsetY)) / dt, -1800, 1800);
     body.angle += (body.x - (drag.lastX - drag.offsetX)) * 0.0016;
-    body.angle = clamp(body.angle, -0.44, 0.44);
+    body.angle = clamp(body.angle, -0.28, 0.28);
     drag.lastX = body.x + drag.offsetX;
     drag.lastY = body.y + drag.offsetY;
     drag.lastTime = event.timeStamp;
@@ -429,7 +446,6 @@ export function initTechPhysics(
     drag.body.dragging = false;
     pillEls.forEach((pill) => pill.classList.remove('is-dragging'));
     drag = null;
-    settleDeadline = performance.now() + 2200;
     start();
   };
 
@@ -453,7 +469,6 @@ export function initTechPhysics(
     body.vx = vector.x * 4;
     body.vy = vector.y * 4;
     wake(body);
-    settleDeadline = performance.now() + 1800;
     renderBody(body);
     start();
   };
@@ -512,8 +527,11 @@ export function initTechPhysics(
     resetButton?.addEventListener(
       'click',
       () => {
-        resetLayout();
-        if (!reducedMotion) start();
+        if (reducedMotion) {
+          resetLayout();
+        } else {
+          drop();
+        }
       },
       { signal: controller.signal },
     );

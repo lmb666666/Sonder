@@ -2,11 +2,11 @@
 import { withBase } from '../../lib/url';
 
 interface Props {
-  src?: string;
-  alt?: string;
+  src: string;
+  alt: string;
 }
 
-const { src = '/images/about-selfie-placeholder.svg', alt = '自拍照' } = Astro.props;
+const { src, alt } = Astro.props;
 ---
 
 <figure class="about-photo-card">

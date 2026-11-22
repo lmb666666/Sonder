@@ -1,56 +1,64 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import type { ImageMetadata } from 'astro';
 import { ArrowUpRight } from 'lucide-astro';
 
+import { withBase } from '../../lib/url';
 import SmartImage from '../SmartImage.astro';
 
-interface Props {
-  projects: CollectionEntry<'projects'>[];
-  covers: (ImageMetadata | string)[];
+interface Work {
+  title: string;
+  description?: string;
+  date: Date;
+  tags?: string[];
+  cover?: string;
+  links?: { href: string }[];
 }
 
-const { projects, covers } = Astro.props;
+interface Props {
+  works: Work[];
+}
+
+const { works } = Astro.props;
 ---
 
 {
-  projects.length > 0 && (
+  works.length > 0 && (
     <ol class="about-works">
-      {projects.map((project, projectIndex) => {
-        const link = project.data.links[0]?.href;
-        const year = project.data.date.getFullYear();
-        const cover = covers[projectIndex % covers.length] ?? covers[0];
+      {works.map((work, workIndex) => {
+        const link = work.links?.[0]?.href;
+        const href = link ? withBase(link) : undefined;
+        const year = work.date.getFullYear();
+        const cover = work.cover ? withBase(work.cover) : '';
         return (
           <li>
             <a
               class="about-work"
-              href={link}
-              target={link?.startsWith('http') ? '_blank' : undefined}
-              rel={link?.startsWith('http') ? 'noreferrer' : undefined}
+              href={href}
+              target={href?.startsWith('http') ? '_blank' : undefined}
+              rel={href?.startsWith('http') ? 'noreferrer' : undefined}
             >
-              <span class="about-work-index" aria-hidden="true">
-                {String(projectIndex + 1).padStart(2, '0')}
-              </span>
               {cover && (
                 <span class="about-work-cover" aria-hidden="true">
                   <SmartImage
                     src={cover}
                     alt=""
-                    widths={[240, 480]}
-                    sizes="(max-width: 760px) 90px, 148px"
+                    widths={[200, 400]}
+                    sizes="(max-width: 420px) 80px, (max-width: 760px) 96px, 132px"
                     loading="lazy"
                   />
                 </span>
               )}
               <span class="about-work-body">
                 <span class="about-work-meta">
+                  <span class="about-work-index" aria-hidden="true">
+                    {String(workIndex + 1).padStart(2, '0')}
+                  </span>
                   <span>{year}</span>
-                  {project.data.tags.length > 0 && (
-                    <span>{project.data.tags.slice(0, 3).join(' / ')}</span>
+                  {work.tags && work.tags.length > 0 && (
+                    <span>{work.tags.slice(0, 3).join(' / ')}</span>
                   )}
                 </span>
-                <strong>{project.data.title}</strong>
-                <span class="about-work-description">{project.data.description}</span>
+                <strong>{work.title}</strong>
+                <span class="about-work-description">{work.description}</span>
               </span>
               <span class="about-work-arrow" aria-hidden="true">
                 <ArrowUpRight size={18} strokeWidth={1.6} />

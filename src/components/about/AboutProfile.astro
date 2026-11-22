@@ -1,0 +1,134 @@
+---
+import { ArrowUpRight, MapPin, School, UserRound } from 'lucide-astro';
+
+import { withBase } from '../../lib/url';
+import AboutPhoto from './AboutPhoto.astro';
+
+interface Mbti {
+  type: string;
+  label: string;
+  quote?: string;
+  quoteAuthor?: string;
+  image?: string;
+  link?: string;
+  linkText?: string;
+}
+
+interface ProfileLabels {
+  bio: string;
+  location: string;
+  identity: string;
+  school: string;
+  personality: string;
+  learnMore: string;
+  photoAlt: string;
+}
+
+interface Props {
+  mbti?: Mbti;
+  bio: string[];
+  location: string;
+  status?: string;
+  school?: string;
+  photo?: string;
+  labels: ProfileLabels;
+}
+
+const { mbti, bio, location, status, school, photo, labels } = Astro.props;
+---
+
+<div class="about-profile-bento">
+  <section class="profile-card profile-main">
+    <div class="profile-about-block">
+      <p class="profile-card-tips">{labels.bio}</p>
+      {
+        bio.length > 0 && (
+          <div class="profile-bio">
+            {bio.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
+        )
+      }
+    </div>
+
+    <div class="profile-facts-block">
+      <dl class="profile-facts">
+        <div>
+          <span class="profile-fact-icon" aria-hidden="true">
+            <MapPin size={14} strokeWidth={1.8} />
+          </span>
+          <div class="profile-fact-copy">
+            <dt>{labels.location}</dt>
+            <dd>{location}</dd>
+          </div>
+        </div>
+        {
+          status && (
+            <div>
+              <span class="profile-fact-icon" aria-hidden="true">
+                <UserRound size={14} strokeWidth={1.8} />
+              </span>
+              <div class="profile-fact-copy">
+                <dt>{labels.identity}</dt>
+                <dd>{status}</dd>
+              </div>
+            </div>
+          )
+        }
+        {
+          school && (
+            <div>
+              <span class="profile-fact-icon" aria-hidden="true">
+                <School size={14} strokeWidth={1.8} />
+              </span>
+              <div class="profile-fact-copy">
+                <dt>{labels.school}</dt>
+                <dd>{school}</dd>
+              </div>
+            </div>
+          )
+        }
+      </dl>
+    </div>
+
+    {
+      mbti && (
+        <div class="profile-personality">
+          <div class="profile-personality-copy">
+            <p class="profile-card-tips">{labels.personality}</p>
+            <div class="profile-heading">
+              <p class="profile-type">{mbti.type}</p>
+              <p class="profile-label">{mbti.label}</p>
+            </div>
+            {mbti.quote && (
+              <blockquote>
+                {mbti.quote}
+                {mbti.quoteAuthor && <cite>——{mbti.quoteAuthor}</cite>}
+              </blockquote>
+            )}
+            {mbti.link && (
+              <a href={mbti.link} target="_blank" rel="noreferrer">
+                {mbti.linkText || labels.learnMore}
+                <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+              </a>
+            )}
+          </div>
+          {mbti.image && (
+            <figure class="profile-personality-art">
+              <img src={withBase(mbti.image)} alt={`${mbti.type} ${mbti.label}`} loading="lazy" />
+            </figure>
+          )}
+        </div>
+      )
+    }
+  </section>
+
+  {
+    photo && (
+      <div class="profile-card profile-photo-card">
+        <AboutPhoto src={photo} alt={labels.photoAlt} />
+      </div>
+    )
+  }
+</div>

@@ -1,0 +1,279 @@
+/* Profile: one merged info card + an article-style selfie card */
+.about-profile-bento {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  align-items: stretch;
+}
+
+.profile-card {
+  min-width: 0;
+  border: 1px solid var(--paper-line);
+  background: var(--paper-surface);
+}
+
+.profile-main {
+  display: grid;
+  grid-column: span 7;
+  gap: clamp(20px, 2.6vw, 28px);
+  align-content: start;
+  padding: clamp(24px, 3vw, 32px);
+  border-radius: 22px;
+}
+
+.profile-card-tips {
+  margin: 0 0 12px;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.profile-personality {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px;
+  gap: clamp(16px, 2vw, 24px);
+  align-items: center;
+}
+
+.profile-personality-copy {
+  min-width: 0;
+}
+
+.profile-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.profile-type {
+  margin: 0;
+  color: var(--paper-accent-text);
+  font-family: var(--about-display);
+  font-size: clamp(3.2rem, 4.4vw, 4.2rem);
+  font-weight: 400;
+  line-height: 0.9;
+}
+
+.profile-label {
+  margin: 0;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.62rem;
+  line-height: 1.4;
+}
+
+.profile-personality blockquote {
+  max-width: 28ch;
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+  color: var(--paper-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.profile-personality blockquote cite {
+  display: block;
+  margin-top: 4px;
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.52rem;
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.profile-personality a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  margin-top: 14px;
+  color: var(--paper-accent-text);
+  font-family: var(--font-meta);
+  font-size: 0.56rem;
+  text-decoration: none;
+}
+
+.profile-personality-art {
+  justify-self: center;
+  width: 100%;
+  max-width: 160px;
+  margin: 0;
+}
+
+.profile-personality-art img {
+  display: block;
+  width: 100%;
+  max-height: 210px;
+  object-fit: contain;
+}
+
+.profile-facts-block,
+.profile-about-block {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+
+.profile-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 32px;
+  margin: 0;
+}
+
+.profile-facts > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.profile-fact-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--paper-surface-muted);
+  color: var(--paper-accent-text);
+}
+
+.profile-fact-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-fact-copy {
+  display: grid;
+  gap: 1px;
+}
+
+.profile-facts dt {
+  color: var(--paper-ink-faint);
+  font-family: var(--font-meta);
+  font-size: 0.58rem;
+  line-height: 1.4;
+}
+
+.profile-facts dd {
+  margin: 0;
+  color: var(--paper-ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.profile-bio {
+  display: grid;
+  gap: 8px;
+  max-width: 54ch;
+  color: var(--paper-ink-soft);
+  font-size: 0.94rem;
+  line-height: 1.85;
+}
+
+.profile-bio p {
+  margin: 0;
+}
+
+/* Match the article-list media card outer frame: 2px ring + 24px radius. */
+.profile-photo-card {
+  grid-column: span 5;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 24px;
+  background: var(--paper-surface-muted);
+  box-shadow: 0 0 0 2px var(--paper-line-strong);
+}
+
+.profile-photo-card .about-photo-card {
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+
+.profile-photo-card .about-photo-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.profile-photo-card .about-photo-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+:root[data-theme='dark'] .profile-photo-card {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--paper-line-strong) 46%, var(--paper-bg));
+}
+
+@media (max-width: 1000px) {
+  .profile-personality {
+    grid-template-columns: minmax(0, 1fr) 130px;
+  }
+
+  .profile-type {
+    font-size: clamp(2.8rem, 5vw, 3.4rem);
+  }
+
+  .profile-facts {
+    gap: 10px 20px;
+  }
+}
+
+@media (max-width: 760px) {
+  .about-profile-bento {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-main,
+  .profile-photo-card {
+    grid-column: auto;
+  }
+
+  .profile-main {
+    padding: 22px;
+  }
+
+  .profile-personality {
+    grid-template-columns: minmax(0, 1fr) 104px;
+    gap: 14px;
+  }
+
+  .profile-personality-art {
+    max-width: 104px;
+  }
+
+  .profile-personality-art img {
+    max-height: 150px;
+  }
+
+  .profile-type {
+    font-size: clamp(2.8rem, 14vw, 3.4rem);
+  }
+
+  .profile-facts {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .profile-photo-card {
+    aspect-ratio: 16 / 9;
+    border-radius: 18px;
+  }
+}

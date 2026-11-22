@@ -1,17 +1,24 @@
+import { getEntry } from 'astro:content';
 import { getSiteConfig } from '../config';
 import { resolveYoulinConfig } from '../config/youlin';
-import { friendLinkGroups } from '../data/friends';
 import { isPlaceholderFeed } from '../lib/friend-data';
 import { resolveFriendLinkGroups } from '../lib/friend-sources';
 import { escapeXml } from '../lib/xml';
 import { withBase } from '../lib/url';
 
 export async function GET(context) {
+  const friendsEntry = await getEntry('friends', 'friends');
+  if (!friendsEntry) {
+    throw new Error('Missing src/data/friends.yml content entry.');
+  }
+
   const siteConfig = await getSiteConfig();
   const { site } = siteConfig;
   const origin = context.site ?? new URL(site.url);
   const youlin = resolveYoulinConfig(siteConfig.youlin);
-  const resolved = await resolveFriendLinkGroups(youlin, { localGroups: friendLinkGroups });
+  const resolved = await resolveFriendLinkGroups(youlin, {
+    localGroups: friendsEntry.data.groups,
+  });
 
   for (const error of resolved.errors) {
     console.warn(`[sonder friends] ${error}`);

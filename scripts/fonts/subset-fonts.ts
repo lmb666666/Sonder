@@ -63,14 +63,19 @@ const sourceDirs = [
   'src/data',
   'src/plugins',
 ];
-const contentFrontmatterDirs = [
-  `${contentRoot}/blog`,
-  `${contentRoot}/projects`,
-  `${contentRoot}/media`,
-];
+const contentFrontmatterDirs = [`${contentRoot}/blog`, `${contentRoot}/media`];
 const lightweightContentDirs = [`${contentRoot}/media`];
-const lightweightContentFiles = [`${contentRoot}/about.md`];
-const sourceExtensions = new Set(['.astro', '.ts', '.js', '.mjs', '.cjs', '.json', '.toml']);
+const sourceExtensions = new Set([
+  '.astro',
+  '.ts',
+  '.js',
+  '.mjs',
+  '.cjs',
+  '.json',
+  '.toml',
+  '.yml',
+  '.yaml',
+]);
 const frontmatterExtensions = new Set(['.md']);
 const frontmatterKeys = new Set([
   'title',
@@ -484,11 +489,6 @@ for (const dir of lightweightContentDirs) {
   for (const file of walkFiles(join(projectRoot, dir), frontmatterExtensions)) {
     collectCjk(chars, readFileSync(file, 'utf8'));
   }
-}
-
-for (const file of lightweightContentFiles) {
-  const path = join(projectRoot, file);
-  if (existsSync(path)) collectCjk(chars, readFileSync(path, 'utf8'));
 }
 
 // 站点配置在根目录，不属于任何 src 目录：页脚版权、首页介绍等文案都来自这里。

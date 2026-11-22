@@ -44,5 +44,52 @@ const htmlLang = getHtmlLang(siteConfig);
     <slot name="after-content" />
     <ScrollToTopButton />
     <slot name="footer"><Footer /></slot>
+    <script>
+      import { initAvatarDock } from '../lib/avatar-dock';
+
+      let cleanup: (() => void) | undefined;
+      let booted = false;
+
+      const boot = () => {
+        if (booted) return;
+        booted = true;
+        cleanup = initAvatarDock();
+      };
+
+      document.addEventListener('astro:before-swap', () => {
+        cleanup?.();
+        cleanup = undefined;
+        booted = false;
+      });
+      document.addEventListener('astro:page-load', boot);
+
+      const homePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') || '/';
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      // 头像入栏后才是首页链接；在首页点击时平滑回顶，而不是重新加载页面
+      document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const link = event.target.closest('a[data-avatar-target]');
+        if (!link) return;
+        const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+        if (currentPath !== homePath) return;
+        event.preventDefault();
+        window.scrollTo({ top: 0, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+      });
+
+      const mobileQuery = window.matchMedia('(max-width: 720px)');
+      mobileQuery.addEventListener('change', () => {
+        cleanup?.();
+        cleanup = undefined;
+        booted = false;
+        boot();
+      });
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot, { once: true });
+      } else {
+        boot();
+      }
+    </script>
   </body>
 </html>

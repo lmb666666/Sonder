@@ -153,11 +153,6 @@ const defaultPagesConfig = {
     metadataSeparator: '·',
     coverImageStyle: 'card',
     listLayout: 'rows',
-    categories: {
-      kicker: 'Browse notes',
-      subtitle: '',
-      note: 'A quiet index of recurring topics, gathered from article frontmatter.',
-    },
   },
   media: {
     title: 'Media',
@@ -274,14 +269,6 @@ const blogPageSchema = z.object({
     .optional()
     .default(defaultPagesConfig.blog.coverImageStyle),
   listLayout: z.enum(['rows', 'media']).optional().default(defaultPagesConfig.blog.listLayout),
-  categories: z
-    .object({
-      kicker: z.string().optional().default(defaultPagesConfig.blog.categories.kicker),
-      subtitle: z.string().optional().default(defaultPagesConfig.blog.categories.subtitle),
-      note: z.string().optional().default(defaultPagesConfig.blog.categories.note),
-    })
-    .optional()
-    .default(defaultPagesConfig.blog.categories),
 });
 
 const mediaPageSchema = z.object({

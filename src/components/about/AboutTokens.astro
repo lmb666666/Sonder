@@ -1,86 +1,59 @@
 ---
-import { format } from 'date-fns';
-
-import type { TokenCalendar, TokenSummary } from '../../lib/token-usage';
+import type { TokenDay, TokenSummary } from '../../lib/token-usage';
 import { formatCount } from '../../lib/word-count';
 
 interface Props {
-  calendar: TokenCalendar;
+  days: TokenDay[];
   summary: TokenSummary;
   locale: string;
   cardTitle: string;
-  cardSubtitle: string;
   labels: {
     today: string;
     total: string;
     peak: string;
     current: string;
     longest: string;
-    less: string;
-    more: string;
-    hint: string;
-    weekdays: string[];
+    range: string;
+    dayUnit: string;
   };
 }
 
-const { calendar, summary, locale, cardTitle, cardSubtitle, labels } = Astro.props;
+const { days, summary, locale, cardTitle, labels } = Astro.props;
 
-const dayLabel = (index: number) =>
-  index === 1
-    ? (labels.weekdays[0] ?? '')
-    : index === 3
-      ? (labels.weekdays[1] ?? '')
-      : index === 5
-        ? (labels.weekdays[2] ?? '')
-        : '';
-
+const rangeDays = days.slice(-30);
 const compact = (value: number) => formatCount(value, locale);
-const peakDate = summary.peak ? format(summary.peak.date, 'M/d') : '';
-const dayUnit = locale.startsWith('zh') ? '天' : 'days';
+const peakDate = summary.peak
+  ? new Intl.DateTimeFormat(locale, { month: 'numeric', day: 'numeric' }).format(summary.peak.date)
+  : '';
+const dateFormatter = new Intl.DateTimeFormat(locale, { month: 'numeric', day: 'numeric' });
+const startLabel = rangeDays[0] ? dateFormatter.format(rangeDays[0].date) : '';
+const endLabel = rangeDays[rangeDays.length - 1]
+  ? dateFormatter.format(rangeDays[rangeDays.length - 1]!.date)
+  : '';
+const rangeLabel = labels.range.replace('{count}', String(rangeDays.length));
+const maxTokens = Math.max(1, ...rangeDays.map((day) => day.tokens));
+const barHeight = (tokens: number) => Math.max(4, Math.round((tokens / maxTokens) * 100));
 ---
 
 {
-  calendar.weeks.length > 0 && (
-    <article class="about-token-card" aria-labelledby="about-token-title">
-      <header class="about-token-head">
-        <div>
-          <h3 id="about-token-title">{cardTitle}</h3>
-          <p>{cardSubtitle}</p>
-        </div>
-      </header>
+  rangeDays.length > 0 && (
+    <article class="about-token-card" aria-label={cardTitle} data-token-card>
+      <div class="about-token-range-head">
+        <p>{rangeLabel}</p>
+        <span>
+          {startLabel} — {endLabel}
+        </span>
+      </div>
 
-      <div class="about-token-chart" aria-label={cardTitle}>
-        <div class="about-token-daylabels" aria-hidden="true">
-          {Array.from({ length: 7 }, (_, dayIndex) => (
-            <span>{dayLabel(dayIndex)}</span>
-          ))}
-        </div>
-        <div class="about-token-scroll">
-          <div class="about-token-calendar" style={`--token-weeks:${calendar.weeks.length}`}>
-            <div class="about-token-months" aria-hidden="true">
-              {calendar.months.map((month) => (
-                <span style={`grid-column:span ${month.span}`}>{month.label}</span>
-              ))}
-            </div>
-            <div class="about-token-weeks" aria-hidden="true">
-              {calendar.weeks.map((week) => (
-                <div class="about-token-week">
-                  {week.days.map((day) => (
-                    <span
-                      class="about-token-cell"
-                      data-level={day.future ? 0 : day.level}
-                      data-future={day.future ? 'true' : undefined}
-                      title={
-                        day.future ? undefined : `${day.dateKey} · ${compact(day.tokens)} tokens`
-                      }
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <p class="about-token-hint">{labels.hint}</p>
+      <div class="about-token-bars" aria-label={`${rangeLabel} ${startLabel} — ${endLabel}`}>
+        {rangeDays.map((day) => (
+          <span
+            class="about-token-bar"
+            data-level={day.level}
+            style={`--token-height:${barHeight(day.tokens)}%`}
+            title={`${day.dateKey} · ${compact(day.tokens)} tokens`}
+          />
+        ))}
       </div>
 
       <dl class="about-token-stats">
@@ -100,24 +73,14 @@ const dayUnit = locale.startsWith('zh') ? '天' : 'days';
         <div>
           <dt>{labels.current}</dt>
           <dd>{summary.currentStreak}</dd>
-          <small>{dayUnit}</small>
+          <small>{labels.dayUnit}</small>
         </div>
         <div>
           <dt>{labels.longest}</dt>
           <dd>{summary.longestStreak}</dd>
-          <small>{dayUnit}</small>
+          <small>{labels.dayUnit}</small>
         </div>
       </dl>
-
-      <div class="about-token-legend" aria-hidden="true">
-        <span>{labels.less}</span>
-        <i data-level="0" />
-        <i data-level="1" />
-        <i data-level="2" />
-        <i data-level="3" />
-        <i data-level="4" />
-        <span>{labels.more}</span>
-      </div>
     </article>
   )
 }
