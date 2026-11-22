@@ -224,13 +224,14 @@ copy = false
 
 # ── 第三方集成 ───────────────────────────────────
 
-# 动态数据源：local 使用 src/data/moments.yml；ech0 浏览器请求 all.json
+# 动态数据源：local 使用 src/data/moments.yml；ech0 在浏览器请求 Ech0 接口
 [config.integrations.moments]
 provider = "local"
 pageSize = 20
 showPoweredBy = true
 
 [config.integrations.moments.ech0]
+# provider = "ech0" 时必填
 apiUrl = ""
 
 # 评论总开关；provider 可选 giscus / utterances / waline / twikoo / none

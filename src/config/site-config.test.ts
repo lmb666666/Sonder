@@ -35,18 +35,29 @@ describe('site config', () => {
   });
 
   test('Youlin 启用时 baseUrl 必填', () => {
-    const config = structuredClone(rawConfig.config);
-    const all = integrations(config);
-    const friends = all.friends!;
-    const youlin = all.youlin!;
-    friends.enable = true;
-    friends.provider = 'youlin';
-    youlin.baseUrl = '';
+    const previousBaseUrl = process.env.SONDER_YOULIN_BASE_URL;
+    delete process.env.SONDER_YOULIN_BASE_URL;
 
-    const result = siteConfigSchema.safeParse(config);
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues[0]?.path).toEqual(['integrations', 'friends', 'provider']);
+    try {
+      const config = structuredClone(rawConfig.config);
+      const all = integrations(config);
+      const friends = all.friends!;
+      const youlin = all.youlin!;
+      friends.enable = true;
+      friends.provider = 'youlin';
+      youlin.baseUrl = '';
+
+      const result = siteConfigSchema.safeParse(config);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0]?.path).toEqual(['integrations', 'friends', 'provider']);
+      }
+    } finally {
+      if (previousBaseUrl === undefined) {
+        delete process.env.SONDER_YOULIN_BASE_URL;
+      } else {
+        process.env.SONDER_YOULIN_BASE_URL = previousBaseUrl;
+      }
     }
   });
 

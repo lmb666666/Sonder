@@ -255,7 +255,7 @@
     "circleLoadFailed": "Friend circle failed to load. Please try again later.",
     "expandMore": "Show more",
     "youlinLinksFallback": "Youlin links are unavailable; showing fallback data.",
-    "youlinUnavailable": "Youlin is temporarily unavailable; showing fallback data.",
+    "youlinUnavailable": "Youlin is temporarily unavailable. Please try again later.",
     "emptyLinks": "No friend links yet.",
     "emptyCircle": "No friend posts yet.",
     "applyAria": "Apply for a friend link",

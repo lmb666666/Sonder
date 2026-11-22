@@ -64,7 +64,7 @@ apiUrl = "https://fcl.example.com/all.json"
 - `provider = "none"` 或 `enable = false`：不显示朋友圈区域。
 - FCL 实例需要允许当前站点域名跨域。
 
-启用 `provider = "fcl"` 时，构建会自动运行 `friends:json`，从 `src/data/friends.yml` 生成 `public/friend.json`（部署为 `/friend.json`）；不使用 FCL 时不会生成。把 FCL 的 `json_url` 指向它，例如：
+启用 `provider = "fcl"` 时，构建会自动运行 `friends:json`，从 `src/data/friends.yml` 生成 `public/friend.json`（部署为 `/friend.json`）；模板里的 `example.*` 占位友链会被跳过。不使用 FCL 时不会生成。把 FCL 的 `json_url` 指向它，例如：
 
 ```yaml
 # Friend-Circle-Lite 配置

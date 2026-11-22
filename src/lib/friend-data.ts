@@ -39,7 +39,7 @@ export type FriendLinkFieldMap = Partial<{
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-/** 模板内置的示例友链不应进入 OPML 导出。 */
+/** 模板内置的示例友链不应进入 OPML 导出或 FCL friend.json。 */
 export const isPlaceholderFeed = (value: string | null | undefined) =>
   /^https?:\/\/(?:www\.)?example\.(?:com|org|net|dev)(?:\/|$)/i.test(value ?? '');
 

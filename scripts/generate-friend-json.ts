@@ -3,6 +3,8 @@ import { dirname, resolve } from 'node:path';
 import { parse as parseToml } from 'smol-toml';
 import { parse } from 'yaml';
 
+import { isPlaceholderFeed } from '../src/lib/friend-data';
+
 interface FriendItem {
   name?: string;
   url?: string;
@@ -36,7 +38,7 @@ export function buildFriendJson(value: unknown): { friends: [string, string, str
     for (const item of group.items ?? []) {
       const name = item.name?.trim() ?? '';
       const url = item.url?.trim() ?? '';
-      if (!name || !url || seen.has(url)) continue;
+      if (!name || !url || seen.has(url) || isPlaceholderFeed(url)) continue;
       seen.add(url);
       friends.push([name, url, item.avatar?.trim() ?? '']);
     }

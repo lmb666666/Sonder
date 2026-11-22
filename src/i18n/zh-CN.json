@@ -237,7 +237,7 @@
     "circleLoadFailed": "朋友圈加载失败，请稍后重试。",
     "expandMore": "展开更多",
     "youlinLinksFallback": "友邻友链接口不可用，已尝试使用回退数据。",
-    "youlinUnavailable": "友邻接口暂时不可用，当前显示回退数据。",
+    "youlinUnavailable": "友邻接口暂时不可用，请稍后重试。",
     "emptyLinks": "还没有友链。",
     "emptyCircle": "还没有朋友动态。",
     "applyAria": "申请友链",

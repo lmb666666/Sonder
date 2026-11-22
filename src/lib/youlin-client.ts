@@ -11,7 +11,7 @@ import {
 } from './youlin';
 import { bindCircleMore } from './circle-more';
 
-/** 浏览器侧 Youlin 刷新：只替换 /links 页的友链与朋友圈，失败时保留 SSR 回退。 */
+/** 浏览器侧 Youlin 刷新：替换 /links 页的友链与朋友圈；友链失败时保留 SSR 回退。 */
 
 const RSS_ICON =
   '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>';
@@ -226,6 +226,16 @@ function renderCircle(
   bindCircleMore();
 }
 
+function renderCircleUnavailable(config: YoulinClientConfig): void {
+  const summary = document.querySelector<HTMLElement>('[data-circle-summary]');
+  if (summary) summary.textContent = config.messages.unavailable;
+
+  const grid = document.querySelector<HTMLElement>('[data-circle-list]');
+  if (grid) grid.replaceChildren(element('p', 'links-empty', config.messages.unavailable));
+
+  bindCircleMore();
+}
+
 function showNotice(feature: 'links' | 'circle', text: string): void {
   const selector = feature === 'links' ? '[data-links-notice]' : '[data-circle-notice]';
   const notice = document.querySelector<HTMLElement>(selector);
@@ -245,7 +255,9 @@ function isClientConfig(value: unknown): value is YoulinClientConfig {
     (config.linksUrl === null || typeof config.linksUrl === 'string') &&
     (config.circleUrl === null || typeof config.circleUrl === 'string') &&
     typeof config.timeoutMs === 'number' &&
+    config.timeoutMs > 0 &&
     typeof config.pageSize === 'number' &&
+    config.pageSize > 0 &&
     ['note', 'circleSummary', 'unavailable', 'emptyLinks', 'emptyCircle'].every(
       (key) => typeof catalog[key] === 'string',
     )
@@ -312,10 +324,15 @@ async function sync(): Promise<void> {
     }
     if (config.circleUrl) {
       showNotice('circle', circleFailed ? config.messages.unavailable : '');
+      if (circleFailed) renderCircleUnavailable(config);
     }
   } catch {
+    if (!page.isConnected) return;
     if (config.linksUrl) showNotice('links', config.messages.unavailable);
-    if (config.circleUrl) showNotice('circle', config.messages.unavailable);
+    if (config.circleUrl) {
+      showNotice('circle', config.messages.unavailable);
+      renderCircleUnavailable(config);
+    }
   }
 }
 

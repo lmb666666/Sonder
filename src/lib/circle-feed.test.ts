@@ -90,6 +90,7 @@ describe('normalizeCircleFeed', () => {
       {
         article_data: [
           { title: '坏链接', link: 'javascript:alert(1)', author: '作者' },
+          { title: '凭据链接', link: 'https://user:pass@example.com/post', author: '作者' },
           { title: '缺作者', link: 'https://example.com/no-author' },
           { title: '有效', link: 'https://example.com/ok', author: '作者' },
         ],

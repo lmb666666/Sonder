@@ -5,9 +5,8 @@ import FriendLinkApplication from '../components/links/FriendLinkApplication.ast
 import FriendLinkCard from '../components/links/FriendLinkCard.astro';
 import '../styles/friend-link-card.css';
 import '../styles/links-page.css';
-import type { FriendPost } from '../lib/friend-data';
 import { resolveFriendLinkGroups, type FriendSourceDeps } from '../lib/friend-sources';
-import { buildYoulinClientConfig, toDisplayDate } from '../lib/youlin';
+import { buildYoulinClientConfig } from '../lib/youlin';
 import { getSiteConfig } from '../config';
 import {
   resolveApplyProvider,
@@ -67,12 +66,9 @@ const rssCount = groups.reduce(
   0,
 );
 
-const circlePosts: FriendPost[] = [];
 const pageSize = friendCircle.pageSize;
 const circleSummaryText =
   clientFeedSrc || clientCircle ? ui.links.circleLoading : ui.links.circleSummary(0, 0, 0);
-const initialCount = 0;
-const shortDate = (post: { date?: string }) => toDisplayDate(post.date);
 
 const linksUrl = clientLinks ? youlinLinksUrl(youlin.baseUrl, youlin.links.group) : null;
 const circleUrl = clientCircle ? youlinCircleUrl(youlin.baseUrl, youlin.circle.limit) : null;
@@ -145,64 +141,17 @@ const circleNotice = circleNotices.join(' ');
           </p>
 
           <div class="circle-grid" data-circle-list data-circle-size={pageSize}>
-            {circlePosts.length === 0 && (
-              <p
-                class="links-empty"
-                data-circle-empty
-                hidden={Boolean(clientFeedSrc || clientCircle)}
-              >
-                {ui.links.emptyCircle}
-              </p>
-            )}
-            {circlePosts.map((post, index) => (
-              <article
-                class:list={['circle-card', { 'circle-card--hidden': index >= initialCount }]}
-                data-circle-card
-              >
-                <a
-                  class="circle-card__author"
-                  href={post.authorUrl || post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span class="circle-card__avatar" aria-hidden="true">
-                    {post.avatar ? (
-                      <img src={post.avatar} alt="" loading="lazy" decoding="async" />
-                    ) : (
-                      <span>{(post.author[0] || '?').toUpperCase()}</span>
-                    )}
-                  </span>
-                  <span class="circle-card__name">{post.author}</span>
-                </a>
-                <a
-                  class="circle-card__title"
-                  href={post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {post.title}
-                </a>
-                <footer class="circle-card__meta">
-                  {post.tags?.length ? (
-                    <span class="circle-card__tags">
-                      {post.tags.slice(0, 3).map((tag) => (
-                        <span>#{tag}</span>
-                      ))}
-                    </span>
-                  ) : null}
-                  {post.date && <time datetime={shortDate(post)}>{shortDate(post)}</time>}
-                </footer>
-              </article>
-            ))}
+            <p
+              class="links-empty"
+              data-circle-empty
+              hidden={Boolean(clientFeedSrc || clientCircle)}
+            >
+              {ui.links.emptyCircle}
+            </p>
           </div>
 
-          <div class="circle-actions" hidden={circlePosts.length <= pageSize}>
-            <button
-              class="circle-more"
-              type="button"
-              data-circle-more
-              hidden={circlePosts.length <= pageSize}
-            >
+          <div class="circle-actions" hidden>
+            <button class="circle-more" type="button" data-circle-more hidden>
               {ui.links.expandMore}
             </button>
           </div>

@@ -10,7 +10,6 @@ import { resolveDirectiveSource, resolveYoulinConfig } from '../../src/config/yo
 import { loadYoulinCircle, loadYoulinLinks } from '../../src/lib/youlin';
 
 type FontConfig = {
-  en: string;
   zh: string;
   file: string;
 };
@@ -114,7 +113,6 @@ function readSiteConfig(): SiteConfig | null {
 function readFontConfig(): FontConfig {
   const fonts = readSiteConfig()?.appearance.fonts;
   return {
-    en: fonts?.en ?? defaultFontConfig.en,
     zh: fonts?.zh ?? defaultFontConfig.zh,
     file: fonts?.file ?? defaultFontConfig.file,
   };

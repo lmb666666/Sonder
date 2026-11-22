@@ -32,6 +32,22 @@ export interface CircleData {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
+function isCircleFeedConfig(value: unknown): value is CircleFeedConfig {
+  if (!isRecord(value)) return false;
+  const messages = value.messages;
+  if (!isRecord(messages)) return false;
+
+  return (
+    typeof value.src === 'string' &&
+    value.src.trim() !== '' &&
+    typeof value.pageSize === 'number' &&
+    value.pageSize > 0 &&
+    ['summary', 'loading', 'empty', 'loadMore', 'error'].every(
+      (key) => typeof messages[key] === 'string',
+    )
+  );
+}
+
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
 
 const escapeHtml = (value: string) =>
@@ -45,7 +61,7 @@ function safeUrl(value: string, baseUrl: string) {
   if (!value) return '';
   try {
     const url = new URL(value, baseUrl);
-    return /^https?:$/.test(url.protocol) ? url.toString() : '';
+    return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.toString() : '';
   } catch {
     return '';
   }
@@ -136,17 +152,18 @@ export function initCircleFeed(): void {
   if (!configElement || configElement.dataset.circleFeedReady === '1') return;
   configElement.dataset.circleFeedReady = '1';
 
-  let config: CircleFeedConfig;
+  let parsed: unknown;
   try {
-    config = JSON.parse(configElement.textContent ?? '') as CircleFeedConfig;
+    parsed = JSON.parse(configElement.textContent ?? '');
   } catch {
     return;
   }
+  if (!isCircleFeedConfig(parsed)) return;
+  const config = parsed;
 
   const list = document.querySelector<HTMLElement>('[data-circle-list]');
   const summary = document.querySelector<HTMLElement>('[data-circle-summary]');
-  const empty = document.querySelector<HTMLElement>('[data-circle-empty]');
-  if (!list || !summary || !config.src) return;
+  if (!list || !summary) return;
 
   summary.textContent = config.messages.loading;
   list.setAttribute('aria-busy', 'true');
@@ -154,24 +171,36 @@ export function initCircleFeed(): void {
   // FCL 可以配置同源相对地址；解析成绝对地址后再作为数据内相对链接的基准。
   let feedUrl: string;
   try {
-    feedUrl = new URL(config.src, window.location.href).toString();
+    const url = new URL(config.src, window.location.href);
+    if (!/^https?:$/.test(url.protocol)) throw new Error('Unsupported feed protocol');
+    feedUrl = url.toString();
   } catch {
     summary.textContent = config.messages.error;
+    list.innerHTML = `<p class="links-empty">${escapeHtml(config.messages.error)}</p>`;
     return;
   }
 
-  void fetch(feedUrl, { headers: { accept: 'application/json' } })
+  // 不支持 AbortSignal.timeout 的旧浏览器仍然可以正常加载。
+  const signal =
+    typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+      ? AbortSignal.timeout(10_000)
+      : undefined;
+
+  void fetch(feedUrl, {
+    headers: { accept: 'application/json' },
+    ...(signal ? { signal } : {}),
+  })
     .then(async (response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return normalizeCircleFeed(await response.json(), feedUrl);
     })
     .then((data) => {
       list.removeAttribute('aria-busy');
-      list.innerHTML = data.posts
-        .map((post, index) => renderPost(post, index, config.pageSize))
-        .join('');
+      list.innerHTML =
+        data.posts.length === 0
+          ? `<p class="links-empty">${escapeHtml(config.messages.empty)}</p>`
+          : data.posts.map((post, index) => renderPost(post, index, config.pageSize)).join('');
       summary.textContent = formatSummary(config.messages.summary, data);
-      if (empty) empty.hidden = data.posts.length > 0;
       bindCircleMore();
     })
     .catch((error: unknown) => {

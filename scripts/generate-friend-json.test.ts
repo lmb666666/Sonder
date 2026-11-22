@@ -31,6 +31,7 @@ describe('generate-friend-json', () => {
               { name: 'A', url: 'https://a.example.com', avatar: '/a.png' },
               { name: 'A duplicate', url: 'https://a.example.com', avatar: '/a2.png' },
               { name: 'B', url: 'https://b.example.com' },
+              { name: '模板占位', url: 'https://example.com/blog' },
             ],
           },
         ],
